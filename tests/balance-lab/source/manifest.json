@@ -1,0 +1,7 @@
+{
+  "version": "8.7.0",
+  "gameSha256": "ad6a3a0e6320b144de34b44a6200f5f2a97700a0e26b299fd4b427c18bc436cb",
+  "scope": "Production Final Arena rules and clock, presentation disabled. Arena source unchanged from v8.5.1; later changes concern Vixar, Unity presentation and roster integration.",
+  "baselineVersion": "8.5.1",
+  "baselineGameSha256": "7645ad0fccb22e3f226a29de4c225dca9c2878ed031214008b9d1dd49bf8f966"
+}

@@ -1,0 +1,159 @@
+/* v6.7. Shared restrained rendering is inherited from .performance-light. */
+.performance-selector{grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}
+.performance-option{padding:.75rem .55rem;min-height:112px}
+.performance-option-title{font-size:.68rem;letter-spacing:.055em}
+.performance-option[data-mode="animated"][aria-pressed="true"]{border-color:#fbbf24;background:#332516;box-shadow:none}
+body.performance-animated #performance-mode-indicator{border-color:#fbbf24;color:#fde68a}
+.mobile-visual-modes{display:flex;gap:3px;flex:0 0 auto}
+.mobile-visual-mode{width:38px;height:42px;border:1px solid #334155;border-radius:8px;background:#111827;font-size:17px;color:#cbd5e1;touch-action:manipulation}
+.mobile-visual-mode[aria-pressed="true"]{background:#334155;border-color:#fbbf24}
+.mobile-controller-header>div:first-child{flex:1;min-width:0}
+.mobile-controller-meta{overflow:hidden}
+.mobile-controller-header #mobile-connection-status{max-width:calc(100vw - 232px)}
+.animated-avatar{display:block;position:relative;width:100%;height:100%;line-height:0}
+.animated-sprite{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;pointer-events:none}
+.animated-art-fallback{display:flex;align-items:center;justify-content:center;height:100%;font-size:80px;line-height:1}
+.animal-mascot>.animated-previous{position:absolute;inset:0;pointer-events:none}
+body.performance-animated .animal-mascot{position:relative;isolation:isolate}
+body.performance-animated .chest-ready-label{display:none}
+body.performance-animated .evolution-chest-btn{filter:none;box-shadow:none}
+body.performance-animated .chest-card-shell::after{display:none}
+.animated-chest-layer{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:visible;contain:layout style}
+.animated-chest{position:absolute;width:48px;height:35px;left:calc(50% - 24px);top:78%;transform-origin:50% 90%}
+.animated-chest-base{position:absolute;left:1px;right:1px;bottom:0;height:25px;border:2px solid #ae8447;border-radius:3px 3px 6px 6px;background:linear-gradient(100deg,#553126,#976344 50%,#3c2521)}
+.animated-chest-base::before,.animated-chest-base::after{content:"";position:absolute;top:0;bottom:0;width:4px;background:#d5ad63}
+.animated-chest-base::before{left:7px}.animated-chest-base::after{right:7px}
+.animated-chest-lid{position:absolute;left:0;right:0;top:0;height:17px;border:2px solid #d5ad63;border-radius:10px 10px 2px 2px;background:linear-gradient(#a97d4d,#654027);transform-origin:10% 100%}
+.animated-chest-lock{position:absolute;width:8px;height:10px;background:#e9c77d;border:1px solid #6e4e26;border-radius:2px;left:20px;top:15px}
+.animated-chest-glow{position:absolute;left:0;right:0;top:9px;height:8px;background:var(--animated-light);border-radius:50%;opacity:0}
+.animated-ribbon{position:absolute;inset:0;width:100%;height:100%;opacity:0;overflow:visible}
+.animated-light-seed{position:absolute;left:calc(51% - 4px);top:calc(84.5% - 4px);width:8px;height:8px;background:#fff4cf;border:2px solid var(--animated-light);border-radius:50%;opacity:0}
+.animated-arrival{position:absolute;left:14%;top:12%;width:72%;height:72%;border-radius:50%;opacity:0;border:2px solid var(--animated-light);background:radial-gradient(ellipse,transparent 40%,var(--animated-light) 72%,transparent 74%)}
+body.performance-animated #battle-overlay .animated-avatar,body.performance-animated .unity-spirit .animated-avatar,body.performance-animated #winner-svg-container .animated-avatar{width:100%;height:100%}
+
+/* v6.6: four independent components share a stable SVG coordinate system. */
+#unity-guardian-animated-art,#vixar-boss-animated-art{display:none}
+body.performance-animated .unity-guardian-stage{width:min(62vw,640px);height:min(64vh,610px);top:57%}
+body.performance-animated #unity-guardian-svg{display:none}
+body.performance-animated #unity-guardian-animated-art{display:block;width:100%;height:100%;overflow:visible}
+body.performance-animated #unity-event-overlay .guardian-piece{
+    opacity:0;transform-box:fill-box;transform-origin:center;filter:none!important;
+    transition:opacity .55s ease,transform .65s ease-out!important
+}
+body.performance-animated .guardian-body{transform:translateY(40px) scale(.87)}
+body.performance-animated .guardian-head{transform:translateY(-65px) scale(.92)}
+body.performance-animated .guardian-tail{transform:translateX(-90px) rotate(-8deg)}
+body.performance-animated .guardian-wings{transform:translateY(-32px) scale(.72)}
+body.performance-animated #unity-event-overlay .guardian-piece.show{opacity:1;transform:none}
+body.performance-animated #unity-event-overlay #unity-guardian-stage.granting #unity-guardian-animated-art{animation:guardianReward .74s ease-out both!important}
+@keyframes guardianReward{0%,100%{transform:none}38%{transform:translateY(-9px) scale(1.025)}}
+/* All four pieces stay assembled during the raid. */
+body.performance-animated #vixar-guardian-host{width:min(42vw,510px);height:min(50vh,455px)}
+body.performance-animated #vixar-guardian-host .guardian-piece{opacity:1;transform:none!important}
+body.performance-animated #vixar-guardian-host #vixar-unity-guardian-svg{width:100%;height:100%;animation:none!important;filter:none!important}
+body.performance-animated #vixar-guardian-host.arriving #vixar-unity-guardian-svg{animation:guardianArrival .85s ease-out both!important}
+body.performance-animated #vixar-guardian-host.final-strike #vixar-unity-guardian-svg{animation:guardianStrike .75s ease-out both!important}
+@keyframes guardianArrival{from{opacity:0;transform:translateY(50px) scale(.65)}to{opacity:1;transform:none}}
+@keyframes guardianStrike{45%{transform:translateY(-28px) scale(1.04)}100%{transform:translateY(-8px)}}
+body.performance-animated #vixar-boss-stage{width:min(58vw,760px);height:min(70vh,640px)}
+body.performance-animated #vixar-boss-svg{visibility:hidden}
+body.performance-animated #vixar-boss-animated-art{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;animation:none!important;filter:none!important}
+body.performance-light #vixar-raid-overlay.raid-victory #vixar-boss-stage{animation:raidDefeated .9s ease-in forwards!important}
+@keyframes raidDefeated{to{opacity:0;transform:translate(-50%,-45%) scale(.85)}}
+
+/* Quiet raid HUD: names, HP, colour-coded seals, timer, KO. */
+body.vixar-raid-active .app-shell,body.vixar-raid-active #utility-dock{display:none!important}
+#vixar-raid-overlay .vixar-raid-kicker,#vixar-raid-condition,
+#vixar-raid-overlay .vixar-epithet,#vixar-raid-overlay .vixar-clock-label,
+#vixar-raid-overlay .vixar-team-meta,#vixar-raid-overlay .vixar-team-stats,
+#vixar-raid-overlay .vixar-team-status,#vixar-raid-overlay .vixar-impact-text,#vixar-phase,#vixar-aegis-status,
+#vixar-raid-overlay .vixar-seal-chip-top,#vixar-raid-overlay .vixar-seal-chip-top::after{display:none!important}
+#vixar-raid-overlay .vixar-raid-header{height:64px;display:flex;align-items:center;justify-content:space-between}
+#vixar-raid-overlay .vixar-raid-header>div:first-child{display:none}
+#vixar-raid-overlay .vixar-title-block{text-align:left}
+#vixar-raid-overlay #vixar-raid-arena{inset:64px 0 0}
+#vixar-raid-overlay .vixar-boss-hud-line{font-size:.72rem}
+#vixar-seal-strip .vixar-seal-chip{min-width:0;width:44px;padding:5px 7px;border-color:var(--seal-color)}
+#vixar-seal-strip .vixar-seal-chip::before{content:'';display:block;margin:1px auto 6px;width:11px;height:11px;background:var(--seal-color);transform:rotate(45deg)}
+#vixar-seal-strip .vixar-seal-chip.locked::before{border:2px solid var(--seal-color);background:transparent}
+#vixar-seal-strip .vixar-seal-chip.broken{opacity:.22;filter:none}
+#vixar-raid-overlay .vixar-team-ko{font-size:clamp(.6rem,1vw,.85rem);letter-spacing:.07em}
+body.performance-light #vixar-raid-overlay *,body.performance-light #vixar-raid-overlay *::before,body.performance-light #vixar-raid-overlay *::after{box-shadow:none!important;text-shadow:none!important}
+body.performance-light #vixar-raid-overlay::after,body.performance-light #vixar-raid-overlay *::before,body.performance-light #vixar-raid-overlay *::after{animation:none!important;filter:none!important}
+body.performance-light #vixar-guardian-host::before,body.performance-light #vixar-guardian-host::after{display:none}
+#raid-motion-layer{position:absolute;inset:0;z-index:44;pointer-events:none;overflow:hidden}
+.raid-small-fx{position:absolute;pointer-events:none}
+.raid-bolt{width:18px;height:5px;border-radius:5px;transform-origin:center}
+.raid-impact{width:34px;height:34px;border:2px solid;border-radius:50%}
+.raid-block{width:94px;height:104px;border:3px solid;border-radius:45% 45% 50% 50%;background:transparent}
+.raid-stream{height:4px;border-radius:4px;transform-origin:left center}
+body.performance-light .vixar-avatar-shell{filter:none!important}
+body.performance-light .vixar-avatar-shell svg,body.performance-light .vixar-avatar-shell .animated-avatar{transform-origin:center}
+body.performance-light .vixar-avatar-shell.has-raid-shield::after,
+body.performance-light #vixar-boss-stage.has-raid-shield::after{
+    content:'';position:absolute;inset:12%;border:2px solid var(--team-color,#c4b5fd);
+    border-radius:45% 45% 50% 50%;opacity:.65;pointer-events:none
+}
+@media(max-width:820px){
+    body.performance-animated .unity-guardian-stage{width:76vw;height:58vh}
+    body.performance-animated #vixar-boss-stage{width:74vw;height:58vh}
+    body.performance-animated #vixar-guardian-host{width:52vw;height:43vh}
+}
+@media(max-width:520px){
+    body.performance-animated #vixar-boss-stage{width:90vw;height:52vh}
+    body.performance-animated #vixar-guardian-host{width:64vw;height:40vh}
+}
+@media(max-width:380px){.performance-option{padding:.65rem .35rem}.performance-option-title{font-size:.61rem}.performance-option-copy{font-size:.61rem}.mobile-visual-mode{width:34px}}
+/* Separate seals disappear independently; their SVG shares the sprite's fitted box. */
+#vixar-animated-actor{display:none;position:absolute;inset:0;transform-origin:center}
+body.performance-animated #vixar-animated-actor{display:block}
+#vixar-element-seals{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.vixar-element-seal{transition:opacity .24s ease!important}
+.vixar-element-seal.broken,#vixar-boss-svg .vixar-svg-seal.broken{opacity:0!important;pointer-events:none}
+.vixar-element-seal.inverted{opacity:.4}
+/* Size is computed once at entry/resize from VIXAR's actual fitted image height. */
+#vixar-raid-overlay #vixar-guardian-host{
+    width:var(--raid-guardian-width,260px)!important;height:var(--raid-guardian-height,234px)!important;
+    bottom:3%;transform:translateX(-50%)!important;transition:none!important
+}
+#vixar-raid-overlay #vixar-guardian-host #vixar-unity-guardian-svg{animation:none!important;filter:none!important;transform-origin:center}
+#vixar-raid-overlay #vixar-guardian-host::before,#vixar-raid-overlay #vixar-guardian-host::after{display:none}
+#vixar-raid-overlay .vixar-team-fighter.is-ko{filter:none!important}
+#vixar-raid-overlay .vixar-team-fighter.is-ko .vixar-avatar-shell{opacity:.3}
+#vixar-raid-overlay .vixar-team-ko{color:#fecaca}
+.raid-impact,.raid-block,.raid-wave{border-color:currentColor}
+.raid-bolt,.raid-stream{background:currentColor}
+.raid-stream{height:5px}
+.raid-stream-strong{height:9px;border-top:2px solid #fff;border-bottom:2px solid #fff}
+.raid-wave{width:110px;height:110px;border:3px solid;border-radius:50%;background:transparent}
+.raid-strike-claw{width:88px;height:5px;background:currentColor;border-radius:60% 0}
+.raid-strike-nature{width:62px;height:29px;border-top:5px solid;border-right:4px solid;border-radius:15% 85% 10% 0}
+.raid-strike-air{width:66px;height:66px;border:4px solid;border-left-color:transparent;border-radius:50%}
+.raid-strike-water{width:75px;height:42px;border-top:6px solid;border-left:4px solid;border-radius:70% 10% 60% 0}
+body.performance-light #vixar-raid-overlay .vixar-team-fighter.is-ko .vixar-avatar-shell{filter:none!important}
+@media(prefers-reduced-motion:reduce){
+    .animated-chest-layer{display:none!important}
+    body.performance-animated #unity-event-overlay .guardian-piece{transition:none!important}
+    body.performance-animated #unity-event-overlay #unity-guardian-stage.granting #unity-guardian-animated-art,
+    body.performance-animated #vixar-guardian-host #vixar-unity-guardian-svg,
+    body.performance-animated #vixar-guardian-host.arriving #vixar-unity-guardian-svg,
+    body.performance-animated #vixar-guardian-host.final-strike #vixar-unity-guardian-svg{animation:none!important}
+    body.performance-light #vixar-raid-overlay.raid-victory #vixar-boss-stage{animation:none!important;opacity:0}
+}
+
+/* v8.6: finite boss projectiles and two readable Guardian claw sweeps. */
+.raid-boss-shot{width:58px;height:58px;transform-origin:center;contain:layout style}
+.raid-boss-shot svg,.raid-guardian-claw svg{width:100%;height:100%;display:block;overflow:visible}
+.raid-final-shot{width:88px;height:88px}
+.raid-guardian-claw{width:clamp(210px,29vw,390px);height:clamp(140px,20vw,260px);transform-origin:center;contain:layout style}
+/* Keep the assembly stage clear; its controls and evolution rewards remain visible. */
+#unity-event-overlay .unity-event-header{display:none!important}
+body.unity-event-active .app-shell,body.unity-event-active #utility-dock{visibility:hidden!important}
+
+/* v8.6.1: assembly stays quiet; the three live reward waves show the teams again. */
+body.unity-event-active.unity-reward-active .team-container{visibility:visible!important}
+body.unity-reward-active #unity-event-overlay .unity-event-header{display:block!important}
+body.unity-reward-active #unity-event-overlay .unity-event-kicker{display:none}
+body.unity-reward-active .unity-ascension-level{font-size:clamp(18px,2vw,28px);font-weight:950;color:#fff;line-height:1.1}
+body.unity-reward-active .unity-ascension-step{font-size:clamp(10px,.9vw,13px)}
+body.unity-reward-active #unity-event-skip{display:none}

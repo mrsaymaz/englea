@@ -1,0 +1,23 @@
+{
+  "name": "english-league-v9-3-0-regression-checks",
+  "private": true,
+  "scripts": {
+    "test": "node run.cjs",
+    "test:v92": "npm run test:v91 && node island-v92.cjs",
+    "test:v93": "npm run test:v92 && node island-v93.cjs",
+    "test:v91": "npm run test:v9 && node island-v91.cjs && node peerjs-wire.cjs && node turn-errors.cjs && node participation-unit.cjs && node teamwork-unit.cjs && node arena-balance-unit.cjs",
+    "test:connection": "node peerjs-wire.cjs && node remote-sync.cjs && node turn-errors.cjs",
+    "test:v9": "node version9.cjs && node teacher-studio.cjs && node island-run-integration.cjs && node island-cloud.cjs && node island-save-flow.cjs && node roster-backend.cjs && node island-run-tally-hooks.cjs && node remote-sync.cjs && node island-runner/test-engine.cjs",
+    "test:invite": "node next-to-invite.cjs",
+    "test:agent": "node secret-agent.cjs",
+    "test:shield": "node shield.cjs",
+    "test:arena": "node arena-techniques.cjs",
+    "test:access": "node access-gate.cjs",
+    "test:projectiles": "node projectiles-hp.cjs",
+    "test:balance": "node arena-balance-unit.cjs",
+    "test:runner": "node island-run-integration.cjs && node island-run-tally-hooks.cjs && node island-runner/test-engine.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

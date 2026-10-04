@@ -1,0 +1,14 @@
+#arena-motion-layer{position:absolute;inset:0;z-index:31;pointer-events:none;overflow:hidden;}
+.combat-shot,.combat-resolution{position:absolute;width:48px;height:48px;pointer-events:none;z-index:40;opacity:0;transform-origin:center;}
+.combat-shot svg,.combat-resolution svg{display:block;width:100%;height:100%;}
+.combat-shot::before{content:'';position:absolute;right:65%;top:46%;width:36px;height:5px;background:linear-gradient(90deg,transparent,currentColor);border-radius:50%;opacity:.65;}
+.combat-shot.signature-shot{width:62px;height:62px;}
+.battle-hp-track{position:relative;overflow:hidden;}
+.battle-hp-track::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 2px),#020617b3 calc(10% - 2px),#020617b3 10%);}
+.battle-hp-number{font-size:clamp(13px,1.3vw,19px)!important;min-width:88px;font-variant-numeric:tabular-nums;}
+.battle-hp-loss{position:absolute;inset:0 auto 0 0;background:#fff5c4;transition:width .6s ease .2s;}
+.battle-hp-fill{position:relative;z-index:1;}
+@media(prefers-reduced-motion:reduce){.combat-shot,.combat-resolution{display:none!important;}.battle-hp-loss{transition:none;}}
+
+.raid-small-fx.raid-element-guard{width:100px;height:100px;border:0;background:none;}
+.raid-element-guard svg{width:100%;height:100%;}

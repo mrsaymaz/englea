@@ -1,0 +1,152 @@
+/* v8.5.0: participation constellation; no continuous effects or external assets. */
+.mascot-area > .teamwork-constellation {
+    position:absolute; inset:4px 18px 6px 0; z-index:5;
+    pointer-events:none; border-radius:50%;
+    border:1px solid rgba(253,230,138,.26);
+}
+.teamwork-constellation[hidden] { display:none; }
+.teamwork-star {
+    position:absolute; width:28px; height:28px; display:grid; place-items:center;
+    transform:translate(-50%,-50%); color:#ffe99a; font-size:26px; line-height:1;
+    text-shadow:0 1px 2px #382000,0 0 3px #382000,0 0 8px #fbbf24;
+}
+.teamwork-star-new { animation:teamworkStarAppear .65s ease-out both; }
+@keyframes teamworkStarAppear {
+    from { opacity:0; transform:translate(-50%,-50%) scale(.35); }
+    65% { opacity:1; transform:translate(-50%,-50%) scale(1.22); }
+    to { opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+@media (prefers-reduced-motion:reduce) { .teamwork-star-new { animation:none; } }
+.student-session-button{min-height:42px;padding:.45rem .75rem;display:flex;align-items:center;justify-content:center;gap:.5rem;border:1px solid #3b5576;border-radius:.7rem;background:#102239;color:#e0f2fe;font-weight:800;font-size:.75rem;touch-action:manipulation;}
+.student-session-button strong{color:#7dd3fc;white-space:nowrap;}
+.student-session-button:disabled{opacity:.45;}
+.mobile-header-actions{display:flex;align-items:center;gap:.35rem;}
+/* Compact portrait remote: readable names and full-size scoring controls.
+   Let unusually short/zoomed viewports scroll instead of clipping controls. */
+#mobile-controller{box-sizing:border-box;}
+.mobile-controller-main{overflow-y:auto;overscroll-behavior:contain;}
+.mobile-team-grid{grid-template-rows:repeat(2,minmax(min-content,1fr));}
+.mobile-team-card{min-height:216px;overflow:visible;}
+.mobile-team-header{flex:0 0 auto;}
+.mobile-team-score-row{flex:1 0 32px;}
+.mobile-invite{flex:0 0 auto;margin:3px 0 7px;padding-top:5px;border-top:1px solid #ffffff1a;}
+.mobile-invite-title{color:var(--mobile-team-pale,#cbd5e1);font-size:10px;line-height:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.mobile-invite-list{list-style:none;padding:0;margin:3px 0 0;}
+.mobile-invite-row{display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-height:20px;line-height:20px;}
+.mobile-invite-name{min-width:0;overflow-wrap:anywhere;color:#f1f5f9;font-size:13px;font-weight:650;}
+.mobile-invite-count{flex:0 0 auto;color:var(--mobile-team-pale,#cbd5e1);font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;}
+.mobile-invite-empty{margin:4px 0 0;color:#cbd5e1;font-size:12px;line-height:18px;}
+#mobile-controller .mobile-score-button{min-height:44px;}
+@media(max-height:700px){
+ .mobile-team-card{padding:5px;min-height:208px;}
+ .mobile-invite{margin:2px 0 5px;padding-top:3px;}
+ .mobile-team-score{font-size:1.25rem;}
+}
+@media(orientation:landscape) and (min-width:700px) and (max-height:500px){
+ .mobile-team-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(min-content,1fr);}
+}
+#board-class-btn{margin:0;min-height:34px;font-size:11px;padding:.35rem .6rem;}
+.student-picker{box-sizing:border-box;width:min(580px,calc(100vw - 24px));max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px);margin:auto;padding:0;border:1px solid #40536d;border-top:3px solid var(--student-color,#7dd3fc);border-radius:22px;background:#0c172b;color:#f8fafc;box-shadow:0 20px 70px #0009;overflow-y:auto;overscroll-behavior:contain;}
+.student-picker::backdrop{background:rgba(2,6,23,.92);}
+.student-picker-header{position:sticky;top:0;z-index:1;background:#0c172b;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:22px 22px 12px;}
+.student-picker-kicker{color:var(--student-color);font-size:10px;letter-spacing:.18em;font-weight:800;margin-bottom:8px;}
+.student-picker h2{margin:0;color:#f8fafc;font-size:clamp(20px,5vw,26px);font-weight:900;line-height:1.2;}
+.student-picker p{color:#aebed5;font-size:13px;line-height:1.5;margin:9px 0 0;}
+.student-picker-close{width:44px;height:44px;flex:0 0 44px;border:1px solid #334963;border-radius:12px;background:#18283f;color:#e2e8f0;font-size:28px;line-height:1;}
+.student-picker-body{padding:4px 22px 22px;}
+.student-class-grid,.student-name-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0;}
+.student-class-choice,.student-name-choice{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:5px;min-width:0;min-height:84px;padding:14px 16px;border:1px solid #3b526d;border-radius:14px;background:#172941;color:#f8fafc;text-align:left;touch-action:manipulation;}
+.student-class-choice strong{font-size:28px;letter-spacing:.025em;}
+.student-name-choice strong{font-size:18px;line-height:1.25;overflow-wrap:anywhere;}
+.student-class-choice span,.student-name-choice span{font-size:11px;color:#aebed5;line-height:1.3;}
+.student-class-choice[aria-pressed=true]{border-color:#7dd3fc;background:#183957;}
+.student-class-choice:disabled{opacity:.4;}
+.student-class-choice:disabled[aria-pressed=true]{opacity:1;}
+.student-name-choice:active,.student-class-choice:active{background:#284667;}
+.student-picker button:focus-visible,.student-session-button:focus-visible{outline:3px solid #e0f2fe;outline-offset:3px;}
+.student-award-preview{color:#e2e8f0;border-left:3px solid var(--student-color);padding:9px 12px;margin:0 0 16px;background:#14263d;border-radius:0 8px 8px 0;font-size:12px;line-height:1.5;}
+.student-picker-back{min-height:44px;color:#bae6fd;padding:8px 0;font-size:13px;}
+.student-picker .student-picker-note{margin-top:14px;font-size:11px;color:#94a3b8;}
+.mascot-area>.student-contribution-badge{position:absolute;left:4%;right:12%;bottom:12px;z-index:12;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;border:1px solid var(--student-color);border-radius:12px;background:rgba(5,14,29,.96);box-shadow:0 7px 18px #0005;pointer-events:none;text-align:center;}
+.student-contribution-kicker{font-size:9px;letter-spacing:.12em;color:#cbd5e1;font-weight:800;}
+.student-contribution-name{font-size:clamp(18px,1.8vw,28px);line-height:1.2;color:#fff;overflow-wrap:anywhere;}
+.student-contribution-points{font-size:12px;font-weight:800;color:#e0f2fe;}
+#winner-card{overflow-y:auto;justify-content:flex-start;height:100dvh;overscroll-behavior:contain;}
+#winner-session-class{font-size:12px;font-weight:800;letter-spacing:.15em;color:#bae6fd;margin-top:8px;}
+.champion-duo{--arena-avatar-size:clamp(120px,min(28vw,25vh),260px);align-items:start;flex:0 0 auto;}
+.champion-crown{width:clamp(68px,7vw,90px);}
+.league-champion-crown{width:clamp(44px,5vw,65px);}
+.champion-duo.is-grand #winner-svg-container{width:clamp(150px,min(32vw,28vh),280px)!important;height:clamp(150px,min(32vw,28vh),280px)!important;}
+.champion-contributors{width:min(440px,100%);margin-top:14px;padding:12px 14px;background:rgba(15,23,42,.88);border:1px solid #334155;border-radius:12px;text-align:left;}
+.champion-contributors[hidden]{display:none;}
+.champion-contributor-title{font-size:10px;font-weight:900;letter-spacing:.15em;color:#cbd5e1;margin-bottom:8px;}
+.champion-contributor-team{font-size:12px;font-weight:900;color:var(--student-color);margin:10px 0 5px;}
+.champion-contributor-list{list-style:none;margin:0;padding:0;display:grid;gap:4px;}
+.champion-contributor{display:grid;grid-template-columns:21px minmax(0,1fr) auto;align-items:center;gap:7px;padding:5px 6px;min-height:28px;border-radius:6px;font-size:clamp(12px,1.2vw,16px);line-height:1.3;color:#dce6f5;}
+.champion-contributor.is-top{background:#423717;border:1px solid #967738;color:#fff4bd;}
+.contributor-rank{font-size:11px;color:#94a3b8;font-weight:800;text-align:center;}
+.is-top .contributor-rank{color:#fcd34d;}
+.contributor-name{overflow-wrap:anywhere;}
+.contributor-score{font-size:clamp(10px,1vw,13px);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.champion-contributor-empty{color:#94a3b8;font-size:12px;}
+.contributor-more{margin-top:5px;font-size:11px;color:#bae6fd;}
+.contributor-more summary{cursor:pointer;min-height:30px;padding:7px 3px;line-height:1.4;}
+.contributor-more summary:focus-visible{outline:2px solid #7dd3fc;outline-offset:2px;}
+.contributor-more[open] summary{margin-bottom:4px;}
+#all-team-recognition { width:min(1120px,100%); flex:0 0 auto; margin:12px auto 6px; padding-top:16px; border-top:1px solid #334155; }
+#all-team-recognition-title { margin:0; color:#e2e8f0; font-size:clamp(16px,1.6vw,22px); font-weight:850; text-align:center; }
+.team-recognition-description { margin:4px 0 12px; color:#94a3b8; font-size:12px; text-align:center; }
+#all-team-recognition-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.team-recognition-card { min-width:0; padding:12px; border:1px solid #334155; border-top:3px solid var(--recognition-color); border-radius:14px; background:rgba(15,23,42,.88); }
+.team-recognition-avatar { width:clamp(64px,7vw,96px); height:clamp(64px,7vw,96px); margin:0 auto 5px; }
+.team-recognition-avatar>svg,.team-recognition-avatar>.animated-avatar,.team-recognition-avatar img { width:100%; height:100%; object-fit:contain; display:block; }
+.team-recognition-avatar * { animation:none!important; }
+.team-recognition-name { margin:0 0 10px; color:#f1f5f9; text-align:center; font-size:clamp(14px,1.4vw,18px); font-weight:850; }
+.team-recognition-list { list-style:none; padding:0; margin:0; display:grid; gap:6px; }
+.team-recognition-contributor { display:grid; grid-template-columns:18px minmax(0,1fr) auto; align-items:center; gap:6px; min-height:30px; color:#e2e8f0; line-height:1.35; }
+.team-recognition-student { font-size:clamp(13px,1.25vw,17px); overflow-wrap:anywhere; }
+.team-recognition-rank { color:#94a3b8; font-size:12px; text-align:center; }
+.team-recognition-count { color:#bae6fd; font-weight:800; font-size:13px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.team-recognition-empty { margin:0; color:#94a3b8; font-size:13px; text-align:center; }
+.team-recognition-note { color:#94a3b8; text-align:center; font-size:11px; margin:10px 0 0; }
+@media(max-width:899px) { #all-team-recognition-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:479px) { #all-team-recognition-grid { grid-template-columns:minmax(0,1fr); } }
+.mobile-participation-modal{position:absolute;inset:0;z-index:10005;display:flex;align-items:safe center;justify-content:center;padding:14px;background:rgba(2,6,23,.96);backdrop-filter:blur(10px);overflow-y:auto;}
+.mobile-participation-modal.hidden{display:none!important;}
+.mobile-participation-card{width:min(560px,100%);max-height:calc(100dvh - 28px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #334155;border-top:3px solid #38bdf8;border-radius:20px;background:#0f172a;box-shadow:0 20px 70px #000a;}
+.mobile-participation-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 12px;border-bottom:1px solid #263449;}
+.mobile-participation-kicker{margin-bottom:5px;color:#7dd3fc;font-size:9px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;}
+.mobile-participation-header h3{margin:0;color:#f8fafc;font-size:21px;font-weight:950;letter-spacing:.03em;}
+.mobile-participation-header p{margin:5px 0 0;color:#94a3b8;font-size:11px;line-height:1.4;}
+.mobile-participation-close{width:42px;height:42px;flex:0 0 42px;border:1px solid #3b4d66;border-radius:11px;background:#1e293b;color:#e2e8f0;font-size:25px;line-height:1;}
+.mobile-participation-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px;overflow-y:auto;overscroll-behavior:contain;}
+.participation-overview{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;padding:9px 11px;border:1px solid #334155;border-radius:10px;background:#111f34;color:#cbd5e1;font-size:11px;font-weight:800;}
+.participation-team{min-width:0;padding:10px;border:1px solid #334155;border-top:3px solid var(--student-color);border-radius:12px;background:#111c2e;}
+.participation-team-heading{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:8px;}
+.participation-team-heading strong{min-width:0;overflow:hidden;color:var(--student-color);font-size:12px;font-weight:950;text-overflow:ellipsis;white-space:nowrap;}
+.participation-team-heading span{color:#94a3b8;font-size:9px;font-weight:800;white-space:nowrap;}
+.participation-list{list-style:none;display:grid;gap:5px;margin:0;padding:0;}
+.participation-row{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:5px;min-height:28px;padding:4px 5px;border-radius:7px;color:#dbeafe;font-size:11px;}
+.participation-row.is-leader{background:#2f2a16;color:#fff3b0;}
+.participation-rank{color:#94a3b8;font-size:9px;font-weight:900;text-align:center;}
+.participation-row.is-leader .participation-rank{color:#facc15;}
+.participation-name{min-width:0;overflow-wrap:anywhere;font-weight:800;}
+.participation-count{padding:2px 6px;border-radius:999px;background:#233149;color:#f8fafc;font-size:9px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.participation-empty{padding:7px 2px;color:#64748b;font-size:10px;line-height:1.4;}
+.mobile-participation-done{min-height:44px;margin:0 14px 14px;border:1px solid #0369a1;border-radius:10px;background:#075985;color:#f0f9ff;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;}
+@media(max-width:520px){
+ .mobile-controller-header{gap:.25rem;}
+ .mobile-header-actions{gap:.25rem;}
+ .mobile-header-actions .student-session-button{padding:.4rem .5rem;gap:.3rem;font-size:11px;}
+ .student-picker-header{padding:18px 16px 10px;}
+ .student-picker-body{padding:4px 16px 18px;}
+ .student-name-grid,.student-class-grid{gap:10px;}
+ .student-name-choice{padding:12px 10px;min-height:80px;}
+ .student-name-choice strong{font-size:16px;}
+ .champion-duo{width:100%;gap:12px;--arena-avatar-size:min(36vw,170px);}
+ .champion-contributors{padding:10px 6px;}
+ .champion-contributor{grid-template-columns:16px minmax(0,1fr);gap:3px;}
+ .contributor-score{grid-column:2;}
+}
+@media(max-width:360px){.student-name-grid,.mobile-participation-body{grid-template-columns:1fr;}.student-name-choice{min-height:64px;}.student-name-choice strong{font-size:18px;}}
+@media(max-height:620px){.student-picker-header{padding-top:14px;}.student-name-choice,.student-class-choice{min-height:64px;}.champion-duo{--arena-avatar-size:min(27vw,25vh);}.champion-duo.is-grand #winner-svg-container{width:26vh!important;height:26vh!important;}}

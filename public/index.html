@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<!-- English League Island Run Edition v9.3.0 -->
+<html lang="en" class="access-locked">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./access-gate.css?v=8.7.0">
+    <script src="./access-gate.js?v=8.7.0"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English League with Mr. Saymaz</title>
+    <link rel="stylesheet" href="./styles.css?v=6.5">
+<!-- WebRTC P2P Data Channels -->
+    <script src="./vendor/peerjs.min.js?v=1.5.4"></script>
+    <link rel="stylesheet" href="./game.css?v=8.7.0">
+
+    <link rel="stylesheet" href="./animated-mode.css?v=6.7">
+    <link rel="stylesheet" href="./combat-motion.css?v=8.7.0">
+    <script src="./classroom-runtime.js?v=8.7.0"></script>
+    <script src="./session-recovery.js?v=8.7.0"></script>
+    <script src="./remote-protocol.js?v=8.7.0"></script>
+    <script src="./performance-budget.js?v=8.7.0"></script>
+    <script src="./sheets-outbox.js?v=9.3.0"></script>
+    <link rel="stylesheet" href="./classroom.css?v=8.7.0">
+    <link rel="stylesheet" href="./students.css?v=8.7.0">
+    <script src="./student-rosters.js?v=8.7.0"></script>
+    <script src="./roster-manager.js?v=9.3.0"></script>
+    <script src="./student-ui.js?v=8.7.0"></script>
+    <script src="./secret-agent.js?v=8.7.0"></script>
+    <link rel="stylesheet" href="./secret-agent.css?v=8.7.0">
+    <script src="./motion.js?v=8.7.0"></script>
+    <script src="./game-rules.js?v=8.7.0"></script>
+    <script src="./session-state.js?v=8.7.0"></script>
+    <script src="./arena-techniques.js?v=8.7.0"></script>
+    <script src="./combat-projectiles.js?v=8.7.0"></script>
+    <link rel="stylesheet" href="./combat-projectiles.css?v=8.7.0">
+    <script src="./arena-motion.js?v=8.7.0"></script>
+    <script src="./guardian-assembly.js?v=8.7.0"></script>
+    <script src="./animated-mode.js?v=8.7.0"></script>
+    <script src="./raid-motion.js?v=8.7.0"></script>
+    <link rel="stylesheet" href="./roster-manager.css?v=8.7.0">
+    <link rel="stylesheet" href="./island-run.css?v=9.3.0">
+    <script src="./adventure.js?v=9.3.0"></script>
+    <script src="./island-runner/content.js?v=9.3.0"></script>
+    <script src="./teaching-model.js?v=9.3.0"></script>
+    <script src="./teaching.js?v=9.3.0"></script>
+    <script src="./teacher-studio.js?v=9.3.0"></script>
+    <link rel="stylesheet" href="./teacher-studio.css?v=9.3.0">
+    <script src="./lesson-recap.js?v=9.3.0"></script>
+    <link rel="stylesheet" href="./adventure.css?v=9.3.0">
+    <script src="./island-progress.js?v=9.3.0"></script>
+    <link rel="stylesheet" href="./island-progress.css?v=9.3.0">
+    <link rel="stylesheet" href="./remote-sync.css?v=9.3.0">
+    <script src="./question-log.js?v=9.3.0"></script>
+    <script src="./island-run.js?v=9.3.0"></script>
+    <script src="./run-remote.js?v=9.3.0"></script>
+    <link rel="stylesheet" href="./remote-compact.css?v=9.3.0">
+</head>
+<body class="p-4 sm:p-8">
+    <section id="access-screen" aria-labelledby="access-title">
+      <div class="access-card"><div class="access-crest" aria-hidden="true">♜</div><h1 id="access-title">English League</h1><p>Teacher access</p>
+      <form id="access-form"><label for="access-code">Access code</label><input id="access-code" type="password" inputmode="numeric" autocomplete="off" maxlength="4" aria-describedby="access-message"><button id="access-submit" type="submit" disabled>Enter classroom</button></form>
+      <p id="access-message" role="status" aria-live="polite">Connecting securely…</p><p class="access-note">Time verified online · Turkey time</p></div>
+    </section>
+
+<!-- STARTUP SCREEN -->
+    <div id="startup-overlay" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase tracking-widest mb-8">English League</h1>
+        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v9.3.0</div>
+        <div class="startup-card bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
+            <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Smartboard Display</h2>
+            <div class="performance-selector" role="group" aria-label="Smartboard visual quality">
+                <button id="performance-option-ultra" type="button" class="performance-option" data-mode="ultra" aria-pressed="true" onclick="selectPerformanceMode('ultra')">
+                    <span class="performance-option-icon" aria-hidden="true">✨</span>
+                    <span class="performance-option-title">PERFORMANCE</span>
+                    <span class="performance-option-copy">Full scenery, particles, reactions and effects</span>
+                </button>
+                <button id="performance-option-animated" type="button" class="performance-option" data-mode="animated" aria-pressed="false" onclick="selectPerformanceMode('animated')">
+                    <span class="performance-option-icon" aria-hidden="true">🎬</span>
+                    <span class="performance-option-title">ANIMATED</span>
+                    <span class="performance-option-copy">Evolving artwork and brief, lightweight effects</span>
+                </button>
+                <button id="performance-option-light" type="button" class="performance-option" data-mode="light" aria-pressed="false" onclick="selectPerformanceMode('light')">
+                    <span class="performance-option-icon" aria-hidden="true">⚡</span>
+                    <span class="performance-option-title">LIGHT</span>
+                    <span class="performance-option-copy">Maximum performance for school smartboards</span>
+                </button>
+            </div>
+            <div id="recovery-card" hidden><span id="recovery-label">Previous session available</span><button id="resume-session-btn" type="button">Resume session</button></div>
+            <button id="start-host-btn" onclick="startHostMode()" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-transform uppercase tracking-wider mb-3 disabled:opacity-50 disabled:cursor-wait">Start New Session</button>
+            <details id="readiness-details"><summary id="readiness-label">Checking classroom setup…</summary><div id="readiness-items"></div><button id="check-relay-btn" type="button">Check remote relay</button></details>
+            <div id="startup-connection-status" class="startup-network-status" role="status" aria-live="polite">Remote connection will be prepared when you start.</div>
+            <hr class="startup-divider border-slate-700 mb-8">
+            <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Remote Control</h2>
+            <input type="text" id="room-code-input" placeholder="4-DIGIT CODE" class="w-full bg-slate-950 border-2 border-slate-700 rounded-xl p-4 text-center text-2xl font-black text-white uppercase tracking-[0.5em] mb-4 outline-none focus:border-blue-500" maxlength="4">
+            <button id="connect-phone-btn" onclick="startControllerMode()" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-transform uppercase tracking-wider disabled:opacity-50 disabled:cursor-wait">Connect Phone</button>
+            <button id="open-saved-results-btn" type="button" hidden>Open saved lesson results</button>
+        </div>
+    </div>
+<!-- MOBILE CONTROLLER UI -->
+    <div id="mobile-controller" class="hidden fixed inset-0 z-[9999] flex flex-col overflow-hidden">
+        <header class="mobile-controller-header">
+            <h1 class="mobile-controller-title remote-visually-hidden">Teacher remote</h1>
+            <div id="mobile-connection-wrap" class="mobile-controller-meta" data-remote-state="connecting">
+                <span class="remote-state-dot" aria-hidden="true"></span>
+                <span id="mobile-connection-status">CONNECTING…</span>
+                <span id="mobile-room-code" class="mobile-room-code" aria-label="Room code">----</span>
+            </div>
+            <button id="mobile-class-btn" type="button" class="student-session-button mobile-remote-action" onclick="openStudentClassPicker()" aria-label="Choose class"><span>Class</span><strong id="mobile-selected-class">Choose</strong></button>
+            <button id="mobile-more-btn" type="button" aria-haspopup="dialog" aria-controls="mobile-more-sheet" aria-expanded="false" aria-label="More controls"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+        </header>
+
+        <div id="mobile-sync-panel"><span id="mobile-sync-detail" role="status">Waiting for board synchronization</span><button id="remote-resync-btn" type="button" onclick="retryRemoteSync()">Retry sync</button></div>
+        <div id="mobile-command-status" role="status" aria-live="polite"></div>
+        <div id="mobile-scene-controls" hidden><span id="mobile-scene-name"></span><button id="remote-pause-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_PAUSE')">Pause</button><button id="remote-skip-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_SKIP')">Skip</button><button id="remote-exit-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_EXIT')">Exit</button></div>
+        <main class="mobile-controller-main">
+            <section id="mobile-run-panel" class="remote-run-panel" aria-label="Island Run controls" hidden>
+                <div class="remote-run-navigator">
+                    <span>Navigator</span>
+                    <strong id="mobile-run-navigator" class="empty">Waiting for the board</strong>
+                    <button id="mobile-run-next" type="button" class="mobile-remote-action" disabled>Another student</button>
+                </div>
+                <button id="mobile-run-repeat" type="button" class="remote-run-repeat mobile-remote-action" disabled>Hear the word again</button>
+                <div class="remote-run-switches">
+                    <button type="button" class="remote-switch" role="switch" data-run-option="listening" aria-checked="true"><span>Listening gates</span><span class="remote-switch-state">On</span></button>
+                    <button type="button" class="remote-switch" role="switch" data-run-option="pictures" aria-checked="false"><span>Picture gates</span><span class="remote-switch-state">Off</span></button>
+                </div>
+                <p id="mobile-run-voice" class="remote-run-note" aria-live="polite"></p>
+                <p class="remote-run-note">Turning listening off shows the word on the board at once. Other changes start with the next run.</p>
+            </section>
+            <section id="mobile-class-mission-panel" class="mobile-mission-panel" aria-label="Class Mission controls">
+                <div class="mobile-mission-top">
+                    <span class="mobile-mission-title">Class Mission</span>
+                    <span id="mobile-class-mission-count">0 / 15</span>
+                </div>
+                <div id="mobile-class-mission-progress" class="mobile-mission-progress" role="progressbar" aria-label="Distinct student contributors toward Class Mission" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0">
+                    <span id="mobile-class-mission-fill"></span>
+                </div>
+                <p class="mobile-mission-explanation">Each student's first contribution adds one step.</p>
+            </section>
+
+            <div class="mobile-team-grid" aria-label="All team controls">
+                <section class="mobile-team-card" style="--mobile-team-color:#e11d48;--mobile-team-border:#4c1d32;--mobile-team-glow:rgba(225,29,72,.18);--mobile-team-pale:#fecdd3;--mobile-team-add-ink:#fff1f2;">
+                    <div class="mobile-team-header">
+                        <h2 class="mobile-team-name">Gryffindor</h2>
+                        <button type="button" onclick="confirmRemoteTeamReset('gryffindor', 'Gryffindor')" class="mobile-team-reset mobile-remote-action" aria-label="Reset Gryffindor">↺</button>
+                    </div>
+                    <div class="mobile-team-score-row">
+                        <span id="mobile-score-gryffindor" class="mobile-team-score">0</span>
+                        <button id="mobile-chest-gryffindor" type="button" onclick="sendRemoteAction('OPEN_CHEST', 'gryffindor')" class="hidden mobile-team-chest mobile-remote-action" aria-label="Open Gryffindor evolution chest">🎁</button>
+                    </div>
+                    <div id="mobile-invite-gryffindor" class="mobile-invite"></div>
+                    <div class="mobile-score-actions">
+                        <button type="button" onclick="sendRemoteAction('SUBTRACT', 'gryffindor')" class="mobile-score-button mobile-remote-action" aria-label="Subtract points from Gryffindor">−</button>
+                        <button type="button" onclick="sendRemoteAction('ADD', 'gryffindor')" class="mobile-score-button add mobile-remote-action" aria-label="Add points to Gryffindor">+</button>
+                    </div>
+                </section>
+
+                <section class="mobile-team-card" style="--mobile-team-color:#059669;--mobile-team-border:#174638;--mobile-team-glow:rgba(16,185,129,.17);--mobile-team-pale:#a7f3d0;--mobile-team-add-ink:#ecfdf5;">
+                    <div class="mobile-team-header">
+                        <h2 class="mobile-team-name">Slytherin</h2>
+                        <button type="button" onclick="confirmRemoteTeamReset('slytherin', 'Slytherin')" class="mobile-team-reset mobile-remote-action" aria-label="Reset Slytherin">↺</button>
+                    </div>
+                    <div class="mobile-team-score-row">
+                        <span id="mobile-score-slytherin" class="mobile-team-score">0</span>
+                        <button id="mobile-chest-slytherin" type="button" onclick="sendRemoteAction('OPEN_CHEST', 'slytherin')" class="hidden mobile-team-chest mobile-remote-action" aria-label="Open Slytherin evolution chest">🎁</button>
+                    </div>
+                    <div id="mobile-invite-slytherin" class="mobile-invite"></div>
+                    <div class="mobile-score-actions">
+                        <button type="button" onclick="sendRemoteAction('SUBTRACT', 'slytherin')" class="mobile-score-button mobile-remote-action" aria-label="Subtract points from Slytherin">−</button>
+                        <button type="button" onclick="sendRemoteAction('ADD', 'slytherin')" class="mobile-score-button add mobile-remote-action" aria-label="Add points to Slytherin">+</button>
+                    </div>
+                </section>
+
+                <section class="mobile-team-card" style="--mobile-team-color:#eab308;--mobile-team-border:#554415;--mobile-team-glow:rgba(234,179,8,.15);--mobile-team-pale:#fef08a;--mobile-team-add-ink:#241a03;">
+                    <div class="mobile-team-header">
+                        <h2 class="mobile-team-name">Hufflepuff</h2>
+                        <button type="button" onclick="confirmRemoteTeamReset('hufflepuff', 'Hufflepuff')" class="mobile-team-reset mobile-remote-action" aria-label="Reset Hufflepuff">↺</button>
+                    </div>
+                    <div class="mobile-team-score-row">
+                        <span id="mobile-score-hufflepuff" class="mobile-team-score">0</span>
+                        <button id="mobile-chest-hufflepuff" type="button" onclick="sendRemoteAction('OPEN_CHEST', 'hufflepuff')" class="hidden mobile-team-chest mobile-remote-action" aria-label="Open Hufflepuff evolution chest">🎁</button>
+                    </div>
+                    <div id="mobile-invite-hufflepuff" class="mobile-invite"></div>
+                    <div class="mobile-score-actions">
+                        <button type="button" onclick="sendRemoteAction('SUBTRACT', 'hufflepuff')" class="mobile-score-button mobile-remote-action" aria-label="Subtract points from Hufflepuff">−</button>
+                        <button type="button" onclick="sendRemoteAction('ADD', 'hufflepuff')" class="mobile-score-button add mobile-remote-action" aria-label="Add points to Hufflepuff">+</button>
+                    </div>
+                </section>
+
+                <section class="mobile-team-card" style="--mobile-team-color:#0284c7;--mobile-team-border:#16445e;--mobile-team-glow:rgba(56,189,248,.16);--mobile-team-pale:#bae6fd;--mobile-team-add-ink:#f0f9ff;">
+                    <div class="mobile-team-header">
+                        <h2 class="mobile-team-name">Ravenclaw</h2>
+                        <button type="button" onclick="confirmRemoteTeamReset('ravenclaw', 'Ravenclaw')" class="mobile-team-reset mobile-remote-action" aria-label="Reset Ravenclaw">↺</button>
+                    </div>
+                    <div class="mobile-team-score-row">
+                        <span id="mobile-score-ravenclaw" class="mobile-team-score">0</span>
+                        <button id="mobile-chest-ravenclaw" type="button" onclick="sendRemoteAction('OPEN_CHEST', 'ravenclaw')" class="hidden mobile-team-chest mobile-remote-action" aria-label="Open Ravenclaw evolution chest">🎁</button>
+                    </div>
+                    <div id="mobile-invite-ravenclaw" class="mobile-invite"></div>
+                    <div class="mobile-score-actions">
+                        <button type="button" onclick="sendRemoteAction('SUBTRACT', 'ravenclaw')" class="mobile-score-button mobile-remote-action" aria-label="Subtract points from Ravenclaw">−</button>
+                        <button type="button" onclick="sendRemoteAction('ADD', 'ravenclaw')" class="mobile-score-button add mobile-remote-action" aria-label="Add points to Ravenclaw">+</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="mobile-controller-footer">
+            <button id="mobile-finish-btn" type="button" onclick="openRemoteFinishModal()" class="mobile-session-button mobile-remote-action"><span id="mobile-finish-btn-label">🏁 Finish Session</span></button>
+            <div id="mobile-result-actions" class="mobile-result-actions hidden">
+                <button id="mobile-participation-btn" type="button" onclick="openParticipationSummary()" class="mobile-session-button"><span>👥 Participation</span></button>
+                <button id="mobile-record-btn" type="button" onclick="openTeacherSaveModal()" disabled class="mobile-session-button"><span id="mobile-record-btn-label">📊 Save Record</span></button>
+            </div>
+            <div id="mobile-record-ready-status" role="status" aria-live="polite">Waiting for a connected smartboard.</div>
+        </footer>
+
+        <div id="mobile-more-sheet" class="remote-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-more-title" hidden>
+            <div class="remote-sheet-card">
+                <div class="remote-sheet-head"><h2 id="mobile-more-title">More controls</h2><button id="mobile-more-close" type="button" aria-label="Close more controls">×</button></div>
+                <section aria-labelledby="remote-visual-title">
+                    <h3 id="remote-visual-title">Board visuals</h3>
+                    <div class="mobile-visual-modes" role="group" aria-label="Board visual mode">
+                        <button type="button" class="mobile-visual-mode mobile-remote-action" data-remote-mode="ultra" data-closes-sheet onclick="requestRemoteVisualMode('ultra')" aria-label="Performance mode" title="Performance" aria-pressed="false"><span aria-hidden="true">✨</span> Performance</button>
+                        <button type="button" class="mobile-visual-mode mobile-remote-action" data-remote-mode="animated" data-closes-sheet onclick="requestRemoteVisualMode('animated')" aria-label="Animated mode" title="Animated" aria-pressed="false"><span aria-hidden="true">🎬</span> Animated</button>
+                        <button type="button" class="mobile-visual-mode mobile-remote-action" data-remote-mode="light" data-closes-sheet onclick="requestRemoteVisualMode('light')" aria-label="Light mode" title="Light" aria-pressed="false"><span aria-hidden="true">⚡</span> Light</button>
+                    </div>
+                </section>
+                <section aria-labelledby="remote-run-title">
+                    <h3 id="remote-run-title">Island Run</h3>
+                    <div class="remote-run-switches">
+                        <button type="button" class="remote-switch" role="switch" data-run-option="listening" aria-checked="true"><span>Listening gates</span><span class="remote-switch-state">On</span></button>
+                        <button type="button" class="remote-switch" role="switch" data-run-option="pictures" aria-checked="false"><span>Picture gates</span><span class="remote-switch-state">Off</span></button>
+                    </div>
+                </section>
+                <section class="remote-sheet-actions">
+                    <button id="mobile-manage-btn" type="button" data-closes-sheet onclick="LeagueStudio.open()">Manage roster and questions</button>
+                    <button type="button" class="remote-disconnect" onclick="location.reload()">Disconnect this remote</button>
+                </section>
+            </div>
+        </div>
+
+        <!-- REMOTE TEAM RESET CONFIRMATION (Phone Only) -->
+        <div id="mobile-reset-modal" class="hidden absolute inset-0 z-[10003] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-6 text-center" role="dialog" aria-modal="true" aria-labelledby="mobile-reset-title">
+            <div class="w-full max-w-sm rounded-2xl border border-rose-900/70 bg-slate-900 p-6 shadow-2xl">
+                <div class="mb-3 text-4xl" aria-hidden="true">↺</div>
+                <h3 id="mobile-reset-title" class="mb-2 text-lg font-black uppercase tracking-widest text-rose-400">Reset <span id="mobile-reset-team-name">Team</span>?</h3>
+                <p class="mb-5 text-xs font-semibold leading-relaxed text-slate-400">This clears the team’s score, level, evolution progress, traits and relic. Earned student contributions are kept. You can undo the team reset from the smartboard.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="closeRemoteTeamResetModal()" class="rounded-xl border border-slate-700 bg-slate-800 py-3 text-xs font-black uppercase tracking-wider text-slate-200 active:bg-slate-700">Cancel</button>
+                    <button id="mobile-reset-confirm-btn" type="button" onclick="executeRemoteTeamReset()" class="rounded-xl bg-rose-600 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg active:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-40">Reset Team</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REMOTE SESSION FINISH CONFIRMATION (Phone Only) -->
+        <div id="mobile-finish-modal" class="hidden absolute inset-0 z-[10004] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-6 text-center" role="dialog" aria-modal="true" aria-labelledby="mobile-finish-title">
+            <div class="w-full max-w-sm rounded-2xl border border-amber-800/70 bg-slate-900 p-6 shadow-2xl">
+                <div class="mb-3 text-4xl" aria-hidden="true">🏁</div>
+                <h3 id="mobile-finish-title" class="mb-2 text-lg font-black uppercase tracking-widest text-amber-300">Finish Session?</h3>
+                <p class="mb-5 text-xs font-semibold leading-relaxed text-slate-400">This sends the final standings to your phone and starts the Final Battle on the smartboard.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="closeRemoteFinishModal()" class="rounded-xl border border-slate-700 bg-slate-800 py-3 text-xs font-black uppercase tracking-wider text-slate-200 active:bg-slate-700">Cancel</button>
+                    <button id="mobile-finish-confirm-btn" type="button" onclick="executeRemoteFinish()" class="mobile-remote-action rounded-xl bg-amber-500 py-3 text-xs font-black uppercase tracking-wider text-slate-950 shadow-lg active:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-40">Finish</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRIVATE PARTICIPATION SUMMARY (Phone Only) -->
+        <div id="mobile-participation-modal" class="mobile-participation-modal hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-participation-title">
+            <section class="mobile-participation-card">
+                <header class="mobile-participation-header">
+                    <div>
+                        <div class="mobile-participation-kicker">Teacher view · phone only</div>
+                        <h3 id="mobile-participation-title">Participation Summary</h3>
+                        <p id="mobile-participation-meta">Ranked by contribution count, not points.</p>
+                    </div>
+                    <button type="button" onclick="closeParticipationSummary()" class="mobile-participation-close" aria-label="Close participation summary">×</button>
+                </header>
+                <div id="mobile-participation-body" class="mobile-participation-body"></div>
+                <button type="button" onclick="closeParticipationSummary()" class="mobile-participation-done">Done</button>
+            </section>
+        </div>
+
+        <!-- PRIVATE TEACHER SAVE MODAL (Phone Only) -->
+        <div id="mobile-save-modal" class="hidden absolute inset-0 z-[10002] bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+            <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-sm w-full shadow-2xl">
+                <h3 class="text-lg font-black tracking-widest text-emerald-400 mb-1 uppercase">Save to Google Sheets</h3>
+                <p class="text-xs text-slate-400 font-semibold mb-4">Record classroom standings or arena battle outcome.</p>
+
+                <!-- Class Selection -->
+                <div class="text-left mb-3">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Class / Branch</label>
+                    <input type="text" id="teacher-class-input" placeholder="e.g. 5-A, 6-D, 8-C" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-center text-lg font-black text-white uppercase tracking-wider outline-none focus:border-emerald-500">
+                </div>
+
+                <!-- Record Type Selection -->
+                <div class="text-left mb-3">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Record Type</label>
+                    <select id="teacher-record-type" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-center text-xs font-bold text-slate-200 uppercase outline-none focus:border-emerald-500">
+                        <option value="FULL_SESSION" selected>⚡ Full Session (Leaderboard + Battle)</option>
+                        <option value="LEADERBOARD_FINAL">🏆 Leaderboard Standings Only</option>
+                        <option value="BATTLE_OUTCOME">⚔️ Battle Arena Result Only</option>
+                    </select>
+                </div>
+
+                <!-- Teacher PIN Input -->
+                <div class="text-left mb-4">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Teacher PIN</label>
+                    <input type="password" id="teacher-pin-input" inputmode="numeric" maxlength="6" placeholder="••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-center text-xl font-black text-white tracking-[0.4em] outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeTeacherSaveModal()" class="flex-1 bg-slate-800 active:bg-slate-700 text-slate-400 font-bold py-3 rounded-lg uppercase text-xs">Cancel</button>
+                    <button type="button" id="btn-confirm-save" onclick="submitOfficialRecordFromMobile()" class="flex-1 bg-emerald-600 active:bg-emerald-700 text-white font-black py-3 rounded-lg uppercase text-xs tracking-wider">Submit</button>
+                </div>
+                <p id="mobile-save-status" class="text-xs font-bold mt-3 text-slate-400 min-h-[1.2em]"></p>
+            </div>
+        </div>
+        <!-- MOBILE WHEEL OVERLAY -->
+        <div id="mobile-wheel-overlay" class="hidden absolute inset-0 z-[10000] bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+            <div id="mobile-wheel-icon" class="mobile-wheel-icon is-spinning text-7xl mb-7">🎡</div>
+            <h2 id="mobile-wheel-title" class="text-2xl font-black tracking-widest text-slate-200 mb-2">WHEEL IS OPEN</h2>
+            <strong id="mobile-wheel-result" class="hidden mobile-wheel-result mb-4"></strong>
+            <p id="mobile-wheel-message" class="text-slate-400 font-bold mb-10">The Wheel of Subjects is currently displayed on the Smartboard.</p>
+            <button id="mobile-wheel-close-btn" onclick="sendRemoteAction('CLOSE_WHEEL')" class="mobile-remote-action w-full max-w-sm bg-slate-800 border-2 border-slate-700 text-slate-200 hover:bg-slate-700 font-black py-4 rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-wider">Close Wheel</button>
+        </div>
+    </div>
+    <!-- HOST APPROVAL OVERLAY -->
+    <div id="approval-overlay" class="hidden fixed inset-0 z-[10001] bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+        <h2 class="text-2xl font-black tracking-widest text-white mb-2">INCOMING CONNECTION</h2>
+        <p class="text-slate-400 font-bold mb-8">Someone is trying to connect to the Smartboard.</p>
+        <div class="flex gap-4">
+            <button id="btn-approve" class="bg-emerald-500 text-slate-900 px-8 py-3 rounded-lg font-black tracking-wider">ALLOW</button>
+            <button id="btn-deny" class="bg-rose-600 text-white px-8 py-3 rounded-lg font-black tracking-wider">DENY</button>
+        </div>
+    </div>
+
+    <div id="dynamic-background">
+        <div class="elemental-bg scenery-layer" id="gryffindor-bg-effect"></div>
+        <div class="elemental-bg scenery-layer" id="slytherin-bg-effect"></div>
+        <div class="elemental-bg scenery-layer" id="hufflepuff-bg-effect"></div>
+        <div class="elemental-bg scenery-layer" id="ravenclaw-bg-effect"></div>
+    </div>
+    
+    <!-- Hardware Accelerated Canvas for Particles -->
+    <canvas id="particle-canvas"></canvas>
+    <div id="vortex-overlay"></div>
+
+    <div class="scenery-layer" id="hot-air-balloon">
+        <svg viewBox="0 0 150 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M75,10 C 30,10 10,50 10,100 C 10,150 30,190 75,190 C 120,190 140,150 140,100 C 140,50 120,10 75,10 Z" fill="#9333ea"/>
+            <path d="M75,10 C 65,10 60,50 60,100 C 60,150 65,190 75,190" fill="none" stroke="#fde047" stroke-width="10"/>
+            <path d="M75,10 C 85,10 90,50 90,100 C 90,150 85,190 75,190" fill="none" stroke="#fde047" stroke-width="10"/>
+            <rect x="60" y="180" width="30" height="20" fill="#8c5a2b" rx="3"/>
+            <line x1="65" y1="160" x2="65" y2="180" stroke="#4d2d14" stroke-width="2"/>
+            <line x1="85" y1="160" x2="85" y2="180" stroke="#4d2d14" stroke-width="2"/>
+        </svg>
+    </div>
+    <div class="scenery-layer" id="roller-coaster">
+        <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+            <g><rect x="50" y="50" width="40" height="20" fill="#e11d48" rx="4"/><circle cx="60" cy="70" r="5" fill="#334155"/><circle cx="80" cy="70" r="5" fill="#334155"/></g>
+            <g><rect x="100" y="50" width="40" height="20" fill="#2563eb" rx="4"/><circle cx="110" cy="70" r="5" fill="#334155"/><circle cx="130" cy="70" r="5" fill="#334155"/></g>
+            <g><rect x="150" y="50" width="40" height="20" fill="#10b981" rx="4"/><circle cx="160" cy="70" r="5" fill="#334155"/><circle cx="180" cy="70" r="5" fill="#334155"/></g>
+        </svg>
+    </div>
+    
+    <div id="golden-snitch">
+        <svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="25" r="10" fill="gold"/><path d="M 40 25 C 10 10, 10 40, 40 25 Z" fill="rgba(255,255,255,0.7)"/><path d="M 60 25 C 90 10, 90 40, 60 25 Z" fill="rgba(255,255,255,0.7)"/>
+        </svg>
+    </div>
+    <div id="event-banner"></div>
+    <div id="focus-mode-indicator">FOCUS MODE</div>
+    <div id="performance-mode-indicator">✨ ULTRA MODE</div>
+    <div id="remote-connection-indicator" data-remote-state="offline" role="status" aria-live="polite">
+        <span class="remote-state-dot"></span><span id="remote-connection-text">REMOTE OFFLINE</span>
+    </div>
+    <div id="summary-delivery-indicator" role="status" aria-live="polite"></div>
+
+    <!-- Utility Dock Sidebar -->
+    <div id="utility-dock">
+        <div id="dock-handle">UTILITIES</div>
+        <button id="learn-btn" class="dock-btn" title="Add Custom Points">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+        </button>
+        <button id="wheel-btn" class="dock-btn" title="Fortune Wheel" onclick="openWheelModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v3m0 12v3m9-9h-3M3 12H0m16.243-7.243l-2.122 2.122M5.636 18.364l-2.122 2.122m12.728 0l-2.122-2.122M5.636 5.636L7.758 7.758" /><circle cx="12" cy="12" r="3" /></svg>
+        </button>
+        <button id="timer-btn" class="dock-btn" title="Start 5m Timer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </button>
+        <button id="mute-btn" class="dock-btn" title="Sound On — click to mute">
+            <svg id="sound-on-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+            <svg id="sound-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l-5-5m0 5l5-5" /></svg>
+        </button>
+        <button id="performance-mode-btn" class="dock-btn" title="Visual mode: Ultra — click for Light" aria-label="Switch visual performance mode">✨</button>
+<!-- Room Code Display tucked at the bottom of the drawer -->
+        <div id="room-code-container" class="ml-[30px] mt-4 flex flex-col items-center gap-1 bg-slate-800 border border-slate-600 p-2 rounded-lg hidden">
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center leading-tight">Room<br>Code</span>
+            <span id="display-room-code" class="text-lg font-black text-white tracking-widest">----</span>
+        </div>
+    </div>
+
+    <div class="app-shell mx-auto">
+        <!-- Cleaned up Header -->
+        <header class="mb-4 relative flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700 backdrop-blur-sm">
+            <div class="header-actions-left">
+                <button id="undo-btn" class="btn btn-neutral font-bold py-2 px-6 rounded-lg text-sm uppercase tracking-wider" disabled>Undo</button>
+                <button id="switch-btn" class="btn btn-neutral font-bold py-2 px-6 rounded-lg text-sm uppercase tracking-wider">Switch</button>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center px-3">
+                <h1 class="league-title text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase tracking-widest text-center">English League</h1>
+                <div class="league-subtitle" aria-label="with Mr. Saymaz">
+                    <svg class="with-heart" viewBox="0 0 64 58" role="img" aria-label="with">
+                        <path d="M32 53 C27 47 8 35 5 22 C2 10 10 3 20 4 C26 4 30 8 32 13 C34 8 38 4 44 4 C54 3 62 10 59 22 C56 35 37 47 32 53 Z" fill="#e11d48" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+                        <text x="32" y="28" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="Poppins, sans-serif" font-size="10" font-weight="700" letter-spacing="1">WITH</text>
+                    </svg>
+                    <span class="teacher-name">MR. SAYMAZ</span>
+                    <button id="board-class-btn" type="button" class="student-session-button" onclick="openStudentClassPicker()"><span>Class</span><strong id="board-selected-class">Choose</strong></button>
+                </div>
+            </div>
+
+            <div class="header-actions-right">
+                <span id="timer-text" class="text-xl font-mono text-slate-300 font-bold hidden px-4">05:00</span>
+                <div class="finish-mode-stack">
+                    <button id="finish-btn" class="btn btn-accent-green font-bold py-2 px-6 rounded-lg text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/20">Finish</button>
+                    <button id="progression-mode-btn" class="progression-mode-btn soft" type="button" data-mode="soft" aria-pressed="true" aria-label="Progression mode: Soft. One point award unlocks an evolution chest." title="Soft mode: 1 point award per level. Click for Hard mode.">
+                        <span class="progression-mode-name">Soft</span>
+                        <span class="progression-mode-steps">1 Step</span>
+                    </button>
+                </div>
+                <button id="vixar-raid-btn" type="button" aria-label="Enter the secret VIXAR raid" aria-hidden="true"><span class="sr-only">VIXAR Secret Raid</span></button>
+            </div>
+        </header>
+
+        <section class="league-control-panel" aria-label="Points and class mission controls">
+            <div class="points-control-panel">
+                <div class="points-control-header">
+                    <div class="points-control-title uppercase">Points to Add</div>
+                </div>
+                <div id="point-tier-group" class="point-tier-group" role="group" aria-label="Points to add">
+                    <button type="button" class="point-tier-btn active" data-tier-index="0" aria-pressed="true">10</button>
+                    <button type="button" class="point-tier-btn" data-tier-index="1" aria-pressed="false">100</button>
+                    <button type="button" class="point-tier-btn" data-tier-index="2" aria-pressed="false">1,000</button>
+                    <button type="button" class="point-tier-btn" data-tier-index="3" aria-pressed="false">10,000</button>
+                </div>
+                <div class="wheel-mode-row">
+                    <div id="wheel-mode-group" class="wheel-mode-group" role="group" aria-label="Category set">
+                        <button type="button" class="wheel-mode-btn active" data-wheel-mode="all" aria-pressed="true">All Subjects</button>
+                        <button type="button" class="wheel-mode-btn" data-wheel-mode="english" aria-pressed="false">English Only</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="league-control-divider" aria-hidden="true"></div>
+
+            <section id="class-mission-panel" class="class-mission-panel" aria-live="polite">
+                <div class="class-mission-layout">
+                    <div class="class-mission-copy">
+                        <div class="class-mission-kicker">Class Mission</div>
+                        <div id="class-mission-status" class="class-mission-status"></div>
+                        <div class="class-mission-meter-meta">
+                            <span id="class-mission-count">0 / 15</span>
+                            <span id="class-mission-reward" class="class-mission-reward">Reward: +3 Evolutions per Team</span>
+                        </div>
+                    </div>
+                    <div class="class-mission-meter-wrap">
+                        <div class="class-mission-meter" role="progressbar" aria-label="Distinct student contributors toward Class Mission" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0">
+                            <div id="class-mission-fill" class="class-mission-fill"></div>
+                        </div>
+                    </div>
+                    <div class="class-mission-controls">
+                        <span class="class-mission-auto-label">Powered by<br>participation</span>
+                        <button id="class-mission-replay" class="class-mission-btn replay" type="button" disabled>Replay</button>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <main id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <!-- Team containers injected here once -->
+        </main>
+
+        <section id="activity-ticker" class="max-w-5xl mx-auto mt-4" aria-live="polite">
+            <div class="ticker-live">LIVE</div>
+            <div class="ticker-window">
+                <div id="ticker-message">
+                    <span id="ticker-time">--:--</span>
+                    <span id="ticker-text">English League is ready. Award points to begin.</span>
+                </div>
+            </div>
+            <button id="full-history-btn" class="btn btn-neutral font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider">Full History</button>
+        </section>
+
+        <footer class="text-center mt-8 pb-12">
+             <button id="reset-all-btn" class="text-slate-500 hover:text-red-400 font-semibold text-sm transition-colors uppercase tracking-widest">Reset Season</button>
+        </footer>
+    </div>
+
+
+
+    <!-- Class Mission: Unity Ascendant Event -->
+    <div id="unity-event-overlay" aria-hidden="true">
+        <div class="unity-cinematic-bar top"></div>
+        <div class="unity-cinematic-bar bottom"></div>
+
+        <div class="unity-event-header">
+            <div class="unity-event-kicker">English League · Class Mission Reward</div>
+            <div id="unity-event-title">Class Mission Complete</div>
+            <div id="unity-event-subtitle">Four teams answer as one</div>
+        </div>
+
+        <svg id="unity-stream-svg" aria-hidden="true">
+            <defs>
+                <filter id="unityStreamGlow" x="-80%" y="-80%" width="260%" height="260%">
+                    <feGaussianBlur stdDeviation="5" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <linearGradient id="unityFireStream" x1="0%" x2="100%"><stop offset="0%" stop-color="#fef08a"/><stop offset="45%" stop-color="#fb923c"/><stop offset="100%" stop-color="#e11d48"/></linearGradient>
+                <linearGradient id="unityNatureStream" x1="0%" x2="100%"><stop offset="0%" stop-color="#bbf7d0"/><stop offset="48%" stop-color="#4ade80"/><stop offset="100%" stop-color="#15803d"/></linearGradient>
+                <linearGradient id="unityAirStream" x1="0%" x2="100%"><stop offset="0%" stop-color="#fef9c3"/><stop offset="52%" stop-color="#facc15"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+                <linearGradient id="unityWaterStream" x1="0%" x2="100%"><stop offset="0%" stop-color="#e0f2fe"/><stop offset="50%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+            </defs>
+            <path id="unity-stream-gryffindor" class="unity-stream" stroke="url(#unityFireStream)"></path>
+            <path id="unity-stream-slytherin" class="unity-stream" stroke="url(#unityNatureStream)"></path>
+            <path id="unity-stream-hufflepuff" class="unity-stream" stroke="url(#unityAirStream)"></path>
+            <path id="unity-stream-ravenclaw" class="unity-stream" stroke="url(#unityWaterStream)"></path>
+            <path id="unity-flow-gryffindor" class="unity-stream-flow" stroke="#fde68a"></path>
+            <path id="unity-flow-slytherin" class="unity-stream-flow" stroke="#86efac"></path>
+            <path id="unity-flow-hufflepuff" class="unity-stream-flow" stroke="#fef08a"></path>
+            <path id="unity-flow-ravenclaw" class="unity-stream-flow" stroke="#bae6fd"></path>
+        </svg>
+
+        <div id="unity-spirit-gryffindor" class="unity-spirit" data-team="gryffindor"></div>
+        <div id="unity-spirit-slytherin" class="unity-spirit" data-team="slytherin"></div>
+        <div id="unity-spirit-hufflepuff" class="unity-spirit" data-team="hufflepuff"></div>
+        <div id="unity-spirit-ravenclaw" class="unity-spirit" data-team="ravenclaw"></div>
+
+        <div id="unity-ascension-layer" class="unity-ascension-layer" aria-hidden="true">
+            <div id="unity-ascension-badge-gryffindor" class="unity-ascension-badge" data-team="gryffindor"><span class="unity-ascension-step"></span><strong class="unity-ascension-trait"></strong><span class="unity-ascension-level"></span></div>
+            <div id="unity-ascension-badge-slytherin" class="unity-ascension-badge" data-team="slytherin"><span class="unity-ascension-step"></span><strong class="unity-ascension-trait"></strong><span class="unity-ascension-level"></span></div>
+            <div id="unity-ascension-badge-hufflepuff" class="unity-ascension-badge" data-team="hufflepuff"><span class="unity-ascension-step"></span><strong class="unity-ascension-trait"></strong><span class="unity-ascension-level"></span></div>
+            <div id="unity-ascension-badge-ravenclaw" class="unity-ascension-badge" data-team="ravenclaw"><span class="unity-ascension-step"></span><strong class="unity-ascension-trait"></strong><span class="unity-ascension-level"></span></div>
+        </div>
+
+        <div id="unity-forge" class="unity-forge">
+            <div class="unity-forge-ring r1"></div>
+            <div class="unity-forge-ring r2"></div>
+            <div class="unity-forge-ring r3"></div>
+            <div class="unity-forge-sigil fire">FIRE</div>
+            <div class="unity-forge-sigil water">WATER</div>
+            <div class="unity-forge-sigil air">AIR</div>
+            <div class="unity-forge-sigil nature">NATURE</div>
+            <div class="unity-forge-core"></div>
+        </div>
+
+        <div id="unity-guardian-stage" class="unity-guardian-stage">
+            <svg id="unity-guardian-animated-art" class="guardian-puppet" viewBox="0 0 1000 900" aria-hidden="true">
+                <image class="guardian-piece guardian-wings" data-guardian-part="wings" href="./assets/animated/guardian-wings.webp?v=6.6" x="0" y="70" width="1000" height="551"/>
+                <image class="guardian-piece guardian-tail" data-guardian-part="tail" href="./assets/animated/guardian-tail.webp?v=6.6" x="10" y="410" width="460" height="407"/>
+                <image class="guardian-piece guardian-body" data-guardian-part="body" href="./assets/animated/guardian-body.webp?v=6.6" x="255" y="300" width="670" height="563"/>
+                <image class="guardian-piece guardian-head" data-guardian-part="head" href="./assets/animated/guardian-head.webp?v=6.6" x="405" y="88" width="360" height="338"/>
+            </svg>
+            <svg id="unity-guardian-svg" viewBox="0 0 420 520" aria-label="English League Unity Ascendant Guardian">
+                <defs>
+                    <linearGradient id="unityMetalDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#050b17"/><stop offset="48%" stop-color="#263449"/><stop offset="100%" stop-color="#09111f"/></linearGradient>
+                    <linearGradient id="unityMetalSilver" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#94a3b8"/><stop offset="100%" stop-color="#e2e8f0"/></linearGradient>
+                    <linearGradient id="unityFireArmor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="42%" stop-color="#f97316"/><stop offset="100%" stop-color="#be123c"/></linearGradient>
+                    <linearGradient id="unityNatureArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#bbf7d0"/><stop offset="50%" stop-color="#22c55e"/><stop offset="100%" stop-color="#14532d"/></linearGradient>
+                    <linearGradient id="unityAirArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff7c2"/><stop offset="52%" stop-color="#facc15"/><stop offset="100%" stop-color="#b45309"/></linearGradient>
+                    <linearGradient id="unityWaterArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e0f2fe"/><stop offset="46%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient>
+                    <filter id="unityGuardianGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                </defs>
+
+                <g id="unity-guardian-base" class="unity-part">
+                    <path d="M210 78 L248 98 L270 145 L267 222 L286 286 L264 392 L232 458 L188 458 L156 392 L134 286 L153 222 L150 145 L172 98 Z" fill="url(#unityMetalDark)" stroke="#64748b" stroke-width="3"/>
+                    <path d="M171 209 L210 188 L249 209 L258 292 L240 369 L210 407 L180 369 L162 292 Z" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+                </g>
+
+                <g id="unity-guardian-nature" class="unity-part">
+                    <path d="M178 219 L148 300 L155 385 L183 450 L197 408 L190 302 Z" fill="url(#unityNatureArmor)" opacity=".84"/>
+                    <path d="M242 219 L272 300 L265 385 L237 450 L223 408 L230 302 Z" fill="url(#unityNatureArmor)" opacity=".84"/>
+                    <path d="M210 191 C184 161 164 134 176 104 C188 74 226 79 234 107 C241 132 224 149 208 158 C239 154 266 171 266 202" fill="none" stroke="url(#unityNatureArmor)" stroke-width="10" stroke-linecap="round" filter="url(#unityGuardianGlow)"/>
+                    <path d="M184 314 L155 348 M236 314 L265 348" stroke="#86efac" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+                </g>
+
+                <g id="unity-guardian-water" class="unity-part">
+                    <path d="M176 146 Q210 128 244 146 L240 184 Q210 173 180 184 Z" fill="#dbeafe" opacity=".18" filter="url(#unityGuardianGlow)"/>
+                    <path d="M186 146 L158 162 L170 203 L202 197 L206 165 Z" fill="url(#unityMetalSilver)" opacity=".95"/>
+                    <path d="M234 146 L262 162 L250 203 L218 197 L214 165 Z" fill="url(#unityMetalSilver)" opacity=".95"/>
+                    <path d="M183 153 L166 166 L173 193 L194 190 L199 169 Z" fill="#7dd3fc" opacity=".30"/>
+                    <path d="M237 153 L254 166 L247 193 L226 190 L221 169 Z" fill="#7dd3fc" opacity=".30"/>
+                    <g id="unity-water-wing-left">
+                        <path d="M191 164 C176 139 157 117 132 98 C104 77 75 67 43 69 C72 105 103 131 179 176 C142 168 102 173 63 191 C96 203 134 208 181 198 C147 214 117 242 92 278 C128 266 160 247 190 219" fill="url(#unityWaterArmor)" opacity=".94"/>
+                        <path d="M188 174 C166 165 141 165 113 171 C137 184 158 197 178 200 C154 208 132 226 114 249 C139 245 163 235 185 221 C169 233 156 252 147 274 C164 269 180 256 194 235" fill="#38bdf8" opacity=".36"/>
+                        <path d="M186 161 L171 169 L170 202 L186 213 L201 182 Z" fill="#0c4a6e" opacity=".84"/>
+                        <path d="M181 176 C154 170 129 170 106 177 M181 195 C156 202 135 216 118 234 M184 219 C168 230 155 246 149 263" fill="none" stroke="#e0f2fe" stroke-width="3.4" opacity=".84" stroke-linecap="round"/>
+                    </g>
+                    <g id="unity-water-wing-right">
+                        <path d="M229 164 C244 139 263 117 288 98 C316 77 345 67 377 69 C348 105 317 131 241 176 C278 168 318 173 357 191 C324 203 286 208 239 198 C273 214 303 242 328 278 C292 266 260 247 230 219" fill="url(#unityWaterArmor)" opacity=".94"/>
+                        <path d="M232 174 C254 165 279 165 307 171 C283 184 262 197 242 200 C266 208 288 226 306 249 C281 245 257 235 235 221 C251 233 264 252 273 274 C256 269 240 256 226 235" fill="#38bdf8" opacity=".36"/>
+                        <path d="M234 161 L249 169 L250 202 L234 213 L219 182 Z" fill="#0c4a6e" opacity=".84"/>
+                        <path d="M239 176 C266 170 291 170 314 177 M239 195 C264 202 285 216 302 234 M236 219 C252 230 265 246 271 263" fill="none" stroke="#e0f2fe" stroke-width="3.4" opacity=".84" stroke-linecap="round"/>
+                    </g>
+                </g>
+
+                <g id="unity-guardian-fire" class="unity-part">
+                    <path d="M170 101 L183 64 L195 80 L210 43 L225 80 L239 61 L250 104 L235 136 L184 136 Z" fill="url(#unityFireArmor)" filter="url(#unityGuardianGlow)"/>
+                    <path d="M178 105 L210 77 L242 105 L235 143 L185 143 Z" fill="url(#unityMetalSilver)" opacity=".9"/>
+                    <path d="M181 106 L198 119 L187 118 Z M239 106 L222 119 L233 118 Z" fill="#fff7ed"/>
+                    <path d="M171 180 L210 160 L249 180 L260 222 L210 251 L160 222 Z" fill="url(#unityFireArmor)"/>
+                    <circle cx="210" cy="208" r="23" fill="#7f1d1d" stroke="#fed7aa" stroke-width="4"/>
+                    <circle cx="210" cy="208" r="11" fill="#fff7ed" filter="url(#unityGuardianGlow)"/>
+                </g>
+
+                <g id="unity-guardian-air" class="unity-part">
+                    <g id="unity-air-arm-left">
+                        <path d="M145 190 L101 202 L76 251 L91 307 L130 326 L155 286 L163 226 Z" fill="url(#unityMetalDark)" stroke="#fde68a" stroke-width="3"/>
+                        <path d="M86 283 C48 277 38 332 70 351 C101 368 137 346 142 313" fill="none" stroke="url(#unityAirArmor)" stroke-width="10" stroke-linecap="round" filter="url(#unityGuardianGlow)"/>
+                    </g>
+                    <g id="unity-air-arm-right">
+                        <path d="M275 190 L319 202 L344 251 L329 307 L290 326 L265 286 L257 226 Z" fill="url(#unityMetalDark)" stroke="#fde68a" stroke-width="3"/>
+                        <path d="M334 283 C372 277 382 332 350 351 C319 368 283 346 278 313" fill="none" stroke="url(#unityAirArmor)" stroke-width="10" stroke-linecap="round" filter="url(#unityGuardianGlow)"/>
+                    </g>
+                    <path d="M160 146 L210 128 L260 146 L250 174 L210 190 L170 174 Z" fill="url(#unityMetalSilver)"/>
+                    <path d="M169 143 C187 119 233 119 251 143" fill="none" stroke="url(#unityAirArmor)" stroke-width="7" stroke-linecap="round" filter="url(#unityGuardianGlow)"/>
+                </g>
+
+                <g id="unity-guardian-unity" class="unity-part">
+                    <path d="M210 158 L223 110 L210 82 L197 110 Z" fill="url(#unityMetalSilver)"/>
+                    <path d="M210 158 L219 119 L210 103 L201 119 Z" fill="url(#unityFireArmor)"/>
+                    <path d="M210 261 L224 234 L210 216 L196 234 Z" fill="url(#unityWaterArmor)"/>
+                    <path d="M210 193 L223 206 L210 219 L197 206 Z" fill="#ffffff" stroke="#facc15" stroke-width="4" filter="url(#unityGuardianGlow)"/>
+                    <path d="M210 198 L214 204 L221 205 L216 210 L217 217 L210 213 L203 217 L204 210 L199 205 L206 204 Z" fill="#1e3a8a"/>
+                </g>
+            </svg>
+        </div>
+
+        <div id="unity-wave-fire" class="unity-final-wave" style="--wave-color:#fb7185"></div>
+        <div id="unity-wave-nature" class="unity-final-wave" style="--wave-color:#4ade80"></div>
+        <div id="unity-wave-air" class="unity-final-wave" style="--wave-color:#fde047"></div>
+        <div id="unity-wave-water" class="unity-final-wave" style="--wave-color:#38bdf8"></div>
+        <div id="unity-screen-flash" class="unity-screen-flash"></div>
+
+        <div class="unity-event-progress"><div class="unity-event-progress-track"><div class="unity-event-progress-fill"></div></div></div>
+        <button id="unity-event-skip" class="unity-event-skip" type="button">Skip Event · Esc</button>
+    </div>
+
+
+    <!-- Modals -->
+    <div id="winner-overlay" class="modal-overlay" aria-hidden="true">
+        <div id="winner-card" class="modal-content">
+            <div class="champion-kicker">English League with Mr. Saymaz</div>
+            <h2 id="winner-text">Today’s Champions</h2>
+            <div id="winner-session-class" hidden></div>
+            <div id="champion-duo" class="champion-duo">
+                <section id="arena-champion-panel" class="champion-award champion-award-arena" aria-label="Arena Champion">
+                    <div class="arena-avatar-adventure"><div class="arena-avatar-portrait">
+                    <svg class="champion-crown" viewBox="0 0 360 190" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="championCrownGold" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#fff7ae"/>
+                                <stop offset="32%" stop-color="#facc15"/>
+                                <stop offset="72%" stop-color="#d97706"/>
+                                <stop offset="100%" stop-color="#78350f"/>
+                            </linearGradient>
+                            <filter id="championCrownGlow" x="-30%" y="-30%" width="160%" height="180%">
+                                <feGaussianBlur stdDeviation="4" result="blur"/>
+                                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                            </filter>
+                        </defs>
+                        <path class="crown-shadow" d="M48 149 L74 58 L133 112 L180 28 L227 112 L286 58 L312 149 Z" transform="translate(0 10)"/>
+                        <path class="crown-metal" filter="url(#championCrownGlow)" d="M48 149 L74 58 L133 112 L180 28 L227 112 L286 58 L312 149 L297 166 L63 166 Z"/>
+                        <path class="crown-metal" d="M63 143 Q180 168 297 143 L297 171 Q180 188 63 171 Z"/>
+                        <circle class="crown-gem-side" cx="83" cy="82" r="10"/>
+                        <circle class="crown-gem-side" cx="277" cy="82" r="10"/>
+                        <path class="crown-gem-main" d="M180 90 L203 116 L180 142 L157 116 Z"/>
+                        <circle class="crown-gem-side" cx="122" cy="133" r="8"/>
+                        <circle class="crown-gem-side" cx="238" cy="133" r="8"/>
+                        <path d="M83 45 L89 57 L102 59 L92 68 L94 81 L83 75 L72 81 L74 68 L64 59 L77 57 Z" fill="#fff9c4" opacity=".9"/>
+                        <path d="M277 45 L283 57 L296 59 L286 68 L288 81 L277 75 L266 81 L268 68 L258 59 L271 57 Z" fill="#fff9c4" opacity=".9"/>
+                    </svg>
+                    <div id="winner-svg-container"></div>
+                    </div><button id="island-run-launch" type="button" class="island-run-launch" hidden>
+                        <svg viewBox="0 0 180 134" fill="none" aria-hidden="true"><defs><linearGradient id="islandBeacon" x1="90" y1="12" x2="90" y2="84" gradientUnits="userSpaceOnUse"><stop stop-color="#ffe7a3" stop-opacity="0"/><stop offset="1" stop-color="#ffe7a3" stop-opacity=".6"/></linearGradient></defs><ellipse cx="90" cy="115" rx="57" ry="8" fill="#050e1b" opacity=".45"/><path d="m20 79 22 27 32 4 19 18 18-20 25-6 23-29Z" fill="#405260"/><path d="m20 79 45 10 9 21-32-4Zm54 31 19-21v39Zm37-2 18-25 30-10-23 29Z" fill="#1b2e41"/><path d="m19 78 20-16 34 2 23-9 36 8 28 13-25 15-38 3-29-8-31 2Z" fill="#5b8072"/><path class="island-shore-glow" d="m19 78 20-16 34 2 23-9 36 8 28 13-25 15-38 3-29-8-31 2Z" stroke="#ffe6a1" stroke-width="2.5"/><path d="M69 78V46l22-13 24 13v32" fill="#8c9d9b"/><path d="m63 47 28-21 30 21-7 4-23-17-22 17Z" fill="#dbcfaa"/><path d="M82 78V56a9 9 0 0 1 18 0v22" fill="#ffdf8c"/><path d="M77 78 65 6h52l-14 72Z" fill="url(#islandBeacon)"/><path d="m91 10 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#fff1bf"/><path d="M41 83q20-8 39-6m23 0q18-9 35 0" stroke="#d5cba5" stroke-width="2"/><circle cx="44" cy="71" r="3" fill="#ffdf8c"/><circle cx="137" cy="71" r="3" fill="#ffdf8c"/></svg>
+                        <span><strong>Enter Island Run</strong><small>Your next island awaits →</small></span>
+                    </button></div>
+                    <div id="arena-champion-role" class="champion-role">Arena Champion</div>
+                    <div id="champion-team-name" class="champion-name">—</div>
+                    <div id="arena-contributors" class="champion-contributors" aria-label="Arena champion team contributors" hidden></div>
+                </section>
+                <section id="league-champion-panel" class="champion-award champion-award-league" aria-label="League Champion">
+                    <svg class="champion-crown league-champion-crown" viewBox="0 0 360 190" aria-hidden="true">
+                        <path class="crown-shadow" d="M48 149 L74 58 L133 112 L180 28 L227 112 L286 58 L312 149 Z" transform="translate(0 10)"/>
+                        <path class="crown-metal" d="M48 149 L74 58 L133 112 L180 28 L227 112 L286 58 L312 149 L297 166 L63 166 Z"/>
+                        <path class="crown-metal" d="M63 143 Q180 168 297 143 L297 171 Q180 188 63 171 Z"/>
+                        <path class="crown-gem-main" d="M180 90 L203 116 L180 142 L157 116 Z"/>
+                        <circle class="crown-gem-side" cx="122" cy="133" r="8"/>
+                        <circle class="crown-gem-side" cx="238" cy="133" r="8"/>
+                    </svg>
+                    <div id="league-winner-avatars" aria-hidden="true"></div>
+                    <div class="champion-role">League Champion</div>
+                    <div id="league-winner-name" class="champion-name">—</div>
+                    <div id="league-contributors" class="champion-contributors" aria-label="League champion team contributors" hidden></div>
+                </section>
+            </div>
+            <div id="champion-subtitle" class="sr-only" aria-live="polite"></div>
+            <div id="battle-result-details" hidden></div>
+            <section id="all-team-recognition" aria-labelledby="all-team-recognition-title">
+                <h3 id="all-team-recognition-title">Every Team's Contributors</h3>
+                <p class="team-recognition-description">Top 3 per team · ranked by number of contributions</p>
+                <div id="all-team-recognition-grid"></div>
+                <p class="team-recognition-note">Equal counts share a rank. Tied names are ordered alphabetically.</p>
+            </section>
+            <section id="expedition-recap" aria-label="Class adventure recap" hidden><div><h3 id="expedition-recap-title">Our class adventure</h3><p id="expedition-recap-line"></p></div><div id="expedition-recap-teams"></div><p id="expedition-recap-next"></p></section>
+            <button id="play-again-btn" class="btn btn-accent-blue font-bold py-3 px-8 rounded-lg text-lg uppercase">Start Session</button>
+        </div>
+    </div>
+
+
+
+    <section id="island-run-overlay" role="dialog" aria-modal="true" aria-labelledby="island-run-title" aria-hidden="true" hidden>
+        <header class="island-run-header"><div><strong id="island-run-title">Island Run</strong><span id="island-run-context"></span></div><button id="island-run-back" type="button">← Back to Champions</button></header>
+        <div id="island-run-stage">
+            <div id="island-run-loading" role="status" hidden><p id="island-run-loading-text">Opening the islands…</p><button id="island-run-retry" type="button" hidden>Try again</button></div>
+            <div id="island-run-class-picker" hidden><h2>Choose the class for this Island Run</h2><div id="island-run-classes"></div></div>
+        </div>
+    </section>
+
+    <!-- Automatic 30-second Final Arena -->
+    <div id="battle-overlay" aria-hidden="true">
+        <div class="battle-stars"></div>
+        <header class="battle-header">
+            <div>
+                <div class="battle-league-label">League Leader</div>
+                <div class="battle-leader-line">
+                    <svg id="battle-leader-crown" class="battle-leader-crown" viewBox="0 0 64 48" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="leagueLeaderCrownGold" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#fff7ae"/>
+                                <stop offset="52%" stop-color="#facc15"/>
+                                <stop offset="100%" stop-color="#a16207"/>
+                            </linearGradient>
+                        </defs>
+                        <path class="crown-body" d="M6 14 L19 28 L32 7 L45 28 L58 14 L53 40 L11 40 Z"/>
+                        <rect class="crown-body" x="11" y="36" width="42" height="8" rx="3"/>
+                        <circle class="crown-gem" cx="32" cy="31" r="4"/>
+                    </svg>
+                    <div id="battle-league-leader" class="battle-league-value">—</div>
+                </div>
+            </div>
+            <div class="battle-title-block">
+                <div class="battle-title">The Final Arena</div>
+                <div id="battle-phase" class="battle-phase">Combat initializing</div>
+            </div>
+            <div class="battle-clock-wrap">
+                <div id="battle-clock">30.0</div>
+                <div class="battle-clock-label">Seconds Remaining</div>
+            </div>
+        </header>
+        <div id="battle-arena">
+            <div class="arena-floor"></div>
+            <div class="arena-center-mark"></div>
+            <div id="battle-fighters"></div>
+            <div id="light-battle-strike" class="light-battle-strike" aria-hidden="true"></div>
+            <div id="light-battle-impact" class="light-battle-impact" aria-hidden="true"></div>
+            <div id="battle-fx-layer"></div>
+            <div id="arena-motion-layer" aria-hidden="true"></div>
+            <div id="battle-announcer"></div>
+            <div class="battle-intro-curtain">
+                <div class="battle-intro-kicker">English League Championship</div>
+                <div class="battle-intro-title">Final Arena</div>
+                <div class="battle-intro-subtitle">Four houses · one continuous battle · thirty seconds</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secret cooperative endgame raid: VIXAR -->
+    <div id="vixar-raid-overlay" aria-hidden="true">
+        <header class="vixar-raid-header">
+            <div>
+                <div class="vixar-raid-kicker">Secret Raid · Beyond Level Seven</div>
+                <div id="vixar-raid-condition" class="vixar-raid-condition">Four Ascendants have entered the forbidden arena.</div>
+            </div>
+            <div class="vixar-title-block">
+                <div class="vixar-title">VIXAR</div>
+                <div class="vixar-epithet">The Sovereign Beyond the Empty Crown</div>
+            </div>
+            <div class="vixar-clock-wrap">
+                <div>
+                    <div id="vixar-clock">70.0</div>
+                    <div class="vixar-clock-label">Raid time</div>
+                </div>
+                <button id="vixar-raid-close" type="button" aria-label="Exit the VIXAR raid" title="Exit raid">×</button>
+            </div>
+        </header>
+
+        <div id="vixar-raid-arena">
+            <div class="vixar-arena-eclipse"></div>
+            <div class="vixar-arena-floor"></div>
+            <div class="vixar-monolith m1"></div>
+            <div class="vixar-monolith m2"></div>
+            <div class="vixar-monolith m3"></div>
+            <div class="vixar-monolith m4"></div>
+
+            <div class="vixar-boss-hud">
+                <div class="vixar-boss-hp-track"><div id="vixar-boss-hp-fill"></div></div>
+                <div class="vixar-boss-hud-line">
+                    <span id="vixar-phase">Phase I · Cosmic Dominion</span>
+                    <span id="vixar-boss-hp-number">4200 / 4200</span>
+                    <span id="vixar-aegis-status">Aegis 0</span>
+                </div>
+                <div id="vixar-seal-strip"></div>
+            </div>
+
+            <div id="vixar-boss-stage" aria-label="VIXAR, Sovereign of the Empty Crown">
+                <div id="vixar-animated-actor" aria-hidden="true">
+                    <img id="vixar-boss-animated-art" src="./assets/animated/vixar.webp?v=6.7" alt="" width="1100" height="890" decoding="async" draggable="false">
+                    <svg id="vixar-element-seals" viewBox="0 0 1100 890"></svg>
+                </div>
+                <svg id="vixar-boss-svg" viewBox="0 0 700 820" role="img" aria-label="A colossal ethereal void emperor with six astral arms, a broken crown, four elemental prison seals and a living cosmic core">
+                    <defs>
+                        <radialGradient id="vixarBodyVoid" cx="50%" cy="32%" r="72%">
+                            <stop offset="0%" stop-color="#4338ca"/><stop offset="27%" stop-color="#1e1b4b"/><stop offset="66%" stop-color="#090d1a"/><stop offset="100%" stop-color="#020617"/>
+                        </radialGradient>
+                        <linearGradient id="vixarBlackMetal" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#dbe4ef"/><stop offset="11%" stop-color="#475569"/><stop offset="39%" stop-color="#111827"/><stop offset="78%" stop-color="#020617"/><stop offset="100%" stop-color="#581c87"/>
+                        </linearGradient>
+                        <linearGradient id="vixarCrownMetal" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#cbd5e1"/><stop offset="70%" stop-color="#475569"/><stop offset="100%" stop-color="#312e81"/>
+                        </linearGradient>
+                        <linearGradient id="vixarMantle" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#312e81" stop-opacity=".92"/><stop offset="54%" stop-color="#111827" stop-opacity=".78"/><stop offset="100%" stop-color="#020617" stop-opacity="0"/>
+                        </linearGradient>
+                        <radialGradient id="vixarCoreLight">
+                            <stop offset="0%" stop-color="#ffffff"/><stop offset="18%" stop-color="#f0abfc"/><stop offset="44%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#12032b"/>
+                        </radialGradient>
+                        <pattern id="vixarCosmos" width="42" height="42" patternUnits="userSpaceOnUse">
+                            <circle cx="6" cy="9" r="1.5" fill="#fff" opacity=".72"/><circle cx="29" cy="20" r=".9" fill="#c4b5fd" opacity=".65"/><circle cx="15" cy="34" r="1.1" fill="#7dd3fc" opacity=".48"/>
+                        </pattern>
+                        <filter id="vixarPurpleGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        <filter id="vixarWhiteGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                    </defs>
+
+                    <g opacity=".94">
+                        <ellipse class="vixar-orbit o1" cx="350" cy="220" rx="246" ry="91" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="22 13"/>
+                        <ellipse class="vixar-orbit o2" cx="350" cy="220" rx="200" ry="72" fill="none" stroke="#d8b4fe" stroke-width="2" stroke-dasharray="8 17"/>
+                        <circle class="vixar-orbit o3" cx="350" cy="220" r="128" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5 11"/>
+                        <path class="vixar-orbit o2" d="M105 220 Q350 41 595 220 Q350 399 105 220 Z" fill="none" stroke="#d946ef" stroke-width="1.5" opacity=".44"/>
+                    </g>
+
+                    <g fill="url(#vixarCrownMetal)" stroke="#e9d5ff" stroke-width="2.5" filter="url(#vixarPurpleGlow)">
+                        <path class="vixar-crown-fragment" d="M196 151 L233 55 L262 161 L230 193 Z"/>
+                        <path class="vixar-crown-fragment" d="M270 120 L316 20 L337 148 L301 182 Z"/>
+                        <path class="vixar-crown-fragment" d="M350 101 L387 8 L412 146 L374 178 Z"/>
+                        <path class="vixar-crown-fragment" d="M434 123 L492 50 L478 171 L438 194 Z"/>
+                        <path class="vixar-crown-fragment" d="M505 159 L568 104 L527 210 L481 214 Z"/>
+                    </g>
+
+                    <g fill="none" stroke="#a78bfa" stroke-linecap="round" opacity=".35">
+                        <path class="vixar-astral-arm" d="M247 326 C162 307 102 252 76 174" stroke-width="18"/>
+                        <path class="vixar-astral-arm" d="M453 326 C538 307 598 252 624 174" stroke-width="18"/>
+                        <path class="vixar-astral-arm" d="M229 390 C140 394 86 438 57 516" stroke-width="16"/>
+                        <path class="vixar-astral-arm" d="M471 390 C560 394 614 438 643 516" stroke-width="16"/>
+                        <path class="vixar-astral-arm" d="M244 449 C166 488 127 552 120 633" stroke-width="14"/>
+                        <path class="vixar-astral-arm" d="M456 449 C534 488 573 552 580 633" stroke-width="14"/>
+                    </g>
+
+                    <g fill="url(#vixarBlackMetal)" stroke="#8b5cf6" stroke-width="2.5" opacity=".92">
+                        <path d="M241 302 L153 210 L194 335 Z"/><path d="M224 348 L108 306 L204 401 Z"/><path d="M220 415 L101 428 L218 469 Z"/>
+                        <path d="M459 302 L547 210 L506 335 Z"/><path d="M476 348 L592 306 L496 401 Z"/><path d="M480 415 L599 428 L482 469 Z"/>
+                    </g>
+
+                    <path d="M224 338 C151 432 140 607 82 800 C171 738 255 755 350 818 C445 755 529 738 618 800 C560 607 549 432 476 338 Z" fill="url(#vixarMantle)" opacity=".88"/>
+                    <path d="M350 205 C431 205 480 275 465 377 L503 540 L448 704 L393 781 L307 781 L252 704 L197 540 L235 377 C220 275 269 205 350 205 Z" fill="url(#vixarBodyVoid)" stroke="#64748b" stroke-width="4"/>
+                    <path d="M350 205 C431 205 480 275 465 377 L503 540 L448 704 L393 781 L307 781 L252 704 L197 540 L235 377 C220 275 269 205 350 205 Z" fill="url(#vixarCosmos)" opacity=".30"/>
+
+                    <g fill="url(#vixarBlackMetal)" stroke="#7c3aed" stroke-width="3">
+                        <path d="M235 316 L120 350 L188 462 L265 405 Z"/><path d="M465 316 L580 350 L512 462 L435 405 Z"/>
+                        <path d="M205 406 L130 494 L205 561 L274 486 Z"/><path d="M495 406 L570 494 L495 561 L426 486 Z"/>
+                        <path id="vixar-chest-armor" d="M254 363 L350 310 L446 363 L429 520 L390 611 L350 648 L310 611 L271 520 Z"/>
+                        <path d="M268 535 L207 624 L272 692 L317 611 Z"/><path d="M432 535 L493 624 L428 692 L383 611 Z"/>
+                    </g>
+
+                    <g fill="#020617" stroke="#c4b5fd" stroke-width="2.2">
+                        <path d="M350 216 L409 248 L399 328 L350 368 L301 328 L291 248 Z"/>
+                        <path d="M302 248 L263 214 L286 294 Z"/><path d="M398 248 L437 214 L414 294 Z"/>
+                        <path d="M318 334 L350 366 L382 334 L369 394 L350 421 L331 394 Z"/>
+                    </g>
+                    <path class="vixar-mask-eye" d="M350 234 L365 276 L350 332 L335 276 Z" fill="#fff" filter="url(#vixarWhiteGlow)"/>
+                    <path d="M302 287 L259 266 L294 311" fill="none" stroke="#64748b" stroke-width="5" stroke-linecap="round"/><path d="M398 287 L441 266 L406 311" fill="none" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+
+                    <g class="vixar-core" filter="url(#vixarPurpleGlow)">
+                        <circle cx="350" cy="478" r="60" fill="#09021b" stroke="#e9d5ff" stroke-width="4"/>
+                        <circle class="vixar-core-rune" cx="350" cy="478" r="45" fill="none" stroke="#c4b5fd" stroke-width="2" stroke-dasharray="8 9"/>
+                        <path d="M350 418 L370 455 L414 478 L370 501 L350 538 L330 501 L286 478 L330 455 Z" fill="url(#vixarCoreLight)"/>
+                        <circle cx="350" cy="478" r="13" fill="#fff"/>
+                    </g>
+
+                    <g id="vixar-svg-seal-gryffindor" class="vixar-svg-seal" filter="url(#vixarWhiteGlow)"><circle cx="187" cy="238" r="31" fill="#260811" stroke="#fb7185" stroke-width="4"/><path d="M187 213 C211 233 204 255 187 270 C170 255 163 233 187 213 Z" fill="#fb7185"/><circle cx="187" cy="238" r="41" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5 9"/></g>
+                    <g id="vixar-svg-seal-slytherin" class="vixar-svg-seal" filter="url(#vixarWhiteGlow)"><circle cx="513" cy="238" r="31" fill="#052e1b" stroke="#4ade80" stroke-width="4"/><path d="M513 213 C537 228 537 254 513 270 C489 254 489 228 513 213 Z" fill="#4ade80"/><circle cx="513" cy="238" r="41" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="5 9"/></g>
+                    <g id="vixar-svg-seal-hufflepuff" class="vixar-svg-seal" filter="url(#vixarWhiteGlow)"><circle cx="156" cy="468" r="31" fill="#352306" stroke="#fde68a" stroke-width="4"/><path d="M131 470 Q156 439 181 470 Q156 453 131 470 M138 484 Q156 461 174 484" fill="none" stroke="#fde68a" stroke-width="5" stroke-linecap="round"/><circle cx="156" cy="468" r="41" fill="none" stroke="#fde68a" stroke-width="1.5" stroke-dasharray="5 9"/></g>
+                    <g id="vixar-svg-seal-ravenclaw" class="vixar-svg-seal" filter="url(#vixarWhiteGlow)"><circle cx="544" cy="468" r="31" fill="#082f49" stroke="#7dd3fc" stroke-width="4"/><path d="M544 438 C568 469 563 494 544 500 C525 494 520 469 544 438 Z" fill="#7dd3fc"/><circle cx="544" cy="468" r="41" fill="none" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="5 9"/></g>
+
+                    <g fill="url(#vixarBlackMetal)" stroke="#94a3b8" stroke-width="2.5">
+                        <path d="M172 452 L111 519 L132 540 L190 503 Z"/><path d="M528 452 L589 519 L568 540 L510 503 Z"/>
+                        <path d="M111 519 L81 560 L104 568 L132 540 Z"/><path d="M589 519 L619 560 L596 568 L568 540 Z"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div id="vixar-team-layer"></div>
+            <div id="vixar-guardian-host" aria-label="Unity Ascendant Guardian"></div>
+            <div id="vixar-fx-layer"></div>
+            <div id="raid-motion-layer" aria-hidden="true"></div>
+            <div id="vixar-announcer" aria-live="off" aria-hidden="true"></div>
+
+            <div class="vixar-intro-curtain" hidden aria-hidden="true">
+                <div class="vixar-intro-kicker">Forbidden English League Encounter</div>
+                <div class="vixar-intro-title">VIXAR</div>
+                <div class="vixar-intro-subtitle">Four teams must become Legendary · Unity alone can break the Empty Crown</div>
+            </div>
+
+            <div id="vixar-result-panel" aria-live="polite">
+                <div id="vixar-result-title">Raid Complete</div>
+                <div id="vixar-result-subtitle"></div>
+                <div id="vixar-result-stats" class="vixar-result-grid"></div>
+                <div class="vixar-result-actions">
+                    <button id="vixar-retry-btn" class="vixar-result-btn" type="button">Challenge Again</button>
+                    <button id="vixar-return-btn" class="vixar-result-btn secondary" type="button">Return to League</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Stage-specific Mystery Evolution Chest Reveal -->
+    <div id="evolution-modal" class="modal-overlay" aria-hidden="true">
+        <div id="evolution-chest-modal-card" class="modal-content evolution-chest-modal-content">
+            <div class="evolution-stage-kicker" id="evolution-stage-kicker">Stage Evolution</div>
+            <h2 class="text-4xl font-black mt-2 mb-1 uppercase tracking-widest">Mystery Evolution Chest</h2>
+            <p id="evolution-chest-subtitle" class="text-slate-400 font-semibold">Elemental energy is selecting a permanent evolution.</p>
+            <div class="evolution-reveal-stage">
+                <div id="evolution-preview-base" class="evolution-current-avatar"></div>
+                <div id="evolution-chest-stage" class="evolution-chest-stage" aria-hidden="true">
+                    <div class="evolution-modal-lid"></div>
+                    <div class="evolution-modal-base"></div>
+                    <div id="evolution-modal-lock" class="evolution-modal-lock">?</div>
+                </div>
+                <div id="evolution-trait-reveal" class="evolution-trait-reveal">
+                    <div id="evolution-trait-icon" class="evolution-trait-icon">✦</div>
+                    <div id="evolution-trait-rank" class="evolution-trait-rank">Evolution Trait</div>
+                    <div id="evolution-trait-name" class="evolution-trait-name">Unknown Evolution</div>
+                </div>
+                <div id="evolution-preview-new" class="evolution-new-avatar"></div>
+            </div>
+            <div id="evolution-chest-status" class="evolution-chest-status">The chest is responding to the team’s current stage…</div>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content text-left" style="max-width: 760px; width: 92%; max-height: 82vh;">
+            <button id="close-history-btn" class="absolute top-4 right-4 text-3xl leading-none text-slate-400 hover:text-white" aria-label="Close full history">&times;</button>
+            <div class="pr-10 mb-5">
+                <p class="text-xs uppercase tracking-[0.25em] text-rose-400 font-bold mb-1">League Broadcast Archive</p>
+                <h3 class="text-2xl font-black uppercase tracking-widest text-slate-100">Full History</h3>
+            </div>
+            <div id="history-log" class="space-y-2 overflow-y-auto pr-2" style="max-height: 62vh;">
+                <div class="history-empty">No league activity yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-points-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; width: 90%;">
+            <button class="modal-close-btn absolute top-4 right-4 text-slate-400 hover:text-white" onclick="closeWheelModal()">&times;</button>
+            <h3 class="text-xl font-bold mb-6 uppercase tracking-widest text-slate-300">Award Custom Points</h3>
+            <form id="custom-points-form" class="space-y-4">
+                <div class="text-left">
+                    <label class="block text-sm font-semibold text-slate-400 mb-1">Select Team</label>
+                    <select id="team-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-blue-500" required></select>
+                </div>
+                <div class="text-left">
+                    <label class="block text-sm font-semibold text-slate-400 mb-1">Points Amount</label>
+                    <input type="number" id="custom-points-input" value="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-blue-500" required>
+                </div>
+                <button type="submit" class="btn btn-accent-blue font-bold py-3 rounded-lg w-full uppercase tracking-wider mt-4">Award Points</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="wheel-modal" class="modal-overlay">
+        <div class="modal-content wheel-modal-content">
+            <button class="modal-close-btn absolute top-4 right-4 text-slate-400 hover:text-white" onclick="closeWheelModal()" aria-label="Close wheel">&times;</button>
+            <h3 class="text-2xl font-bold mb-5 uppercase tracking-widest text-slate-200">Wheel of Subjects</h3>
+            <div class="wheel-stage">
+                <div class="wheel-rim">
+                    <canvas id="wheel-canvas" width="360" height="360" class="transition-transform duration-[5000ms] ease-[cubic-bezier(0.25,1,0.5,1)]"></canvas>
+                    <div class="wheel-hub">SPIN</div>
+                </div>
+                <div class="wheel-pointer"></div>
+            </div>
+            <div id="wheel-result-card">
+                <span id="wheel-result-label">Selected Subject</span>
+                <strong id="wheel-result">Awaiting Spin</strong>
+            </div>
+            <button id="spin-btn" class="btn btn-accent-blue font-bold py-3 rounded-lg w-full uppercase tracking-wider mt-2">Spin Wheel</button>
+            <button id="wheel-continue-btn" type="button" onclick="closeWheelModal()" class="hidden btn wheel-continue-btn font-black py-3 rounded-lg w-full uppercase tracking-wider mt-2">Continue</button>
+        </div>
+    </div>
+
+    <script src="./game.js?v=9.3.0"></script>
+
+</body>
+</html>

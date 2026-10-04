@@ -1,0 +1,47 @@
+const assert=require('assert/strict');
+const {setup}=require('./support.cjs');
+(async()=>{const e=await setup();try{
+ const board=await e.page();await board.evaluate(()=>{__qa.start();__qa.mode('light');__qa.selectClass('5-A');});
+ const phone=await e.page();await phone.setViewportSize({width:393,height:660});let drop=false;
+ await phone.exposeFunction('__send',data=>board.evaluate(data=>window.__receive(data),data));
+ await board.exposeFunction('__send',data=>{if(drop&&data.type==='ACTION_ACK'){drop=false;return;}return phone.evaluate(data=>window.__receive(data),data);});
+ await phone.evaluate(()=>{document.getElementById('startup-overlay').classList.add('hidden');document.querySelector('.app-shell').style.display='none';document.getElementById('mobile-controller').classList.remove('hidden');__qa.connect('controller');});
+ await board.evaluate(()=>__qa.connect('host'));await phone.waitForFunction(()=>__qa.state().remoteStudentClass==='5-A');
+ const state=()=>board.evaluate(()=>__qa.state());
+ const toggle=type=>board.locator(`[data-team="hufflepuff"][data-type="${type}"]`).click();
+ const pick=async()=>{await phone.locator('#mobile-agent-slytherin').click();await phone.waitForSelector('#agent-picker[open]');await phone.locator('[data-agent-student="5-A:hufflepuff:0"]').click();await phone.waitForFunction(()=>__qa.state().remotePending===0);};
+ await toggle('shield');await toggle('halfDown');
+ let s=await state();assert.equal(s.powerupsByTeam.hufflepuff.shield,false);assert.equal(s.powerupsByTeam.hufflepuff.halfDown,false);
+ await board.locator('#undo-btn').click();s=await state();assert.equal(s.powerupsByTeam.hufflepuff.shield,true);assert.equal(s.powerupsByTeam.hufflepuff.halfDown,false);
+ await toggle('halfDown');await board.evaluate(()=>__qa.studentAward('hufflepuff','5-A:hufflepuff:0'));
+ assert.equal((await state()).studentContributions['5-A:hufflepuff:0'].points,10);
+ await pick();assert.equal((await state()).secretAgents.assignments.slytherin.blocked,false);
+ await phone.locator('#mobile-agent-slytherin').click();await phone.locator('#agent-reveal-now').click();await phone.waitForSelector('#agent-remote-reveal:not([hidden])');
+ assert.equal((await state()).pointsByTeam.slytherin,10);await phone.locator('#agent-remote-continue').click();
+ await board.evaluate(()=>{__qa.reset({clearUndo:true});__qa.selectClass('5-A');});await phone.waitForFunction(()=>!document.querySelector('.mobile-agent-button.active,.mobile-agent-button.used'));
+ await toggle('shield');await pick();s=await state();
+ assert.equal(s.secretAgents.assignments.slytherin.blocked,true);assert.equal(s.powerupsByTeam.hufflepuff.shield,false);
+ assert.match(await phone.locator('#mobile-command-status').textContent(),/Shield blocked/);
+ await board.locator('#undo-btn').click();s=await state();assert.equal(s.powerupsByTeam.hufflepuff.shield,true);assert.equal(s.secretAgents.assignments.slytherin,undefined);
+ await phone.waitForSelector('#agent-picker[open]');drop=true;await phone.locator('[data-agent-student="5-A:hufflepuff:0"]').click();
+ await board.waitForFunction(()=>__qa.state().secretAgents.assignments.slytherin?.blocked===true);
+ // A retried receipt must not consume a newly issued shield.
+ await toggle('shield');await phone.waitForFunction(()=>__qa.state().remotePending===0);assert.equal((await state()).powerupsByTeam.hufflepuff.shield,true);
+ await toggle('shield'); // teacher switches that replacement off
+ await toggle('halfDown');s=await state();assert.equal(s.powerupsByTeam.hufflepuff.halfDown,true);
+ await board.evaluate(()=>__qa.studentAward('hufflepuff','5-A:hufflepuff:0'));
+ assert.equal((await state()).studentContributions['5-A:hufflepuff:0'].points,5);
+ await board.evaluate(()=>__qa.checkpoint());await board.reload();await board.waitForFunction(()=>Boolean(window.__qa)&&LeagueAccess.granted);await board.evaluate(()=>__qa.start({resume:true}));await board.evaluate(()=>__qa.connect('host'));
+ s=await state();assert.equal(s.secretAgents.assignments.slytherin.blocked,true);assert.equal(s.powerupsByTeam.hufflepuff.shield,false);
+ await phone.locator('#mobile-agent-slytherin').click();assert.match(await phone.locator('#agent-picker').textContent(),/Shield intercepted/);
+ await phone.locator('#agent-reveal-now').click();await phone.waitForSelector('#agent-remote-reveal:not([hidden])');
+ s=await state();assert.equal(s.pointsByTeam.hufflepuff,5);assert.equal(s.pointsByTeam.slytherin,0);
+ assert.match(await board.locator('#agent-reveal-cards').textContent(),/Shield protected.*0 points transferred/);
+ await phone.locator('#agent-remote-continue').click();
+ await toggle('halfDown');await toggle('shield');await toggle('halfDown');assert.equal((await state()).powerupsByTeam.hufflepuff.halfDown,false);
+ await toggle('halfDown');assert.equal((await state()).powerupsByTeam.hufflepuff.halfDown,true);
+ const rules=await board.evaluate(()=>{const t={id:'hufflepuff',points:0,powerups:{halfDown:true,shield:true}};return LeagueRules.award({team:t,teams:[t],base:10,lastTeam:null}).points;});assert.equal(rules,5);
+ assert.deepEqual(e.errors,[]);
+ console.log('PASS Half Down→agent and agent→Half Down: only first is blocked; blocked attempt is spent, invalidates no counts, and transfers zero');
+ console.log('PASS Half Down twice, no retroactive immunity, shield reissue, atomic Undo, lost receipt deduplication, and blocked-agent checkpoint recovery');
+}finally{await e.close();}})().catch(e=>{console.error(e);process.exit(1);});

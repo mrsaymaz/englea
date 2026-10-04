@@ -1,0 +1,66 @@
+{
+  "version": "9.1.0",
+  "logicChecks": 34,
+  "questionVariants": 4240,
+  "perIsland": 106,
+  "collectingBot": {
+    "runs": 240,
+    "completedWithAllSixAnswers": 240,
+    "coinRange": [
+      144,
+      178
+    ],
+    "secondsRange": [
+      115,
+      170
+    ]
+  },
+  "bossPercentages": {
+    "soft": [
+      50,
+      52,
+      54,
+      56,
+      58,
+      60,
+      62,
+      64,
+      66,
+      68
+    ],
+    "hard": [
+      70,
+      72,
+      74,
+      76,
+      78,
+      80,
+      82,
+      84,
+      86,
+      88
+    ]
+  },
+  "jumpScenarios": {
+    "modes": [
+      "soft",
+      "hard"
+    ],
+    "states": [
+      "normal",
+      "slow",
+      "slowing",
+      "accelerating"
+    ],
+    "fps": [
+      60,
+      20
+    ],
+    "forwardCoinCollisionTested": true
+  },
+  "additionalSeedAndFpsRuns": 400,
+  "nativeCanvasFrames": 240,
+  "nativeBrowserTested": false,
+  "physicalSmartboardTested": false,
+  "canvasInspected": true
+}

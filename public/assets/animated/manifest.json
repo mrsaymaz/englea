@@ -1,0 +1,271 @@
+{
+  "version": "6.7",
+  "size": 384,
+  "format": "webp",
+  "files": [
+    {
+      "team": "gryffindor",
+      "level": 0,
+      "file": "gryffindor-0.webp",
+      "bytes": 41650
+    },
+    {
+      "team": "gryffindor",
+      "level": 1,
+      "file": "gryffindor-1.webp",
+      "bytes": 46928
+    },
+    {
+      "team": "gryffindor",
+      "level": 2,
+      "file": "gryffindor-2.webp",
+      "bytes": 47236
+    },
+    {
+      "team": "gryffindor",
+      "level": 3,
+      "file": "gryffindor-3.webp",
+      "bytes": 47394
+    },
+    {
+      "team": "gryffindor",
+      "level": 4,
+      "file": "gryffindor-4.webp",
+      "bytes": 44934
+    },
+    {
+      "team": "gryffindor",
+      "level": 5,
+      "file": "gryffindor-5.webp",
+      "bytes": 45524
+    },
+    {
+      "team": "gryffindor",
+      "level": 6,
+      "file": "gryffindor-6.webp",
+      "bytes": 53142
+    },
+    {
+      "team": "gryffindor",
+      "level": 7,
+      "file": "gryffindor-7.webp",
+      "bytes": 48720
+    },
+    {
+      "team": "gryffindor",
+      "level": 8,
+      "file": "gryffindor-8.webp",
+      "bytes": 54508
+    },
+    {
+      "team": "gryffindor",
+      "level": 9,
+      "file": "gryffindor-9.webp",
+      "bytes": 53732
+    },
+    {
+      "team": "gryffindor",
+      "level": 10,
+      "file": "gryffindor-10.webp",
+      "bytes": 50848
+    },
+    {
+      "team": "slytherin",
+      "level": 0,
+      "file": "slytherin-0.webp",
+      "bytes": 36182
+    },
+    {
+      "team": "slytherin",
+      "level": 1,
+      "file": "slytherin-1.webp",
+      "bytes": 30630
+    },
+    {
+      "team": "slytherin",
+      "level": 2,
+      "file": "slytherin-2.webp",
+      "bytes": 36568
+    },
+    {
+      "team": "slytherin",
+      "level": 3,
+      "file": "slytherin-3.webp",
+      "bytes": 38914
+    },
+    {
+      "team": "slytherin",
+      "level": 4,
+      "file": "slytherin-4.webp",
+      "bytes": 36676
+    },
+    {
+      "team": "slytherin",
+      "level": 5,
+      "file": "slytherin-5.webp",
+      "bytes": 47058
+    },
+    {
+      "team": "slytherin",
+      "level": 6,
+      "file": "slytherin-6.webp",
+      "bytes": 46140
+    },
+    {
+      "team": "slytherin",
+      "level": 7,
+      "file": "slytherin-7.webp",
+      "bytes": 51504
+    },
+    {
+      "team": "slytherin",
+      "level": 8,
+      "file": "slytherin-8.webp",
+      "bytes": 46104
+    },
+    {
+      "team": "slytherin",
+      "level": 9,
+      "file": "slytherin-9.webp",
+      "bytes": 55488
+    },
+    {
+      "team": "slytherin",
+      "level": 10,
+      "file": "slytherin-10.webp",
+      "bytes": 59502
+    },
+    {
+      "team": "hufflepuff",
+      "level": 0,
+      "file": "hufflepuff-0.webp",
+      "bytes": 34298
+    },
+    {
+      "team": "hufflepuff",
+      "level": 1,
+      "file": "hufflepuff-1.webp",
+      "bytes": 35808
+    },
+    {
+      "team": "hufflepuff",
+      "level": 2,
+      "file": "hufflepuff-2.webp",
+      "bytes": 38210
+    },
+    {
+      "team": "hufflepuff",
+      "level": 3,
+      "file": "hufflepuff-3.webp",
+      "bytes": 39916
+    },
+    {
+      "team": "hufflepuff",
+      "level": 4,
+      "file": "hufflepuff-4.webp",
+      "bytes": 37616
+    },
+    {
+      "team": "hufflepuff",
+      "level": 5,
+      "file": "hufflepuff-5.webp",
+      "bytes": 40718
+    },
+    {
+      "team": "hufflepuff",
+      "level": 6,
+      "file": "hufflepuff-6.webp",
+      "bytes": 45278
+    },
+    {
+      "team": "hufflepuff",
+      "level": 7,
+      "file": "hufflepuff-7.webp",
+      "bytes": 52210
+    },
+    {
+      "team": "hufflepuff",
+      "level": 8,
+      "file": "hufflepuff-8.webp",
+      "bytes": 52482
+    },
+    {
+      "team": "hufflepuff",
+      "level": 9,
+      "file": "hufflepuff-9.webp",
+      "bytes": 56490
+    },
+    {
+      "team": "hufflepuff",
+      "level": 10,
+      "file": "hufflepuff-10.webp",
+      "bytes": 55784
+    },
+    {
+      "team": "ravenclaw",
+      "level": 0,
+      "file": "ravenclaw-0.webp",
+      "bytes": 37818
+    },
+    {
+      "team": "ravenclaw",
+      "level": 1,
+      "file": "ravenclaw-1.webp",
+      "bytes": 41186
+    },
+    {
+      "team": "ravenclaw",
+      "level": 2,
+      "file": "ravenclaw-2.webp",
+      "bytes": 46450
+    },
+    {
+      "team": "ravenclaw",
+      "level": 3,
+      "file": "ravenclaw-3.webp",
+      "bytes": 52840
+    },
+    {
+      "team": "ravenclaw",
+      "level": 4,
+      "file": "ravenclaw-4.webp",
+      "bytes": 53984
+    },
+    {
+      "team": "ravenclaw",
+      "level": 5,
+      "file": "ravenclaw-5.webp",
+      "bytes": 54654
+    },
+    {
+      "team": "ravenclaw",
+      "level": 6,
+      "file": "ravenclaw-6.webp",
+      "bytes": 62408
+    },
+    {
+      "team": "ravenclaw",
+      "level": 7,
+      "file": "ravenclaw-7.webp",
+      "bytes": 63460
+    },
+    {
+      "team": "ravenclaw",
+      "level": 8,
+      "file": "ravenclaw-8.webp",
+      "bytes": 61106
+    },
+    {
+      "team": "ravenclaw",
+      "level": 9,
+      "file": "ravenclaw-9.webp",
+      "bytes": 68434
+    },
+    {
+      "team": "ravenclaw",
+      "level": 10,
+      "file": "ravenclaw-10.webp",
+      "bytes": 72084
+    }
+  ]
+}

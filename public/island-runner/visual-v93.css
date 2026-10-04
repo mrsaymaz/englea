@@ -1,0 +1,48 @@
+/* v9.3.0: navigator, listening and picture gates, Word Trail. Static DOM; no animation loops. */
+.prompt-panel{position:relative}
+.prompt-panel.picture,.prompt-panel.trail,.prompt-panel.listen{max-height:none}
+
+/* The navigator sits in the panel corner so the prompt keeps its full width. */
+.navigator-chip{position:absolute;left:14px;top:10px;display:inline-flex;align-items:baseline;gap:6px;padding:4px 10px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,#e9d6a8);background:#0b1726d9;color:#c9d6df;font-size:12px;letter-spacing:.4px}
+.navigator-chip b{color:#fff3cf;font-size:clamp(14px,1.35vw,20px);font-weight:750;letter-spacing:0;max-width:22ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Review and second-chance gates carry a quiet brass marker, never a warning colour. */
+.prompt-panel.review .eyebrow,.prompt-panel.echo .eyebrow{color:#e8c77f}
+.prompt-panel.echo{background:linear-gradient(115deg,#2b2a1f,#183742)}
+
+/* Listening: a large speaker cue, the word itself stays hidden until the answer. */
+.prompt-panel.listen h2::before{content:"";display:inline-block;width:.9em;height:.9em;margin-right:.35em;vertical-align:-.1em;
+  background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z'/%3E%3C/svg%3E") center/contain no-repeat}
+.repeat-audio{position:absolute;right:14px;top:50%;transform:translateY(-50%);min-height:44px;padding:8px 16px;border-radius:12px;
+  border:1px solid #e1c27a;background:#2a2617;color:#fff1c4;font-weight:750;font-size:clamp(13px,1.1vw,16px);cursor:pointer}
+.repeat-audio:hover{background:#3a3420}
+.repeat-audio:focus-visible{outline:3px solid #fff1c4;outline-offset:2px}
+
+/* Picture gates: one large, high-contrast line drawing on a parchment tile. */
+.prompt-panel.picture h2{display:flex;justify-content:center;margin-top:4px}
+.picture-gate-art{width:clamp(64px,7.5vw,104px);height:clamp(64px,7.5vw,104px);padding:6px;border-radius:14px;background:#f6e7c1;color:#2a1d0e;
+  stroke-width:3.2;box-shadow:0 0 0 2px #c9973f}
+.picture-gate-art .a{fill:currentColor;fill-opacity:.16}
+
+/* Word Trail: the Turkish clue above, slots that fill as letters are collected. */
+.prompt-panel.trail{background:linear-gradient(110deg,#2a2417,#1a2c38)}
+.prompt-panel.trail h2{font-size:clamp(18px,1.9vw,30px)}
+.trail-slots{display:flex;justify-content:center;gap:clamp(4px,.5vw,8px);margin-top:6px}
+.trail-slots span{display:grid;place-items:center;width:clamp(26px,2.6vw,40px);height:clamp(30px,3vw,46px);border-radius:8px;
+  border:2px solid #9f855a;background:#0b1624;color:#f6e7c1;font:800 clamp(16px,1.7vw,26px)/1 Georgia,"Times New Roman",serif}
+.trail-slots span.ok{background:#f6e7c1;color:#24180c;border-color:#c9973f}
+.trail-slots span.missed{background:#3a2a1c;color:#ffcf8a;border-color:#d48a4a;text-decoration:underline;text-underline-offset:3px}
+
+/* Run settings additions */
+.review-items{margin:8px 0;padding-left:18px;color:#c9d6df;font-size:13px;line-height:1.45;max-height:150px;overflow:auto}
+.review-items li{margin:2px 0}
+
+@media (max-height:620px){
+  .navigator-chip{top:6px;left:8px;font-size:10px;padding:2px 8px}
+  .picture-gate-art{width:56px;height:56px}
+  .trail-slots span{width:24px;height:28px;font-size:15px}
+  .repeat-audio{min-height:36px;padding:4px 10px}
+}
+@media (prefers-reduced-motion:reduce){.repeat-audio{transition:none}}

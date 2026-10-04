@@ -1,0 +1,16 @@
+html:not(.tally-runner-connected) #app,html:not(.tally-runner-connected) dialog{display:none!important;}
+.tally-runner-connected #host-required{display:none!important;}
+#host-required{min-height:100dvh;display:grid;place-content:center;gap:16px;padding:32px;text-align:center;font-family:system-ui,sans-serif;color:#e5eaf1;background:#060e1c;}
+#host-required h1{font-size:28px;color:#f2deaa;margin:0;}
+#host-required p{max-width:440px;line-height:1.6;color:#b6c7d8;}
+#host-required a{color:#f2deaa;font-weight:800;}
+.tally-runner-connected .map-toolbar .selectors label{opacity:.85;}
+.tally-runner-connected .map-toolbar select:disabled{color:#dfe8f4;opacity:1;cursor:default;}
+.tally-runner-connected #housePicker[hidden]{display:none!important;}
+.tally-runner-connected{--runner-host-header:54px;}
+.tally-runner-connected .topbar{height:var(--runner-host-header);min-height:var(--runner-host-header);}
+.tally-runner-connected .map-view,.tally-runner-connected .run-view{height:calc(100dvh - var(--runner-host-header));}
+
+.tally-runner-connected .topbar .brand small{font-size:9px;}
+@media(max-height:650px){.tally-runner-connected{--runner-host-header:44px;}}
+@media(max-width:680px) and (orientation:portrait){.tally-runner-connected .map-view{height:auto;min-height:calc(100dvh - var(--runner-host-header));}}

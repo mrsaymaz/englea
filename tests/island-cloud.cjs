@@ -1,0 +1,44 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {makeGas}=require('./roster-gas-harness.cjs');
+const g=makeGas(),pin='2595',progress={'5-A|gryffindor':{1:{score:850,stars:3}}};
+const post=(x)=>g.post({pin,...x});
+assert.equal(post({type:'ISLAND_GET',pin:'bad',className:'5-A'}).status,'unauthorized');
+assert.equal(g.sheets.has('Island_Progress'),false);
+assert.equal(post({type:'ISLAND_GET',className:'5-A'}).status,'success');
+assert.equal(g.sheets.get('Island_Progress').getLastRow(),1);
+const payload={type:'FULL_SESSION',sessionId:'lesson-1',className:'5-A',standings:[{name:'Gryffindor',points:100,level:4}],winner:'Slytherin',islandProgress:progress};
+let result=post(payload);assert.equal(result.status,'success');assert.deepEqual(result.islandProgress['5-A|gryffindor'],progress['5-A|gryffindor']);
+const lb=g.sheets.get('Leaderboard'),bt=g.sheets.get('Battle_Results');
+assert.equal(lb.getLastRow(),3);assert.equal(bt.getLastRow(),3);
+const second=structuredClone(payload);second.islandProgress['5-A|gryffindor'][2]={score:940,stars:2};
+assert.equal(post(second).status,'success');assert.equal(lb.getLastRow(),3);assert.equal(bt.getLastRow(),3);assert.equal(g.sheets.get('Island_Progress').getLastRow(),3);
+// A stale retry, a weaker replay, and switching between record types never erase bests or duplicate results.
+post(payload);post({...payload,type:'BATTLE_OUTCOME'});post({...payload,type:'LEADERBOARD_FINAL'});
+post({...payload,islandProgress:{'5-A|gryffindor':{1:{score:20,stars:1}}}});
+result=post({type:'ISLAND_GET',className:'5-A'});assert.equal(result.islandProgress['5-A|gryffindor'][1].score,850);assert.equal(result.islandProgress['5-A|gryffindor'][1].stars,3);assert.equal(result.islandProgress['5-A|gryffindor'][2].score,940);
+assert.equal(lb.getLastRow(),3);assert.equal(bt.getLastRow(),3);
+post({...payload,sessionId:'lesson-2',className:'6-C',islandProgress:{'6-C|slytherin':{1:{score:600,stars:1}}}});
+assert.equal(post({type:'ISLAND_GET',className:'6-C'}).islandProgress['6-C|slytherin'][1].score,600);
+assert.equal(post({type:'ISLAND_GET',className:'5-A'}).islandProgress['5-A|slytherin'][1],undefined);
+for(const invalid of [{'6-C|gryffindor':{1:{score:30,stars:2}}},{'5-A|gryffindor':{11:{score:30,stars:2}}},{'5-A|gryffindor':{1:{score:-1,stars:2}}},{'5-A|gryffindor':{1:{score:30,stars:4}}}])assert.equal(post({...payload,islandProgress:invalid}).status,'error');
+const stored=new Map(),events=[];
+const c={console,JSON,Number,Object,Array,Map,Set,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},document:{getElementById:()=>null,dispatchEvent:e=>events.push(e)},localStorage:{getItem:k=>stored.get(k)||null,setItem:(k,v)=>stored.set(k,v)}};c.window=c;vm.createContext(c);vm.runInContext(fs.readFileSync(require.resolve('../public/island-progress.js'),'utf8'),c);
+const P=c.LeagueIslandProgress;P.merge(progress,'5-A');assert.equal(P.snapshot('5-A')['5-A|gryffindor'][1].score,850);
+P.merge({'5-A|gryffindor':{1:{score:1,stars:1}},'6-C|slytherin':{1:{score:999,stars:3}}},'5-A');assert.equal(P.snapshot('5-A')['5-A|gryffindor'][1].score,850);assert.equal(P.snapshot('6-C')['6-C|slytherin'][1],undefined);
+// Simulate a completed runner writing storage before notifying its parent.
+const disk=JSON.parse(stored.get('english-league-island-runner-v1'));disk.progress['5-A|gryffindor'][2]={score:940,stars:2};stored.set('english-league-island-runner-v1',JSON.stringify(disk));const eventCount=events.length;P.merge(disk.progress,'5-A');assert.equal(events.length,eventCount+1);
+P.acknowledge('5-A',post({type:'ISLAND_GET',className:'5-A'}).islandProgress);assert.equal(P.label('5-A'),'Island progress saved online');
+(async()=>{
+ const {handleSession}=await import('../netlify/functions/session.mjs');
+ const req=data=>new Request('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ const upstream=async(url,options)=>new Response(JSON.stringify(g.post(JSON.parse(options.body))));
+ assert.equal((await (await handleSession(req({pin,...second}),upstream)).json()).status,'success');
+ assert.equal(lb.getLastRow(),4);assert.equal(bt.getLastRow(),4);
+ let oldWrites=0;const old=async(url,opt)=>{const body=JSON.parse(opt.body);if(body.type!=='ISLAND_GET')oldWrites++;return new Response(JSON.stringify({status:'error',message:'Unknown record type'}));};
+ assert.equal((await (await handleSession(req({pin,...payload}),old)).json()).status,'error');assert.equal(oldWrites,0);
+ assert.equal((await (await handleSession(req({pin:'bad',...payload}),upstream)).json()).status,'unauthorized');
+ assert.equal((await handleSession(req({pin,type:'ROSTER_SAVE'}),upstream)).status,400);
+ const wrongOrigin=new Request('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://other.test'},body:JSON.stringify({pin,...payload})});assert.equal((await handleSession(wrongOrigin,upstream)).status,403);
+ assert.equal((await (await handleSession(req({pin,...payload}),async()=>{throw Error('offline');})).json()).uncertain,true);
+ console.log('PASS class/team isolation, cloud restore, best-only merge, post-run updates, idempotent mixed-type retries, invalid data/PIN, old-script preflight, and proxy failures.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

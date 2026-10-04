@@ -1,0 +1,18 @@
+/* Keep status readable and controls within narrow Safari viewports. */
+#mobile-controller{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#mobile-controller .mobile-controller-header{display:grid;grid-template-columns:minmax(0,1fr);gap:5px}
+#mobile-controller .mobile-controller-header>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+#mobile-controller .mobile-controller-meta{margin:0;min-width:0}
+#mobile-controller #mobile-connection-status{max-width:none;overflow:visible;font-size:10px;letter-spacing:.02em}
+#mobile-controller .mobile-controller-title{font-size:10px;white-space:nowrap}
+#mobile-controller .mobile-header-actions{display:flex;justify-content:space-between;gap:5px;min-width:0;width:100%}
+#mobile-controller .mobile-header-actions .student-session-button{min-width:0;flex:1;justify-content:center}
+#mobile-controller .mobile-visual-mode{width:34px;min-height:44px;flex-shrink:0}
+#mobile-sync-panel{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px;background:#0f172a;color:#b9d4e8;font-size:11px;flex-shrink:0}
+#mobile-sync-detail{min-width:0;overflow-wrap:anywhere}
+#remote-resync-btn{flex-shrink:0;min-height:44px;padding:6px 10px;border:1px solid #47728b;border-radius:8px;background:#173047;color:#d7f1ff;font-weight:700}
+#remote-resync-btn[hidden]{display:none}
+@media(min-width:600px){#mobile-controller .mobile-controller-header{grid-template-columns:minmax(140px,1fr) minmax(300px,1fr)}}
+
+#mobile-sync-panel[hidden]{display:none}
+#mobile-controller .mobile-controller-main{overflow-y:auto;overflow-x:hidden}

@@ -1,0 +1,52 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/access-time"
+  to = "/.netlify/functions/access-time"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/api/access-time"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+
+[[redirects]]
+  from = "/api/turn-credentials"
+  to = "/.netlify/functions/turn-credentials"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/api/turn-credentials"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[redirects]]
+  from = "/api/roster"
+  to = "/.netlify/functions/roster"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/api/roster"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0"
+
+[[redirects]]
+  from = "/api/session"
+  to = "/.netlify/functions/session"
+  status = 200
+  force = true

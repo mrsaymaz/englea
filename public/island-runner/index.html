@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#060e1c">
+  <title>English League · Island Runner</title>
+  <link rel="icon" href="assets/ravenclaw-5.webp">
+  <link rel="stylesheet" href="style.css?v=9.3.0">
+  <link rel="stylesheet" href="host.css?v=9.3.0">
+  <script src="host-bridge.js?v=9.3.0"></script>
+<link rel="stylesheet" href="living-map.css?v=9.3.0">
+<link rel="stylesheet" href="adventure-v91.css?v=9.3.0">
+<link rel="stylesheet" href="visual-v92.css?v=9.3.0">
+<link rel="stylesheet" href="visual-v93.css?v=9.3.0">
+</head>
+<body>
+<section id="host-required"><h1>Island Run</h1><p>Open this adventure from the Battle Arena champion on your tally results screen.</p><a href="../index.html">Open English League →</a></section>
+<div id="app">
+  <header class="topbar">
+    <a class="brand" href="#" id="brand"><span class="brand-mark" aria-hidden="true">✦</span><span>ENGLISH LEAGUE<small>ISLAND RUNNER <i>with MR. SAYMAZ</i></small></span></a>
+    <nav aria-label="Game tools">
+      <button id="soundButton" class="quiet icon-button" aria-label="Turn sound on" title="Sound">♪ <span>Off</span></button>
+      <button id="fullscreenButton" class="quiet" title="Full screen">⛶ <span>Full screen</span></button>
+      <button id="bossesButton" class="quiet">◇ <span>Bosses</span></button>
+      <button id="passportButton" class="quiet">✧ <span>Passport</span></button>
+      <button id="runSettingsButton" class="quiet">Run settings</button>
+      <button id="teacherButton" class="quiet">⚙ <span>Teacher</span></button>
+    </nav>
+  </header>
+
+  <main id="mapView" class="map-view">
+    <div class="map-toolbar">
+      <div><span class="eyebrow">THE TEN ISLANDS</span><h1>Find your next horizon.</h1></div>
+      <div class="selectors">
+        <label>Grade<select id="gradeSelect" aria-label="Grade"><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
+        <label>Class<select id="classSelect" aria-label="Class"></select></label>
+        <div class="mode-toggle" role="group" aria-label="Difficulty"><button id="softMode">Soft</button><button id="hardMode">Hard</button></div>
+      </div>
+    </div>
+    <div class="map-layout">
+      <aside class="house-panel">
+        <span class="eyebrow">YOUR RUNNER</span>
+        <div class="hero-orbit"><div class="orbit-ring"></div><img id="heroImage" alt=""><span class="hero-spark">✦</span></div>
+        <h2 id="houseName"></h2><p id="houseElement" class="muted"></p>
+        <div id="housePicker" class="house-picker" aria-label="Choose your team"></div>
+        <div class="house-progress"><b id="islandsCompleted">0 / 10</b><span>islands explored</span><div class="meter"><i id="mapProgress"></i></div></div>
+      </aside>
+      <section class="archipelago" aria-label="Ten connected curriculum islands">
+        <div class="map-water" aria-hidden="true"></div>
+        <span class="map-coordinate north">N · THE LEARNING ARCHIPELAGO</span>
+        <span class="compass" aria-hidden="true">✧</span>
+        <svg class="route" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true"><path class="route-shadow" d="M120 160 C250 80 260 160 360 140 S490 100 600 160 S750 195 840 140 S1000 80 1080 160 C1200 240 1180 365 1080 400 S930 470 840 415 S690 365 600 420 S460 455 360 400 S220 360 120 420"/><path class="route-line" d="M120 160 C250 80 260 160 360 140 S490 100 600 160 S750 195 840 140 S1000 80 1080 160 C1200 240 1180 365 1080 400 S930 470 840 415 S690 365 600 420 S460 455 360 400 S220 360 120 420"/><path id="completedRoute" pathLength="100" d="M120 160 C250 80 260 160 360 140 S490 100 600 160 S750 195 840 140 S1000 80 1080 160 C1200 240 1180 365 1080 400 S930 470 840 415 S690 365 600 420 S460 455 360 400 S220 360 120 420"/></svg>
+        <div id="islands" class="islands"></div>
+        <span class="map-coordinate south">Collect. Choose. Explore.</span>
+      </section>
+    </div>
+    <section class="launch-panel" aria-label="Selected island">
+      <span id="islandNumber" class="island-number">01</span>
+      <img id="selectedBossArt" class="selected-boss-art" alt="">
+      <div class="launch-copy"><span id="selectedTheme" class="eyebrow"></span><h2 id="selectedTitle"></h2><p id="selectedObjective"></p><p id="selectedMechanic" class="selected-mechanic"></p><p id="restorationStatus" class="restoration-status"></p><p id="selectedBoss" class="selected-boss"></p></div>
+      <div class="launch-actions"><button id="howButton" class="quiet">How to play</button><button id="startButton" class="primary">Run this island <span>→</span></button></div>
+    </section>
+  </main>
+
+  <main id="runView" class="run-view" hidden>
+    <section class="run-hud" aria-label="Run status">
+      <div class="run-identity"><img id="runHouseIcon" alt=""><div><span id="runMode" class="eyebrow"></span><strong id="runTitle"></strong></div></div>
+      <div class="journey-meter" aria-label="Distance to finish"><div><i id="runProgress"></i></div><span>START <b>FINISH</b></span></div>
+      <div class="hud-totals"><span class="coin-hud"><i>◆</i> <b id="coinCount">0</b><small id="coinTarget"></small></span><span class="score-hud"><small>SCORE</small><b id="scoreCount">0</b></span><span id="health" aria-label="Guards remaining"></span></div>
+      <button id="pauseButton" class="quiet">Ⅱ Pause</button>
+    </section>
+    <div class="course-layout">
+      <aside class="control-rail" aria-label="Runner controls">
+        <button id="upButton" class="control" aria-label="Move to the upper lane"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 25 20 13 32 25"/></svg><span>UP</span></button>
+        <button id="downButton" class="control" aria-label="Move to the lower lane"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="m8 15 12 12 12-12"/></svg><span>DOWN</span></button>
+        <button id="jumpButton" class="control jump-control" aria-label="Jump over obstacles"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 31q2-21 20-20m-6-6 7 6-7 6M5 33h30"/></svg><span>JUMP</span></button>
+        <p class="rail-hint">SWIPE ↑ ↓ →<br><span>or use arrow keys</span></p>
+      </aside>
+      <div id="gameSurface" class="game-surface" tabindex="0" aria-label="Three-lane running course. Use up and down to change lanes, and Space or right arrow to jump.">
+        <div id="promptPanel" class="prompt-panel" aria-live="polite"><span id="navigatorChip" class="navigator-chip" hidden>Navigator <b id="navigatorName"></b></span><span id="promptType" class="eyebrow"></span><h2 id="promptText"></h2><div id="trailSlots" class="trail-slots" aria-label="Word Trail letters" hidden></div><p id="promptNote"></p><button id="repeatAudio" type="button" class="repeat-audio" hidden>Hear it again</button></div>
+        <div id="track" class="track">
+          <canvas id="gameCanvas" aria-label="Runner, coins and obstacles"></canvas>
+          <div class="lane-guide" aria-hidden="true"><span>A</span><span>B</span><span>C</span></div>
+          <div id="answerGates" class="answer-gates" hidden>
+            <div class="answer-card" data-lane="0"><b>A</b><span></span></div>
+            <div class="answer-card" data-lane="1"><b>B</b><span></span></div>
+            <div class="answer-card" data-lane="2"><b>C</b><span></span></div>
+          </div>
+          <div id="bossHUD" class="boss-hud" hidden><span id="bossTitle" class="eyebrow"></span><strong id="bossName"></strong><div class="boss-meter" role="progressbar" aria-label="Boss guard" id="bossMeter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="bossHP"></i></div><span id="bossStatus"></span></div>
+          <div id="runToast" class="run-toast" aria-live="polite"></div>
+          <section id="restorationScene" class="restoration-scene" aria-label="Island restoration" hidden>
+            <p id="restorationLabel"></p><div id="restorationArt" class="restoration-art"></div><img id="restorationAvatar" class="restoration-avatar" alt="Your team spirit restoring the island"><div id="restorationSeal" class="restoration-seal"></div><button id="skipRestoration" class="quiet">Continue →</button>
+          </section>
+        </div>
+        <footer class="course-footer"><span id="courseInstruction">Follow the coins. Jump over the obstacles.</span><div class="focus-widget"><span id="focusLabel">ELEMENTAL FOCUS</span><div id="focusMeter" role="progressbar" aria-label="Elemental Focus" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="focusFill"></i></div></div><span id="challengeCount">✦ 0 / 6</span></footer>
+      </div>
+    </div>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+</div>
+
+<dialog id="helpDialog" class="help-dialog">
+  <button class="close" data-close="helpDialog" aria-label="Close instructions">×</button><span class="eyebrow">A NEW WAY TO EXPLORE</span><h2>Three lanes. One adventure.</h2>
+  <div class="help-steps"><div><b>01</b><h3>Collect & jump</h3><p>Follow the gold coins. Move up or down to switch lanes. Jump over obstacles. Each island introduces one special rule. Correct answers and coin streaks build Elemental Focus: a short coin magnet and protection from one hit.</p></div><div><b>02</b><h3>Find the answer</h3><p>Read the prompt first, then choose the correct lane. The gold marker approaches while answer text stays still. Coins and obstacles stay active. You can still jump; your lane selects the answer. No countdown is shown.</p></div><div><b>03</b><h3>Face the guardian</h3><p>At the boss, dodge the marked lanes or jump. Enter the gold lane and stay briefly to fire a coin volley. Correct answers give you a little more firing time. You still need the displayed coin target: bonus points cannot replace coins.</p></div></div>
+  <p class="help-controls">Board: <strong>UP · DOWN · JUMP</strong> &nbsp; Touch: <strong>swipe ↑ ↓ →</strong><br>Keyboard: <strong>↑ ↓</strong> to switch · <strong>Space / →</strong> to jump · <strong>P</strong> to pause</p>
+  <button class="primary" data-close="helpDialog">Let’s explore →</button>
+</dialog>
+
+<dialog id="pauseDialog" class="pause-dialog">
+  <span class="eyebrow">TAKE A BREATHER</span><h2>Adventure paused.</h2><p>The run waits for you.</p>
+  <button id="resumeButton" class="primary">Continue running →</button><button id="restartButton" class="quiet">Restart this run</button><button id="leaveButton" class="quiet">Return to the islands</button>
+</dialog>
+
+<dialog id="resultDialog" class="result-dialog">
+  <div class="result-hero"><img id="resultAvatar" alt=""><div><span id="resultEyebrow" class="eyebrow"></span><h2 id="resultTitle"></h2><div id="resultStars" class="result-stars" aria-label="Stars earned"></div><p id="resultMessage"></p></div></div>
+  <div class="result-stats"><div><b id="resultScore"></b><span>total points</span></div><div><b id="resultCoins"></b><span>coins collected</span></div><div><b id="resultAnswers"></b><span>correct choices</span></div></div>
+  <details class="answer-review"><summary>Review the learning challenges</summary><div id="reviewList"></div></details>
+  <div class="result-actions"><button id="resultChampions" class="quiet">Back to Champions</button><button id="resultMap" class="quiet">Island map</button><button id="resultReplay" class="quiet">Play again</button><button id="resultNext" class="primary">Next island →</button></div>
+</dialog>
+
+<dialog id="teacherDialog" class="teacher-dialog">
+  <div class="dialog-heading"><div><span class="eyebrow">TEACHER SPACE</span><h2>Make it your lesson.</h2></div><button class="close" data-close="teacherDialog" aria-label="Close Teacher panel">×</button></div>
+  <div class="teacher-tabs" role="tablist" aria-label="Teacher settings"><button data-tab="setup" role="tab">Run setup</button><button data-tab="questions" role="tab">Edit questions</button><button data-tab="backup" role="tab">Save & restore</button></div>
+  <section id="setupTab" class="teacher-section">
+    <div class="setup-grid">
+      <div class="settings-card"><h3>Reading pace</h3><p>The run slows while choices approach; coins and obstacles remain active. No countdown is shown.</p><label>Time to read and choose<select id="readingPace"><option value="extra">Extra breathing room</option><option value="calm">Calm · recommended</option><option value="quick">Brisk</option></select></label><label>Graphics<select id="graphicsQuality"><option value="auto">Automatic · recommended</option><option value="light">Light · older smartboards</option></select></label><label class="check-label"><input type="checkbox" id="reducedMotion"> Reduce decorative movement</label><p class="small">Soft: gentler speed, 5 guards. Hard: faster speed, 3 guards. Both use the same learning objectives. Soft needs 50–68% of the available coins; Hard needs 70–88%. Each island adds 2 percentage points. The exact coin target appears when the run starts.</p></div>
+      <div class="settings-card"><h3>Listening and pictures</h3><p>One listening gate speaks an English word; the team chooses its Turkish meaning. One picture gate shows a drawing; the team chooses the English word. Changes apply from the next run. The teacher remote has the same switches.</p><label class="check-label"><input type="checkbox" id="optionListening"> Listening gates</label><label class="check-label"><input type="checkbox" id="optionPictures"> Picture gates</label><p id="listeningSupport" class="small"></p><button id="testVoice" type="button" class="quiet">Test voice</button></div>
+      <div class="settings-card"><h3>Review list</h3><p id="reviewSummary"></p><ul id="reviewItems" class="review-items"></ul><button id="clearReview" type="button" class="quiet">Clear this class list</button><p class="small">A missed concept returns in later runs until the class answers it correctly in two different runs. Second-chance answers and Word Trail letters are recorded but do not change this list.</p></div>
+      <div class="settings-card"><h3>Test any island</h3><p>Preview a later chapter without changing saved progress.</p><label>Island<select id="previewIsland"></select></label><button id="previewButton" class="primary">Start a practice run →</button><p class="small">Uses the grade, class and team chosen on the map.</p></div>
+    </div>
+    <div class="curriculum-note"><b>Curriculum map</b><p>Grades 5–6: Maarif themes, arranged as ten game islands. Grades 7–8: the regular ten-unit English programme. The question bank is original supplementary practice, not a full course or an official MEB assessment. Use Edit questions to match your current lessons.</p><a href="CURRICULUM.md" target="_blank" rel="noopener">Open curriculum & source notes ↗</a></div>
+  </section>
+  <section id="questionsTab" class="teacher-section" hidden>
+    <div class="editor-selectors"><label>Grade<select id="editorGrade"><option>5</option><option>6</option><option>7</option><option>8</option></select></label><label>Island<select id="editorIsland"></select></label><button id="addQuestion" class="quiet">＋ New question</button></div>
+    <p id="editorObjective" class="small"></p>
+    <div class="editor-layout"><div id="questionList" class="question-list" aria-label="Question bank"></div>
+      <form id="questionForm" class="question-form">
+        <label>Challenge type<select id="questionKind"><option value="word">Word meaning</option><option value="gap">Sentence with a blank</option><option value="question">Question & answer</option></select></label>
+        <label>Prompt <span class="small">use ___ for a blank</span><textarea id="questionPrompt" maxlength="150" required rows="2"></textarea></label>
+        <div class="choice-editor"><label>Choice 1<input id="choice0" maxlength="65" required></label><label>Choice 2<input id="choice1" maxlength="65" required></label><label>Choice 3<input id="choice2" maxlength="65" required></label></div>
+        <label>Correct answer<select id="correctChoice"><option value="0">Choice 1</option><option value="1">Choice 2</option><option value="2">Choice 3</option></select></label>
+        <label>Instruction<input id="questionInstruction" maxlength="80" placeholder="e.g. Find the Turkish meaning"></label>
+        <label>Short explanation<input id="questionExplanation" maxlength="200" placeholder="Shown after the answer and in the review"></label>
+        <div class="form-actions"><button type="submit" class="primary">Save question</button><button type="button" id="deleteQuestion" class="danger quiet">Delete</button></div><p id="editorStatus" role="status" class="small"></p>
+      </form>
+    </div>
+  </section>
+  <section id="backupTab" class="teacher-section" hidden>
+    <div class="settings-card"><h3>Your progress travels with you.</h3><p>Progress, question edits and each class’s question history are saved in this browser when local storage is available. Download a backup to keep them safe or move to another computer.</p><div class="backup-buttons"><button id="exportButton" class="primary">Download backup</button><button id="importButton" class="quiet">Choose backup file</button><input id="importFile" type="file" accept=".json,application/json" hidden></div><div id="importPreview" hidden><p id="importSummary"></p><button id="confirmImport" class="primary">Replace with this backup</button><button id="cancelImport" class="quiet">Cancel</button></div></div>
+    <p id="storageStatus" class="small" role="status"></p>
+    <div class="settings-card"><h3>Local balance notes</h3><p>The last 60 runs record coin percentage, missed attacks, Focus uses and completion. No student or class names are included, and these notes are not sent online.</p><button id="balanceExport" class="quiet">Download balance notes</button></div>
+    <div class="settings-card"><h3>Class island progress</h3><p>Return to Champions and use Save session on the teacher remote to save completed islands, best scores and stars to Google Sheets. Load islands when choosing a class on another device. Question edits and question history stay in this browser; use a backup to move those.</p><p class="small">Stars: finish = 1 · at least 3 correct answers = 2 · at least 5 correct answers = 3. Coin = 10 points. Correct choice = 100 points, plus up to 60 for a continuing answer streak.</p></div>
+  </section>
+</dialog>
+<dialog id="bossesDialog" class="bosses-dialog">
+  <button class="close" data-close="bossesDialog" aria-label="Close boss gallery">×</button><span class="eyebrow">GUARDIANS OF THE TEN ISLANDS</span><h2>Meet what waits at the finish.</h2><p>Dodge the marked lanes, then enter the gold lane to fire your coins. The exact coin target appears at the start of each run. Vixar is a separate class raid on the main tally board, not an island guardian.</p><div id="bossGallery" class="boss-gallery"></div>
+</dialog>
+<dialog id="passportDialog" class="passport-dialog" aria-labelledby="passportTeam">
+  <button class="close" data-close="passportDialog" aria-label="Close Island Passport">×</button><header class="passport-heading"><img id="passportAvatar" alt="Team spirit"><div><span class="eyebrow">ISLAND PASSPORT</span><h2 id="passportTeam"></h2><p>Ten journeys. A permanent mark for every victory.</p></div></header><div id="passportGrid" class="passport-grid"></div><p class="passport-note">Best stars and coin haul never decrease. Return to Champions → Save session to keep your passport online. Older victories retain their seals; replay to add a coin record.</p>
+</dialog>
+<script src="content.js?v=9.3.0"></script><script src="questions-grade5.js?v=9.3.0"></script><script src="questions-grade6.js?v=9.3.0"></script><script src="questions-grade7.js?v=9.3.0"></script><script src="questions-grade8.js?v=9.3.0"></script><script src="variety-grade5.js?v=9.3.0"></script><script src="variety-grade6.js?v=9.3.0"></script><script src="variety-grade7.js?v=9.3.0"></script><script src="variety-grade8.js?v=9.3.0"></script><script src="expand-content.js?v=9.3.0"></script><script src="bosses.js?v=9.3.0"></script><script src="islands.js?v=9.3.0"></script><script src="engine.js?v=9.3.0"></script><script src="pictures.js?v=9.3.0"></script><script src="formats.js?v=9.3.0"></script><script src="../adventure.js?v=9.3.0"></script><script src="../teaching-model.js?v=9.3.0"></script><script src="visual-kit.js?v=9.3.0"></script><script src="spirit-motion.js?v=9.3.0"></script><script src="scenery.js?v=9.3.0"></script><script src="app.js?v=9.3.0"></script>
+</body>
+</html>

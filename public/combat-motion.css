@@ -1,0 +1,37 @@
+/* Stable artwork, separate position / facing / scale / pose layers. */
+.battle-level-size{width:100%;height:100%;transform:scale(var(--battle-level-scale,1));transform-origin:center}
+.battle-avatar-pose,.raid-travel,.raid-pose{width:100%;height:100%;position:relative;transform-origin:50% 65%}
+.raid-pose>.animated-avatar,.raid-pose>svg{width:100%;height:100%;display:block}
+#battle-announcer,#battle-phase,#battle-overlay .battle-corner-caption,#battle-overlay .battle-team-meta,#battle-overlay .battle-final-points,#battle-overlay .battle-stat-row,#battle-overlay .battle-status-line{display:none!important}
+#battle-overlay .battle-avatar-shell.guarded .battle-shield,#battle-overlay .battle-avatar-shell.invulnerable .battle-shield{animation:none!important;box-shadow:none!important;opacity:.74;transform:scale(1)}
+#battle-overlay .battle-fighter.is-ko .battle-ko-label{opacity:1!important}
+.arena-mark,.arena-bolt{position:absolute;pointer-events:none;z-index:30;opacity:0}
+.arena-mark{width:58px;height:58px;border:3px solid currentColor;border-radius:50%}
+.arena-impact{width:34px;height:34px;border-width:2px}
+.arena-strike.arena-element-claw{width:76px;height:13px;border:0;border-top:4px solid currentColor;border-bottom:3px solid currentColor;border-radius:40%}
+.arena-strike.arena-element-nature{width:54px;height:54px;border-left-width:6px;border-bottom-color:transparent;border-radius:65% 20% 70% 30%}
+.arena-strike.arena-element-water{width:67px;height:56px;border-top-width:7px;border-right:0;border-bottom:0;border-radius:60%}
+.arena-strike.arena-element-air{width:64px;height:40px;border-left:0;border-right:0;border-radius:50%}
+.arena-guard{width:78px;height:85px;border-radius:45% 45% 60% 60%;background:transparent}
+.arena-guard.arena-element-nature{border-radius:65% 30% 65% 30%}.arena-guard.arena-element-water{border-left-width:6px;border-right-width:1px}.arena-guard.arena-element-air{border-style:double;border-width:6px;border-radius:50%}
+.arena-bolt{width:25px;height:5px;background:currentColor;border-radius:50%;transform-origin:left center}.arena-heal{border-style:dashed}
+/* A single small SVG per elemental accent, animated only by transform/opacity. */
+.arena-mark.arena-technique{width:92px;height:92px;border:0;border-radius:0;background:none;}
+.arena-mark.arena-technique.arena-guard{width:106px;height:106px;}
+.arena-technique svg{display:block;width:100%;height:100%;}
+.league-scene-paused #battle-overlay *,.league-scene-paused #vixar-raid-overlay *,.league-scene-paused #unity-event-overlay *{animation-play-state:paused!important}
+#vixar-boss-stage.seals-intact::after{content:'';position:absolute;inset:14% 19%;border:2px solid #c4b5fd;border-radius:50%;opacity:.35;pointer-events:none}
+#vixar-boss-stage.seals-broken::after{content:'';position:absolute;left:43%;top:39%;width:14%;height:17%;border:2px solid #e9d5ff;border-radius:50%;opacity:.65;pointer-events:none}
+#vixar-raid-overlay[data-scene-phase='charging'] .vixar-team-fighter{opacity:.65;transition:opacity .2s ease}
+#vixar-raid-overlay[data-scene-phase='charging'] #vixar-boss-stage::after{border-color:#f5d0fe;opacity:.9}
+#vixar-raid-overlay.final-assault .vixar-team-fighter,#vixar-raid-overlay.final-assault #vixar-boss-stage,#vixar-raid-overlay.final-assault .vixar-phase-halo{animation:none!important}
+#vixar-raid-overlay .vixar-impact-text{display:none!important}
+.raid-block.raid-defense-nature{border-radius:70% 25% 70% 25%;border-left-width:6px}.raid-block.raid-defense-water{border-radius:60% 30% 60% 35%;border-left-width:6px}.raid-block.raid-defense-air{border-style:double;border-width:6px}
+.raid-unity-core{width:30px;height:30px;border-radius:50%;background:conic-gradient(#fb7185,#6ee7b7,#fcd34d,#7dd3fc,#fb7185);border:2px solid #fff7c2}
+body.performance-animated #unity-event-overlay .guardian-piece{transition:opacity .48s ease,transform .72s cubic-bezier(.18,.78,.26,1)!important;transform-box:view-box}
+body.performance-animated #unity-event-overlay .guardian-body{transform-origin:58% 64%;transform:translateY(34px) scale(.91)}
+body.performance-animated #unity-event-overlay .guardian-head{transform-origin:58.5% 42%;transform:translateY(-50px) rotate(-4deg)}
+body.performance-animated #unity-event-overlay .guardian-tail{transform-origin:37% 68%;transform:translateX(-65px) rotate(-12deg)}
+body.performance-animated #unity-event-overlay .guardian-wings{transform-origin:54% 40.5%;transform:translateY(-18px) scaleX(.55) scaleY(.94)}
+body.performance-animated #unity-event-overlay .guardian-piece.show{transform:none}
+@media(prefers-reduced-motion:reduce){.arena-mark,.arena-bolt,.raid-small-fx{display:none!important}body.performance-animated #unity-event-overlay .guardian-piece{transition:none!important;animation:none!important;transform:none!important}}

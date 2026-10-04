@@ -1,0 +1,117 @@
+/* v9.3.0 compact teacher remote. Fits an iPhone 14 Pro in Safari (393 px wide, about 600–660 px tall)
+   without scrolling. The four team cards share whatever height remains; nothing has a fixed minimum height. */
+#mobile-controller{
+  --r-bg:#07111f;--r-surface:#0e1b2d;--r-raise:#15263b;--r-line:#243850;--r-ink:#eef3f8;--r-muted:#9fb3c6;--r-brass:#e1c27a;--r-brass-ink:#2a1f0b;
+  height:100vh;height:100dvh;background:var(--r-bg);color:var(--r-ink);
+  padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+  font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+#mobile-controller button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#mobile-controller button:focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
+.remote-visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Header: connection, class and More on one 52 px row. */
+#mobile-controller .mobile-controller-header{display:grid!important;grid-template-columns:auto minmax(0,1fr) 44px;align-items:center;gap:6px;
+  min-height:52px;padding:4px 8px;background:var(--r-surface);border-bottom:1px solid var(--r-line);box-shadow:none}
+#mobile-controller .mobile-controller-meta{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin:0;min-width:0}
+#mobile-controller .mobile-controller-meta .remote-state-dot{position:absolute;margin:4px 0 0 -12px}
+#mobile-controller #mobile-connection-wrap{position:relative;padding-left:12px}
+#mobile-controller #mobile-connection-status{max-width:96px;font-size:10px;letter-spacing:.04em;line-height:1.2}
+#mobile-controller .mobile-room-code{font-size:12px;letter-spacing:.12em;padding:1px 6px;border-color:var(--r-line);background:var(--r-bg);color:var(--r-ink)}
+#mobile-controller #mobile-class-btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:0;padding:4px 10px;
+  border:1px solid var(--r-line);border-radius:12px;background:var(--r-raise);color:var(--r-muted);font-size:13px}
+#mobile-controller #mobile-class-btn strong{color:#bae6fd;font-size:17px;font-weight:850;letter-spacing:.02em}
+#mobile-more-btn{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--r-line);border-radius:12px;background:var(--r-raise);color:var(--r-ink)}
+#mobile-more-btn svg{width:22px;height:22px;fill:currentColor}
+#mobile-more-btn[aria-expanded="true"]{border-color:var(--r-brass);color:var(--r-brass)}
+
+/* Status lines float over the top of the cards instead of taking a row. */
+#mobile-controller #mobile-command-status{position:absolute;left:50%;top:calc(56px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:30;
+  min-height:0;max-width:86%;padding:0;pointer-events:none;font:700 11px/1.3 system-ui;text-align:center}
+#mobile-controller #mobile-command-status:not(:empty){padding:3px 10px;border-radius:999px;background:#07111fe6;border:1px solid var(--r-line)}
+#mobile-controller #mobile-sync-panel{padding:4px 8px;font-size:11px}
+#mobile-controller #mobile-scene-controls{gap:6px;padding:4px 8px;background:var(--r-surface);border-bottom:1px solid var(--r-line)}
+#mobile-controller #mobile-scene-controls button{min-height:40px;padding:6px 12px;border-radius:10px;font-size:12px}
+
+/* Main area: mission strip plus a 2 × 2 grid that shares the remaining height. */
+#mobile-controller .mobile-controller-main{display:flex;flex:1 1 auto;flex-direction:column;gap:6px;min-height:0;padding:6px 8px;overflow-x:hidden;overflow-y:auto}
+/* Class Mission: one 28 px line. Label, bar, count. */
+#mobile-controller .mobile-mission-panel{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"title bar count";align-items:center;column-gap:10px;flex:0 0 auto;
+  min-height:28px;padding:3px 10px;border:1px solid var(--r-line);border-radius:10px;background:var(--r-surface)}
+#mobile-controller .mobile-mission-top{display:contents}
+#mobile-controller .mobile-mission-title{grid-area:title;font-size:12px;letter-spacing:.01em;text-transform:none;font-weight:750;color:var(--r-muted)}
+#mobile-controller #mobile-class-mission-count{grid-area:count;font-size:12px}
+#mobile-controller .mobile-mission-progress{grid-area:bar;margin:0;height:5px}
+#mobile-controller .mobile-mission-explanation{display:none}
+#mobile-controller .mobile-team-grid{flex:1 1 auto;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:6px}
+/* Name on its own line; score shares a row with the chest, Secret Agent and reset buttons. */
+#mobile-controller .mobile-team-card{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;grid-template-rows:auto auto minmax(0,1fr) auto;
+  grid-template-areas:"name name name name" "score chest agent reset" "invite invite invite invite" "actions actions actions actions";
+  column-gap:4px;row-gap:2px;min-height:0!important;padding:6px 8px 8px;border-radius:14px;overflow:hidden}
+#mobile-controller .mobile-team-header,#mobile-controller .mobile-team-score-row{display:contents}
+#mobile-controller .mobile-team-name{grid-area:name;font-size:15px;line-height:20px;font-weight:850;letter-spacing:.01em}
+#mobile-controller .mobile-team-score{grid-area:score;align-self:center}
+#mobile-controller .mobile-team-chest{grid-area:chest;align-self:center;width:36px;height:36px}
+#mobile-controller .mobile-agent-button{grid-area:agent;align-self:center}
+#mobile-controller .mobile-team-reset{grid-area:reset;align-self:center}
+#mobile-controller .mobile-invite{grid-area:invite}
+#mobile-controller .mobile-score-actions{grid-area:actions}
+#mobile-controller .mobile-team-reset,#mobile-controller .mobile-agent-button{width:36px;height:36px;flex:0 0 36px;border-radius:10px}
+#mobile-controller .mobile-team-score{font-size:26px;line-height:1}
+#mobile-controller .mobile-invite{flex:1 1 auto;min-height:0;overflow:hidden;margin:2px 0 6px;padding-top:4px}
+#mobile-controller .mobile-invite-title{font-size:10px;line-height:13px;letter-spacing:.03em;text-transform:none;font-weight:750}
+#mobile-controller .mobile-invite-list{margin-top:2px}
+#mobile-controller .mobile-invite-row{min-height:19px;line-height:19px}
+#mobile-controller .mobile-invite-name{font-size:14px;line-height:19px;overflow-wrap:normal;white-space:nowrap;overflow:hidden;text-overflow:clip}
+#mobile-controller .mobile-invite-count{font-size:12px}
+#mobile-controller .mobile-score-actions{gap:6px}
+#mobile-controller .mobile-score-button{min-height:46px;border-radius:12px;font-size:24px}
+
+/* Footer: one primary action; disconnect lives in More. */
+#mobile-controller .mobile-controller-footer{grid-template-columns:minmax(0,1fr)!important;gap:4px;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:var(--r-surface);border-top:1px solid var(--r-line)}
+#mobile-controller .mobile-session-button{min-height:46px;border-radius:12px;font-size:12px;letter-spacing:.06em}
+#mobile-controller #mobile-record-ready-status{font-size:11px;line-height:1.3;text-align:center;color:var(--r-muted)}
+
+/* Island Run panel replaces the team grid while the run is open on the board. */
+#mobile-controller.remote-island-run .mobile-team-grid,#mobile-controller.remote-island-run .mobile-mission-panel{display:none!important}
+.remote-run-panel{display:flex;flex-direction:column;gap:10px;flex:1 1 auto;min-height:0}
+.remote-run-panel[hidden]{display:none!important}
+.remote-run-navigator{display:grid;grid-template-columns:1fr;gap:4px;padding:14px;border:1px solid #6b5a33;border-radius:16px;
+  background:linear-gradient(160deg,#2a2417,#121f30 70%)}
+.remote-run-navigator>span{color:var(--r-brass);font-size:12px;font-weight:750;letter-spacing:.03em}
+.remote-run-navigator strong{font-size:clamp(26px,8vw,34px);line-height:1.1;font-weight:850;color:#fff3d6;overflow-wrap:anywhere}
+.remote-run-navigator strong.empty{font-size:17px;font-weight:650;color:var(--r-muted)}
+.remote-run-navigator button{justify-self:start;min-height:44px;margin-top:6px;padding:8px 14px;border:1px solid #8a7444;border-radius:12px;background:#1d1a12;color:#fff1c4;font-size:14px;font-weight:750}
+.remote-run-repeat{min-height:56px;border:1px solid var(--r-brass);border-radius:14px;background:var(--r-brass);color:var(--r-brass-ink);font-size:16px;font-weight:850}
+.remote-run-repeat:disabled,.remote-run-navigator button:disabled{opacity:.42;filter:saturate(.3)}
+.remote-run-switches{display:grid;gap:8px}
+.remote-switch{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:6px 8px 6px 14px;border:1px solid var(--r-line);border-radius:12px;
+  background:var(--r-surface);color:var(--r-ink);font-size:15px;font-weight:700;text-align:left}
+.remote-switch-state{min-width:52px;padding:6px 10px;border-radius:999px;background:#26374c;color:var(--r-muted);font-size:13px;font-weight:800;text-align:center}
+.remote-switch[aria-checked="true"] .remote-switch-state{background:var(--r-brass);color:var(--r-brass-ink)}
+.remote-switch:disabled{opacity:.5}
+.remote-run-note{margin:0;color:var(--r-muted);font-size:12px;line-height:1.4}
+
+/* More sheet: a bottom sheet over the controller. */
+.remote-sheet{position:absolute;inset:0;z-index:10010;display:flex;align-items:flex-end;background:#020617b8}
+.remote-sheet[hidden]{display:none}
+.remote-sheet-card{width:100%;max-height:calc(100% - 24px);overflow-y:auto;display:grid;gap:14px;padding:14px 14px calc(16px + env(safe-area-inset-bottom,0px));
+  border-top:1px solid var(--r-line);border-radius:20px 20px 0 0;background:var(--r-surface)}
+.remote-sheet-head{display:flex;align-items:center;justify-content:space-between}
+.remote-sheet-head h2{margin:0;font-size:18px;font-weight:800}
+.remote-sheet-head button{width:44px;height:44px;border:1px solid var(--r-line);border-radius:12px;background:var(--r-raise);color:var(--r-ink);font-size:24px;line-height:1}
+.remote-sheet-card section{display:grid;gap:8px}
+.remote-sheet-card h3{margin:0;color:var(--r-muted);font-size:13px;font-weight:750}
+#mobile-controller .remote-sheet .mobile-visual-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#mobile-controller .remote-sheet .mobile-visual-mode{width:auto;min-height:48px;padding:4px 6px;border:1px solid var(--r-line);border-radius:12px;background:var(--r-raise);color:var(--r-ink);font-size:13px;font-weight:700}
+#mobile-controller .remote-sheet .mobile-visual-mode[aria-pressed="true"]{border-color:#fbbf24;background:#3a2c0b;color:#fde68a}
+.remote-sheet-actions{grid-template-columns:1fr}
+#mobile-controller #mobile-manage-btn{min-height:48px;border-radius:12px;font-size:14px}
+.remote-disconnect{min-height:48px;border:1px solid #7f1d1d;border-radius:12px;background:#2a0f14;color:#fecdd3;font-size:14px;font-weight:750}
+
+/* Very short viewports (landscape phones, zoomed text) may scroll rather than clip. */
+/* Shorter Safari views (toolbars expanded): two invite names rather than a clipped third. */
+@media (max-height:575px){#mobile-controller .mobile-invite-row:nth-child(n+3){display:none}#mobile-controller .mobile-team-score{font-size:24px}}
+@media (max-height:560px){#mobile-controller .mobile-team-grid{grid-template-rows:repeat(2,minmax(150px,1fr))}}
+@media (min-width:600px){#mobile-controller .mobile-team-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){#mobile-controller *{transition:none!important}}

@@ -1,0 +1,19 @@
+#mobile-manage-btn{min-height:44px;padding:6px 8px;background:#164e63;color:#ecfeff;border:1px solid #2c839f;border-radius:8px;font-size:11px;font-weight:800;touch-action:manipulation}
+.mobile-controller-header>div:first-child{min-width:65px}
+.mobile-controller-header #mobile-connection-status{max-width:70px}
+.roster-manager{width:min(620px,calc(100vw - 16px));max-height:calc(100dvh - 20px);padding:16px;margin:auto;border:1px solid #4b647c;border-radius:16px;background:#0f172a;color:#f8fafc;overflow-y:auto;font:15px system-ui;box-sizing:border-box}
+.roster-manager::backdrop{background:#020617dd}
+.roster-manager header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.roster-manager h2{font-size:24px;margin:0}.roster-manager h3{margin:16px 0 8px;font-size:16px}
+.roster-manager p{font-size:13px;line-height:1.5;color:#cbd5e1}
+.roster-manager button,.roster-manager input,.roster-manager select{min-height:44px;border:1px solid #52657e;border-radius:8px;background:#1e293b;color:#f8fafc;font:inherit;padding:8px 10px;box-sizing:border-box;max-width:100%}
+.roster-manager button{cursor:pointer;touch-action:manipulation;font-weight:700}
+.roster-manager button:disabled{opacity:.5;cursor:wait}
+.roster-manager form{display:grid;gap:8px}.roster-manager form>button{margin-top:8px;background:#155e75}
+.roster-manager label{font-size:13px}.roster-status{padding:10px;background:#102c3c;border-radius:8px;overflow-wrap:anywhere}.roster-status[data-error=true]{color:#fecaca;background:#451a24}
+.roster-bar{display:flex;flex-wrap:wrap;gap:8px}.roster-names{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.roster-student{text-align:left;overflow-wrap:anywhere}
+.roster-removed-toggle{display:flex;gap:8px;align-items:center;margin-top:10px}.roster-removed-toggle input{width:22px;min-height:22px}
+.roster-manager .roster-remove{border-color:#be647b;margin:10px 0;width:100%;color:#fecdd3}
+.roster-body>button{margin:6px 6px 0 0}.roster-manager :focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
+@media(max-width:420px){.mobile-controller-title{font-size:10px;letter-spacing:.06em}.mobile-header-actions{gap:3px}.mobile-header-actions .student-session-button{padding:5px;gap:3px}.mobile-visual-mode{width:32px;min-height:44px}.roster-manager{padding:12px}}

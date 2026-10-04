@@ -1,0 +1,8 @@
+#island-cloud-dialog{background:#101b30;color:#e6edf7;border:1px solid #47728b;border-radius:18px;padding:24px;width:min(420px,92vw);box-shadow:0 24px 90px #000a;z-index:100000}
+#island-cloud-dialog::backdrop{background:#030913b8}
+#island-cloud-dialog h2{font-size:22px;margin:0 0 12px}#island-cloud-dialog p{font-size:14px;line-height:1.5;margin:12px 0}
+#island-cloud-dialog input{display:block;background:#071020;color:white;border:1px solid #557388;border-radius:8px;padding:12px;width:100%;margin:8px 0 20px}
+#island-cloud-dialog form>div{display:flex;gap:10px;justify-content:flex-end}#island-cloud-dialog button,.island-cloud-button{border:1px solid #426779;background:#172c41;color:#c4edfc;border-radius:8px;padding:9px 12px;font-weight:600}
+#island-progress-status{font-size:12px;color:#a7ddee;margin:8px 0}.island-cloud-button{font-size:11px;padding:6px 8px;white-space:nowrap}#island-cloud-dialog button:disabled{opacity:.6}
+
+#mobile-island-progress{min-height:44px;margin:8px 0}

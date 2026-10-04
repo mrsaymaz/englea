@@ -1,0 +1,5 @@
+#expedition-recap{width:min(1000px,96vw);margin:12px auto;padding:12px 16px;border:1px solid #53657688;border-radius:14px;background:linear-gradient(120deg,#0d2131,#152335);text-align:left;box-sizing:border-box}
+#expedition-recap[hidden]{display:none}#expedition-recap h3{font-size:16px;color:#e9d8a5;margin:0 0 4px}#expedition-recap p{font-size:13px;line-height:1.45;color:#c2d8e3;margin:5px 0}
+#expedition-recap-teams{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}#expedition-recap-teams span{font-size:12px;color:var(--team-color);border-left:2px solid var(--team-color);padding-left:7px}
+#expedition-recap-next{border-top:1px solid #59708044;padding-top:7px}
+@media(max-width:650px){#expedition-recap-teams{grid-template-columns:repeat(2,minmax(0,1fr))}}
