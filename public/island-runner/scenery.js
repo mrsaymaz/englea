@@ -245,7 +245,7 @@
       if(run.trail&&run.trail.started&&!run.trail.done)this.letters(run);
       // A stable silhouette with a small gait; no rapid pose swapping.
       const knockout=run.boss?.state==='knockout'?Math.min(1,run.boss.clock/.8):0;
-      const x=w*(.165+run.jumpForward/1000-knockout*.065),y=h*(.40+.24*run.lanePos),size=Math.min(188,h*.25,w*.18),hop=run.jumpHeight*Math.min(145,h*.25,Math.max(0,y-size*.8-6)),bob=this.reduced||run.paused||run.phase==='boss'?0:Math.sin(run.time*13)*Math.min(2.2,h*.006);
+      const x=w*(.165+run.jumpForward/1000-knockout*.065),y=h*(.40+.24*run.lanePos),size=Math.min(188,h*.25,w*.18)*(this.artScale||1),hop=run.jumpHeight*Math.min(145,h*.25,Math.max(0,y-size*.8-6)),bob=this.reduced||run.paused||run.phase==='boss'?0:Math.sin(run.time*13)*Math.min(2.2,h*.006);
       c.fillStyle='#07101c99';c.beginPath();c.ellipse(x,y+size*.15,size*.37*(1-run.jumpHeight*.27),size*.063,0,0,Math.PI*2);c.fill();
       const motion=root.RunnerSpiritMotion,pose=motion?.pose(this.house.id,run,this.reduced);
       if(run.focusTime>0){c.save();c.strokeStyle=V.colors[this.house.id];c.lineWidth=run.focusShield?3:1.5;c.globalAlpha=.8;c.beginPath();c.ellipse(x,y-hop-size*.27,size*.48,size*.54,0,0,Math.PI*2);c.stroke();

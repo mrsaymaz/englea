@@ -11,7 +11,7 @@
   - Board and runner pages load the shared look, the seals script and only v9.4.0 asset URLs.
 - **Native Canvas2D renders** (`render-runner-v91.cjs` with `@napi-rs/canvas`): 320 frames pass, all houses, ten mechanics, boss warnings, openings, projectiles, Focus, reduced motion and bounded particles.
 - **Remote layout in Chromium** (`next-to-invite.cjs`): all five classes still fit at 393 × 660. With a seal on a card, a separate 393 × 660 check measured no page scroll and no card overflow. **Arena, projectiles, Vixar finale, Unity reward, access gate, island-v91 and island-v92** browser and unit suites pass.
-- **End-to-end in Chromium**, with the existing skilled test driver steering a real browser run on island 1: muted start, colour returning through six correct answers, boss, restoration scene, result dialog. After Back to Champions, the seal announcement appears and the team card shows the seal with NEW. Islands 3, 4, 6, 7 and 10 were also captured for their realm scenery.
+- **End-to-end in Chromium**, with the existing skilled test driver steering a real browser run on island 1: muted start, colour returning through six correct answers, boss, restoration scene, result dialog. After Back to Champions, the seal announcement appears and the team card shows the seal with NEW. Islands 3, 4, 6, 7 and 10 were also captured for their realm scenery. The board, arena, champions screen, island map, runs and the phone were also captured in **Animated mode** at 1366 × 768 and 1920 × 1080.
 
 ## Limits
 

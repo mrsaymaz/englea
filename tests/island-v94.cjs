@@ -60,7 +60,7 @@ function boardDOM(){
  }
  const document={body:new El('body'),getElementById:id=>nodes.get(id)||null,createElement:t=>new El(t),querySelector:sel=>{const m=sel.match(/^#team-(\w+) \.mascot-area$/);return m?nodes.get('team-'+m[1])?._mascot||null:null;},addEventListener:(k,f)=>{(listeners[k]??=[]).push(f);},dispatchEvent:e=>{(listeners[e.type]||[]).forEach(f=>f(e));}};
  document.body.classList.contains=()=>false;
- for(const t of ['gryffindor','hufflepuff','slytherin','ravenclaw']){const card=new El('div');card.id='team-'+t;card._mascot=new El('div');}
+ for(const t of ['gryffindor','hufflepuff','slytherin','ravenclaw']){const panel=new El('div');panel.id='score-panel-'+t;}
  return {document,nodes};
 }
 function sealsContext(){

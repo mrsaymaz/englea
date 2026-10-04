@@ -155,7 +155,9 @@
     const h=currentHouse(),u=currentUnit(island);$('runHouseIcon').src=avatar(h,island);$('runTitle').textContent=u.title;$('runMode').textContent=`${practice?'PRACTICE · ':''}${state.settings.className} · ISLAND ${island} · ${state.settings.mode}`;
     $('bossHUD').hidden=true;['upButton','downButton','jumpButton'].forEach(id=>$(id).disabled=false);$('answerGates').hidden=true;$('runToast').classList.remove('visible');$('challengeCount').textContent='✦ 0 / 6';$('trailSlots').hidden=true;$('repeatAudio').hidden=true;
     renderer.setup(h,hostImage,u.realm,state.settings.reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches,bossImage(island),B.get(island),graphics==='light');
-    renderer.restoredStart?.(window.LeagueAdventure?.restoration(state.progress,state.settings.className,island)?.stage);$('app').classList.add('running');lastLane=-1;
+    renderer.restoredStart?.(window.LeagueAdventure?.restoration(state.progress,state.settings.className,island)?.stage);
+    // Animated mode hands over the detailed creature artwork (not a generated SVG portrait); draw it larger.
+    renderer.artScale=String(H.context?.avatar||'').startsWith('blob:')?1:1.3;$('app').classList.add('running');lastLane=-1;
     idlePrompt();resize();updateHUD();$('gameSurface').focus({preventScroll:true});
     if(state.settings.sound)sound('jump');
   }

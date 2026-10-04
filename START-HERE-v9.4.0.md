@@ -15,13 +15,13 @@
 
 **Colour returns as you learn.** A run starts slightly muted. Each correct answer brings back more colour, and the full palette arrives when the guardian falls. Islands the class has already restored start brighter. Colour never affects coins, speed or scoring.
 
-**A livelier runner.** Coins spin and glint, the runner kicks up dust, and it settles with a short squash after each jump. All of this is skipped with reduced motion.
+**A livelier runner.** In Animated mode, the runner is your team's full creature artwork, now drawn 30% larger. Coins spin and glint, the runner kicks up dust, and it settles with a short squash after each jump. All of this is skipped with reduced motion.
 
 **Lanes match the answers.** The A, B and C lane letters are gold, teal and lilac, the same colours as the letter badges on the answer gates. The runner's current lane letter lights up, and its answer gate is highlighted while the choices are on screen. The coin counter now reads, for example, "COINS 24 of 89 needed", with a ✓ once the target is reached.
 
 **Clearer map.** Locked islands show a lock and are dimmer. The next island to play gently beckons. The selected island line reads "Guardian: Veyr · collect 50% of the coins, then win the showdown".
 
-**Passport seals on the board.** When a team completes an island (not a practice run), its passport stamp now also appears on that team's board card: the latest guardian's emblem and the number of seals, out of 10. When you return to Champions, a short "Passport seal added" announcement names the team, the island and the guardian, and the card shows **NEW** for the rest of the lesson. The remote shows **✦ n** next to the team name. Seals follow the selected class and are loaded with **Load islands** as before. Loading progress from Google Sheets never triggers the announcement.
+**Passport seals on the board.** When a team completes an island (not a practice run), its passport stamp now also appears in the score panel of that team's board card, beside the score so it never covers the Animated-mode artwork: the latest guardian's emblem and the number of seals, out of 10. When you return to Champions, a short "Passport seal added" announcement names the team, the island and the guardian, and the card shows **NEW** for the rest of the lesson. The remote shows **✦ n** next to the team name. Seals follow the selected class and are loaded with **Load islands** as before. Loading progress from Google Sheets never triggers the announcement.
 
 **One shared look.** The board, the remote and Island Run use the same night-blue panels, borders, gold accents and title style (`public/league-look.css`).
 

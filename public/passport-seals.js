@@ -12,7 +12,7 @@
   return Object.keys(levels).map(Number).filter(n=>n>=1&&n<=10).sort((a,b)=>a-b).map(n=>({island:n,stars:levels[n].stars||1}));
  }
  function chip(team){
-  const card=document.querySelector('#team-'+team+' .mascot-area');if(!card)return null;
+  const card=document.getElementById('score-panel-'+team);if(!card)return null;
   let el=document.getElementById('passport-seals-'+team);
   if(!el){
    el=document.createElement('div');el.id='passport-seals-'+team;el.className='passport-seals';el.setAttribute('role','img');
