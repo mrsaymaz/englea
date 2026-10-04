@@ -1,8 +1,9 @@
-English League · Island Run Edition · v9.4.0
+English League · Island Run Edition · v9.5.0
 
-Island Run visual polish: one header while running, per-island daylight scenery that regains colour with correct answers, livelier runner, colour-matched lane letters and answer gates, clearer map.
-Passport seals from successful Island Runs appear on the team's board card and remote card.
-One shared look for the board, the teacher remote and Island Run.
+Presentation pass across the game, still lightweight: board fits the smartboard without scrolling, score-first cards, leader crown and lead-change banner, award points fly into the score.
+Final Arena countdown dial, damage numbers and callouts; shared League titles in one row.
+Island Run: title cards, answer streak with Spirit Surge, Perfect Run bonus, answer-gate results, guardian hit numbers, ambience, sound palette and a result sequence.
+Remote: leader crown and +N pop.
 
 No Apps Script change: keep GOOGLE-APPS-SCRIPT-v9.3.0.gs.
-No new Netlify or Cloudflare variables. Read START-HERE-v9.4.0.md.
+No new Netlify or Cloudflare variables. Read START-HERE-v9.5.0.md.

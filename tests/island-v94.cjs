@@ -95,11 +95,12 @@ test('Only a finished run celebrates a new seal; loading progress from Sheets do
  assert.equal(toast.children[1].children[1].textContent,'Slytherin · Island 3');
 });
 
-test('Board and runner pages load the shared look, the seals script and v9.4.0 assets only',()=>{
+test('Board and runner pages load the shared look and the seals script, all on the current release tag',()=>{
  const board=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8'),runner=fs.readFileSync(path.join(__dirname,'../public/island-runner/index.html'),'utf8');
- for(const html of [board,runner]){assert.match(html,/league-look\.css\?v=9\.4\.0/);assert.doesNotMatch(html,/\?v=9\.3\.0/);}
- assert.match(board,/passport-seals\.js\?v=9\.4\.0/);assert.match(board,/Island Run Edition · v9\.4\.0/);
- assert.match(runner,/id="laneGuide"/);assert.match(runner,/id="runSoundButton"/);assert.match(runner,/visual-v94\.css\?v=9\.4\.0/);
- assert.match(fs.readFileSync(path.join(__dirname,'../public/island-run.js'),'utf8'),/index\.html\?v=9\.4\.0/);
+ const release=(board.match(/Island Run Edition · v(9\.\d+\.\d+)/)||[])[1];assert(release,'edition badge present');const tag=release.replace(/\./g,'\\.');
+ for(const html of [board,runner]){assert.match(html,new RegExp('league-look\\.css\\?v='+tag));assert.doesNotMatch(html,/\?v=9\.3\.0/);}
+ assert.match(board,new RegExp('passport-seals\\.js\\?v='+tag));
+ assert.match(runner,/id="laneGuide"/);assert.match(runner,/id="runSoundButton"/);assert.match(runner,new RegExp('visual-v94\\.css\\?v='+tag));
+ assert.match(fs.readFileSync(path.join(__dirname,'../public/island-run.js'),'utf8'),new RegExp('index\\.html\\?v='+tag));
 });
 console.log(JSON.stringify({checks}));

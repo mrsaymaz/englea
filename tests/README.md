@@ -1,3 +1,7 @@
+# v9.5.0 checks
+
+Run `npm run test:v95` for the full dependency-free suite (all v9.4 checks plus `island-v95.cjs`: Spirit Surge, Perfect Run, guardian hit damage, bounded presentation layers, reduced motion and the sound palette). `npm run test:board` (Playwright with Chromium) checks the board fit at 1280×720, 1366×768 and 1920×1080 in all three display modes, the lead-change banner, the arena dial and the shared League title. See `../TEST-REPORT-v9.5.0.md`.
+
 # v9.4.0 checks
 
 Run `npm run test:v94` for the full dependency-free suite (all v9.3 checks plus `island-v94.cjs`: scene colour, 392 stub-canvas frames across every realm, and passport seals on the board). With `@napi-rs/canvas` available, `render-runner-v91.cjs` renders the new scenery natively. See `../TEST-REPORT-v9.4.0.md`.
