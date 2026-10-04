@@ -1,11 +1,8 @@
-English League · Island Run Edition · v9.3.0
+English League · Island Run Edition · v9.4.0
 
-Answer log to Google Sheets (Question_Log, Question_Summary) and per-class review list: missed concepts return in later runs.
-One second chance per run, reshuffled, half points; stars unchanged.
-Listening gates (English voices only, on by default) and picture gates (108 drawings, off by default), switchable from the remote.
-Word Trail letter-coins before the boss; a correct word gives a Word Strike worth 15% of the guard.
-Navigator names from the champion team's session contributors.
-Compact iPhone remote: one-row header, More sheet, Island Run panel.
+Island Run visual polish: one header while running, per-island daylight scenery that regains colour with correct answers, livelier runner, colour-matched lane letters and answer gates, clearer map.
+Passport seals from successful Island Runs appear on the team's board card and remote card.
+One shared look for the board, the teacher remote and Island Run.
 
-Apps Script update required: GOOGLE-APPS-SCRIPT-v9.3.0.gs (keep your PIN, deploy a New version of the existing deployment).
-No new Netlify or Cloudflare variables. Read START-HERE-v9.3.0.md.
+No Apps Script change: keep GOOGLE-APPS-SCRIPT-v9.3.0.gs.
+No new Netlify or Cloudflare variables. Read START-HERE-v9.4.0.md.

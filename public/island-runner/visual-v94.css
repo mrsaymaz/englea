@@ -1,0 +1,101 @@
+/* v9.4.0 · Island Run polish: one header while running, readable HUD, lane colours that
+   match the answer gates, clearer map states. Uses the shared tokens from ../league-look.css. */
+body{background:var(--league-night);}
+.topbar{background:linear-gradient(90deg,rgba(13,24,41,.96),rgba(8,19,33,.96));border-bottom-color:var(--league-line);}
+.topbar button.quiet{border-color:var(--league-line);background:rgba(22,38,60,.7);}
+.brand-mark{color:var(--league-gold);}
+.primary{background:linear-gradient(180deg,#fff4d6,#f0cf86);color:var(--league-gold-ink);border:1px solid #ffe7ad;box-shadow:0 6px 22px rgba(243,201,107,.22),inset 0 1px 0 #fffbe9;}
+.primary:hover{background:linear-gradient(180deg,#fffaf0,#f6d998);}
+.eyebrow{letter-spacing:var(--league-eyebrow-spacing);}
+
+/* ---------- One header while running ---------- */
+#app.running .topbar{display:none;}
+#app.running .run-view,.tally-runner-connected #app.running .run-view{height:100dvh;}
+.run-view{gap:10px;}
+
+/* ---------- HUD ---------- */
+.run-hud{gap:14px;padding:6px 8px 6px 10px;border-radius:var(--league-radius);background:var(--league-panel);border:1px solid var(--league-line);box-shadow:0 8px 24px rgba(2,8,20,.3);}
+.run-identity img{filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));}
+.run-identity .eyebrow{color:var(--league-gold);}
+.journey-meter>div{height:9px;background:#13243a;border:1px solid var(--league-line);}
+.journey-meter i{background:linear-gradient(90deg,var(--league-gold),var(--accent));box-shadow:0 0 12px color-mix(in srgb,var(--accent) 55%,transparent);border-radius:8px;transition:width .25s linear;}
+.journey-meter>span{font-size:9px;color:var(--league-muted);}
+.hud-totals{gap:18px;}
+.coin-hud{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 8px;border-radius:12px;background:rgba(243,201,107,.08);border:1px solid rgba(243,201,107,.24);}
+.coin-hud>i{font-size:22px;color:var(--league-gold);filter:drop-shadow(0 0 6px rgba(243,201,107,.5));}
+.coin-copy{display:flex;flex-direction:column;line-height:1.05;}
+.hud-label{font-size:8px;letter-spacing:.2em;color:var(--league-muted);}
+.coin-hud b{font-size:24px;color:#ffe7ad;}
+.coin-hud #coinTarget{font-size:12px;color:#cdb98a;}
+.coin-hud.ready{background:rgba(127,216,201,.12);border-color:rgba(127,216,201,.5);}
+.coin-hud.ready #coinTarget{color:#9ff0de;}
+.coin-hud.ready #coinTarget::after{content:" ✓";}
+.score-hud small{font-size:8px;color:var(--league-muted);}
+.score-hud b{font-size:22px;}
+.health-dot{font-size:18px;color:#9ee6da;text-shadow:0 0 8px rgba(127,216,201,.45);}
+.health-dot.empty{color:#22374a;text-shadow:none;}
+.hud-tools{display:flex;gap:6px;align-items:center;}
+.hud-tools button{min-height:40px;font-size:12px;white-space:nowrap;border:1px solid var(--league-line);background:rgba(22,38,60,.8);}
+.hud-tools .hud-icon{width:40px;padding:0;font-size:16px;}
+.hud-tools .hud-icon[aria-pressed="true"]{color:var(--league-gold);border-color:rgba(243,201,107,.5);}
+
+/* ---------- Course frame ---------- */
+.game-surface{border:1px solid var(--league-line-strong);border-radius:22px;box-shadow:0 18px 44px rgba(2,8,20,.45),inset 0 0 0 1px rgba(255,255,255,.03);}
+.prompt-panel{background:linear-gradient(115deg,#112640,#152338);border-bottom:1px solid var(--league-line);}
+.prompt-panel .eyebrow{color:var(--league-gold);font-weight:800;}
+.prompt-panel h2{font-weight:750;letter-spacing:-.01em;text-shadow:0 2px 10px rgba(0,0,0,.25);}
+.prompt-panel p{color:var(--league-muted);}
+.prompt-panel.question{background:linear-gradient(115deg,#14304a,#17344a);}
+.prompt-panel.correct{background:linear-gradient(100deg,#123a33,#112c38);box-shadow:inset 4px 0 0 #6fe0b5;}
+.prompt-panel.correct .eyebrow{color:#8ff0c8;}
+.prompt-panel.wrong{background:linear-gradient(100deg,#35301f,#17303c);box-shadow:inset 4px 0 0 var(--league-gold);}
+#navigatorChip{border-color:rgba(243,201,107,.55)!important;background:rgba(6,14,28,.72)!important;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+#navigatorName{color:#fff1c8;}
+
+/* Lane letters match the answer gates and follow the runner. */
+.lane-guide span{left:12px;width:32px;height:32px;line-height:30px;border-radius:10px;font-size:14px;font-weight:900;border:1.5px solid currentColor;background:rgba(6,14,28,.55);opacity:.62;transition:opacity .18s,transform .18s,background .18s,box-shadow .18s;}
+.lane-guide span:nth-child(1){color:var(--league-lane-a);}
+.lane-guide span:nth-child(2){color:var(--league-lane-b);}
+.lane-guide span:nth-child(3){color:var(--league-lane-c);}
+.lane-guide span.current{opacity:1;transform:translateY(-50%) scale(1.14);background:currentColor;box-shadow:0 0 0 4px rgba(6,14,28,.35),0 0 18px currentColor;}
+.lane-guide span.current::first-letter{color:#0b1628;}
+.lane-guide span.current{-webkit-text-fill-color:#0b1628;}
+
+.answer-card{background:linear-gradient(160deg,#fffaf0,#f1e3c2);color:#1d2433;border:2px solid #fff5dc;border-radius:16px;box-shadow:0 6px 0 rgba(30,40,58,.75),0 12px 28px rgba(0,0,0,.35);padding-left:48px;}
+.answer-card b{left:10px;width:28px;height:28px;border-radius:9px;font-size:14px;font-weight:900;border:0;color:#0b1628;}
+.answer-card:nth-child(1) b{background:var(--league-lane-a);}
+.answer-card:nth-child(2) b{background:var(--league-lane-b);}
+.answer-card:nth-child(3) b{background:var(--league-lane-c);}
+.answer-card.in-lane{border-color:#fff;transform:translate(-50%,-50%) scale(1.04);transition:transform .18s;}
+.answer-card:nth-child(1).in-lane{box-shadow:0 6px 0 rgba(30,40,58,.75),0 0 0 4px var(--league-lane-a),0 0 30px rgba(243,201,107,.45);}
+.answer-card:nth-child(2).in-lane{box-shadow:0 6px 0 rgba(30,40,58,.75),0 0 0 4px var(--league-lane-b),0 0 30px rgba(127,216,201,.45);}
+.answer-card:nth-child(3).in-lane{box-shadow:0 6px 0 rgba(30,40,58,.75),0 0 0 4px var(--league-lane-c),0 0 30px rgba(185,166,246,.45);}
+.answer-card.active{outline-color:var(--league-gold);}
+
+.control{border-radius:16px;background:linear-gradient(160deg,#20344f,#111f33);border-color:var(--league-line-strong);}
+.control:hover,.control.pressed{background:linear-gradient(160deg,#2c4669,#18304c);border-color:#c7dcf0;}
+#jumpButton{background:linear-gradient(160deg,#3a3420,#1d2230);border-color:rgba(243,201,107,.55);}
+#jumpButton svg{stroke:var(--league-gold);}
+.course-footer{background:#0c1a2b;border-top-color:var(--league-line);color:var(--league-muted);font-size:11px;}
+#focusMeter{height:7px;border-radius:6px;}
+.run-toast{background:rgba(6,14,28,.86);border-color:rgba(243,201,107,.5);color:#ffe7ad;font-size:14px;padding:9px 18px;}
+
+/* ---------- Map ---------- */
+.archipelago{background:radial-gradient(ellipse at 72% 12%,rgba(54,98,140,.45),transparent 57%),radial-gradient(ellipse at 14% 70%,rgba(60,52,120,.4),transparent 55%),linear-gradient(180deg,#0c2136,#081626);border-color:var(--league-line);}
+.island.locked .island-art{filter:grayscale(.85) brightness(.5) drop-shadow(0 12px 10px #030911bb);}
+.island.locked .island-name{color:#6f8296;}
+.island.locked .island-num{background:#0b1726;}
+.island.locked .island-num::after{content:"🔒";position:absolute;right:-12px;bottom:-8px;font-size:11px;filter:grayscale(1) brightness(1.4);}
+.island.current:not(.locked) .island-art{animation:islandBeckon 2.8s ease-in-out infinite;}
+.island.current:not(.locked) .island-num{background:var(--league-gold);color:var(--league-gold-ink);border-color:#ffe7ad;box-shadow:0 0 0 4px rgba(243,201,107,.18),0 0 22px rgba(243,201,107,.55);}
+.island.completed .island-name{color:#dfe9f2;}
+.island.selected .island-name{color:#fff;font-weight:800;}
+@keyframes islandBeckon{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 0 rgba(243,201,107,0)) drop-shadow(0 15px 11px #030911bb)}50%{transform:translateY(-6px);filter:drop-shadow(0 0 16px rgba(243,201,107,.45)) drop-shadow(0 20px 12px #030911aa)}}
+.launch-panel{background:linear-gradient(100deg,#172a40,#101d31);border-color:var(--league-line);border-radius:var(--league-radius);}
+.island-number{color:var(--league-gold);font-weight:600;}
+.selected-boss{color:#cdb98a;}
+
+@media(max-height:750px){.lane-guide span{width:26px;height:26px;line-height:24px;font-size:12px}.answer-card{padding-left:40px}.answer-card b{width:23px;height:23px;font-size:12px}.coin-hud b{font-size:20px}.hud-tools button{min-height:36px}.hud-tools .hud-icon{width:36px}}
+@media (prefers-reduced-motion:reduce){.island.current:not(.locked) .island-art{animation:none}.lane-guide span,.answer-card.in-lane{transition:none}}
+.reduced-motion .island.current .island-art{animation:none;}
+.hud-tools{order:5;margin-left:6px;}

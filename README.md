@@ -1,10 +1,14 @@
-# English League with Mr. Saymaz — v9.3.0
+# English League with Mr. Saymaz — v9.4.0
 
-Start with **START-HERE-v9.3.0.md**. This update turns Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named for each question. The teacher remote is redesigned to fit an iPhone 14 Pro in Safari without scrolling.
+Start with **START-HERE-v9.4.0.md**. This update polishes Island Run's visuals: one header while running, a brighter scene for each island that regains its colour as the team answers correctly, a livelier runner, lane letters that match the answer gates, and a clearer island map. A passport seal earned in Island Run now appears on that team's board card and on the remote. The board, the remote and Island Run share one look.
 
-**Apps Script update required:** replace your script with **GOOGLE-APPS-SCRIPT-v9.3.0.gs**, keep your own PIN, and deploy a New version of the existing deployment. No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v9.3.0**.
+**No Apps Script change** if you already run **GOOGLE-APPS-SCRIPT-v9.3.0.gs**. No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v9.4.0**.
 
-Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v9.3.0.md**.
+## v9.3.0 (retained)
+
+v9.3.0 turned Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named for each question. The teacher remote fits an iPhone 14 Pro in Safari without scrolling.
+
+Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v9.4.0.md**.
 
 ## Retained features and earlier fixes
 
@@ -19,7 +23,7 @@ Version 9 adds the four selected features:
 - Teacher Studio: use **Manage** on the phone or board to edit questions and learning objectives, preview choices, paste vocabulary pairs, maintain rosters and view class progression. Teaching material saves online by grade and island.
 - A compact expedition recap below the existing champion and contributor sections, with team progress, this lesson's new completions and a next-island teaser.
 
-For this release, use **START-HERE-v9.3.0.md** and **GOOGLE-APPS-SCRIPT-v9.3.0.gs**. The startup badge should read **Island Run Edition · v9.3.0** on both devices. No new environment variables are required.
+For this release, use **START-HERE-v9.4.0.md** and keep **GOOGLE-APPS-SCRIPT-v9.3.0.gs**. The startup badge should read **Island Run Edition · v9.4.0** on both devices. No new environment variables are required.
 
 Remote startup synchronization, Retry sync, class/team cloud progress and session-save deduplication from v8.9.1 remain included. Existing artwork, grade curricula, 4,240 question variants, scoring, coin targets and Soft/Hard rules are retained.
 

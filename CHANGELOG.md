@@ -2,6 +2,9 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 9.4.0
+Island Run visual polish: one header while running (sound, full screen and pause move into the run bar); a daylight palette and distinct skyline for each island type, which starts muted and regains its colour with each correct answer and fully when the guardian falls; spinning coins, running dust and a landing squash; lane letters A/B/C coloured to match the answer gates and lit for the runner's lane; plain coin target ("of 89 needed"); locked islands show a lock and the next island beckons on the map. Passport seals from successful runs appear on the team's board card and remote card, with a one-time announcement after the run. Shared look (`league-look.css`) for the board, remote and Island Run. No Apps Script change.
+
 ## 9.3.0
 Island Run learning loop: team answers are logged to Google Sheets (Question_Log, Question_Summary); missed concepts return in later runs; one second chance per run; listening gates (English voice only) and picture gates, switchable from the remote; Word Trail letter-coins before the boss with a 15% Word Strike; navigator names from the session's contributors; compact iPhone remote with a More sheet and Island Run panel. Old documents moved to `archive/`. Apps Script: `GOOGLE-APPS-SCRIPT-v9.3.0.gs`.
 

@@ -1,0 +1,76 @@
+/* v9.4.0 · One shared look for the board, the teacher remote and Island Run.
+   Loaded after each page's own stylesheets. Tokens first, then light-touch surface rules. */
+:root{
+  --league-night:#060e1c;
+  --league-deep:#0b1628;
+  --league-panel:rgba(15,27,46,.84);
+  --league-panel-solid:#0f1b2e;
+  --league-raised:#16263c;
+  --league-line:rgba(150,182,214,.20);
+  --league-line-strong:rgba(186,210,236,.36);
+  --league-ink:#eef3fa;
+  --league-muted:#9fb2c8;
+  --league-gold:#f3c96b;
+  --league-cream:#f8e8bf;
+  --league-gold-ink:#2a1d07;
+  --league-radius:18px;
+  --league-radius-sm:12px;
+  --league-shadow:0 18px 44px rgba(2,8,20,.42);
+  --league-eyebrow-spacing:.22em;
+  --league-title:linear-gradient(180deg,#fff6dc 0%,#f6dc9c 55%,#e6b45a 100%);
+  --league-lane-a:#f3c96b;
+  --league-lane-b:#7fd8c9;
+  --league-lane-c:#b9a6f6;
+  --league-gryffindor:#f43f5e;
+  --league-slytherin:#10b981;
+  --league-hufflepuff:#eab308;
+  --league-ravenclaw:#3b82f6;
+}
+
+/* ---------- Board ---------- */
+.app-shell > header{background:var(--league-panel)!important;border-color:var(--league-line)!important;border-radius:var(--league-radius)!important;box-shadow:var(--league-shadow);}
+.league-control-panel{background:var(--league-panel);border-color:var(--league-line);border-radius:var(--league-radius);}
+.league-title{background-image:var(--league-title)!important;text-shadow:none;filter:drop-shadow(0 3px 14px rgba(243,201,107,.18));}
+.league-title::before,.league-title::after{content:"✦";display:inline-block;margin:0 .45em;font-size:.42em;vertical-align:.55em;color:var(--league-gold);-webkit-text-fill-color:var(--league-gold);opacity:.85;}
+.class-mission-panel .eyebrow,.points-control-panel > :first-child{letter-spacing:var(--league-eyebrow-spacing);}
+
+/* Passport seals: earned in Island Run, shown on the team's card. */
+.mascot-area > .passport-seals{position:absolute;left:.35rem;bottom:.35rem;z-index:6;display:flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(6,14,28,.78);border:1px solid rgba(243,201,107,.62);box-shadow:0 0 0 1px rgba(0,0,0,.25),0 4px 14px rgba(0,0,0,.35);color:var(--league-cream);pointer-events:auto;}
+.mascot-area > .passport-seals[hidden]{display:none;}
+.passport-seal-emblem{width:30px;height:30px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#2b3f5c,#0b1628);border:1.5px solid var(--league-gold);}
+.passport-seal-emblem img{width:118%;height:118%;object-fit:cover;object-position:50% 30%;}
+.passport-seal-count{display:flex;flex-direction:column;line-height:1;}
+.passport-seal-count b{font-size:15px;font-weight:900;color:#fff4d4;font-variant-numeric:tabular-nums;}
+.passport-seal-count small{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--league-gold);}
+.passport-seals.fresh{animation:leagueSealArrive 2.4s cubic-bezier(.2,.9,.25,1.2) both;}
+.passport-seals.fresh .passport-seal-emblem{animation:leagueSealGlow 2.4s ease-out both;}
+@keyframes leagueSealArrive{0%{transform:scale(.2) rotate(-25deg);opacity:0}18%{transform:scale(1.55) rotate(6deg);opacity:1}32%{transform:scale(.94) rotate(-2deg)}46%,100%{transform:scale(1) rotate(0)}}
+@keyframes leagueSealGlow{0%,20%{box-shadow:0 0 0 0 rgba(243,201,107,.85)}60%{box-shadow:0 0 0 14px rgba(243,201,107,0)}100%{box-shadow:none}}
+
+/* ---------- Teacher remote ---------- */
+#mobile-controller{background:radial-gradient(120% 60% at 50% 0%,#11223a 0%,var(--league-night) 70%);}
+.mobile-controller-header{background:rgba(9,18,32,.9);border-color:var(--league-line);}
+.mobile-mission-panel{background:var(--league-panel);border-color:var(--league-line);}
+.mobile-team-card{border-radius:var(--league-radius);box-shadow:0 10px 26px rgba(2,8,20,.35);}
+.mobile-passport-seals{flex:0 0 auto;margin-left:6px;padding:1px 7px;border-radius:999px;border:1px solid rgba(243,201,107,.55);background:rgba(6,14,28,.6);color:var(--league-cream);font-size:11px;font-weight:800;line-height:18px;font-variant-numeric:tabular-nums;}
+.mobile-passport-seals[hidden]{display:none;}
+.mobile-team-header{align-items:center;}
+
+/* ---------- Motion preferences ---------- */
+@media (prefers-reduced-motion:reduce){.passport-seals.fresh,.passport-seals.fresh .passport-seal-emblem{animation:none;}}
+body.performance-light .passport-seals.fresh{animation-duration:.6s;}
+
+/* A seal stamped during Island Run is announced once the board is visible again. */
+.mascot-area > .passport-seals.new-seal{border-color:var(--league-gold);box-shadow:0 0 0 2px rgba(243,201,107,.35),0 0 18px rgba(243,201,107,.45);}
+.mascot-area > .passport-seals.new-seal::after{content:"NEW";position:absolute;top:-9px;right:-6px;padding:1px 5px;border-radius:6px;background:var(--league-gold);color:var(--league-gold-ink);font-size:8px;font-weight:900;letter-spacing:.1em;}
+.mobile-passport-seals.new-seal{border-color:var(--league-gold);background:rgba(243,201,107,.18);}
+#passport-seal-toast{position:fixed;left:50%;bottom:26px;z-index:2147483000;display:flex;align-items:center;gap:14px;padding:12px 22px 12px 12px;border-radius:20px;background:linear-gradient(120deg,rgba(17,32,54,.97),rgba(10,20,36,.97));border:1px solid rgba(243,201,107,.6);box-shadow:0 0 0 1px rgba(0,0,0,.3),0 20px 50px rgba(0,0,0,.5),inset 4px 0 0 var(--seal-team,var(--league-gold));color:var(--league-ink);transform:translate(-50%,140%);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.2,.9,.25,1.15),opacity .35s;}
+#passport-seal-toast.visible{transform:translate(-50%,0);opacity:1;}
+#passport-seal-toast img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 28%;border:2px solid var(--league-gold);background:#0b1628;box-shadow:0 0 22px rgba(243,201,107,.4);}
+#passport-seal-toast div{display:flex;flex-direction:column;gap:2px;}
+#passport-seal-toast small{font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--league-gold);}
+#passport-seal-toast strong{font-size:22px;font-weight:900;color:#fff4d4;}
+#passport-seal-toast span{font-size:13px;color:var(--league-muted);}
+@media (prefers-reduced-motion:reduce){#passport-seal-toast{transition:opacity .2s;}}
+/* The compact remote card is a grid: the seal shares the name row, right-aligned. */
+#mobile-controller .mobile-passport-seals{grid-row:1;line-height:16px;font-size:10.5px;grid-column:1 / -1;justify-self:end;align-self:center;width:auto;height:auto;min-width:0;min-height:0;margin:0;}

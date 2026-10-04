@@ -1,3 +1,7 @@
+# v9.4.0 checks
+
+Run `npm run test:v94` for the full dependency-free suite (all v9.3 checks plus `island-v94.cjs`: scene colour, 392 stub-canvas frames across every realm, and passport seals on the board). With `@napi-rs/canvas` available, `render-runner-v91.cjs` renders the new scenery natively. See `../TEST-REPORT-v9.4.0.md`.
+
 # v9.3.0 checks
 
 Run `npm run test:v93` for the full dependency-free suite (all v9.2 checks plus `island-v93.cjs`). `next-to-invite.cjs` checks the compact remote layout in Chromium. See `../TEST-REPORT-v9.3.0.md`.

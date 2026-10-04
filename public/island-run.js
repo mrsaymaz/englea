@@ -75,7 +75,7 @@
     $('island-run-loading').hidden=false;$('island-run-loading-text').textContent='Opening the islands…';$('island-run-retry').hidden=true;
     frame=document.createElement('iframe');frame.id='island-run-frame';frame.title=`Island Run · ${c.className} · ${c.name}`;
     frame.setAttribute('allow','fullscreen');frame.setAttribute('allowfullscreen','');
-    frame.src='./island-runner/index.html?v=9.3.0';frame.addEventListener('error',fail);
+    frame.src='./island-runner/index.html?v=9.4.0';frame.addEventListener('error',fail);
     $('island-run-stage').append(frame);loadTimer=setTimeout(fail,15000);changed();return true;
   }
   function open(){
@@ -146,7 +146,7 @@
     optionsFor(child,key){return own(child,key)?{...options}:null;},
     optionsFrom(child,key,value){return own(child,key)?setOptions(value):null;},
     returnFrom(child,key){return child===frame?.contentWindow&&key===token?hide():{ok:false};},
-    progressFrom(child,key,progress){if(child!==frame?.contentWindow||key!==token||!context||!permitted())return false;return LeagueIslandProgress.merge(progress,context.className);},
+    progressFrom(child,key,progress){if(child!==frame?.contentWindow||key!==token||!context||!permitted())return false;root.LeaguePassportSeals?.fromRun();return LeagueIslandProgress.merge(progress,context.className);},
     studioFrom(child,key,options){if(child!==frame?.contentWindow||key!==token||!context||!permitted())return false;return root.LeagueStudio?.open({className:context.className,island:options?.island})||false;},
     applyTeaching(value){try{frame?.contentWindow?.IslandRunner?.applyTeaching(value);}catch{}},
     applyProgress(progress){try{frame?.contentWindow?.IslandRunner?.applyProgress(progress);}catch{}},

@@ -493,6 +493,7 @@
                     const opt = document.createElement('option'); opt.value = team.id; opt.textContent = team.name; 
                     document.getElementById('team-select').appendChild(opt);
                 });
+                window.LeaguePassportSeals?.render();
             }
 
             const cardLevelCoverage = [0, 10, 18, 27, 37, 48, 59, 70, 80, 90, 100];
@@ -1946,6 +1947,7 @@
             };
             function updateStudentSessionUI() {
                 window.LeagueIslandProgress?.select(remoteRole==='controller'?remoteStudentClass:selectedClass,remoteRole==='controller'||!window.remoteConnection?.open);
+                window.LeaguePassportSeals?.render();
                 document.getElementById('board-selected-class').textContent = selectedClass || 'Choose';
                 document.getElementById('mobile-selected-class').textContent = remoteStudentClass || 'Choose';
                 document.getElementById('mobile-class-btn').setAttribute('aria-label', remoteStudentClass ? `Class ${remoteStudentClass}` : 'Choose class');
@@ -5633,7 +5635,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '9.3.0';
+        const REMOTE_BUILD = '9.4.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6963,6 +6965,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         }
         globalThis.LeagueRunRemote?.configure({send:(action,extra)=>remoteCommands.enqueue(action,null,extra)});
         LeagueStudio.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass});
+        window.LeaguePassportSeals?.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass});
         const studioButton=document.createElement('button');studioButton.type='button';studioButton.className='island-cloud-button';studioButton.textContent='Manage';studioButton.onclick=()=>LeagueStudio.open();document.getElementById('board-selected-class')?.closest('button')?.after(studioButton);
         LeagueRecap.configure(()=>({sessionId,className:selectedClass,house:battleState?.fighters?.length?determineArenaWinner().id:null,progress:LeagueIslandProgress.snapshot(selectedClass)}));
         document.addEventListener('teaching-content-change',event=>{
