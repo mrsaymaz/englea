@@ -3362,7 +3362,7 @@
             }
 
             function setBattleStatus(){}
-            function battleAnnounce(){}
+            function battleAnnounce(text,color){window.LeagueArenaFX?.announce(text,color);}
 
             function setArenaTeamFlare(teamId, duration=700) {
                 const overlay = document.getElementById('battle-overlay');
@@ -3395,11 +3395,11 @@
             }
 
             function addBattleEffect(){return null;}
-            function createImpact(target,color,damage,options={}){ArenaMotion.impact(target,color,options);}
+            function createImpact(target,color,damage,options={}){ArenaMotion.impact(target,color,options);window.LeagueArenaFX?.impact(target.id,damage,{...options,color});}
             function createProjectile(attacker,target,color,type=''){animateShell(attacker,'action-arc',920);}
             function createFog(target,color){ArenaMotion.effect(target.id,'poison',color);}
             function createElementalBurst(target,element,large=false){if(target){const profile=Object.values(battleProfiles).find(p=>p.element===element);ArenaMotion.effect(target.id,'impact',profile?.elementColor||'#f8fafc',large);}}
-            function shakeArena(){}
+            function shakeArena(){window.LeagueArenaFX?.shake();}
             function screenFlash(){}
 
             function activeTargetPressure(targetId, at=SceneRuntime.now()) {
@@ -3449,6 +3449,7 @@
 
             function performEvade(target,attackerId) {
                 ArenaMotion.resolve(target.id,attackerId,'evaded');
+                window.LeagueArenaFX?.impact(target.id,0,{label:'EVADE',color:target.color,blocked:true});
                 target.evadeCooldownUntil=SceneRuntime.now()+2600;
                 setBattleStatus(target,'Evaded',650);
             }
@@ -3821,8 +3822,14 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     document.getElementById('winner-svg-container').innerHTML=getAvatarSVG(arenaWinner.id,arenaWinner.traits);
                     const leagueHost=document.getElementById('league-winner-avatars');
                     leagueHost.classList.toggle('is-tie',leagueWinners.length>1);
+                    leagueHost.setAttribute?.('data-tie-count',String(leagueWinners.length));
                     leagueHost.innerHTML=leagueWinners.map(fighter=>`<span class="league-winner-avatar" style="--league-team-color:${fighter.color}">${getAvatarSVG(fighter.id,fighter.traits)}</span>`).join('');
-                    document.getElementById('league-winner-name').textContent=leagueText;
+                    // v9.5.0: a shared title lines its champions up in a row, each name in its team colour.
+                    const leagueNameEl=document.getElementById('league-winner-name');
+                    leagueNameEl.textContent=leagueText;leagueNameEl.classList?.toggle('is-tie',leagueWinners.length>1);
+                    if(leagueWinners.length>1&&typeof leagueNameEl.replaceChildren==='function'&&typeof document.createTextNode==='function'){leagueNameEl.replaceChildren(...leagueWinners.flatMap((fighter,index)=>{const span=document.createElement('span');span.textContent=fighter.name;span.style.color=fighter.color;return index?[document.createTextNode(' · '),span]:[span];}));}
+                    const leagueRole=document.querySelector?.('#league-champion-panel .champion-role');
+                    if(leagueRole)leagueRole.textContent=leagueWinners.length>1?'Shared League Title':'League Champion';
                     renderChampionContributors(arenaWinner,leagueWinners);
                     document.getElementById('winner-card').scrollTop=0;
                     document.getElementById('battle-result-details').innerHTML='';

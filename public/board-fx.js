@@ -64,8 +64,8 @@
  // Web Animations API, which those rules do not touch. Transform and opacity only, except the
  // panel ring, which is a single half-second box-shadow.
  const presets={
-  delta:[[{opacity:0,transform:'translateY(-10%) scale(.6)'},{opacity:1,transform:'translateY(-60%) scale(1.18)',offset:.22},{opacity:1,transform:'translateY(-65%) scale(1)',offset:.7},{opacity:0,transform:'translateY(-110%) scale(.96)'}],{duration:900,easing:'cubic-bezier(.2,.9,.25,1.2)'}],
-  chip:[[{opacity:0,transform:'scale(.72)'},{opacity:1,transform:'scale(1)',offset:.24},{opacity:1,transform:'scale(1)',offset:.68},{opacity:0,transform:'scale(.92)'}],{duration:920,easing:'ease-out'}],
+  delta:[[{opacity:0,transform:'translateY(-10%) scale(.6)',easing:'cubic-bezier(.2,.9,.3,1.3)'},{opacity:1,transform:'translateY(-60%) scale(1.18)',offset:.22},{opacity:1,transform:'translateY(-65%) scale(1)',offset:.7},{opacity:0,transform:'translateY(-110%) scale(.96)'}],{duration:1000,easing:'linear'}],
+  chip:[[{opacity:0,transform:'scale(.72)',easing:'ease-out'},{opacity:1,transform:'scale(1)',offset:.24},{opacity:1,transform:'scale(1)',offset:.68},{opacity:0,transform:'scale(.92)'}],{duration:920,easing:'linear'}],
   hit:[[{boxShadow:'0 0 0 0 rgba(255,255,255,0)'},{boxShadow:'0 0 0 3px rgba(255,255,255,.85),0 0 24px rgba(255,255,255,.45)',offset:.35},{boxShadow:'0 0 0 0 rgba(255,255,255,0)'}],{duration:520,easing:'ease-out'}],
   crown:[[{transform:'translateY(-6px) scale(1.25) rotate(-8deg)'},{transform:'translateY(0) scale(1) rotate(0)'}],{duration:620,easing:'cubic-bezier(.2,1.4,.3,1)'}]
  };
