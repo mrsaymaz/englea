@@ -121,6 +121,7 @@
             element('strong','student-contribution-name',person.name),
             element('span','student-contribution-points',`+${number(points)}${detail ? ` · ${detail}` : ''}`));
         host.append(node);
+        root.LeagueBoardFX?.flyPoints(node.querySelector('.student-contribution-points'),team.id,team.color);
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('performance-light');
         const motion = reduced ? null : node.animate([
             {opacity:0,transform:'translateY(9px) scale(.98)'},

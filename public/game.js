@@ -653,7 +653,8 @@
                 };
                 scoreAnimationControllers.set(teamId, controller);
 
-                if (isLeanMode()) {
+                // v9.5.0: Animated mode counts the score up as Performance does; Light stays instant.
+                if (isLeanMode() && performanceMode !== 'animated') {
                     renderTeamScoreDisplay(teamId, targetValue);
                     controller.currentValue = targetValue;
                     numberEl.classList.remove('score-counting', 'score-light-flash');
@@ -691,6 +692,11 @@
                     modifiersEl.innerHTML = modifiers.map((modifier, index) =>
                         `<span class="score-modifier-chip" style="animation-delay:${index * 85}ms">${modifier.icon} ${modifier.label}</span>`
                     ).join('');
+                }
+                // Animated mode disables board CSS animations; play the same cues through Web Animations.
+                if (performanceMode === 'animated' && window.LeagueBoardFX) {
+                    LeagueBoardFX.flash(deltaEl, 'delta');
+                    modifiersEl?.querySelectorAll('.score-modifier-chip').forEach((chip, index) => LeagueBoardFX.flash(chip, 'chip', index * 85));
                 }
 
                 const startedAt = SceneRuntime.now();

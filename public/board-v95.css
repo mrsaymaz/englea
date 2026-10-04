@@ -1,0 +1,108 @@
+/* v9.5.0 · Board presentation. Loaded after game.css, animated-mode.css and league-look.css.
+   The board fits a 16:9 smartboard without scrolling, the score leads each card, the leader
+   wears a crown, and award feedback stays clear of the creature. Title and fonts are unchanged. */
+
+/* Crown artwork shared by the leader's card and the lead-change banner. */
+:root{--league-crown:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff7ae'/%3E%3Cstop offset='.55' stop-color='%23facc15'/%3E%3Cstop offset='1' stop-color='%23a16207'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M6 14 19 28 32 7 45 28 58 14 53 40H11Z' fill='url(%23g)' stroke='%23fff7cc' stroke-width='2.5' stroke-linejoin='round'/%3E%3Crect x='11' y='36' width='42' height='8' rx='3' fill='url(%23g)' stroke='%23fff7cc' stroke-width='2'/%3E%3Ccircle cx='32' cy='30' r='4' fill='%23f43f5e' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E");}
+
+/* ---------- Fit the screen (four-column boards) ---------- */
+@media (min-width:1280px){
+  body.session-started{padding:clamp(8px,1.3vh,18px) clamp(12px,1.3vw,24px);}
+  .app-shell{max-width:min(1720px,100%);}
+  .app-shell>header{margin-bottom:clamp(6px,1.1vh,14px)!important;padding:clamp(6px,1vh,14px) 1rem!important;}
+  .league-control-panel{margin-bottom:clamp(6px,1.1vh,14px);padding:clamp(6px,.9vh,11px) 1rem;gap:.85rem;}
+  .league-control-divider{min-height:0;}
+  .points-control-header{margin-bottom:.3rem;}
+  .point-tier-btn,.wheel-mode-btn{min-height:clamp(30px,4vh,38px);padding-top:.22rem;padding-bottom:.22rem;}
+  /* Point tiers and subject set share one row, so the controls take half the height. */
+  .points-control-panel{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-areas:"head head" "tiers wheel";column-gap:.5rem;align-content:center;}
+  .points-control-header{grid-area:head;}
+  .point-tier-group{grid-area:tiers;}
+  .wheel-mode-row{grid-area:wheel;margin-top:0!important;}
+  .point-tier-btn{font-size:.8rem;}
+  .wheel-mode-btn{white-space:nowrap;font-size:clamp(.5rem,.6vw,.62rem);letter-spacing:.03em;}
+  .class-mission-auto-label{display:none;}
+  /* Reset Season stays one tap away as a quiet corner link instead of a row under the board. */
+  .app-shell>footer{position:fixed;right:14px;bottom:8px;z-index:90;margin:0!important;padding:0!important;}
+  .app-shell>footer #reset-all-btn{font-size:.62rem;opacity:.62;}
+  .app-shell>footer #reset-all-btn:hover,.app-shell>footer #reset-all-btn:focus-visible{opacity:1;}
+  #teams-grid{gap:clamp(12px,1.25vw,26px)!important;}
+  #teams-grid>.team-container{padding:clamp(10px,1.5vh,20px) clamp(12px,1.05vw,20px)!important;}
+  .team-card-title{padding-top:clamp(2.05rem,4.6vh,2.6rem)!important;margin-bottom:.15rem!important;}
+  /* The creature grows with the screen: about 210 px on 768-px boards, up to 400 px on 1080p. */
+  .mascot-area{height:clamp(172px,calc(85vh - 448px),400px)!important;}
+  .team-score-panel{margin-top:.35rem!important;margin-bottom:.45rem!important;}
+  #activity-ticker{margin-top:clamp(8px,1.2vh,16px)!important;}
+}
+
+/* The Utilities tab stays visible on the right edge; keep the last card clear of it. */
+@media (min-width:1280px) and (max-width:1816px){.app-shell{padding-right:42px;}}
+/* Status pills sit in the bottom-left corner, below the cards. */
+@media (min-width:1280px){
+  #remote-connection-indicator{bottom:.6rem;}
+  #performance-mode-indicator{bottom:3rem;}
+}
+
+/* ---------- Class Mission: a slim meter with one segment per student ---------- */
+.class-mission-layout{gap:.32rem .8rem;}
+.class-mission-meter{min-height:30px!important;border-radius:999px;}
+.class-mission-meter::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:repeating-linear-gradient(90deg,transparent 0 calc(100%/15 - 2px),rgba(2,6,23,.82) calc(100%/15 - 2px) calc(100%/15));}
+.class-mission-fill{border-radius:999px;}
+.class-mission-controls{align-content:center;gap:.3rem;min-height:0!important;}
+.class-mission-btn.replay{min-height:30px;}
+
+/* ---------- Score leads the card ---------- */
+#teams-grid .team-score-number{font-size:clamp(2.15rem,3.05vw,3.5rem)!important;line-height:1!important;}
+#teams-grid .team-score-display{min-height:clamp(2.4rem,3.3vw,3.7rem);}
+#teams-grid .team-score-label{letter-spacing:.24em;}
+.score-delta{top:50%!important;right:.6rem!important;font-size:clamp(.82rem,1vw,1.15rem)!important;transform:translateY(-50%) scale(.9);}
+.score-delta.visible{animation:boardDeltaPop .9s cubic-bezier(.2,.9,.25,1.2) both!important;}
+@keyframes boardDeltaPop{0%{opacity:0;transform:translateY(-10%) scale(.6)}22%{opacity:1;transform:translateY(-60%) scale(1.18)}70%{opacity:1;transform:translateY(-65%) scale(1)}100%{opacity:0;transform:translateY(-110%) scale(.96)}}
+
+/* ---------- Leader crown (one clear leader only, from body.leader-*) ---------- */
+.team-card-title{display:flex!important;align-items:center;justify-content:center;gap:.4rem;}
+.team-card-title::before{content:"";flex:0 0 auto;width:0;height:1.05em;opacity:0;transform:translateY(4px) scale(.6);
+  background:center/contain no-repeat var(--league-crown);
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.45));transition:width .35s ease,opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.3,1);}
+body.leader-gryffindor #team-gryffindor .team-card-title::before,
+body.leader-slytherin #team-slytherin .team-card-title::before,
+body.leader-hufflepuff #team-hufflepuff .team-card-title::before,
+body.leader-ravenclaw #team-ravenclaw .team-card-title::before{width:1.35em;opacity:1;transform:none;}
+body.leader-gryffindor #team-gryffindor,body.leader-slytherin #team-slytherin,
+body.leader-hufflepuff #team-hufflepuff,body.leader-ravenclaw #team-ravenclaw{
+  box-shadow:0 0 0 3px rgba(250,204,21,.85),0 0 26px rgba(250,204,21,.38),0 14px 30px rgba(2,6,23,.35)!important;}
+
+/* Lead change: a short sweep across the top of the cards. Never blocks a tap. */
+#lead-change-banner{position:fixed;left:0;right:0;z-index:1200;pointer-events:none;display:flex;justify-content:center;opacity:0;}
+#lead-change-banner .lead-strip{display:flex;align-items:center;gap:.8rem;padding:.55rem 2.2rem;border-radius:999px;
+  background:linear-gradient(90deg,transparent,rgba(2,6,23,.92) 14%,rgba(2,6,23,.92) 86%,transparent);
+  box-shadow:inset 0 0 0 1px rgba(250,204,21,.45);color:#fff;text-transform:uppercase;font-weight:900;letter-spacing:.16em;font-size:clamp(.9rem,1.35vw,1.35rem);white-space:nowrap;}
+#lead-change-banner .lead-team{color:var(--lead-color,#facc15);text-shadow:0 0 18px var(--lead-color,#facc15);font-size:1.25em;}
+#lead-change-banner .lead-crown{width:1.6em;height:1.2em;background:center/contain no-repeat var(--league-crown);filter:drop-shadow(0 0 8px rgba(250,204,21,.6));}
+#lead-change-banner.playing{animation:leadBannerSweep 2.1s cubic-bezier(.2,.8,.2,1) both;}
+@keyframes leadBannerSweep{0%{opacity:0;transform:translateX(-14%) scaleX(.82)}16%{opacity:1;transform:translateX(0) scaleX(1)}80%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(10%)}}
+body.performance-light:not(.performance-animated) #lead-change-banner.playing{animation:leadBannerFade 1.6s linear both;}
+@keyframes leadBannerFade{0%,100%{opacity:0}12%,82%{opacity:1}}
+
+/* ---------- Award ribbon: one line along the foot of the creature, not across it ---------- */
+.mascot-area>.student-contribution-badge{left:5%!important;right:14%!important;bottom:4px!important;flex-direction:row!important;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:.15rem .55rem!important;padding:.38rem .8rem!important;border-radius:999px!important;backdrop-filter:none!important;}
+.mascot-area>.student-contribution-badge .student-contribution-kicker{display:none;}
+.mascot-area>.student-contribution-badge .student-contribution-name{font-size:clamp(15px,1.45vw,24px)!important;line-height:1.1!important;}
+.mascot-area>.student-contribution-badge .student-contribution-points{padding:.12rem .5rem;border-radius:999px;background:var(--student-color,#facc15);color:#fff;font-size:clamp(11px,.95vw,15px)!important;text-shadow:0 1px 2px rgba(0,0,0,.35);}
+.score-fly{position:fixed;z-index:1300;pointer-events:none;padding:.12rem .55rem;border-radius:999px;background:var(--fly-color,#facc15);color:#fff;font-weight:900;font-size:clamp(13px,1.1vw,18px);box-shadow:0 0 18px var(--fly-color,#facc15);text-shadow:0 1px 2px rgba(0,0,0,.4);}
+.team-score-panel.score-hit{animation:scorePanelHit .5s ease-out;}
+@keyframes scorePanelHit{0%{box-shadow:0 0 0 0 rgba(255,255,255,.0)}35%{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 24px rgba(var(--element-rgb),.7)}100%{box-shadow:0 6px 14px rgba(15,23,42,.09)}}
+
+/* ---------- Status pills step aside once the class is under way ---------- */
+#remote-connection-indicator,#performance-mode-indicator{transition:opacity .4s ease,max-width .5s ease,padding .4s ease,transform .4s ease;}
+#remote-connection-indicator.board-quiet{max-width:30px!important;padding-left:.6rem;padding-right:.6rem;overflow:hidden;white-space:nowrap;}
+#remote-connection-indicator.board-quiet>:not(.remote-state-dot){opacity:0;}
+body.session-started #performance-mode-indicator.board-quiet{opacity:0;transform:translateY(8px);}
+
+@media (prefers-reduced-motion:reduce){
+  #lead-change-banner.playing{animation:leadBannerFade 1.6s linear both;}
+  .score-delta.visible{animation-duration:.01s!important;}
+  .team-card-title::before{transition:none;}
+}
