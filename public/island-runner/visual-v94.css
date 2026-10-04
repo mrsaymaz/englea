@@ -6,7 +6,6 @@ body{background:var(--league-night);}
 .brand-mark{color:var(--league-gold);}
 .primary{background:linear-gradient(180deg,#fff4d6,#f0cf86);color:var(--league-gold-ink);border:1px solid #ffe7ad;box-shadow:0 6px 22px rgba(243,201,107,.22),inset 0 1px 0 #fffbe9;}
 .primary:hover{background:linear-gradient(180deg,#fffaf0,#f6d998);}
-.eyebrow{letter-spacing:var(--league-eyebrow-spacing);}
 
 /* ---------- One header while running ---------- */
 #app.running .topbar{display:none;}
@@ -42,8 +41,7 @@ body{background:var(--league-night);}
 /* ---------- Course frame ---------- */
 .game-surface{border:1px solid var(--league-line-strong);border-radius:22px;box-shadow:0 18px 44px rgba(2,8,20,.45),inset 0 0 0 1px rgba(255,255,255,.03);}
 .prompt-panel{background:linear-gradient(115deg,#112640,#152338);border-bottom:1px solid var(--league-line);}
-.prompt-panel .eyebrow{color:var(--league-gold);font-weight:800;}
-.prompt-panel h2{font-weight:750;letter-spacing:-.01em;text-shadow:0 2px 10px rgba(0,0,0,.25);}
+.prompt-panel .eyebrow{color:var(--league-gold);}
 .prompt-panel p{color:var(--league-muted);}
 .prompt-panel.question{background:linear-gradient(115deg,#14304a,#17344a);}
 .prompt-panel.correct{background:linear-gradient(100deg,#123a33,#112c38);box-shadow:inset 4px 0 0 #6fe0b5;}
@@ -89,10 +87,10 @@ body{background:var(--league-night);}
 .island.current:not(.locked) .island-art{animation:islandBeckon 2.8s ease-in-out infinite;}
 .island.current:not(.locked) .island-num{background:var(--league-gold);color:var(--league-gold-ink);border-color:#ffe7ad;box-shadow:0 0 0 4px rgba(243,201,107,.18),0 0 22px rgba(243,201,107,.55);}
 .island.completed .island-name{color:#dfe9f2;}
-.island.selected .island-name{color:#fff;font-weight:800;}
+.island.selected .island-name{color:#fff;}
 @keyframes islandBeckon{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 0 rgba(243,201,107,0)) drop-shadow(0 15px 11px #030911bb)}50%{transform:translateY(-6px);filter:drop-shadow(0 0 16px rgba(243,201,107,.45)) drop-shadow(0 20px 12px #030911aa)}}
 .launch-panel{background:linear-gradient(100deg,#172a40,#101d31);border-color:var(--league-line);border-radius:var(--league-radius);}
-.island-number{color:var(--league-gold);font-weight:600;}
+.island-number{color:var(--league-gold);}
 .selected-boss{color:#cdb98a;}
 
 @media(max-height:750px){.lane-guide span{width:26px;height:26px;line-height:24px;font-size:12px}.answer-card{padding-left:40px}.answer-card b{width:23px;height:23px;font-size:12px}.coin-hud b{font-size:20px}.hud-tools button{min-height:36px}.hud-tools .hud-icon{width:36px}}

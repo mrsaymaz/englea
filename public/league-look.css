@@ -16,8 +16,6 @@
   --league-radius:18px;
   --league-radius-sm:12px;
   --league-shadow:0 18px 44px rgba(2,8,20,.42);
-  --league-eyebrow-spacing:.22em;
-  --league-title:linear-gradient(180deg,#fff6dc 0%,#f6dc9c 55%,#e6b45a 100%);
   --league-lane-a:#f3c96b;
   --league-lane-b:#7fd8c9;
   --league-lane-c:#b9a6f6;
@@ -30,9 +28,6 @@
 /* ---------- Board ---------- */
 .app-shell > header{background:var(--league-panel)!important;border-color:var(--league-line)!important;border-radius:var(--league-radius)!important;box-shadow:var(--league-shadow);}
 .league-control-panel{background:var(--league-panel);border-color:var(--league-line);border-radius:var(--league-radius);}
-.league-title{background-image:var(--league-title)!important;text-shadow:none;filter:drop-shadow(0 3px 14px rgba(243,201,107,.18));}
-.league-title::before,.league-title::after{content:"✦";display:inline-block;margin:0 .45em;font-size:.42em;vertical-align:.55em;color:var(--league-gold);-webkit-text-fill-color:var(--league-gold);opacity:.85;}
-.class-mission-panel .eyebrow,.points-control-panel > :first-child{letter-spacing:var(--league-eyebrow-spacing);}
 
 /* Passport seals: earned in Island Run, shown on the team's card. */
 .team-score-panel{position:relative;}

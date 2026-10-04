@@ -23,7 +23,7 @@
 
 **Passport seals on the board.** When a team completes an island (not a practice run), its passport stamp now also appears in the score panel of that team's board card, beside the score so it never covers the Animated-mode artwork: the latest guardian's emblem and the number of seals, out of 10. When you return to Champions, a short "Passport seal added" announcement names the team, the island and the guardian, and the card shows **NEW** for the rest of the lesson. The remote shows **✦ n** next to the team name. Seals follow the selected class and are loaded with **Load islands** as before. Loading progress from Google Sheets never triggers the announcement.
 
-**One shared look.** The board, the remote and Island Run use the same night-blue panels, borders, gold accents and title style (`public/league-look.css`).
+**One shared look.** The board, the remote and Island Run use the same night-blue panels, borders and gold accents (`public/league-look.css`). The English League title and the fonts are unchanged from v9.3.0.
 
 ## Quick classroom check
 
