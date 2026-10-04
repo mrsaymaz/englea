@@ -75,8 +75,32 @@
   try{return el.animate(frames,{...options,delay});}catch{return null;}
  }
 
+ // ---- Teacher remote: the leader's card wears the crown and new points pop on the score ----
+ const parseScore=text=>{const t=String(text||'').trim();if(!/^-?[\d.,\s]+$/.test(t))return null;const n=parseInt(t.replace(/[^\d-]/g,''),10);return Number.isFinite(n)?n:null;};
+ const remoteScores=new Map();
+ function remoteLeader(){
+  const values=Object.keys(teams).map(id=>[id,parseScore(document.getElementById('mobile-score-'+id)?.textContent)]);
+  const max=Math.max(...values.map(([,v])=>v??-Infinity)),leaders=values.filter(([,v])=>v===max&&max>0);
+  for(const [id] of values)document.getElementById('mobile-score-'+id)?.closest('.mobile-team-card')?.classList.toggle('mobile-leader',leaders.length===1&&leaders[0][0]===id);
+ }
+ function remoteScoreChanged(id){
+  const el=document.getElementById('mobile-score-'+id);if(!el)return;
+  const now=parseScore(el.textContent),before=remoteScores.get(id);remoteScores.set(id,now);remoteLeader();
+  if(before==null||now==null||now===before||reduced()||document.getElementById('mobile-controller')?.classList.contains('hidden'))return;
+  const card=el.closest('.mobile-team-card'),delta=now-before;
+  try{el.animate([{transform:'scale(1)'},{transform:'scale(1.22)',offset:.3},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.2,1.3,.3,1)'});}catch{}
+  if(!card)return;const chip=document.createElement('span');chip.className='mobile-score-pop'+(delta<0?' negative':'');chip.textContent=(delta>0?'+':'−')+Math.abs(delta).toLocaleString('en-US');
+  card.append(chip);
+  try{const m=chip.animate([{opacity:0,transform:'translateY(6px) scale(.8)'},{opacity:1,transform:'translateY(-4px) scale(1.05)',offset:.25},{opacity:1,transform:'translateY(-10px) scale(1)',offset:.7},{opacity:0,transform:'translateY(-18px)'}],{duration:1100,easing:'linear'});m.addEventListener('finish',()=>chip.remove(),{once:true});m.addEventListener('cancel',()=>chip.remove(),{once:true});}catch{chip.remove();}
+ }
+ function watchRemote(){
+  for(const id of Object.keys(teams)){const el=document.getElementById('mobile-score-'+id);if(!el)continue;remoteScores.set(id,parseScore(el.textContent));
+   new MutationObserver(()=>remoteScoreChanged(id)).observe(el,{childList:true,characterData:true,subtree:true});}
+  remoteLeader();
+ }
+
  function start(){
-  watchPills();
+  watchPills();watchRemote();
   new MutationObserver(onLeader).observe(document.body,{attributes:true,attributeFilter:['class']});
   // Recovery and class selection settle first; the leader at that moment is not announced.
   setTimeout(()=>{announced=leaderOf();ready=true;},1500);

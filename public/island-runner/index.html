@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="visual-v93.css?v=9.4.0">
 <link rel="stylesheet" href="../league-look.css?v=9.4.0">
 <link rel="stylesheet" href="visual-v94.css?v=9.4.0">
+<link rel="stylesheet" href="visual-v95.css?v=9.5.0">
 </head>
 <body>
 <section id="host-required"><h1>Island Run</h1><p>Open this adventure from the Battle Arena champion on your tally results screen.</p><a href="../index.html">Open English League →</a></section>
@@ -69,7 +70,7 @@
     <section class="run-hud" aria-label="Run status">
       <div class="run-identity"><img id="runHouseIcon" alt=""><div><span id="runMode" class="eyebrow"></span><strong id="runTitle"></strong></div></div>
       <div class="journey-meter" aria-label="Distance to finish"><div><i id="runProgress"></i></div><span>START <b>FINISH</b></span></div>
-      <div class="hud-totals"><span id="coinHud" class="coin-hud"><i>◆</i><span class="coin-copy"><small class="hud-label">COINS</small><span><b id="coinCount">0</b> <small id="coinTarget"></small></span></span></span><span class="score-hud"><small>SCORE</small><b id="scoreCount">0</b></span><span id="health" aria-label="Guards remaining"></span></div>
+      <div class="hud-totals"><span id="coinHud" class="coin-hud"><i>◆</i><span class="coin-copy"><small class="hud-label">COINS</small><span><b id="coinCount">0</b> <small id="coinTarget"></small></span></span></span><span class="score-hud"><small>SCORE</small><b id="scoreCount">0</b></span><span id="streakHud" class="streak-hud" data-streak="0" aria-label="Answer streak 0"><small class="hud-label">STREAK</small><span class="streak-pips" aria-hidden="true"><i></i><i></i><i></i></span></span><span id="health" aria-label="Guards remaining"></span></div>
       <div class="hud-tools"><button id="runSoundButton" class="quiet hud-icon" type="button" aria-pressed="false" aria-label="Turn sound on" title="Sound">♪</button><button id="runFullscreenButton" class="quiet hud-icon" type="button" aria-label="Full screen" title="Full screen">⛶</button><button id="pauseButton" class="quiet">Ⅱ Pause</button></div>
     </section>
     <div class="course-layout">
@@ -89,8 +90,9 @@
             <div class="answer-card" data-lane="1"><b>B</b><span></span></div>
             <div class="answer-card" data-lane="2"><b>C</b><span></span></div>
           </div>
-          <div id="bossHUD" class="boss-hud" hidden><span id="bossTitle" class="eyebrow"></span><strong id="bossName"></strong><div class="boss-meter" role="progressbar" aria-label="Boss guard" id="bossMeter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="bossHP"></i></div><span id="bossStatus"></span></div>
+          <div id="bossHUD" class="boss-hud" hidden><span id="bossTitle" class="eyebrow"></span><strong id="bossName"></strong><div class="boss-meter" role="progressbar" aria-label="Boss guard" id="bossMeter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="bossHPTrail" class="boss-hp-trail"></i><i id="bossHP"></i></div><span id="bossStatus"></span></div>
           <div id="runToast" class="run-toast" aria-live="polite"></div>
+          <div id="runBanner" class="run-banner" aria-live="polite" hidden><small id="runBannerEyebrow"></small><strong id="runBannerTitle"></strong><span id="runBannerSub"></span></div>
           <section id="restorationScene" class="restoration-scene" aria-label="Island restoration" hidden>
             <p id="restorationLabel"></p><div id="restorationArt" class="restoration-art"></div><img id="restorationAvatar" class="restoration-avatar" alt="Your team spirit restoring the island"><div id="restorationSeal" class="restoration-seal"></div><button id="skipRestoration" class="quiet">Continue →</button>
           </section>
@@ -115,7 +117,7 @@
 </dialog>
 
 <dialog id="resultDialog" class="result-dialog">
-  <div class="result-hero"><img id="resultAvatar" alt=""><div><span id="resultEyebrow" class="eyebrow"></span><h2 id="resultTitle"></h2><div id="resultStars" class="result-stars" aria-label="Stars earned"></div><p id="resultMessage"></p></div></div>
+  <div class="result-hero"><img id="resultAvatar" alt=""><div><span id="resultEyebrow" class="eyebrow"></span><h2 id="resultTitle"></h2><div id="resultStars" class="result-stars" aria-label="Stars earned"></div><div id="resultBadges" class="result-badges"></div><p id="resultMessage"></p></div></div>
   <div class="result-stats"><div><b id="resultScore"></b><span>total points</span></div><div><b id="resultCoins"></b><span>coins collected</span></div><div><b id="resultAnswers"></b><span>correct choices</span></div></div>
   <details class="answer-review"><summary>Review the learning challenges</summary><div id="reviewList"></div></details>
   <div class="result-actions"><button id="resultChampions" class="quiet">Back to Champions</button><button id="resultMap" class="quiet">Island map</button><button id="resultReplay" class="quiet">Play again</button><button id="resultNext" class="primary">Next island →</button></div>
@@ -161,6 +163,7 @@
 <dialog id="passportDialog" class="passport-dialog" aria-labelledby="passportTeam">
   <button class="close" data-close="passportDialog" aria-label="Close Island Passport">×</button><header class="passport-heading"><img id="passportAvatar" alt="Team spirit"><div><span class="eyebrow">ISLAND PASSPORT</span><h2 id="passportTeam"></h2><p>Ten journeys. A permanent mark for every victory.</p></div></header><div id="passportGrid" class="passport-grid"></div><p class="passport-note">Best stars and coin haul never decrease. Return to Champions → Save session to keep your passport online. Older victories retain their seals; replay to add a coin record.</p>
 </dialog>
-<script src="content.js?v=9.4.0"></script><script src="questions-grade5.js?v=9.4.0"></script><script src="questions-grade6.js?v=9.4.0"></script><script src="questions-grade7.js?v=9.4.0"></script><script src="questions-grade8.js?v=9.4.0"></script><script src="variety-grade5.js?v=9.4.0"></script><script src="variety-grade6.js?v=9.4.0"></script><script src="variety-grade7.js?v=9.4.0"></script><script src="variety-grade8.js?v=9.4.0"></script><script src="expand-content.js?v=9.4.0"></script><script src="bosses.js?v=9.4.0"></script><script src="islands.js?v=9.4.0"></script><script src="engine.js?v=9.4.0"></script><script src="pictures.js?v=9.4.0"></script><script src="formats.js?v=9.4.0"></script><script src="../adventure.js?v=9.4.0"></script><script src="../teaching-model.js?v=9.4.0"></script><script src="visual-kit.js?v=9.4.0"></script><script src="spirit-motion.js?v=9.4.0"></script><script src="scenery.js?v=9.4.0"></script><script src="app.js?v=9.4.0"></script>
+<script src="content.js?v=9.4.0"></script><script src="questions-grade5.js?v=9.4.0"></script><script src="questions-grade6.js?v=9.4.0"></script><script src="questions-grade7.js?v=9.4.0"></script><script src="questions-grade8.js?v=9.4.0"></script><script src="variety-grade5.js?v=9.4.0"></script><script src="variety-grade6.js?v=9.4.0"></script><script src="variety-grade7.js?v=9.4.0"></script><script src="variety-grade8.js?v=9.4.0"></script><script src="expand-content.js?v=9.4.0"></script><script src="bosses.js?v=9.4.0"></script><script src="islands.js?v=9.4.0"></script><script src="engine.js?v=9.4.0"></script><script src="pictures.js?v=9.4.0"></script><script src="formats.js?v=9.4.0"></script><script src="../adventure.js?v=9.4.0"></script><script src="../teaching-model.js?v=9.4.0"></script><script src="visual-kit.js?v=9.4.0"></script><script src="spirit-motion.js?v=9.4.0"></script><script src="scenery.js?v=9.4.0"></script><script src="runner-fx.js?v=9.5.0"></script>
+<script src="app.js?v=9.4.0"></script>
 </body>
 </html>

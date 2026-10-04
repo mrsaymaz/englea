@@ -95,5 +95,5 @@ body{background:var(--league-night);}
 
 @media(max-height:750px){.lane-guide span{width:26px;height:26px;line-height:24px;font-size:12px}.answer-card{padding-left:40px}.answer-card b{width:23px;height:23px;font-size:12px}.coin-hud b{font-size:20px}.hud-tools button{min-height:36px}.hud-tools .hud-icon{width:36px}}
 @media (prefers-reduced-motion:reduce){.island.current:not(.locked) .island-art{animation:none}.lane-guide span,.answer-card.in-lane{transition:none}}
-.reduced-motion .island.current .island-art{animation:none;}
+.runner-reduced .island.current .island-art{animation:none;}
 .hud-tools{order:5;margin-left:6px;}

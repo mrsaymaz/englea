@@ -106,3 +106,14 @@ body.session-started #performance-mode-indicator.board-quiet{opacity:0;transform
   .score-delta.visible{animation-duration:.01s!important;}
   .team-card-title::before{transition:none;}
 }
+
+/* A student's first contribution this session: a gold tag and a one-time glint. */
+.mascot-area>.student-contribution-badge.first-contribution{border-color:#facc15!important;box-shadow:0 0 0 2px rgba(250,204,21,.45),0 10px 26px rgba(2,6,23,.5)!important;}
+.student-contribution-first{position:absolute;top:-.8rem;left:50%;transform:translateX(-50%);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.35);padding:.1rem .5rem;border-radius:999px;background:linear-gradient(180deg,#fff4d6,#f0cf86);color:#2a1d07;font-size:clamp(10px,.85vw,13px);font-weight:900;letter-spacing:.06em;text-transform:uppercase;}
+
+/* ---------- Teacher remote ---------- */
+#mobile-controller .mobile-team-card{position:relative;}
+#mobile-controller .mobile-team-card.mobile-leader{box-shadow:0 0 0 2px rgba(250,204,21,.85),0 0 18px rgba(250,204,21,.28),0 10px 26px rgba(2,8,20,.35)!important;}
+#mobile-controller .mobile-team-card.mobile-leader .mobile-team-name::before{content:"";display:inline-block;width:1.15em;height:.9em;margin-right:.3em;vertical-align:-.05em;background:center/contain no-repeat var(--league-crown);}
+.mobile-score-pop{position:absolute;left:44%;top:28px;z-index:3;pointer-events:none;padding:1px 8px;border-radius:999px;background:var(--mobile-team-color,#facc15);color:#fff;font-size:13px;font-weight:900;box-shadow:0 0 12px var(--mobile-team-color,#facc15);}
+.mobile-score-pop.negative{background:#334155;box-shadow:none;}

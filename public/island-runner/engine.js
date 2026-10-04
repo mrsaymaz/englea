@@ -164,8 +164,11 @@
       const g=this.gate,q=g.q,lane=Math.round(this.lanePos),ok=lane===q.answer;
       let points=0;
       if(g.echo){points=ok?50:0;if(ok){this.echoCorrect++;this.score+=points;this.addFocus(I.focus.answer);}}
-      else{points=ok?100+Math.min(this.combo,3)*20:0;this.combo=ok?this.combo+1:0;if(ok){this.correct++;this.score+=points;this.addFocus(I.focus.answer);}}
-      const row={prompt:q.prompt,kind:q.kind,picked:q.choices[lane],answer:q.choices[q.answer],correct:ok,explanation:q.explanation,points,
+      else{points=ok?100+Math.min(this.combo,3)*20:0;this.combo=ok?this.combo+1:0;this.bestStreak=Math.max(this.bestStreak||0,this.combo);if(ok){this.correct++;this.score+=points;this.addFocus(I.focus.answer);
+        // v9.5: Spirit Surge. Every third correct answer in a row fills Elemental Focus at once.
+        if(this.combo>=3&&this.combo%3===0){const before=this.metrics.focusUses;this.addFocus(I.focus.limit);this.metrics.surges=(this.metrics.surges||0)+1;this.emit('surge',{streak:this.combo,focus:this.metrics.focusUses>before});}
+        else if(this.combo>=2)this.emit('streak',{streak:this.combo});}}
+      const row={prompt:q.prompt,kind:q.kind,picked:q.choices[lane],answer:q.choices[q.answer],correct:ok,explanation:q.explanation,points,streak:g.echo?0:this.combo,
         id:q.id,concept:q.family||familyOf(q),index:g.index,format:q.format||'text',review:q.review===true,echo:g.echo,moved:g.moved,lane};
       this.review.push(row);this.emit('answer',row);this.gate=null;this.feedback=3;
     }
@@ -250,7 +253,7 @@
     stepBoss(dt){
       const b=this.boss;b.age+=dt;b.clock+=dt;b.recoil=Math.max(0,b.recoil-dt);
       if(this.jumpAge>=1.05){this.jumpAge=-1;if(this.jumpBuffer>0)this.jump();}
-      for(const shot of b.shots){shot.age+=dt;if(!shot.hit&&shot.age>=shot.duration){shot.hit=true;b.hp=Math.max(0,b.hp-shot.damage);b.recoil=.18;this.emit('bossHit');}}
+      for(const shot of b.shots){shot.age+=dt;if(!shot.hit&&shot.age>=shot.duration){shot.hit=true;b.hp=Math.max(0,b.hp-shot.damage);b.recoil=.18;this.emit('bossHit',{damage:shot.damage,word:Boolean(shot.word),final:b.hp===0});}}
       b.shots=b.shots.filter(s=>!s.hit);
       if(b.hp<=0&&b.state!=='defeated'){
         b.state='defeated';b.defeated=true;b.clock=0;this.emit('bossDefeated');
@@ -317,9 +320,12 @@
       }
       if(this.distance>=this.bossAt&&!this.gate&&this.feedback===0&&this.nextGate>=this.questions.length&&(!this.trail||this.trail.done))this.beginBoss();
     }
-    finish(completed,reason=''){if(this.status!=='running')return;this.failureReason=reason;this.status=completed?'completed':'ended';this.emit('finish',{completed,result:this.result()});}
+    finish(completed,reason=''){if(this.status!=='running')return;this.failureReason=reason;
+      // v9.5: a Perfect Run (every question right first time) adds 300 points. Score only: coins, stars and unlocks are unchanged.
+      if(completed&&this.questions.length&&this.correct===this.questions.length){this.perfect=true;this.score+=300;this.emit('perfect',{bonus:300});}
+      this.status=completed?'completed':'ended';this.emit('finish',{completed,result:this.result()});}
     result(){return {completed:this.status==='completed',score:this.score,coins:this.coins,coinPercent:Math.floor(this.coins/this.totalCoins*100),hardClear:this.mode==='hard'&&this.status==='completed',correct:this.correct,total:this.review.filter(r=>!r.echo).length,health:this.health,stars:this.status==='completed'?(this.correct>=5?3:this.correct>=3?2:1):0,review:this.review.slice(),failureReason:this.failureReason,requiredCoins:this.requiredCoins,totalCoins:this.totalCoins,requiredPercent:this.requiredPercent,bossDefeated:!!this.boss?.defeated,coinsSpent:this.boss?.spent||0,metrics:{...this.metrics},seed:this.seed,seconds:Math.round(this.time),
-      echoCorrect:this.echoCorrect,trail:this.trail?{word:this.trail.word,clue:this.trail.clue,concept:this.trail.concept,id:this.trail.id,success:this.trail.success,done:this.trail.done,mistakes:this.trail.mistakes,letters:this.trail.steps.map(s=>s.picked||'')}:null,wordStrike:this.boss?.wordStrike||0};}
+      echoCorrect:this.echoCorrect,perfect:this.perfect===true,bestStreak:this.bestStreak||0,trail:this.trail?{word:this.trail.word,clue:this.trail.clue,concept:this.trail.concept,id:this.trail.id,success:this.trail.success,done:this.trail.done,mistakes:this.trail.mistakes,letters:this.trail.steps.map(s=>s.picked||'')}:null,wordStrike:this.boss?.wordStrike||0};}
   }
   const storageKey='english-league-island-runner-v1';
   const fresh=()=>({schema:'english-league-island-runner',version:3,contentRevision:3,settings:{grade:5,className:'5-A',house:'gryffindor',mode:'soft',readPace:'calm',sound:false,reducedMotion:false},progress:{},overrides:{},seen:{}});

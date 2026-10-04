@@ -60,12 +60,13 @@
   const bossImages={};function bossImage(island){const b=B.get(island);if(!bossImages[b.id]){const img=new Image();img.src=b.asset;bossImages[b.id]=img;}return bossImages[b.id];}
   const renderer=new S.Renderer($('gameCanvas'));
   let audioContext=null,lastCoinSound=0;
-  function sound(type){
+  function sound(type,options){
     if(!state.settings.sound)return;
     try{
       const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
       if(!audioContext)audioContext=new Audio();if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
       const now=audioContext.currentTime;if(type==='coin'&&now-lastCoinSound<.11)return;if(type==='coin')lastCoinSound=now;
+      if(window.RunnerFX?.play(audioContext,type,options))return;
       const tones={coin:[720,.075],jump:[320,.11],hit:[115,.15],answer:[880,.2],finish:[660,.3]};
       const [hz,duration]=tones[type]||tones.coin,osc=audioContext.createOscillator(),gain=audioContext.createGain();
       osc.type=type==='hit'?'triangle':'sine';osc.frequency.setValueAtTime(hz,now);osc.frequency.exponentialRampToValueAtTime(hz*(type==='hit'?.5:1.35),now+duration);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.055,now+.008);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);osc.connect(gain);gain.connect(audioContext.destination);osc.start(now);osc.stop(now+duration+.02);osc.onended=()=>{osc.disconnect();gain.disconnect();};
@@ -92,7 +93,7 @@
   function bankFor(grade,island){const published=teaching[`${grade}-${island}`];return published?(published.content.bank||C.grades[grade][island-1].bank):(state.overrides[`${grade}-${island}`]||C.grades[grade][island-1].bank);}
   function preferredIsland(){let i=1;while(i<10&&levels()[i])i++;return i;}
   function avatar(){return hostImage.src;}
-  function setAccent(){const h=currentHouse();document.documentElement.style.setProperty('--accent',h.color);document.documentElement.style.setProperty('--glow',h.glow);}
+  function setAccent(){const h=currentHouse();document.documentElement.style.setProperty('--accent',h.color);document.documentElement.style.setProperty('--glow',h.glow);document.documentElement.classList.toggle('runner-reduced',state.settings.reducedMotion===true);}
   const coords=[[10,26.7],[30,23.3],[50,26.7],[70,23.3],[90,26.7],[90,66.7],[70,69.2],[50,70],[30,66.7],[10,70]];
   function renderMap(){
     enforceHost();$('gradeSelect').disabled=true;$('classSelect').disabled=true;$('housePicker').hidden=true;
@@ -129,6 +130,19 @@
   function updateSoundButton(){if($('runSoundButton')){$('runSoundButton').setAttribute('aria-pressed',String(Boolean(state.settings.sound)));$('runSoundButton').setAttribute('aria-label',`Turn sound ${state.settings.sound?'off':'on'}`);}$('soundButton').querySelector('span').textContent=state.settings.sound?'On':'Off';$('soundButton').setAttribute('aria-label',`Turn sound ${state.settings.sound?'off':'on'}`);}
   function resize(){const rect=$('track').getBoundingClientRect();renderer.resize(rect.width,rect.height,window.devicePixelRatio||1);}
   if(window.ResizeObserver)new ResizeObserver(resize).observe($('track'));else window.addEventListener('resize',resize);
+  // v9.5: short title cards over the course. They never block input or the answer gates.
+  let bannerTimer=0;
+  function banner(kind,title,sub='',eyebrow='',color=''){
+    const b=$('runBanner');if(!b)return;clearTimeout(bannerTimer);
+    b.className='run-banner '+kind;b.style.setProperty('--banner-color',color||'var(--accent)');
+    $('runBannerEyebrow').textContent=eyebrow;$('runBannerTitle').textContent=title;$('runBannerSub').textContent=sub;b.hidden=true;void b.offsetWidth;b.hidden=false;
+    bannerTimer=setTimeout(()=>{b.hidden=true;},kind==='intro'?2600:kind==='boss'?2300:1900);
+  }
+  function clearBanner(){clearTimeout(bannerTimer);if($('runBanner'))$('runBanner').hidden=true;}
+  // Answer gates keep the result on screen briefly: the chosen card bursts or cracks and the answer glows.
+  let gateResultTimer=0;
+  function clearGateResult(){clearTimeout(gateResultTimer);Array.from($('answerGates').children).forEach(card=>card.classList.remove('result-correct','result-wrong','result-answer'));}
+  function updateStreak(){const n=run?Math.min(3,run.combo||0):0,el=$('streakHud');if(!el)return;const v=String(run?run.combo||0:0);if(el.dataset.streak!==v){el.dataset.streak=v;el.setAttribute('aria-label','Answer streak '+v);el.dataset.level=String(n);el.classList.remove('pulse');void el.offsetWidth;if(+v>0)el.classList.add('pulse');}}
   function idlePrompt(){
     $('promptPanel').className='prompt-panel';$('promptType').textContent=currentUnit(activeIsland).theme;
     $('promptText').style.fontSize='';$('promptText').textContent=run.time<8?run.config.hint:run.coins>=run.requiredCoins?'Your coin volley is ready.':'Follow the gold. Find your next answer.';
@@ -158,7 +172,8 @@
     renderer.restoredStart?.(window.LeagueAdventure?.restoration(state.progress,state.settings.className,island)?.stage);
     // Animated mode hands over the detailed creature artwork (not a generated SVG portrait); draw it larger.
     renderer.artScale=String(H.context?.avatar||'').startsWith('blob:')?1:1.3;$('app').classList.add('running');lastLane=-1;
-    idlePrompt();resize();updateHUD();$('gameSurface').focus({preventScroll:true});
+    clearGateResult();clearBanner();idlePrompt();resize();updateHUD();updateStreak();$('gameSurface').focus({preventScroll:true});
+    banner('intro',u.title,`Guardian · ${B.get(island).name}`,`${practice?'Practice · ':''}Island ${island} · ${u.theme}`,currentHouse().color);
     if(state.settings.sound)sound('jump');
   }
   let lastLane=-1;
@@ -169,7 +184,7 @@
     if($('scoreCount').textContent!==run.score.toLocaleString())$('scoreCount').textContent=run.score.toLocaleString();
     $('runProgress').style.width=`${run.progress*100}%`;
     if(run.lane!==lastLane){lastLane=run.lane;Array.from($('laneGuide').children).forEach((span,i)=>span.classList.toggle('current',i===run.lane));Array.from($('answerGates').children).forEach((card,i)=>card.classList.toggle('in-lane',i===run.lane));}
-    if(run.boss){const hp=Math.ceil(run.boss.hp/run.boss.maxHP*100);if($('bossMeter').getAttribute('aria-valuenow')!==String(hp)){$('bossHP').style.width=hp+'%';$('bossMeter').setAttribute('aria-valuenow',hp);}}
+    if(run.boss){const hp=Math.ceil(run.boss.hp/run.boss.maxHP*100);if($('bossMeter').getAttribute('aria-valuenow')!==String(hp)){$('bossHP').style.width=hp+'%';$('bossMeter').setAttribute('aria-valuenow',hp);if($('bossHPTrail'))$('bossHPTrail').style.width=hp+'%';}}
     const focusValue=run.focusTime>0?100:Math.floor(run.focus),focusLabel=run.focusTime>0?(run.focusShield?'FOCUS · MAGNET + SHIELD':'FOCUS · MAGNET'):'ELEMENTAL FOCUS';
     if($('focusMeter').getAttribute('aria-valuenow')!==String(focusValue)){$('focusFill').style.width=focusValue+'%';$('focusMeter').setAttribute('aria-valuenow',focusValue);}if($('focusLabel').textContent!==focusLabel){$('focusLabel').textContent=focusLabel;$('focusMeter').classList.toggle('active',run.focusTime>0);}
     const label=`${run.health} of ${run.maxHealth} guards remaining`;
@@ -185,13 +200,20 @@
     else if(q.format==='listen'){$('promptText').textContent='Listen carefully';$('promptNote').textContent='Hear the English word. Choose its Turkish meaning.';speakTimer=setTimeout(()=>speak(q.speak),450);}
     else{$('promptText').textContent=q.prompt;$('promptText').style.fontSize=q.prompt.length>90?'clamp(18px,2vw,30px)':'';$('promptNote').textContent='Read first. Your choices are approaching.';}
     if(!q.echo){const key=historyKey();if(!state.seen[key])state.seen[key]={};E.markSeen(state.seen[key],activeBank,q);persist();}
-    const cards=$('answerGates').children;Array.from(cards).forEach((card,i)=>{card.querySelector('span').textContent=q.choices[i];card.classList.toggle('long-choice',q.choices[i].length>36);});$('answerGates').hidden=true;$('courseInstruction').textContent='Your lane selects your answer';
+    clearGateResult();const cards=$('answerGates').children;Array.from(cards).forEach((card,i)=>{card.querySelector('span').textContent=q.choices[i];card.classList.toggle('long-choice',q.choices[i].length>36);});$('answerGates').hidden=true;$('courseInstruction').textContent='Your lane selects your answer';
   }
   function showAnswer(row){
     stopSpeech();$('repeatAudio').hidden=true;logAnswer(row);
-    $('answerGates').hidden=true;$('promptPanel').className=`prompt-panel ${row.correct?'correct':'wrong'}`;$('promptType').textContent=row.correct?`Correct choice · +${row.points} points`:row.echo?'Keep going · we will review it again':'Keep going · learn this one';$('promptText').textContent=row.explanation;$('promptText').style.fontSize=row.explanation.length>90?'clamp(16px,1.6vw,26px)':'';$('promptNote').textContent=row.correct?'Nicely done. The next trail is yours.':`You chose “${row.picked}”. The answer is “${row.answer}”.`;
+    const cards=Array.from($('answerGates').children);clearGateResult();
+    if(cards.length===3&&!$('answerGates').hidden){const picked=cards[row.lane],right=cards.findIndex(card=>card.querySelector('span')?.textContent===row.answer);
+      if(picked)picked.classList.add(row.correct?'result-correct':'result-wrong');if(!row.correct&&cards[right])cards[right].classList.add('result-answer');
+      gateResultTimer=setTimeout(()=>{$('answerGates').hidden=true;clearGateResult();},renderer.reduced?400:760);}
+    else $('answerGates').hidden=true;
+    $('promptPanel').className=`prompt-panel ${row.correct?'correct':'wrong'}`;$('promptType').textContent=row.correct?`Correct choice · +${row.points} points`:row.echo?'Keep going · we will review it again':'Keep going · learn this one';$('promptText').textContent=row.explanation;$('promptText').style.fontSize=row.explanation.length>90?'clamp(16px,1.6vw,26px)':'';$('promptNote').textContent=row.correct?'Nicely done. The next trail is yours.':`You chose “${row.picked}”. The answer is “${row.answer}”.`;
     $('challengeCount').textContent=`✦ ${run.correct} / 6`;$('courseInstruction').textContent='Coins +10 · obstacles cost one guard';
-    if(row.correct){renderer.burst('answer',run.lane);sound('answer');}
+    if(row.correct){renderer.burst('answer',run.lane);renderer.floatAtRunner?.(`+${row.points}`,'#ffe7a3',1.15);renderer.ringAtRunner?.(currentHouse().color,1);sound('answer');}
+    else sound('wrong');
+    updateStreak();
   }
   function showTrail(event){
     stopSpeech();setNavigator(navigators?.next()||'');
@@ -205,7 +227,7 @@
   }
   function showLetter(event){
     const slot=$('trailSlots').children[event.index];if(slot){slot.textContent=event.letter;slot.className=event.ok?'ok':'missed';slot.title=event.ok?'':`You collected ${event.picked}`;}
-    if(event.ok){renderer.burst('answer',event.lane);sound('coin');}else sound('hit');
+    if(event.ok){renderer.burst('answer',event.lane);renderer.floatAtRunner?.(event.letter,'#fff1c4',1.2);sound('letter');}else sound('hit');
   }
   function endTrail(event){
     stopSpeech();$('repeatAudio').hidden=true;logTrail(run.trail);
@@ -216,7 +238,8 @@
   }
   function showBoss(){
     $('trailSlots').hidden=true;stopSpeech();$('repeatAudio').hidden=true;
-    const boss=B.get(activeIsland);$('answerGates').hidden=true;$('bossHUD').hidden=false;
+    const boss=B.get(activeIsland);clearGateResult();$('answerGates').hidden=true;$('bossHUD').hidden=false;banner('boss',boss.name,boss.title,'Guardian of island '+activeIsland,boss.color);sound('bossIntro');
+    if($('bossHPTrail'))$('bossHPTrail').style.width='100%';
     $('bossName').textContent=boss.name;$('bossTitle').textContent=boss.title;$('bossStatus').textContent='The guardian arrives';
     $('promptPanel').className='prompt-panel boss-prompt';$('promptType').textContent='ISLAND SHOWDOWN';$('promptText').style.fontSize='';$('promptText').textContent=`${boss.name} blocks the finish.`;
     $('promptNote').textContent='Dodge marked lanes. Enter the gold lane to fire.';$('courseInstruction').textContent='Every collected coin deals 10 damage';
@@ -244,6 +267,7 @@
     stopSpeech();$('trailSlots').hidden=true;$('repeatAudio').hidden=true;setNavigator('');
     const before=window.LeagueAdventure?.restoration(state.progress,state.settings.className,activeIsland);
     const old=levels()[activeIsland];if(result.completed&&!practice&&(!old||result.stars>old.stars))freshStamps.add(activeIsland);
+    resultContext={firstSeal:!practice&&result.completed&&!old,newBest:!practice&&result.completed&&Boolean(old)&&result.score>(old.score||0)};
     if(!practice){E.record(state.progress,progressKey(),activeIsland,result);persist();}
     // Bounded anonymous balance notes remain only on this browser, never in Sheets.
     try{const key='island-run-balance-v91',rows=JSON.parse(localStorage.getItem(key)||'[]');rows.push({island:activeIsland,grade:state.settings.grade,mode:state.settings.mode,readPace:state.settings.readPace,seed:result.seed,completed:result.completed,coinPercent:result.coinPercent,correct:result.correct,reason:result.failureReason,seconds:result.seconds,...result.metrics});localStorage.setItem(key,JSON.stringify(rows.slice(-60)));}catch{}
@@ -268,6 +292,7 @@
   }
   function endRestoration(){if(!restoring)return;const result=restoring.result;restoring=null;$('restorationScene').hidden=true;$('gameSurface').classList.remove('restoring');showResult(result);}
   $('skipRestoration').onclick=endRestoration;
+  let resultContext={firstSeal:false,newBest:false},countUp=0;
   function showResult(result){
     $('answerGates').hidden=true;$('resultAvatar').src=avatar(currentHouse(),activeIsland);
     $('resultEyebrow').textContent=`${practice?'PRACTICE · ':''}${currentHouse().name} · ISLAND ${activeIsland}`;
@@ -277,7 +302,19 @@
     if(result.failureReason==='boss')$('resultMessage').textContent=`You collected ${result.coins} of ${result.requiredCoins} coins. Collect ${Math.max(0,result.requiredCoins-result.coins)} more on your next run to break ${B.get(activeIsland).name}’s guard.${practice?' Practice does not change saved progress.':''}`;
     if(result.failureReason==='boss-dodge')$('resultMessage').textContent='Watch the marked attack lanes, then move into the gold lane to fire. Your coin target stays the same. Try again when you are ready.';
     if(!storageOK&&!practice&&result.completed)$('resultMessage').textContent='Completed! Download a backup in Teacher to keep your progress.';
-    $('resultScore').textContent=result.score.toLocaleString();$('resultCoins').textContent=`${result.coins} / ${result.totalCoins}`;$('resultAnswers').textContent=`${result.correct} / ${result.total}`;
+    $('resultScore').textContent=result.score.toLocaleString();
+    // v9.5: the score counts up and the stars land one by one; badges name what was special about the run.
+    window.cancelAnimationFrame?.(countUp);
+    if(!renderer.reduced&&typeof requestAnimationFrame==='function'&&result.score>0){const start=performance.now(),target=result.score;$('resultScore').textContent='0';
+      const step=now=>{const t=Math.min(1,(now-start)/900),v=Math.round(target*(1-Math.pow(1-t,3)));$('resultScore').textContent=v.toLocaleString();if(t<1)countUp=requestAnimationFrame(step);};countUp=requestAnimationFrame(step);}
+    const badges=[];
+    if(result.perfect)badges.push(['perfect','Perfect run']);
+    if(resultContext.firstSeal)badges.push(['seal','Passport seal earned']);
+    if(resultContext.newBest)badges.push(['best','New best score']);
+    if(result.hardClear)badges.push(['hard','Hard cleared']);
+    if(result.bestStreak>=3)badges.push(['streak','Best streak ×'+result.bestStreak]);
+    if($('resultBadges'))$('resultBadges').replaceChildren(...badges.map(([kind,text],i)=>{const b=document.createElement('span');b.className='result-badge '+kind;b.textContent=text;b.style.setProperty('--i',String(i));return b;}));
+    $('resultStars').classList.remove('reveal');void $('resultStars').offsetWidth;$('resultStars').classList.add('reveal');$('resultCoins').textContent=`${result.coins} / ${result.totalCoins}`;$('resultAnswers').textContent=`${result.correct} / ${result.total}`;
     const reviewRows=result.review.map(row=>{const item=document.createElement('article'),title=document.createElement('b'),text=document.createElement('p');title.textContent=(row.echo?'Second chance · ':row.review?'Review · ':'')+(row.format==='listen'?'Listening: '+row.prompt:row.prompt);text.className=row.correct?'ok':'learn';text.textContent=row.correct?`✓ ${row.answer}`:`You chose: ${row.picked} · Answer: ${row.answer}`;item.append(title,text);return item;});
     if(result.trail?.done){const item=document.createElement('article'),title=document.createElement('b'),text=document.createElement('p');title.textContent=`Word Trail · ${result.trail.clue}`;text.className=result.trail.success?'ok':'learn';text.textContent=result.trail.success?`✓ ${result.trail.word} · Word Strike`:`You spelled: ${result.trail.letters.join('')} · Word: ${result.trail.word}`;item.append(title,text);reviewRows.push(item);}
     $('reviewList').replaceChildren(...reviewRows);
@@ -285,7 +322,7 @@
     // Integration hook, inert unless a future host deliberately listens to it.
     window.dispatchEvent(new CustomEvent('island-runner:complete',{detail:{version:3,className:state.settings.className,grade:state.settings.grade,house:state.settings.house,island:activeIsland,practice,result}}));
   }
-  function returnToMap(){stopSpeech();setNavigator('');for(const d of document.querySelectorAll('dialog'))if(d.open)d.close();restoring=null;$('restorationScene').hidden=true;$('gameSurface').classList.remove('restoring');run=null;$('runView').hidden=true;$('mapView').hidden=false;$('app').classList.remove('running');$('teacherButton').disabled=false;if($('runSettingsButton'))$('runSettingsButton').disabled=false;$('bossesButton').disabled=false;$('passportButton').disabled=false;renderMap();}
+  function returnToMap(){stopSpeech();setNavigator('');clearBanner();clearGateResult();for(const d of document.querySelectorAll('dialog'))if(d.open)d.close();restoring=null;$('restorationScene').hidden=true;$('gameSurface').classList.remove('restoring');run=null;$('runView').hidden=true;$('mapView').hidden=false;$('app').classList.remove('running');$('teacherButton').disabled=false;if($('runSettingsButton'))$('runSettingsButton').disabled=false;$('bossesButton').disabled=false;$('passportButton').disabled=false;renderMap();}
   function pause(){if(!run||run.status!=='running'||run.paused)return;stopSpeech();run.pause(true);$('pauseDialog').showModal();reportHost();}
   function resume(){if(!hostVisible||!run||run.status!=='running')return;$('pauseDialog').close();run.pause(false);$('gameSurface').focus({preventScroll:true});reportHost();}
   let previous=performance.now(),lastFeedback=0;
@@ -296,13 +333,16 @@
       run.step(dt);
       for(const event of run.drain()){
         if(event.type==='question')showQuestion(event.question);
-        if(event.type==='choices'){$('answerGates').hidden=false;$('promptNote').textContent='Choose A, B or C · keep collecting and jumping.';if(run.gate?.q?.format==='listen')speak(run.gate.q.speak);}
+        if(event.type==='choices'){$('answerGates').hidden=false;sound('gate');$('promptNote').textContent='Choose A, B or C · keep collecting and jumping.';if(run.gate?.q?.format==='listen')speak(run.gate.q.speak);}
         if(event.type==='answer')showAnswer(event);
         if(event.type==='trailStart')showTrail(event);
         if(event.type==='letter')showLetter(event);
         if(event.type==='trailEnd')endTrail(event);
         if(event.type==='wordStrike'){runNotify(`Word Strike · ${event.word}`);$('bossStatus').textContent='Word Strike';}
-        if(event.type==='coin'){renderer.burst('coin',event.lane,event.magnet);sound('coin');}
+        if(event.type==='coin'){renderer.burst('coin',event.lane,event.magnet);sound('coin',{streak:run.coinStreak});if(run.coinStreak>0&&run.coinStreak%10===0)renderer.floatAtRunner?.(`${run.coinStreak} coin chain`,'#ffe7a3',.7);}
+        if(event.type==='streak'){renderer.floatAtRunner?.(`Streak ×${event.streak}`,'#fff1c4',.8);sound('streak');}
+        if(event.type==='surge'){banner('surge','Spirit Surge',event.focus?'Three in a row · Elemental Focus is full':'Three in a row','Answer streak ×'+event.streak,currentHouse().color);renderer.ringAtRunner?.(currentHouse().color,1.6);sound('surge');}
+        if(event.type==='perfect'){banner('perfect','Perfect Run','+'+event.bonus+' points · every question right first time','Island '+activeIsland,'#facc15');sound('perfect');}
         if(event.type==='jump')sound('jump');
         if(event.type==='hit'){renderer.burst('hit',run.lane);runNotify('One guard lost · dodge or jump');sound('hit');}
         if(event.type==='focus'){renderer.burst('answer',run.lane);runNotify('Elemental Focus · nearby coins + one shield');sound('answer');}
@@ -313,10 +353,10 @@
         if(event.type==='bossPhase')bossPhase(event);
         if(event.type==='coinShot'){$('bossStatus').textContent='Coin volley launched';sound('answer');}
         if(event.type==='bossAttack'){$('promptText').textContent='Your coins become your attack.';$('bossStatus').textContent='Coin volley';}
-        if(event.type==='bossHit'){renderer.burst(run.boss.hp===0?'bossFinal':'bossHit',run.lane);sound('coin');}
+        if(event.type==='bossHit'){renderer.burst(run.boss.hp===0?'bossFinal':'bossHit',run.lane);if(event.damage)renderer.floatAtBoss?.(`−${event.damage}`,event.word?'#fff1c4':'#ffd27a',event.final?1.5:event.word?1.3:1);sound('bossHit',{final:event.final});}
         if(event.type==='bossCounter'){$('promptText').textContent='The guardian holds the passage.';$('promptNote').textContent=run.coins<run.requiredCoins?'Collect more coins on your next run.':'Use the gold firing lanes on your next run.';$('bossStatus').textContent='Counterattack';}
         if(event.type==='bossKnockout'){renderer.burst('hit',1);sound('hit');$('promptText').textContent='The guardian pushes you back.';}
-        if(event.type==='bossDefeated'){$('promptText').textContent=`${B.get(activeIsland).name}’s guard is broken!`;$('promptNote').textContent='The path to the next island is open.';$('bossStatus').textContent='Defeated';sound('answer');}
+        if(event.type==='bossDefeated'){$('promptText').textContent=`${B.get(activeIsland).name}’s guard is broken!`;$('promptNote').textContent='The path to the next island is open.';$('bossStatus').textContent='Defeated';banner('defeated','Guardian defeated',`${B.get(activeIsland).name}’s guard is broken`,'Island '+activeIsland,B.get(activeIsland).color);sound('victory');}
         if(event.type==='finishTrail'){$('bossHUD').hidden=true;$('promptText').textContent='The finish is yours.';}
         if(event.type==='finish')finish(event.result);
       }
@@ -389,7 +429,7 @@
   if(H.studio)document.querySelector('[data-tab="questions"]')?.setAttribute('hidden','');
   $('teacherDialog').addEventListener('cancel',e=>{if(!discardDraft())e.preventDefault();});
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-  $('readingPace').onchange=()=>{state.settings.readPace=$('readingPace').value;persist();};$('reducedMotion').onchange=()=>{state.settings.reducedMotion=$('reducedMotion').checked;persist();};$('previewButton').onclick=()=>startRun(+$('previewIsland').value,true);
+  $('readingPace').onchange=()=>{state.settings.readPace=$('readingPace').value;persist();};$('reducedMotion').onchange=()=>{state.settings.reducedMotion=$('reducedMotion').checked;persist();setAccent();};$('previewButton').onclick=()=>startRun(+$('previewIsland').value,true);
   function fillEditorIslands(){$('editorIsland').replaceChildren(...C.grades[editorGrade].map(u=>new Option(`${u.id}. ${u.theme} — ${u.title}`,u.id)));$('editorIsland').value=editorIsland;$('editorObjective').textContent=C.grades[editorGrade][editorIsland-1].objective;}
   function renderEditorList(focusID){
     const bank=bankFor(editorGrade,editorIsland);editingID=focusID||bank[0].id;$('editorObjective').textContent=`${C.grades[editorGrade][editorIsland-1].objective} · ${bank.length} questions`;

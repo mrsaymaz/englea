@@ -110,7 +110,7 @@
         const active = celebrations.get(teamId);
         if (active) { clearTimeout(active.timer); active.motion?.cancel(); active.node.remove(); celebrations.delete(teamId); }
     }
-    function celebrate(team, person, points, detail = '') {
+    function celebrate(team, person, points, detail = '', options = {}) {
         const host = document.querySelector(`#team-${team.id} .mascot-area`);
         if (!host) return;
         clearCelebration(team.id);
@@ -120,6 +120,8 @@
         node.append(element('span','student-contribution-kicker',`${person.className} · POINTS EARNED`),
             element('strong','student-contribution-name',person.name),
             element('span','student-contribution-points',`+${number(points)}${detail ? ` · ${detail}` : ''}`));
+        // v9.5.0: a student's first contribution of the session gets its own small flourish.
+        if (options.first) { node.classList.add('first-contribution'); node.append(element('span','student-contribution-first','★ First time')); }
         host.append(node);
         root.LeagueBoardFX?.flyPoints(node.querySelector('.student-contribution-points'),team.id,team.color);
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('performance-light');

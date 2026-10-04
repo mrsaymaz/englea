@@ -2042,10 +2042,11 @@
             }
             function recordStudentAward(team, person, points, detail = '') {
                 if (!person || !Number.isFinite(points) || points <= 0) return;
+                const firstContribution = !(studentContributions[person.id]?.awards > 0);
                 LeagueStudents.credit(studentContributions,person,points);
                 LeagueStudentUI.renderConstellation(document.getElementById(`constellation-${team.id}`),team,selectedClass,studentContributions,{animate:!recoveryRestoring});
                 syncParticipationMission();
-                LeagueStudentUI.celebrate(team,person,points,detail);
+                LeagueStudentUI.celebrate(team,person,points,detail,{first:firstContribution&&!recoveryRestoring});
             }
             function renderChampionContributors(arenaWinner, leagueWinners) {
                 LeagueStudentUI.renderContributors(document.getElementById('arena-contributors'),[arenaWinner],selectedClass,studentContributions);
