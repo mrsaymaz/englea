@@ -1,5 +1,5 @@
 {
-  "name": "english-league-v9-5-0-regression-checks",
+  "name": "english-league-v9-6-0-regression-checks",
   "private": true,
   "scripts": {
     "test": "node run.cjs",
@@ -18,7 +18,8 @@
     "test:runner": "node island-run-integration.cjs && node island-run-tally-hooks.cjs && node island-runner/test-engine.cjs",
     "test:v94": "npm run test:v93 && node island-v94.cjs",
     "test:v95": "npm run test:v94 && node island-v95.cjs",
-    "test:board": "node board-v95.cjs"
+    "test:board": "node board-v95.cjs",
+    "test:v96": "npm run test:v95 && node v96.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

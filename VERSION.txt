@@ -1,9 +1,10 @@
-English League · Island Run Edition · v9.5.0
+English League · Island Run Edition · v9.6.0
 
-Presentation pass across the game, still lightweight: board fits the smartboard without scrolling, score-first cards, leader crown and lead-change banner, award points fly into the score.
-Final Arena countdown dial, damage numbers and callouts; shared League titles in one row.
-Island Run: title cards, answer streak with Spirit Surge, Perfect Run bonus, answer-gate results, guardian hit numbers, ambience, sound palette and a result sequence.
-Remote: leader crown and +N pop.
+Animated mode is the board's mode: Performance is removed; Animated and Light remain.
+Board: no "takes the lead" banner and no point bubbles; Class Mission fills as one smooth, slim bar; Award Custom Points closes with ×.
+Arena: attack names are no longer shown in the centre. Remote: taller cards with at least three names per team.
+Google Sheets: every student's contribution count (Student_Contributions tab); Leaderboard I–L list every contributor.
+Island Run: one navigator per run; fixed-height question panel; steady background; new lanes, coins, obstacles, letters, attack and firing lanes at lower cost.
 
-No Apps Script change: keep GOOGLE-APPS-SCRIPT-v9.3.0.gs.
-No new Netlify or Cloudflare variables. Read START-HERE-v9.5.0.md.
+Apps Script update required: GOOGLE-APPS-SCRIPT-v9.6.0.gs (deploy a New version of the existing web app).
+No new Netlify or Cloudflare variables. Read START-HERE-v9.6.0.md.

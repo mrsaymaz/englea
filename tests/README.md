@@ -1,6 +1,10 @@
+# v9.6.0 checks
+
+Run `npm run test:v96` for the full dependency-free suite (all v9.5 checks plus `v96.cjs`). `v96.cjs` checks the session summary that lists every student, the v9.6.0 Apps Script (one Student_Contributions row per student, in-place updates, all contributors in Leaderboard I–L, nothing half-saved), the Netlify capability check, the board and arena removals, the release tag, and (in `v96-island.cjs`) one navigator per run, the fixed prompt panel and its text fitting, no-op canvas resizes, the quality governor's bounce lock, single-copy cached scenery with one blended colour level at a time, far layers that always move, a landmark that never snaps, and a bounded sprite cache through four complete driven runs. `npm run test:board` (Playwright with Chromium) checks the board fit in Light and Animated, the removed Performance option, Award Custom Points closing, a quiet lead change, the arena dial and the shared League title. See `../TEST-REPORT-v9.6.0.md`.
+
 # v9.5.0 checks
 
-Run `npm run test:v95` for the full dependency-free suite (all v9.4 checks plus `island-v95.cjs`: Spirit Surge, Perfect Run, guardian hit damage, bounded presentation layers, reduced motion and the sound palette). `npm run test:board` (Playwright with Chromium) checks the board fit at 1280×720, 1366×768 and 1920×1080 in all three display modes, the lead-change banner, the arena dial and the shared League title. See `../TEST-REPORT-v9.5.0.md`.
+Run `npm run test:v95` for the full dependency-free suite (all v9.4 checks plus `island-v95.cjs`: Spirit Surge, Perfect Run, guardian hit damage, bounded presentation layers, reduced motion and the sound palette). `npm run test:board` (Playwright with Chromium) checks the board fit at 1280×720, 1366×768 and 1920×1080 in all three display modes, the lead-change banner, the arena dial and the shared League title. See `../archive/TEST-REPORT-v9.5.0.md`.
 
 # v9.4.0 checks
 
