@@ -22,7 +22,8 @@
     "test:v96": "npm run test:v95 && node v96.cjs",
     "test:v97": "npm run test:v96 && node v97.cjs",
     "test:v10": "npm run test:v97 && node v10.cjs",
-    "test:v101": "npm run test:v10 && node v101.cjs"
+    "test:v101": "npm run test:v10 && node v101.cjs",
+    "test:v1012": "npm run test:v101 && node v1012.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

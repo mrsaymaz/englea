@@ -2,6 +2,15 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.1.2
+**Dates in Google Sheets are day first (DD/MM/YYYY)**:
+- The Apps Script now writes every date as a real date shown `dd/mm/yyyy hh:mm:ss`, whatever the Sheet's locale. This covers Leaderboard, Battle_Results, Student_Contributions, Navigator_Seals, Island_Progress (Last updated) and Question_Log.
+- Question_Summary's Last wrong is a day-first date without the time.
+- Earlier versions wrote US-style month-first text.
+- A new `formatOldDates()` function, run once from the Apps Script editor, converts the dates of earlier saves. It leaves any other text unchanged, and a second run changes nothing.
+
+Apps Script: `GOOGLE-APPS-SCRIPT-v10.1.2.gs` (required; includes v10.0.0).
+
 ## 10.1.1
 **Student cards on the board**:
 - One card at a time: a new award fades the previous card out in about 0.2 s before the next one appears.

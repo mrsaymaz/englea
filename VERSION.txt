@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.1.1
+English League · Island Run Edition · v10.1.2
+
+v10.1.2: Google Sheets dates are day first (DD/MM/YYYY). Apps Script update required: GOOGLE-APPS-SCRIPT-v10.1.2.gs. Run formatOldDates once to convert earlier rows (optional).
 
 v10.1.1: one student card at a time on the board, no card while the team cards slide, and a shorter freeze at each award. Apps Script unchanged (v10.0.0).
 
@@ -12,4 +14,4 @@ Elemental student cards: the award card takes on the student's team element (fir
 School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
 
 Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v10.1.0.md.
+No new Netlify or Cloudflare variables. Read START-HERE-v10.1.2.md.

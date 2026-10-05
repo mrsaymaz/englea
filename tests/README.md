@@ -1,3 +1,11 @@
+# v10.1.2 checks
+
+Run `npm run test:v1012` for the full dependency-free suite (all v10.1 checks plus `v1012.cjs`). `v1012.cjs` runs the real Apps Script in the in-memory spreadsheet and checks that:
+
+- every tab's date is a real date shown `dd/mm/yyyy hh:mm:ss` (Question_Summary `dd/mm/yyyy`);
+- a re-saved session keeps the format, and the season, seals and islands still load;
+- `formatOldDates()` converts month-first and ISO text (midnight and noon included), leaves impossible dates and hand-typed text alone, changes nothing on a second run and releases its lock.
+
 # v10.1.0 checks
 
 Run `npm run test:v101` for the full dependency-free suite (all v10.0 checks plus `v101.cjs`). `v101.cjs` covers:
