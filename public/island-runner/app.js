@@ -128,7 +128,12 @@
     updateSoundButton();
   }
   function updateSoundButton(){if($('runSoundButton')){$('runSoundButton').setAttribute('aria-pressed',String(Boolean(state.settings.sound)));$('runSoundButton').setAttribute('aria-label',`Turn sound ${state.settings.sound?'off':'on'}`);}$('soundButton').querySelector('span').textContent=state.settings.sound?'On':'Off';$('soundButton').setAttribute('aria-label',`Turn sound ${state.settings.sound?'off':'on'}`);}
-  function resize(){const rect=$('track').getBoundingClientRect();renderer.resize(rect.width,rect.height,window.devicePixelRatio||1);}
+  // v9.6.0: the prompt panel has one fixed height (visual-v96.css); a long prompt steps its text size down to fit
+  // instead of growing the panel, so the course never resizes mid-run.
+  function fitPrompt(){const panel=$('promptPanel'),text=$('promptText');if(!panel?.dataset||!text?.dataset)return;delete text.dataset.fit;delete panel.dataset.fit;
+    for(let level=1;level<=4&&panel.scrollHeight>panel.clientHeight+1;level++){if(level<4)text.dataset.fit=String(level);else panel.dataset.fit='4';}}
+  if(window.MutationObserver)new MutationObserver(fitPrompt).observe($('promptPanel'),{childList:true,subtree:true,characterData:true});
+  function resize(){const rect=$('track').getBoundingClientRect();renderer.resize(rect.width,rect.height,window.devicePixelRatio||1);fitPrompt();}
   if(window.ResizeObserver)new ResizeObserver(resize).observe($('track'));else window.addEventListener('resize',resize);
   // v9.5: short title cards over the course. They never block input or the answer gates.
   let bannerTimer=0;
@@ -163,7 +168,9 @@
     listeningActive=opts.listening&&speechReady();
     run.questions=F.applyFormats(run.questions,{bank:activeBank,rng:formatRng,listening:listeningActive,pictures:opts.pictures});
     runId=(seed>>>0).toString(36)+Date.now().toString(36);answerIndex=0;stopSpeech();
-    navigators=new F.Navigators(crew,E.random(seed^0x27d4eb2d));setNavigator('');
+    // v9.6.0: one navigator leads the whole run, chosen at random from the champion team's contributors.
+    // The bag lasts for this Island Run visit, so everyone leads once before anyone leads twice.
+    navigators??=new F.Navigators(crew);setNavigator(navigators.next());
     if(opts.listening&&!listeningActive)setTimeout(()=>runNotify('No English voice on this board · listening is off'),900);
     $('mapView').hidden=true;$('runView').hidden=false;$('teacherButton').disabled=true;if($('runSettingsButton'))$('runSettingsButton').disabled=true;$('bossesButton').disabled=true;$('passportButton').disabled=true;lastFeedback=0;
     const h=currentHouse(),u=currentUnit(island);$('runHouseIcon').src=avatar(h,island);$('runTitle').textContent=u.title;$('runMode').textContent=`${practice?'PRACTICE · ':''}${state.settings.className} · ISLAND ${island} · ${state.settings.mode}`;
@@ -173,7 +180,7 @@
     // Animated mode hands over the detailed creature artwork (not a generated SVG portrait); draw it larger.
     renderer.artScale=String(H.context?.avatar||'').startsWith('blob:')?1:1.3;$('app').classList.add('running');lastLane=-1;
     clearGateResult();clearBanner();idlePrompt();resize();updateHUD();updateStreak();$('gameSurface').focus({preventScroll:true});
-    banner('intro',u.title,`Guardian · ${B.get(island).name}`,`${practice?'Practice · ':''}Island ${island} · ${u.theme}`,currentHouse().color);
+    banner('intro',u.title,`${navigator?`Navigator · ${navigator} · `:''}Guardian · ${B.get(island).name}`,`${practice?'Practice · ':''}Island ${island} · ${u.theme}`,currentHouse().color);
     if(state.settings.sound)sound('jump');
   }
   let lastLane=-1;
@@ -191,7 +198,7 @@
     if($('health').getAttribute('aria-label')!==label){$('health').replaceChildren(...Array.from({length:run.maxHealth},(_,i)=>{const dot=document.createElement('span');dot.className='health-dot'+(i>=run.health?' empty':'');dot.textContent='◆';dot.setAttribute('aria-hidden','true');return dot;}));$('health').setAttribute('aria-label',label);}
   }
   function showQuestion(q){
-    stopSpeech();setNavigator(navigators?.next()||'');
+    stopSpeech();
     const label=q.echo?'Second chance · half points':q.review?'Review · '+q.instruction:q.instruction;
     $('promptPanel').className='prompt-panel question'+(q.format==='listen'?' listen':'')+(q.format==='picture'?' picture':'')+(q.echo?' echo':'')+(q.review?' review':'');
     $('promptType').textContent=label;$('promptText').style.fontSize='';$('repeatAudio').hidden=q.format!=='listen';
@@ -216,7 +223,7 @@
     updateStreak();
   }
   function showTrail(event){
-    stopSpeech();setNavigator(navigators?.next()||'');
+    stopSpeech();
     const key=historyKey();state.seen[key]??={};state.seen[key].trail=[...(state.seen[key].trail||[]).filter(w=>w.toLowerCase()!==event.word.toLowerCase()),event.word.toLowerCase()].slice(-12);persist();
     $('promptPanel').className='prompt-panel trail';$('promptType').textContent='Word Trail · spell the English word';
     $('promptText').textContent=event.clue||'Spell the word';$('promptText').style.fontSize='';
@@ -459,7 +466,7 @@
   };
   $('exportButton').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`island-runner-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Backup download started. Keep it with your game folder.');};
   $('importButton').onclick=()=>$('importFile').click();
-  $('balanceExport').onclick=()=>{try{const rows=JSON.parse(localStorage.getItem('island-run-balance-v91')||'[]'),blob=new Blob([JSON.stringify({version:'9.5.0',runs:rows},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='island-run-balance-notes.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{notify('Balance notes are unavailable in this browser.');}};
+  $('balanceExport').onclick=()=>{try{const rows=JSON.parse(localStorage.getItem('island-run-balance-v91')||'[]'),blob=new Blob([JSON.stringify({version:'9.6.0',runs:rows},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='island-run-balance-notes.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{notify('Balance notes are unavailable in this browser.');}};
   $('importFile').onchange=async()=>{
     const file=$('importFile').files[0];$('importFile').value='';if(!file)return;
     try{if(file.size>8*1024*1024)throw Error('This file is too large. Choose an Island Runner JSON backup smaller than 8 MB.');pendingImport=E.validateSave(JSON.parse(await file.text()));const edits=Object.keys(pendingImport.overrides).length,completed=Object.values(pendingImport.progress).reduce((n,p)=>n+Object.keys(p).length,0);$('importSummary').textContent=`Ready to restore ${completed} completed team islands and ${edits} edited question banks. This will replace the current progress, settings and edits in this browser.`;$('importPreview').hidden=false;}
@@ -479,7 +486,7 @@
     reportHost();
   }
   selected=preferredIsland();renderMap();updateStorageStatus();frameId=requestAnimationFrame(frame);
-  window.IslandRunner={version:'9.5.0',
+  window.IslandRunner={version:'9.6.0',
     setOptions(value){if(value&&typeof value==='object')Object.assign(localOptions,{listening:value.listening!==false,pictures:value.pictures===true});if(value?.listening)listeningActive=speechReady();if(!value?.listening){listeningActive=false;stopSpeech();if(run?.gate?.q?.format==='listen'){$('promptText').textContent=run.gate.q.speak;$('promptNote').textContent='Listening is off. The word is shown instead.';$('repeatAudio').hidden=true;}}if($('teacherDialog').open)renderRunOptions();reportHost();},
     repeatAudio(){const q=run?.gate?.q;if(q?.format==='listen'&&listeningActive){speak(q.speak);return {ok:true,message:'Repeating the word'};}if(run?.trailActive&&listeningActive){speak(run.trail.word.toLowerCase());return {ok:true,message:'Repeating the word'};}return {ok:false,message:'No listening question right now'};},
     nextNavigator,applyTeaching(catalog){acceptTeaching(catalog);if(!run||run.status!=='running')renderMap();},applyProgress(progress){mergeProgress(progress);persist();if(!run||run.status!=='running'){selected=preferredIsland();renderMap();}},pause,resume,setHostVisible,getSnapshot:()=>({settings:{...state.settings},selectedIsland:selected,status:run?run.status:'map',practice,progress:JSON.parse(JSON.stringify(state.progress))})};

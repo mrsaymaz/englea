@@ -25,14 +25,16 @@
  }
  class Quality{
   constructor(){this.tier=0;this.reset();}
-  reset(light=false){this.manual=light;this.tier=light?2:0;this.warm=1.5;this.slow=0;this.fast=0;this.cost=0;this.interval=1/60;}
-  sample(seconds,cost){if(this.manual||seconds<=0||seconds>.75||!Number.isFinite(cost))return false;seconds=Math.min(.1,seconds);if(this.warm>0){this.warm-=seconds;return false;}
+  reset(light=false){this.manual=light;this.tier=light?2:0;this.warm=1.5;this.slow=0;this.fast=0;this.cost=0;this.interval=1/60;this.sinceUp=Infinity;this.locked=false;}
+  // v9.6.0: a board that slows down again soon after stepping up stays on the lower tier for the rest of the run,
+  // so quality never bounces back and forth (each change resizes the canvas).
+  sample(seconds,cost){if(this.manual||seconds<=0||seconds>.75||!Number.isFinite(cost))return false;seconds=Math.min(.1,seconds);this.sinceUp+=seconds;if(this.warm>0){this.warm-=seconds;return false;}
    this.cost+=.06*(cost-this.cost);this.interval+=.06*(seconds-this.interval);
    const slow=this.cost>(this.tier===0?11:19)||this.interval>(this.tier===0?.026:.043);
    this.slow=slow?this.slow+seconds:Math.max(0,this.slow-seconds*2);
    this.fast=this.cost<6&&this.interval<.022?this.fast+seconds:0;
-   if(this.slow>2.5&&this.tier<2){this.tier++;this.slow=this.fast=0;this.warm=2;return true;}
-   if(this.fast>12&&this.tier>0){this.tier--;this.slow=this.fast=0;this.warm=3;return true;}return false;
+   if(this.slow>2.5&&this.tier<2){this.tier++;this.slow=this.fast=0;this.warm=2;if(this.sinceUp<30)this.locked=true;return true;}
+   if(this.fast>12&&this.tier>0&&!this.locked){this.tier--;this.slow=this.fast=0;this.warm=3;this.sinceUp=0;return true;}return false;
   }
   get limits(){return [{particles:60,strips:16,pixels:2400000,parallax:3},{particles:36,strips:10,pixels:1600000,parallax:2},{particles:18,strips:6,pixels:1000000,parallax:1}][this.tier];}
  }
