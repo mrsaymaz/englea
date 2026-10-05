@@ -5658,7 +5658,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '9.7.0';
+        const REMOTE_BUILD = '10.0.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6332,6 +6332,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                         window.syncStateToController();
                     }else if(data.sessionId===latestRemoteSessionId)LeagueQuestionLog.merge(data.className,data.rows);
                     return;
+                }
+                if(data.type==='LEAGUE_SEASON'&&isHost){
+                    if(data.sessionId===sessionId)globalThis.LeagueSeason?.accept(data.season);return;
                 }
                 if(data.type==='NAVIGATOR_SEALS'&&isHost){
                     if(data.sessionId===sessionId&&data.className===selectedClass&&Array.isArray(data.rows))globalThis.LeagueNavigatorSeals?.merge(selectedClass,data.rows);return;
@@ -7030,6 +7033,16 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         LeagueStudio.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass});
         window.LeaguePassportSeals?.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass});
         const studioButton=document.createElement('button');studioButton.type='button';studioButton.className='island-cloud-button';studioButton.textContent='Manage';studioButton.onclick=()=>LeagueStudio.open();document.getElementById('board-selected-class')?.closest('button')?.after(studioButton);
+        // v10.0: School League Season panel on the Champions screen (board only). This session's wins are the
+        // League title holder(s) and the Arena champion; the phone passes on the season totals it gets from Sheets.
+        globalThis.LeagueSeason?.configure({session:()=>{
+            if(remoteRole==='controller'||LeagueScenes.active!=='results'||!battleState?.fighters?.length||battleState.running)return null;
+            const top=Math.max(...battleState.fighters.map(f=>f.points));
+            return {sessionId,league:battleState.fighters.filter(f=>f.points===top).map(f=>f.id),arena:determineArenaWinner().id};
+        }});
+        document.addEventListener('league-season-change',()=>{
+            if(remoteRole==='controller'&&globalThis.LeagueSeason?.data)safeRemoteSend({type:'LEAGUE_SEASON',sessionId:latestRemoteSessionId,season:LeagueSeason.data});
+        });
         LeagueRecap.configure(()=>({sessionId,className:selectedClass,house:battleState?.fighters?.length?determineArenaWinner().id:null,progress:LeagueIslandProgress.snapshot(selectedClass)}));
         document.addEventListener('teaching-content-change',event=>{
             const grade=event.detail.grade;LeagueIslandRun.applyTeaching(LeagueTeaching.catalog(grade));

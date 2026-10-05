@@ -1,0 +1,103 @@
+/* v10.0 · Elemental student cards and the School League Season panel. Loaded after league-v97.css.
+   Cards: the student's team element grows with their navigator seals (Spark 1–3, Surge 4–6, Storm 7–9,
+   Mythic 10). Motion is transform/opacity only and runs in Animated mode; Light and reduced motion keep
+   the same frames and colours, still. */
+
+/* ---------- Element palettes ---------- */
+.el-card.el-fire{--el-a:#ff7a18;--el-b:#ffd166;--el-c:#c81d25;--el-glow:255,122,24;}
+.el-card.el-nature{--el-a:#4ade80;--el-b:#d9f99d;--el-c:#166534;--el-glow:74,222,128;}
+.el-card.el-water{--el-a:#38bdf8;--el-b:#cffafe;--el-c:#1d4ed8;--el-glow:56,189,248;}
+.el-card.el-air{--el-a:#fde68a;--el-b:#ffffff;--el-c:#94a3b8;--el-glow:253,230,138;}
+
+/* ---------- Card: tinted by the element, brighter with each seal ---------- */
+.mascot-area>.student-contribution-badge.el-card{overflow:visible;isolation:isolate;
+  border:2px solid var(--el-a)!important;
+  background:linear-gradient(180deg,rgba(var(--el-glow),calc(.08 + var(--el-level) * .025)),rgba(8,14,26,.93) 62%),rgba(8,14,26,.93)!important;
+  box-shadow:0 0 0 1px rgba(2,6,23,.6),0 10px 26px rgba(2,6,23,.55),0 0 calc(6px + var(--el-level) * 2.4px) rgba(var(--el-glow),calc(.25 + var(--el-level) * .05))!important;}
+.mascot-area>.student-contribution-badge.el-card>:not(.el-fx):not(.student-contribution-first){position:relative;z-index:2;}
+.el-card .student-contribution-name{text-shadow:0 0 calc(4px + var(--el-level) * 1px) rgba(var(--el-glow),.75),0 1px 2px rgba(0,0,0,.6);}
+.el-card .student-seal-slot.earned{border-color:var(--el-b);box-shadow:0 0 0 1px rgba(2,6,23,.55),0 0 calc(6px + var(--el-level) * 1.2px) rgba(var(--el-glow),.65);}
+.el-card .student-seal-slot:not(.earned){border-color:rgba(var(--el-glow),.32);}
+.el-card.el-storm,.el-card.el-mythic{padding:.5rem .75rem .6rem!important;}
+
+/* ---------- Effects layer: glow, frame, particles ---------- */
+.el-fx{position:absolute;inset:-18px -8px -2px;z-index:1;pointer-events:none;}
+.el-glow{position:absolute;inset:8px 4px;border-radius:22px;opacity:calc(.25 + var(--el-level) * .06);
+  background:radial-gradient(60% 70% at 50% 60%,rgba(var(--el-glow),.55),rgba(var(--el-glow),0) 70%);}
+.el-frame{position:absolute;inset:16px 6px 0;border-radius:18px;padding:3px;
+  background:linear-gradient(90deg,var(--el-c),var(--el-a),var(--el-b),var(--el-a),var(--el-c),var(--el-a),var(--el-b)) 0 0/300% 100%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;}
+.el-mythic .el-frame{padding:4px;}
+.el-p{position:absolute;left:var(--x);bottom:10px;display:block;opacity:0;transform:scale(var(--s));}
+
+/* Fire: embers that rise and fade */
+.el-fire .el-p{width:7px;height:11px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 50% 70%,#fff3b0,var(--el-a) 55%,rgba(200,29,37,0) 72%);}
+/* Nature: leaves that drift and turn */
+.el-nature .el-p{width:10px;height:10px;border-radius:0 100% 0 100%;background:linear-gradient(135deg,var(--el-b),var(--el-a) 60%,var(--el-c));}
+/* Water: bubbles that wobble upward */
+.el-water .el-p{width:9px;height:9px;border-radius:50%;border:2px solid var(--el-b);background:rgba(207,250,254,.22);box-shadow:inset -2px -2px 0 rgba(56,189,248,.35);}
+/* Air: wisps that sweep sideways */
+.el-air .el-p{width:24px;height:10px;border-radius:50%;border-top:2.5px solid var(--el-b);bottom:auto;top:calc(20% + var(--x) * .55);left:-6%;}
+
+/* Storm and Mythic: the element breaks out along the card's top edge */
+.el-edge{position:absolute;top:4px;left:var(--x);width:12px;height:16px;margin-left:-6px;transform-origin:50% 100%;transform:scale(var(--s));}
+.el-fire .el-edge{border-radius:50% 50% 30% 30%/70% 70% 30% 30%;background:linear-gradient(to top,var(--el-c),var(--el-a) 45%,var(--el-b) 85%,#fff7d6);box-shadow:0 0 10px rgba(255,122,24,.75);}
+.el-nature .el-edge{width:11px;height:15px;border-radius:0 100% 0 100%;background:linear-gradient(160deg,var(--el-b),var(--el-a) 55%,var(--el-c));transform:rotate(var(--r)) scale(var(--s));}
+.el-water .el-edge{width:11px;height:14px;top:6px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 40% 35%,#ffffff,var(--el-b) 30%,var(--el-a) 70%,var(--el-c));box-shadow:0 0 8px rgba(56,189,248,.7);}
+.el-air .el-edge{width:16px;height:16px;top:3px;border-radius:50%;border:2.5px solid var(--el-b);border-right-color:transparent;border-bottom-color:transparent;transform:rotate(var(--r)) scale(var(--s));box-shadow:0 0 8px rgba(253,230,138,.6);}
+
+/* Mythic: a crown of the element above the name, and a title beneath it */
+.el-crown{display:block;width:clamp(24px,2.1vw,36px);height:auto;margin:-.2rem auto -.25rem;filter:drop-shadow(0 0 6px rgba(var(--el-glow),.9));}
+.el-crown svg{display:block;width:100%;height:auto;fill:var(--el-a);stroke:var(--el-b);stroke-width:1.2;stroke-linejoin:round;}
+.el-title{display:block;margin-top:-.2rem;font-size:clamp(9px,.78vw,13px);font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--el-b);text-shadow:0 0 8px rgba(var(--el-glow),.9);}
+
+/* Light and reduced motion: a few particles stay visible, still. */
+.el-card .el-p:nth-child(-n+6){opacity:.7;}
+.el-air .el-p:nth-child(-n+6){opacity:.55;}
+
+/* ---------- Motion: Animated mode only. Specific enough to pass the lean renderer's "no animation" rule. ---------- */
+@keyframes el-rise{0%{opacity:0;transform:translate(0,0) scale(var(--s));}15%{opacity:1;}100%{opacity:0;transform:translate(0,-58px) scale(calc(var(--s) * .4));}}
+@keyframes el-leaf{0%{opacity:0;transform:translate(0,0) rotate(0) scale(var(--s));}15%{opacity:1;}100%{opacity:0;transform:translate(14px,-52px) rotate(260deg) scale(var(--s));}}
+@keyframes el-bubble{0%{opacity:0;transform:translate(0,0) scale(var(--s));}20%{opacity:1;}50%{transform:translate(5px,-28px) scale(var(--s));}100%{opacity:0;transform:translate(-3px,-60px) scale(calc(var(--s) * 1.25));}}
+@keyframes el-wisp{0%{opacity:0;transform:translateX(0) scale(var(--s));}25%{opacity:.9;}100%{opacity:0;transform:translateX(min(290px,24vw)) scale(var(--s));}}
+@keyframes el-breathe{0%,100%{opacity:calc(.2 + var(--el-level) * .05);transform:scale(1);}50%{opacity:calc(.35 + var(--el-level) * .06);transform:scale(1.04);}}
+@keyframes el-flow{to{background-position:-200% 0;}}
+@keyframes el-flicker{0%,100%{transform:scale(var(--s)) scaleY(.75);opacity:.8;}50%{transform:scale(var(--s)) scaleY(1.25);opacity:1;}}
+@keyframes el-sway{0%,100%{transform:rotate(var(--r)) scale(var(--s));}50%{transform:rotate(calc(var(--r) * -1)) scale(calc(var(--s) * 1.1));}}
+@keyframes el-drip{0%,100%{transform:translateY(0) scale(var(--s));}50%{transform:translateY(-5px) scale(calc(var(--s) * 1.08));}}
+@keyframes el-spin{to{transform:rotate(calc(var(--r) + 360deg)) scale(var(--s));}}
+@media (prefers-reduced-motion:no-preference){
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-card .el-p{opacity:0;animation:el-rise var(--t) linear var(--d) infinite!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-nature .el-p{animation-name:el-leaf!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-water .el-p{animation-name:el-bubble!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-air .el-p{animation-name:el-wisp!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-card:is(.el-surge,.el-storm,.el-mythic) .el-glow{animation:el-breathe 2.2s ease-in-out infinite!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-card .el-frame{animation:el-flow 3.2s linear infinite!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-air .el-frame{animation-duration:1.8s!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-mythic .el-frame{animation-duration:2s!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-fire .el-edge{animation:el-flicker .7s ease-in-out var(--d) infinite!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-nature .el-edge{animation:el-sway 2.4s ease-in-out var(--d) infinite!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-water .el-edge{animation:el-drip 1.6s ease-in-out var(--d) infinite!important;}
+  body.performance-animated .app-shell .mascot-area>.student-contribution-badge.el-air .el-edge{animation:el-spin 1.8s linear var(--d) infinite!important;}
+}
+
+/* ---------- School League Season panel (Champions screen, upper right) ---------- */
+#league-season-panel{position:absolute;top:clamp(58px,8vh,84px);right:clamp(10px,1.4vw,24px);z-index:6;width:clamp(170px,14.5vw,270px);
+  padding:.6rem .7rem .55rem;border-radius:16px;border:1px solid rgba(243,201,107,.4);background:linear-gradient(180deg,rgba(18,30,52,.92),rgba(8,14,26,.94));
+  box-shadow:0 12px 30px rgba(2,6,23,.55);color:#e2e8f0;font-family:inherit;}
+#league-season-panel[hidden]{display:none!important;}
+.season-head small{display:block;color:#f3c96b;font-size:clamp(9px,.68vw,11px);font-weight:900;letter-spacing:.2em;}
+.season-head strong{display:block;margin-top:.1rem;font-size:clamp(13px,1.05vw,18px);font-weight:900;letter-spacing:.04em;color:#fff7e0;}
+.season-rows{list-style:none;margin:.45rem 0 .2rem;padding:0;display:grid;gap:.28rem;}
+.season-row{display:grid;grid-template-columns:1.3em 1fr auto auto;align-items:center;gap:.4rem;padding:.28rem .45rem;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid transparent;}
+.season-row.leader{border-color:rgba(243,201,107,.55);background:linear-gradient(90deg,rgba(243,201,107,.16),rgba(255,255,255,.03));}
+.season-rank{font-size:clamp(10px,.75vw,13px);font-weight:900;color:#94a3b8;text-align:center;}
+.season-row.leader .season-rank{color:#f3c96b;}
+.season-team{display:flex;align-items:center;gap:.35rem;min-width:0;font-size:clamp(11px,.88vw,15px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.season-team i{flex:none;width:.6em;height:.6em;border-radius:50%;background:var(--team);box-shadow:0 0 6px var(--team);}
+.season-wins{font-size:clamp(14px,1.15vw,20px);font-weight:900;color:#fff;font-variant-numeric:tabular-nums;}
+.season-delta{min-width:2.1em;text-align:center;font-size:clamp(9px,.7vw,12px);font-weight:900;padding:.08rem .32rem;border-radius:999px;color:#1c1405;background:#f3c96b;}
+.season-delta:empty{visibility:hidden;}
+.season-delta.pending{background:rgba(243,201,107,.22);color:#f3c96b;border:1px dashed rgba(243,201,107,.7);}
+.season-foot{margin:.25rem 0 0;font-size:clamp(9px,.66vw,11px);line-height:1.3;color:#94a3b8;}
+@media (max-width:900px),(max-height:520px){#league-season-panel{top:auto;bottom:10px;right:10px;width:200px;}}

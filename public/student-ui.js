@@ -125,6 +125,57 @@
         }
         return grid;
     }
+    // v10.0: the card takes on the student's team element as they collect navigator seals. The look grows in
+    // four stages (no number is shown): Spark 1–3, Surge 4–6, Storm 7–9, Mythic at all ten seals.
+    const ELEMENTS = {
+        gryffindor:{kind:'fire',title:'Flamebearer'}, slytherin:{kind:'nature',title:'Earthshaker'},
+        ravenclaw:{kind:'water',title:'Tidecaller'}, hufflepuff:{kind:'air',title:'Stormrider'}
+    };
+    const CROWNS = {
+        fire:'<path d="M4 22h28l-2-12-5 5-3-11-4 9-3-7-3 9-4-5z"/>',
+        nature:'<path d="M18 4c-5 5-6 10-2 15-6-3-10-2-13 2 4 2 9 2 13 0-1 2-1 4 0 5h4c1-1 1-3 0-5 4 2 9 2 13 0-3-4-7-5-13-2 4-5 3-10-2-15z"/>',
+        water:'<path d="M3 20c4-6 8-6 11-2 2-6 6-10 4-15 6 4 8 10 6 15 3-4 7-4 9 2-5-2-9 3-15 3S8 18 3 20z"/>',
+        air:'<path d="M4 12c6-5 13-5 17 0-5-2-10-1-12 3 5-3 12-2 15 3-6-2-11 0-13 4 6-1 12 1 15 5H4c-2-5-2-10 0-15z"/>'
+    };
+    const tierOf = level => level >= 10 ? 'mythic' : level >= 7 ? 'storm' : level >= 4 ? 'surge' : level >= 1 ? 'spark' : '';
+    function elementalize(node, team, person) {
+        const level = root.LeagueNavigatorSeals?.islands(person.className, person.id).length || 0, tier = tierOf(level), info = ELEMENTS[team.id];
+        if (!tier || !info) return null;
+        node.classList.add('el-card', `el-${info.kind}`, `el-${tier}`);
+        node.style.setProperty('--el-level', String(level));
+        const fx = element('span','el-fx'); fx.setAttribute('aria-hidden','true');
+        fx.append(element('span','el-glow'));
+        if (tier === 'storm' || tier === 'mythic') fx.append(element('span','el-frame'));
+        // Particles grow in number with each seal; spread and timing are fixed per index, so no two cards flicker alike.
+        const count = Math.min(16, 2 + level + (tier === 'mythic' ? 4 : 0));
+        for (let i = 0; i < count; i++) {
+            const p = element('i','el-p'), spread = (i * 0.618034) % 1;
+            p.style.setProperty('--x', `${Math.round(6 + spread * 88)}%`);
+            p.style.setProperty('--d', `${-((i * 0.37) % 1.8).toFixed(2)}s`);
+            p.style.setProperty('--s', (0.75 + ((i * 7) % 5) * 0.12 + level * 0.03).toFixed(2));
+            p.style.setProperty('--t', `${(1.7 + ((i * 3) % 4) * 0.22).toFixed(2)}s`);
+            fx.append(p);
+        }
+        // Storm and Mythic: the element breaks out along the top edge (flames, sprouting leaves, droplets, curls).
+        const edges = tier === 'mythic' ? 9 : tier === 'storm' ? 6 : 0;
+        for (let i = 0; i < edges; i++) {
+            const e = element('i','el-edge');
+            e.style.setProperty('--x', `${Math.round(8 + (i + 0.5) * (84 / edges))}%`);
+            e.style.setProperty('--d', `${-((i * 0.29) % 1).toFixed(2)}s`);
+            e.style.setProperty('--s', (0.8 + ((i * 5) % 3) * 0.18 + (tier === 'mythic' ? 0.2 : 0)).toFixed(2));
+            e.style.setProperty('--r', `${(i % 2 ? 1 : -1) * (12 + (i % 3) * 8)}deg`);
+            fx.append(e);
+        }
+        node.prepend(fx);
+        if (tier === 'mythic') {
+            const crown = element('span','el-crown');
+            crown.innerHTML = `<svg viewBox="0 0 36 26" aria-hidden="true">${CROWNS[info.kind]}</svg>`;
+            node.querySelector('.student-contribution-name')?.before(crown);
+            node.querySelector('.student-contribution-name')?.after(element('span','el-title',info.title));
+            node.setAttribute('aria-label', `${person.name}, ${info.title}`);
+        }
+        return {level, tier};
+    }
     function celebrate(team, person, points, detail = '', options = {}) {
         const host = document.querySelector(`#team-${team.id} .mascot-area`);
         if (!host) return;
@@ -137,8 +188,15 @@
             sealGrid(person));
         // v9.5.0: a student's first contribution of the session gets its own small flourish.
         if (options.first) { node.classList.add('first-contribution'); node.append(element('span','student-contribution-first','★ First time')); }
+        const elemental = elementalize(node, team, person);
         host.append(node);
-        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('performance-light');
+        // Animated mode also carries performance-light (it shares the lean renderer); only real Light stays still.
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || (document.body.classList.contains('performance-light') && !document.body.classList.contains('performance-animated'));
+        // A new seal since this student's last card: one short burst of their element.
+        if (elemental && root.LeagueNavigatorSeals?.takeLevelUp(person.className, person.id) && !reduced) {
+            node.classList.add('el-levelup');
+            node.querySelector('.el-glow')?.animate([{opacity:0,transform:'scale(.7)'},{opacity:1,transform:'scale(1.35)',offset:.35},{opacity:0,transform:'scale(1.6)'}],{duration:1100,delay:250,easing:'ease-out'});
+        }
         const motion = reduced ? null : node.animate([
             {opacity:0,transform:'translateY(9px) scale(.98)'},
             {opacity:1,transform:'translateY(0) scale(1)',offset:.12},

@@ -50,10 +50,14 @@
   if(!student||!idOk(student.id))return {ok:false,added:false,count:0};
   const added=add(c,{studentId:student.id,student:student.name,team:student.team,island,sessionId});
   const count=islands(c,student.id).length;
-  if(added){save();changed(c);queue.push({name:entryName(c,student),team:student.team,island:Number(island),count});announceSoon();}
+  if(added){save();markLevelUp(c,student.id);changed(c);queue.push({name:entryName(c,student),team:student.team,island:Number(island),count});announceSoon();}
   return {ok:true,added,count,name:entryName(c,student)};
  }
  const entryName=(c,student)=>store[c]?.[student.id]?.student||student.name||'';
+ // v10.0: a new seal levels up the student's elemental card; the next card they get shows one burst.
+ const LEVEL_KEY='englishLeague.cardLevelUps.v1';let levelUps={};try{levelUps=JSON.parse(localStorage.getItem(LEVEL_KEY)||'{}')||{};}catch{levelUps={};}
+ function markLevelUp(c,id){levelUps[c+'|'+id]=1;try{localStorage.setItem(LEVEL_KEY,JSON.stringify(levelUps));}catch{}}
+ function takeLevelUp(c,id){const key=c+'|'+id;if(!levelUps[key])return false;delete levelUps[key];try{localStorage.setItem(LEVEL_KEY,JSON.stringify(levelUps));}catch{}return true;}
 
  // The seal is earned while Island Run is open; it is announced once the class is back on the board.
  const queue=[];let waiting=0;
@@ -71,5 +75,5 @@
   setTimeout(()=>{box.classList.remove('visible');setTimeout(announce,500);},5200);
  }
  const emblem=n=>`island-runner/assets/bosses/${bosses[n-1]}.webp`;
- root.LeagueNavigatorSeals=Object.freeze({islands,award,merge,rows,stamp,emblem,guardian:n=>names[n-1]||''});
+ root.LeagueNavigatorSeals=Object.freeze({islands,award,merge,rows,stamp,emblem,takeLevelUp,guardian:n=>names[n-1]||''});
 })(window);
