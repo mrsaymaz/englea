@@ -59,7 +59,7 @@
   function launch(c){
     if(!permitted()||!classes.includes(c.className)||!houses.includes(c.house))return false;
     root.LeagueRecap?.begin(c.sessionId,c.className,LeagueIslandProgress.snapshot(c.className));
-    const next=[c.sessionId,c.className,c.house,c.level,c.avatarMarkup].join('|');
+    const next=[c.sessionId,c.className,c.house,c.level,c.avatarMarkup,c.navigator?.id||''].join('|');
     $('island-run-class-picker').hidden=true;
     $('island-run-context').textContent=`${c.className} · ${c.name} · Level ${c.level}`;
     if(frame&&signature===next){
@@ -70,12 +70,14 @@
       frame.focus();changed();return true;
     }
     disposeFrame();signature=next;token=LeagueRecovery.uid();
-    const crew=Array.isArray(c.crew)?c.crew.filter(n=>typeof n==='string'&&n.trim()).map(n=>n.trim().slice(0,70)).slice(0,40):[];
-    context=Object.freeze({version:2,token,sessionId:c.sessionId,className:c.className,grade:Number(c.className[0]),house:c.house,level:c.level,progress:LeagueIslandProgress.snapshot(c.className),avatar:assetFor(c),crew:Object.freeze(crew)});
+    // v9.7.0: one navigator for the whole session, chosen by the board from the champion team's contributors.
+    const n=c.navigator,navigatorOk=n&&typeof n.id==='string'&&typeof n.name==='string'&&n.name.trim()&&houses.includes(n.team);
+    const chosen=navigatorOk?Object.freeze({id:n.id.slice(0,100),name:n.name.trim().slice(0,70),team:n.team}):null;
+    context=Object.freeze({version:3,token,sessionId:c.sessionId,className:c.className,grade:Number(c.className[0]),house:c.house,level:c.level,progress:LeagueIslandProgress.snapshot(c.className),avatar:assetFor(c),navigator:chosen,crew:Object.freeze(chosen?[chosen.name]:[])});
     $('island-run-loading').hidden=false;$('island-run-loading-text').textContent='Opening the islands…';$('island-run-retry').hidden=true;
     frame=document.createElement('iframe');frame.id='island-run-frame';frame.title=`Island Run · ${c.className} · ${c.name}`;
     frame.setAttribute('allow','fullscreen');frame.setAttribute('allowfullscreen','');
-    frame.src='./island-runner/index.html?v=9.6.0';frame.addEventListener('error',fail);
+    frame.src='./island-runner/index.html?v=9.7.0';frame.addEventListener('error',fail);
     $('island-run-stage').append(frame);loadTimer=setTimeout(fail,15000);changed();return true;
   }
   function open(){
@@ -135,7 +137,19 @@
   root.LeagueIslandRun=Object.freeze({configure,open,close:hide,dispose,refresh,connect,report,togglePause,setOptions,
     get options(){return {...options};},
     repeatAudio:()=>runnerCall('repeatAudio','Repeating the word'),
-    nextNavigator:()=>runnerCall('nextNavigator','Another student chosen'),
+    // v9.7.0: the navigator stays for the whole session; the remote's student controller steers the runner.
+    nextNavigator:()=>({ok:false,message:'The navigator stays the same for the whole session.'}),
+    control(action){
+      if(!visible||!permitted()||!ready||!['up','down','jump'].includes(action))return false;
+      try{return frame?.contentWindow?.IslandRunner?.control?.(action)===true;}catch{return false;}
+    },
+    sealFrom(child,key,island){
+      if(!own(child,key)||!context.navigator)return null;
+      const n=Number(island);if(!Number.isInteger(n)||n<1||n>10)return null;
+      const result=root.LeagueNavigatorSeals?.award(context.className,context.navigator,n,context.sessionId);
+      if(result?.added)bridge?.sealsChanged?.(context.className);
+      return result?{added:result.added,count:result.count,name:result.name}:null;
+    },
     answersFrom(child,key,rows){
       if(!own(child,key)||!Array.isArray(rows))return 0;
       const mine=rows.filter(r=>r&&r.c===context.className&&r.s===context.sessionId);

@@ -7,8 +7,9 @@
   const enforceHost=()=>{state.settings.grade=H.context.grade;state.settings.className=H.context.className;state.settings.house=H.context.house;};
   const E=window.RunnerEngine,C=window.RunnerContent,S=window.RunnerScenery,B=window.RunnerBosses,I=window.RunnerIslands,F=window.RunnerFormats,PIC=window.RunnerPictures;
   /* v9.3.0: navigator, listening/picture gates, Word Trail and the shared answer log. */
-  let runId='',answerIndex=0,navigators=null,navigator='',listeningActive=false,speakTimer=0,currentSpeech='';
-  const crew=Array.isArray(H.context.crew)?H.context.crew:[];
+  let runId='',answerIndex=0,navigator='',listeningActive=false,speakTimer=0,currentSpeech='',navigatorSeal=null;
+  // v9.7.0: the board chooses one navigator for the whole session (a random contributor of the champion team).
+  const sessionNavigator=typeof H.context?.navigator?.name==='string'?H.context.navigator.name.slice(0,70):'';
   const localOptions={listening:true,pictures:false};
   function options(){const o=H.options?.();return o&&typeof o==='object'?{listening:o.listening!==false,pictures:o.pictures===true}:{...localOptions};}
   const speech=window.speechSynthesis&&window.SpeechSynthesisUtterance?window.speechSynthesis:null;
@@ -33,7 +34,6 @@
   }
   function stopSpeech(){clearTimeout(speakTimer);try{speech?.cancel();}catch{}}
   function setNavigator(name){navigator=name||'';const chip=$('navigatorChip');if(chip){chip.hidden=!navigator;const label=$('navigatorName');if(label)label.textContent=navigator;}}
-  function nextNavigator(){if(!navigators||!run||run.status!=='running')return {ok:false,message:'Start a run first.'};setNavigator(navigators.next());reportHost();return {ok:true,message:navigator?`Navigator: ${navigator}`:'No team list for this class'};}
   function logRows(rows){if(practice||!rows.length)return;try{H.answers?.(rows);}catch{}}
   function logAnswer(row){
     logRows([{id:`${runId}:${answerIndex++}`,t:Date.now(),s:H.context.sessionId,c:state.settings.className,h:state.settings.house,g:state.settings.grade,i:activeIsland,
@@ -168,9 +168,7 @@
     listeningActive=opts.listening&&speechReady();
     run.questions=F.applyFormats(run.questions,{bank:activeBank,rng:formatRng,listening:listeningActive,pictures:opts.pictures});
     runId=(seed>>>0).toString(36)+Date.now().toString(36);answerIndex=0;stopSpeech();
-    // v9.6.0: one navigator leads the whole run, chosen at random from the champion team's contributors.
-    // The bag lasts for this Island Run visit, so everyone leads once before anyone leads twice.
-    navigators??=new F.Navigators(crew);setNavigator(navigators.next());
+    setNavigator(sessionNavigator);navigatorSeal=null;
     if(opts.listening&&!listeningActive)setTimeout(()=>runNotify('No English voice on this board · listening is off'),900);
     $('mapView').hidden=true;$('runView').hidden=false;$('teacherButton').disabled=true;if($('runSettingsButton'))$('runSettingsButton').disabled=true;$('bossesButton').disabled=true;$('passportButton').disabled=true;lastFeedback=0;
     const h=currentHouse(),u=currentUnit(island);$('runHouseIcon').src=avatar(h,island);$('runTitle').textContent=u.title;$('runMode').textContent=`${practice?'PRACTICE · ':''}${state.settings.className} · ISLAND ${island} · ${state.settings.mode}`;
@@ -275,6 +273,8 @@
     const before=window.LeagueAdventure?.restoration(state.progress,state.settings.className,activeIsland);
     const old=levels()[activeIsland];if(result.completed&&!practice&&(!old||result.stars>old.stars))freshStamps.add(activeIsland);
     resultContext={firstSeal:!practice&&result.completed&&!old,newBest:!practice&&result.completed&&Boolean(old)&&result.score>(old.score||0)};
+    // v9.7.0: a completed run earns the session's navigator this island's seal (kept by the board and Google Sheets).
+    if(result.completed&&!practice&&sessionNavigator)navigatorSeal=H.seal?.(activeIsland)||null;
     if(!practice){E.record(state.progress,progressKey(),activeIsland,result);persist();}
     // Bounded anonymous balance notes remain only on this browser, never in Sheets.
     try{const key='island-run-balance-v91',rows=JSON.parse(localStorage.getItem(key)||'[]');rows.push({island:activeIsland,grade:state.settings.grade,mode:state.settings.mode,readPace:state.settings.readPace,seed:result.seed,completed:result.completed,coinPercent:result.coinPercent,correct:result.correct,reason:result.failureReason,seconds:result.seconds,...result.metrics});localStorage.setItem(key,JSON.stringify(rows.slice(-60)));}catch{}
@@ -317,6 +317,7 @@
     const badges=[];
     if(result.perfect)badges.push(['perfect','Perfect run']);
     if(resultContext.firstSeal)badges.push(['seal','Passport seal earned']);
+    if(navigatorSeal?.added)badges.push(['seal',`${navigatorSeal.name} · seal ${navigatorSeal.count} of 10`]);
     if(resultContext.newBest)badges.push(['best','New best score']);
     if(result.hardClear)badges.push(['hard','Hard cleared']);
     if(result.bestStreak>=3)badges.push(['streak','Best streak ×'+result.bestStreak]);
@@ -376,6 +377,13 @@
     reportHost();frameId=requestAnimationFrame(frame);
   }
   function control(action){if(!run||!run.canControl())return;if(action==='up')run.move(-1);if(action==='down')run.move(1);if(action==='jump')run.jump();}
+  // v9.7.0: the teacher's phone (student controller or a Bluetooth keyboard on it) steers the runner too.
+  function remoteControl(action){
+    if(!['up','down','jump'].includes(action)||!run||run.status!=='running'||document.querySelector('dialog[open]'))return false;
+    control(action);const button=$({up:'upButton',down:'downButton',jump:'jumpButton'}[action]);
+    if(button){button.classList.add('pressed');clearTimeout(button._remote);button._remote=setTimeout(()=>button.classList.remove('pressed'),160);}
+    return true;
+  }
   [['upButton','up'],['downButton','down'],['jumpButton','jump']].forEach(([id,action])=>{
     const button=$(id);button.addEventListener('pointerdown',e=>{e.preventDefault();control(action);button.classList.add('pressed');button.setPointerCapture?.(e.pointerId);});
     for(const event of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(event,()=>button.classList.remove('pressed'));
@@ -466,7 +474,7 @@
   };
   $('exportButton').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`island-runner-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Backup download started. Keep it with your game folder.');};
   $('importButton').onclick=()=>$('importFile').click();
-  $('balanceExport').onclick=()=>{try{const rows=JSON.parse(localStorage.getItem('island-run-balance-v91')||'[]'),blob=new Blob([JSON.stringify({version:'9.6.0',runs:rows},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='island-run-balance-notes.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{notify('Balance notes are unavailable in this browser.');}};
+  $('balanceExport').onclick=()=>{try{const rows=JSON.parse(localStorage.getItem('island-run-balance-v91')||'[]'),blob=new Blob([JSON.stringify({version:'9.7.0',runs:rows},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='island-run-balance-notes.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{notify('Balance notes are unavailable in this browser.');}};
   $('importFile').onchange=async()=>{
     const file=$('importFile').files[0];$('importFile').value='';if(!file)return;
     try{if(file.size>8*1024*1024)throw Error('This file is too large. Choose an Island Runner JSON backup smaller than 8 MB.');pendingImport=E.validateSave(JSON.parse(await file.text()));const edits=Object.keys(pendingImport.overrides).length,completed=Object.values(pendingImport.progress).reduce((n,p)=>n+Object.keys(p).length,0);$('importSummary').textContent=`Ready to restore ${completed} completed team islands and ${edits} edited question banks. This will replace the current progress, settings and edits in this browser.`;$('importPreview').hidden=false;}
@@ -476,7 +484,7 @@
   $('cancelImport').onclick=()=>{pendingImport=null;$('importPreview').hidden=true;};
   function reportHost(){
     const audio=Boolean(listeningActive&&run&&run.status==='running'&&(run.gate?.q?.format==='listen'||run.trailActive));
-    const status={ready:true,status:run?run.status:'map',canPause:Boolean(run&&run.status==='running'),paused:Boolean(run?.paused),navigator:run&&run.status==='running'?navigator:'',audio,voice:speech?(chosenVoice?`${chosenVoice.name} (${chosenVoice.lang})`:'none'):'unsupported'};
+    const status={ready:true,status:run?run.status:'map',canPause:Boolean(run&&run.status==='running'),paused:Boolean(run?.paused),navigator:sessionNavigator,audio,voice:speech?(chosenVoice?`${chosenVoice.name} (${chosenVoice.lang})`:'none'):'unsupported'};
     const key=JSON.stringify(status);if(key!==lastHostState){lastHostState=key;H.report(status);}
   }
   function setHostVisible(value){
@@ -486,9 +494,9 @@
     reportHost();
   }
   selected=preferredIsland();renderMap();updateStorageStatus();frameId=requestAnimationFrame(frame);
-  window.IslandRunner={version:'9.6.0',
+  window.IslandRunner={version:'9.7.0',
     setOptions(value){if(value&&typeof value==='object')Object.assign(localOptions,{listening:value.listening!==false,pictures:value.pictures===true});if(value?.listening)listeningActive=speechReady();if(!value?.listening){listeningActive=false;stopSpeech();if(run?.gate?.q?.format==='listen'){$('promptText').textContent=run.gate.q.speak;$('promptNote').textContent='Listening is off. The word is shown instead.';$('repeatAudio').hidden=true;}}if($('teacherDialog').open)renderRunOptions();reportHost();},
     repeatAudio(){const q=run?.gate?.q;if(q?.format==='listen'&&listeningActive){speak(q.speak);return {ok:true,message:'Repeating the word'};}if(run?.trailActive&&listeningActive){speak(run.trail.word.toLowerCase());return {ok:true,message:'Repeating the word'};}return {ok:false,message:'No listening question right now'};},
-    nextNavigator,applyTeaching(catalog){acceptTeaching(catalog);if(!run||run.status!=='running')renderMap();},applyProgress(progress){mergeProgress(progress);persist();if(!run||run.status!=='running'){selected=preferredIsland();renderMap();}},pause,resume,setHostVisible,getSnapshot:()=>({settings:{...state.settings},selectedIsland:selected,status:run?run.status:'map',practice,progress:JSON.parse(JSON.stringify(state.progress))})};
+    control:remoteControl,applyTeaching(catalog){acceptTeaching(catalog);if(!run||run.status!=='running')renderMap();},applyProgress(progress){mergeProgress(progress);persist();if(!run||run.status!=='running'){selected=preferredIsland();renderMap();}},pause,resume,setHostVisible,getSnapshot:()=>({settings:{...state.settings},selectedIsland:selected,status:run?run.status:'map',practice,progress:JSON.parse(JSON.stringify(state.progress))})};
   reportHost();
 })();

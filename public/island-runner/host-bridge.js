@@ -7,6 +7,8 @@
   root.RunnerHost=Object.freeze({context:context?Object.freeze(context):null,
     studio(options){if(context)try{return bridge.studioFrom?.(root,context.token,options)||false;}catch{}return false;},
     progress(value){if(context)try{bridge.progressFrom(root,context.token,value);}catch{}},
+    // v9.7.0: a finished run earns this session's navigator the island's seal; the board keeps and saves it.
+    seal(island){if(context)try{return bridge.sealFrom?.(root,context.token,island)||null;}catch{}return null;},
     report(state){if(context)try{bridge.report(root,context.token,state);}catch{}},
     // v9.3.0: answer log, review list and the listening/picture switches live on the board page.
     answers(rows){if(context)try{return bridge.answersFrom?.(root,context.token,rows)||0;}catch{}return 0;},

@@ -110,6 +110,21 @@
         const active = celebrations.get(teamId);
         if (active) { clearTimeout(active.timer); active.motion?.cancel(); active.node.remove(); celebrations.delete(teamId); }
     }
+    // v9.7.0: the award card shows the Island Run seals this student earned as navigator (islands 1–10,
+    // five to a row) instead of the points; the score panel and the history still show the points.
+    function sealGrid(person) {
+        const seals = root.LeagueNavigatorSeals?.islands(person.className, person.id) || [];
+        const grid = element('span','student-seal-grid');
+        grid.setAttribute('role','img');
+        grid.setAttribute('aria-label',`${seals.length} of 10 Island Run navigator seals`);
+        for (let island = 1; island <= 10; island++) {
+            // Earned seals are bright gold with the island number, readable from the back of the room.
+            const earned = seals.includes(island), slot = element('span',`student-seal-slot${earned ? ' earned' : ''}`,String(island));
+            if (earned) slot.title = `Island ${island} · ${root.LeagueNavigatorSeals.guardian(island)} seal`;
+            grid.append(slot);
+        }
+        return grid;
+    }
     function celebrate(team, person, points, detail = '', options = {}) {
         const host = document.querySelector(`#team-${team.id} .mascot-area`);
         if (!host) return;
@@ -119,7 +134,7 @@
         node.setAttribute('role','status'); node.setAttribute('aria-live','polite');
         node.append(element('span','student-contribution-kicker',`${person.className} · POINTS EARNED`),
             element('strong','student-contribution-name',person.name),
-            element('span','student-contribution-points',`+${number(points)}${detail ? ` · ${detail}` : ''}`));
+            sealGrid(person));
         // v9.5.0: a student's first contribution of the session gets its own small flourish.
         if (options.first) { node.classList.add('first-contribution'); node.append(element('span','student-contribution-first','★ First time')); }
         host.append(node);
@@ -129,8 +144,8 @@
             {opacity:1,transform:'translateY(0) scale(1)',offset:.12},
             {opacity:1,transform:'translateY(0) scale(1)',offset:.88},
             {opacity:0,transform:'translateY(-6px) scale(1)'}
-        ],{duration:3600,easing:'ease-out'});
-        celebrations.set(team.id,{node,motion,timer:setTimeout(() => clearCelebration(team.id),3700)});
+        ],{duration:4200,easing:'ease-out'});
+        celebrations.set(team.id,{node,motion,timer:setTimeout(() => clearCelebration(team.id),4300)});
     }
     function clearCelebrations() { for (const teamId of [...celebrations.keys()]) clearCelebration(teamId); }
     function renderContributors(host, teams, className, totals) {

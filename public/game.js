@@ -5658,11 +5658,35 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '9.6.0';
+        const REMOTE_BUILD = '9.7.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
         let remoteIslandRun = {open:false,ready:false,canPause:false,paused:false,options:{listening:true,pictures:false},navigator:'',audio:false};
+        // v9.7.0: one Island Run navigator per session: a random contributor of the Arena champion team (the
+        // whole team if nobody contributed). Kept in the session checkpoint so a reload keeps the same student.
+        let sessionNavigator = null, runControlSequence = 0;
+        function chooseSessionNavigator(winner) {
+            const roster = globalThis.LeagueStudents;
+            if (!roster?.validClass(selectedClass) || !winner) return null;
+            const kept = sessionNavigator;
+            if (kept?.sessionId === sessionId && kept.className === selectedClass && kept.team === winner.id && roster.student(selectedClass, winner.id, kept.id)) return kept;
+            const contributors = roster.contributors(selectedClass, winner.id, studentContributions);
+            const pool = contributors.length ? contributors : roster.members(selectedClass, winner.id);
+            if (!pool.length) return null;
+            let index = Math.floor(Math.random() * pool.length);
+            if (window.crypto?.getRandomValues) { const value = new Uint32Array(1); window.crypto.getRandomValues(value); index = value[0] % pool.length; }
+            const person = pool[index];
+            sessionNavigator = { sessionId, className:selectedClass, team:winner.id, id:person.id, name:person.name };
+            addHistoryLog(`Island Run navigator for this session: ${person.name} (${winner.name}).`, '#fde68a');
+            scheduleCheckpoint();
+            return sessionNavigator;
+        }
+        // Controller side: a student controller press travels as a light message, not a confirmed command.
+        function sendRunControl(action) {
+            if (remoteRole !== 'controller' || remoteConnectionState !== 'connected' || !latestRemoteSessionId || !['up','down','jump'].includes(action)) return false;
+            return safeRemoteSend({ type:'RUN_CONTROL', protocol:7, sessionId:latestRemoteSessionId, control:action, sequence:++runControlSequence });
+        }
         let remoteQuestionLogExchange = '';
         let remoteRole = 'none';
         let activeRoomCode = '';
@@ -6309,6 +6333,13 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     }else if(data.sessionId===latestRemoteSessionId)LeagueQuestionLog.merge(data.className,data.rows);
                     return;
                 }
+                if(data.type==='NAVIGATOR_SEALS'&&isHost){
+                    if(data.sessionId===sessionId&&data.className===selectedClass&&Array.isArray(data.rows))globalThis.LeagueNavigatorSeals?.merge(selectedClass,data.rows);return;
+                }
+                if(data.type==='RUN_CONTROL'&&isHost){
+                    if(!connection._stateReady||connection._versionMismatch||data.protocol!==7||data.sessionId!==sessionId)return;
+                    LeagueIslandRun.control(data.control);return;
+                }
                 if(data.type==='ISLAND_PROGRESS'&&isHost){
                     if(data.sessionId===sessionId&&data.className===selectedClass){LeagueIslandProgress.merge(data.progress,selectedClass);window.syncStateToController();}return;
                 }
@@ -6403,6 +6434,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if(latestRemoteSessionId!==data.sessionId){LeagueAgent.close();shownAgentRequest=null;LeagueStudentUI.close(true);closeParticipationSummary();pendingRemoteClassSelection=null;cachedLeaderboardRecord=null;cachedBattleRecord=null;pendingRemoteFinish=false;latestRemoteSessionId=data.sessionId;updateMobileRecordAvailability();}
                     updateRemoteSceneControls(data.scene,data.paused,data.islandRun);
                     if(data.islandProgress)LeagueIslandProgress.merge(data.islandProgress,data.selectedClass);
+                    if(globalThis.LeagueNavigatorSeals&&Array.isArray(data.navigatorSeals)&&LeagueStudents.validClass(data.selectedClass)){
+                        globalThis.LeagueNavigatorSeals?.merge(data.selectedClass,data.navigatorSeals);
+                        // The phone may hold seals loaded from Google Sheets that the board has not seen yet.
+                        if(globalThis.LeagueNavigatorSeals&&LeagueNavigatorSeals.rows(data.selectedClass).length>new Set(data.navigatorSeals.map(r=>r?.studentId+':'+r?.island)).size)
+                            safeRemoteSend({type:'NAVIGATOR_SEALS',sessionId:data.sessionId,className:data.selectedClass,rows:LeagueNavigatorSeals.rows(data.selectedClass)});
+                    }
                     // Answer logs are exchanged only when the two devices hold different rows for this class.
                     if(globalThis.LeagueQuestionLog&&LeagueStudents.validClass(data.selectedClass)&&typeof data.questionLogStamp==='string'){
                         const key=data.sessionId+'|'+data.selectedClass+'|'+data.questionLogStamp+'|'+LeagueQuestionLog.stamp(data.selectedClass);
@@ -6519,6 +6556,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     type: 'STATE_SYNC', protocol:7, build:REMOTE_BUILD, syncToken:window.remoteConnection._syncToken, sessionId,
                     selectedClass, studentContributions, studentTrackingVersion:1, secretAgents,
                     islandProgress:LeagueIslandProgress.snapshot(selectedClass),
+                    navigatorSeals:globalThis.LeagueNavigatorSeals?.rows(selectedClass)||[],
                     questionLogStamp:globalThis.LeagueQuestionLog?.stamp(selectedClass)||'0',
                     rosterSnapshot:LeagueStudents.snapshot(),rosterCatalog:LeagueRoster.current(),
                     levels:Object.fromEntries(teamsData.map(t=>[t.id,t.level])),
@@ -6753,6 +6791,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const payload = {
                     sessionId:latestRemoteSessionId||lbRecord.sessionId||btRecord.sessionId||lbRecord.summaryId,
                     islandProgress:LeagueIslandProgress.snapshot(classInput),
+                    navigatorSeals:globalThis.LeagueNavigatorSeals?.rows(classInput)||[],
                     type: recordType,
                     className: classInput,
                     studentContributions:lbRecord.studentContributions || null,
@@ -6801,7 +6840,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 selectedClass,studentContributions,secretAgents,rosterSnapshot:LeagueStudents.snapshot(),
                 classMission:{...classMission},lastTeamClicked,comboCount,historyLog:historyLog.slice(0,120),historyStack:historyStack.slice(-20),
                 wheels:[...(active?[active]:[]),...pendingAnimatedWheels],wheelMode:activeWheelMode,pendingFinish:pendingAnimatedFinish,
-                deferredEvolutions:[...deferredAnimatedEvolutions],commandLedger,boardSummaries,vixarDefeatedThisSession,lastVortexTime,
+                deferredEvolutions:[...deferredAnimatedEvolutions],commandLedger,boardSummaries,vixarDefeatedThisSession,lastVortexTime,sessionNavigator,
                 unity:unityAscensionState?{wave:unityAscensionState.wave,totalGranted:unityAscensionState.totalGranted,teamPlans:[...unityAscensionState.teamPlans]}:null,
                 scene:LeagueScenes.active,arenaResult:battleState&&!battleState.running?battleState.fighters.map(f=>({id:f.id,hp:f.hp,maxHP:f.maxHP,alive:f.alive,damageDealt:f.damageDealt,points:f.points,traits:f.traits,level:f.level})):null};
             const saved=LeagueRecovery.save(snapshot);
@@ -6834,6 +6873,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 (s.deferredEvolutions||[]).filter(id=>teamsData.some(t=>t.id===id)).forEach(id=>deferredAnimatedEvolutions.add(id));
                 boardSummaries=s.boardSummaries||{};lastMatchSummaryPayload=boardSummaries.BATTLE_OUTCOME||boardSummaries.LEADERBOARD_FINAL||null;
                 vixarDefeatedThisSession=Boolean(s.vixarDefeatedThisSession);lastVortexTime=s.lastVortexTime||0;
+                sessionNavigator=s.sessionNavigator&&s.sessionNavigator.sessionId===s.sessionId&&typeof s.sessionNavigator.id==='string'&&typeof s.sessionNavigator.name==='string'?{...s.sessionNavigator}:null;
                 pendingAnimatedFinish=Boolean(s.pendingFinish);const restoredVisualMode=normalizeVisualMode(s.performanceMode);setPerformanceMode(VISUAL_MODES.includes(restoredVisualMode)?restoredVisualMode:'light',{persist:true});
                 if(s.unity&&Array.isArray(s.unity.teamPlans)&&!classMission.rewardGranted)resumeUnityPlan={...s.unity,teamPlans:new Map(s.unity.teamPlans)};
                 setWheelMode(s.wheelMode==='english'?'english':'all');
@@ -6986,7 +7026,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             updateMobileClassMissionUI();updateMobileRecordAvailability();
             globalThis.LeagueRunRemote?.render(remoteIslandRun,connected);
         }
-        globalThis.LeagueRunRemote?.configure({send:(action,extra)=>remoteCommands.enqueue(action,null,extra)});
+        globalThis.LeagueRunRemote?.configure({send:(action,extra)=>remoteCommands.enqueue(action,null,extra),control:sendRunControl});
         LeagueStudio.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass});
         window.LeaguePassportSeals?.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass});
         const studioButton=document.createElement('button');studioButton.type='button';studioButton.className='island-cloud-button';studioButton.textContent='Manage';studioButton.onclick=()=>LeagueStudio.open();document.getElementById('board-selected-class')?.closest('button')?.after(studioButton);
@@ -7013,18 +7053,23 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 window.syncStateToController?.();scheduleCheckpoint();
             }
         });
+        // v9.7.0: navigator seals follow the same paths as island progress: board ⇄ phone, phone → Google Sheets.
+        document.addEventListener('navigator-seals-change',event=>{
+            const c=event.detail.className;
+            if(remoteRole==='controller'){if(c===remoteStudentClass)safeRemoteSend({type:'NAVIGATOR_SEALS',sessionId:latestRemoteSessionId,className:c,rows:LeagueNavigatorSeals.rows(c)});}
+            else{window.syncStateToController?.();scheduleCheckpoint();}
+        });
         LeagueIslandRun.configure({
             eligible:()=>remoteRole!=='controller'&&LeagueScenes.active==='results'&&Boolean(battleState&&!battleState.running),
             context:()=>{
                 if(!battleState?.fighters?.length||battleState.running)return null;
                 const winner=determineArenaWinner();
-                // Navigators: this session's contributors from the winning team; the whole team if nobody contributed.
-                const roster=globalThis.LeagueStudents,contributors=roster?.contributors(selectedClass,winner.id,studentContributions)||[];
-                const crew=(contributors.length?contributors:roster?.members(selectedClass,winner.id)||[]).map(p=>p.name);
-                return {sessionId,className:selectedClass,house:winner.id,name:winner.name,level:winner.level,avatarMarkup:getAvatarSVG(winner.id,winner.traits,winner.level),crew};
+                const chosen=chooseSessionNavigator(winner),navigator=chosen?{id:chosen.id,name:chosen.name,team:chosen.team}:null;
+                return {sessionId,className:selectedClass,house:winner.id,name:winner.name,level:winner.level,avatarMarkup:getAvatarSVG(winner.id,winner.traits,winner.level),navigator};
             },
             changed:()=>{updateSceneControls();LeagueRecap.render();},
-            questionsChanged:()=>{window.syncStateToController?.();scheduleCheckpoint();}
+            questionsChanged:()=>{window.syncStateToController?.();scheduleCheckpoint();},
+            sealsChanged:()=>{window.syncStateToController?.();scheduleCheckpoint();}
         });
         const pausedAnimations=new Set();
         document.addEventListener('league-scene-change',()=>{if(['arena','raid','results','agent'].includes(LeagueScenes.active)){LeagueStudentUI.close(true);LeagueStudentUI.clearCelebrations();}updateSceneControls();pumpPresentation();});

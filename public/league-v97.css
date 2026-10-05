@@ -1,0 +1,37 @@
+/* v9.7.0 · Student award card with navigator seals, and the remote's student controller for Island Run.
+   Loaded after board-v95.css and remote-compact.css. */
+
+/* ---------- Student award card: the name, then ten seal places (islands 1–10, five to a row) ---------- */
+.mascot-area>.student-contribution-badge{left:7%!important;right:16%!important;bottom:4px!important;flex-direction:column!important;flex-wrap:nowrap!important;
+  gap:.32rem!important;padding:.42rem .7rem .55rem!important;border-radius:16px!important;}
+.mascot-area>.student-contribution-badge .student-contribution-points{display:none;}
+.student-seal-grid{--seal:clamp(19px,1.85vw,34px);display:grid;grid-template-columns:repeat(5,var(--seal));gap:clamp(3px,.34vw,6px);justify-content:center;}
+.student-seal-slot{width:var(--seal);height:var(--seal);border-radius:50%;display:grid;place-items:center;box-sizing:border-box;
+  border:1.5px dashed rgba(226,232,240,.3);background:rgba(2,6,23,.42);color:rgba(226,232,240,.45);font:800 calc(var(--seal)*.42)/1 system-ui,-apple-system,"Segoe UI",sans-serif;}
+.student-seal-slot.earned{border:2px solid #fff1c4;background:radial-gradient(circle at 34% 28%,#fffbe6 0,#f6d27a 38%,#c8902f 100%);color:#3b2606;font-weight:900;
+  box-shadow:0 0 0 1px rgba(120,72,10,.6),0 2px 7px rgba(2,6,23,.5),0 0 12px rgba(246,210,122,.55);text-shadow:0 1px 0 rgba(255,248,220,.6);}
+
+/* ---------- Remote: student controller ---------- */
+#mobile-run-pad{position:fixed;inset:0;z-index:2147482000;display:flex;flex-direction:column;gap:12px;padding:max(12px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));
+  background:radial-gradient(120% 80% at 50% 0%,#17304a 0%,#0b1626 55%,#060d18 100%);color:#e8eef5;touch-action:manipulation;user-select:none;-webkit-user-select:none;}
+#mobile-run-pad[hidden]{display:none!important;}
+body.run-pad-open{overflow:hidden;}
+.run-pad-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.run-pad-head small{display:block;color:#f3c96b;font-size:11px;font-weight:800;letter-spacing:.14em;}
+.run-pad-head strong{display:block;margin-top:3px;font-size:19px;font-weight:800;line-height:1.15;color:#fff3cf;overflow-wrap:anywhere;}
+#mobile-run-pad-close{flex:none;min-width:96px;min-height:44px;border-radius:12px;border:1px solid rgba(226,232,240,.25);background:rgba(15,23,42,.8);color:#e2e8f0;font-size:14px;font-weight:750;}
+.run-pad-status{margin:0;min-height:1.3em;color:#a9bccb;font-size:14px;}
+.run-pad-buttons{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-template-areas:"up jump" "down jump";gap:12px;}
+.run-pad-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:120px;border-radius:24px;border:2px solid rgba(148,201,230,.35);
+  background:linear-gradient(180deg,#1d3a55,#122539);color:#f1f5f9;font-size:22px;font-weight:900;letter-spacing:.12em;box-shadow:0 10px 24px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.08);
+  transition:transform .08s ease,background .08s ease;-webkit-tap-highlight-color:transparent;}
+.run-pad-btn svg{width:58px;height:58px;fill:none;stroke:currentColor;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;}
+.run-pad-btn.up{grid-area:up;}.run-pad-btn.down{grid-area:down;}
+.run-pad-btn.jump{grid-area:jump;border-color:#f3c96b;background:linear-gradient(180deg,#5a4413,#2f2409);color:#fff1c4;}
+.run-pad-btn.pressed,.run-pad-btn:active{transform:scale(.96);background:#2c5578;}
+.run-pad-btn.jump.pressed,.run-pad-btn.jump:active{background:#7a5c18;}
+.run-pad-btn:disabled{opacity:.42;}
+.run-pad-keys{margin:0;text-align:center;color:#8fa6b8;font-size:13px;}
+.run-pad-keys b{color:#f3c96b;margin-right:6px;letter-spacing:.08em;text-transform:uppercase;font-size:11px;}
+@media (orientation:landscape){.run-pad-buttons{grid-template-columns:1fr 1.25fr 1fr;grid-template-rows:1fr;grid-template-areas:"up jump down";}.run-pad-btn{min-height:0;}}
+@media (prefers-reduced-motion:reduce){.run-pad-btn{transition:none;}}
