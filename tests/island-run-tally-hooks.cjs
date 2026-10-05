@@ -14,6 +14,7 @@ const ctx={console,sessionId:'lesson-a',selectedClass:'6-C',remoteRole:'host',ba
 };vm.createContext(ctx);
 for(const [a,b]of [['function compareArenaFighters','// Light Arena scaling'],['function determineArenaWinner','function finishFinalBattle'],['function finishFinalBattle','function updateFinalBattle'],['function applyRemoteCommand','        const controls=document.createElement'],['function updateRemoteSceneControls','        LeagueStudio.configure']])vm.runInContext(section(a,b),ctx);
 vm.runInContext(source.match(/function exitResults\(\)\{[^\n]+/)[0],ctx);
+vm.runInContext(section('        function chooseSessionNavigator','        // Controller side'),ctx);
 vm.runInContext(section('        LeagueIslandRun.configure','        const pausedAnimations'),ctx);
 const original=JSON.stringify({fighters,contributions:ctx.studentContributions});
 assert.equal(adapter.eligible(),false);ctx.finishFinalBattle();assert.equal(ctx.battleState.running,false);assert.equal(scheduled.length,1);scheduled.shift()();assert.equal(scene,'results');assert.equal(refresh,1);assert.equal(adapter.eligible(),true);

@@ -1,8 +1,12 @@
-# English League with Mr. Saymaz — v9.6.0
+# English League with Mr. Saymaz — v9.7.0
 
-Start with **START-HERE-v9.6.0.md**. This update follows classroom use of Animated mode. **Performance mode is removed**; Animated and Light remain. The board drops the "takes the lead" banner and the point bubbles, the Class Mission bar fills smoothly again, and Award Custom Points closes with its × button. The arena no longer prints attack names in the centre. The remote's team cards are taller, with at least three names each. The Google Sheet now records **every student's contribution count** in a new Student_Contributions tab, and Leaderboard columns I–L list every contributor. Island Run keeps one navigator for the whole run, a question panel that never changes height, and a steady background, with new lanes, coins, obstacles, letters and attack and firing lanes drawn at lower cost.
+Start with **START-HERE-v9.7.0.md**. In Island Run, one student from the Arena champion's contributors is the **navigator for the whole session**, and every island their runs complete earns **that student** the island's seal. A student's award card on the board now shows their **ten seal places** instead of the points, and the seals are kept in Google Sheets (**Navigator_Seals**) and loaded back with Load islands. For students who prefer not to stand at the board, a large **student controller** pops up on the teacher's phone when a run starts, and a **Bluetooth keyboard** paired with the phone steers the runner.
 
-**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v9.6.0.gs** (deploy a New version of the existing web app). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v9.6.0**. The English League title and fonts are unchanged.
+**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v9.7.0.gs** (deploy a New version of the existing web app; it includes v9.6.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v9.7.0**.
+
+## v9.6.0 (retained)
+
+v9.6.0 made Animated mode the board's mode (Performance removed), dropped the lead banner and point bubbles, restored the smoothly filling Class Mission bar, fixed the Award Custom Points ×, removed attack names from the arena centre, gave the remote taller cards, recorded every student's contribution count in Google Sheets, and gave Island Run a fixed question panel, a steady background and a lighter, richer renderer.
 
 ## v9.5.0 (retained)
 
@@ -14,9 +18,9 @@ v9.4.0 gave Island Run a single header while running, a daylight scene for each 
 
 ## v9.3.0 (retained)
 
-v9.3.0 turned Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named (since v9.6.0, one navigator leads the whole run). The teacher remote fits an iPhone 14 Pro in Safari without scrolling.
+v9.3.0 turned Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named (since v9.7.0, one navigator leads the whole session). The teacher remote fits an iPhone 14 Pro in Safari without scrolling.
 
-Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v9.6.0.md**.
+Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v9.7.0.md**.
 
 ## Retained features and earlier fixes
 
@@ -31,7 +35,7 @@ Version 9 adds the four selected features:
 - Teacher Studio: use **Manage** on the phone or board to edit questions and learning objectives, preview choices, paste vocabulary pairs, maintain rosters and view class progression. Teaching material saves online by grade and island.
 - A compact expedition recap below the existing champion and contributor sections, with team progress, this lesson's new completions and a next-island teaser.
 
-For this release, use **START-HERE-v9.6.0.md** and update to **GOOGLE-APPS-SCRIPT-v9.6.0.gs**. The startup badge should read **Island Run Edition · v9.6.0** on both devices. No new environment variables are required.
+For this release, use **START-HERE-v9.7.0.md** and update to **GOOGLE-APPS-SCRIPT-v9.7.0.gs**. The startup badge should read **Island Run Edition · v9.7.0** on both devices. No new environment variables are required.
 
 Remote startup synchronization, Retry sync, class/team cloud progress and session-save deduplication from v8.9.1 remain included. Existing artwork, grade curricula, 4,240 question variants, scoring, coin targets and Soft/Hard rules are retained.
 
@@ -84,7 +88,7 @@ Student totals survive team resets and participate in Undo, session recovery and
 - `tests/arena-techniques.cjs`: all 24 moves, contact timing, visual isolation, limits and cleanup.
 - `archive/RELEASE-NOTES-v8.1.0.md`: previous all-team recognition and compact Level badge changes.
 - `archive/TEST-REPORT-v8.1.0.md`: previous release verification and limits.
-- `GOOGLE-APPS-SCRIPT-v9.6.0.gs`: current complete backend with results, roster, teaching material, island progress, passport details, the Island Run answer log and every student's contribution count. Older scripts in `archive/` are historical; do not deploy them.
+- `GOOGLE-APPS-SCRIPT-v9.7.0.gs`: current complete backend with results, roster, teaching material, island progress, passport details, the Island Run answer log, every student's contribution count and navigator seals. Older scripts in `archive/` are historical; do not deploy them.
 - `public/student-rosters.js`: the class and team rosters.
 - `tests/`: optional developer checks; not required to run the site.
 

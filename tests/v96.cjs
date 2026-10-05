@@ -80,13 +80,13 @@ test('Performance mode is gone: two display modes, and a saved or requested Perf
  assert.doesNotMatch(html,/performance-option-ultra|data-mode="ultra"|'ultra'\)/);
  assert.match(html,/id="custom-points-close"[^>]*onclick="closeCustomPointsModal\(\)"/);
 });
-test('Board, remote and runner load every v9.6.0 change on the release tag',()=>{
+test('Board, remote and runner load every v9.6.0 change on the current release tag',()=>{
  const board=pub('index.html'),runner=pub('island-runner/index.html'),release=(board.match(/Island Run Edition · v(9\.\d+\.\d+)/)||[])[1];
- assert.equal(release,'9.6.0');
- for(const f of ['student-rosters.js','remote-compact.css','board-fx.js','board-v95.css','game.js','student-ui.js'])assert.match(board,new RegExp(f.replace('.','\\.')+'\\?v=9\\.6\\.0'),f);
- for(const f of ['visual-v96.css','visual-kit.js','scenery.js','app.js'])assert.match(runner,new RegExp(f.replace('.','\\.')+'\\?v=9\\.6\\.0'),f);
- assert.doesNotMatch(board+runner,/\?v=9\.5\.0/);assert.match(pub('island-run.js'),/index\.html\?v=9\.6\.0/);
- assert.match(pub('game.js'),/const REMOTE_BUILD = '9\.6\.0'/);assert.match(pub('island-runner/app.js'),/window\.IslandRunner=\{version:'9\.6\.0'/);
+ assert(release&&!['9.5.0','9.4.0'].includes(release),'v9.6.0 or later');const tag=release.replace(/\./g,'\\.');
+ for(const f of ['student-rosters.js','remote-compact.css','board-fx.js','board-v95.css','game.js','student-ui.js'])assert.match(board,new RegExp(f.replace('.','\\.')+'\\?v='+tag),f);
+ for(const f of ['visual-v96.css','visual-kit.js','scenery.js','app.js'])assert.match(runner,new RegExp(f.replace('.','\\.')+'\\?v='+tag),f);
+ assert.doesNotMatch(board+runner,/\?v=9\.5\.0/);assert.match(pub('island-run.js'),new RegExp('index\\.html\\?v='+tag));
+ assert.match(pub('game.js'),new RegExp("const REMOTE_BUILD = '"+tag+"'"));assert.match(pub('island-runner/app.js'),new RegExp("window\\.IslandRunner=\\{version:'"+tag+"'"));
 });
 
 (async()=>{
@@ -94,9 +94,9 @@ test('Board, remote and runner load every v9.6.0 change on the release tag',()=>
  const call=async(capability,body)=>{const fetcher=async(url,o)=>{const d=JSON.parse(o.body);return {ok:true,json:async()=>d.type==='ISLAND_GET'?capability:{status:'success',islandProgress:{}}};};
   return (await handleSession(new Request('https://x.invalid/api/session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),fetcher)).json();};
  const body={type:'FULL_SESSION',pin:'1',className:'5-A',islandProgress:{},studentContributions:{teams,everyone}};
- let r=await call({status:'success',islandProgress:{},passportVersion:1,questionLogVersion:1},body);assert.equal(r.status,'error');assert.match(r.message,/v9\.6\.0/);
+ let r=await call({status:'success',islandProgress:{},passportVersion:1,questionLogVersion:1},body);assert.equal(r.status,'error');assert.match(r.message,/GOOGLE-APPS-SCRIPT-v9\.\d\.0\.gs/);
  r=await call({status:'success',islandProgress:{},passportVersion:1,questionLogVersion:1,contributionsVersion:1},body);assert.equal(r.status,'success');
- checks++;console.log('PASS Netlify session function keeps student contributions on the phone until the Sheet runs the v9.6.0 script');
+ checks++;console.log('PASS Netlify session function keeps student contributions on the phone until the Sheet runs the v9.6.0 (or later) script');
  await require('./v96-island.cjs').run(test);
  console.log(JSON.stringify({checks}));
 })().catch(e=>{console.error(e);process.exit(1);});

@@ -1,10 +1,9 @@
-English League · Island Run Edition · v9.6.0
+English League · Island Run Edition · v9.7.0
 
-Animated mode is the board's mode: Performance is removed; Animated and Light remain.
-Board: no "takes the lead" banner and no point bubbles; Class Mission fills as one smooth, slim bar; Award Custom Points closes with ×.
-Arena: attack names are no longer shown in the centre. Remote: taller cards with at least three names per team.
-Google Sheets: every student's contribution count (Student_Contributions tab); Leaderboard I–L list every contributor.
-Island Run: one navigator per run; fixed-height question panel; steady background; new lanes, coins, obstacles, letters, attack and firing lanes at lower cost.
+Island Run: one navigator for the whole session, chosen at random from the Arena champion's contributors.
+Navigator seals: each island the navigator completes earns that student its seal; the student award card shows ten seal places instead of the points; team cards no longer show seals.
+Google Sheets: Navigator_Seals tab, loaded back with Load islands.
+Remote: a large student controller pops up when a run starts; a Bluetooth keyboard paired with the phone steers the runner (arrows, Space).
 
-Apps Script update required: GOOGLE-APPS-SCRIPT-v9.6.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v9.6.0.md.
+Apps Script update required: GOOGLE-APPS-SCRIPT-v9.7.0.gs (deploy a New version of the existing web app).
+No new Netlify or Cloudflare variables. Read START-HERE-v9.7.0.md.

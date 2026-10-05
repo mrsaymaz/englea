@@ -74,25 +74,12 @@ function sealsContext(){
  return {seals,progress,nodes,timers,change,flush(){while(timers.length)timers.shift()();}};
 }
 
-test('Board cards show a team seal count and the latest guardian only after a passport stamp exists',()=>{
- const t=sealsContext(),chip=t.nodes.get('passport-seals-slytherin');
- assert(chip&&chip.hidden,'no seals yet: chip hidden');
- t.progress['5-A|slytherin']={1:{score:900,stars:2},3:{score:1200,stars:3}};t.seals.fromRun();t.change();
- assert.equal(chip.hidden,false);assert.equal(chip._b.textContent,2);assert.match(chip._img.attrs.src,/mirrath\.webp$/);
- assert.match(chip.attrs['aria-label'],/2 of 10 Island Run seals\. Latest: island 3, Mirrath/);
+// v9.7.0 moved seals from the team cards to the navigator student's award card (see v97.cjs).
+test('Team cards carry no seal chip since v9.7.0; the team passport is still read for the map and unlocks',()=>{
+ const t=sealsContext();
+ t.progress['5-A|slytherin']={1:{score:900,stars:2},3:{score:1200,stars:3}};t.seals.fromRun();t.change();t.flush();
+ assert.equal(t.nodes.get('passport-seals-slytherin'),undefined,'no chip on the team card');assert.equal(t.nodes.get('passport-seal-toast'),undefined,'no team toast');
  assert.equal(JSON.stringify(t.seals.sealsFor('5-A','slytherin').map(s=>s.island)),'[1,3]');
-});
-
-test('Only a finished run celebrates a new seal; loading progress from Sheets does not',()=>{
- const t=sealsContext(),chip=t.nodes.get('passport-seals-slytherin');
- t.progress['5-A|slytherin']={1:{score:900,stars:2}};t.change();t.flush();
- assert.equal(chip.cls.has('new-seal'),false,'cloud load: no celebration');assert.equal(t.nodes.get('passport-seal-toast'),undefined);
- t.seals.fromRun();t.flush();t.progress['5-A|slytherin'][2]={score:500,stars:1};t.change();
- assert.equal(chip.cls.has('new-seal'),false,'an expired run marker is not reused');
- t.seals.fromRun();t.progress['5-A|slytherin'][3]={score:500,stars:1};t.change();
- assert(chip.cls.has('new-seal'));t.flush();
- const toast=t.nodes.get('passport-seal-toast');assert(toast,'announcement shown once the board is visible');
- assert.equal(toast.children[1].children[1].textContent,'Slytherin · Island 3');
 });
 
 test('Board and runner pages load the shared look and the seals script, all on the current release tag',()=>{

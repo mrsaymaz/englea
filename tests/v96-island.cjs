@@ -22,10 +22,10 @@ function scene(realm='forest',island=4){
 const stripImages=(renderer,level)=>new Set(Object.values(renderer.bakes.get(level)?.parts||{}).map(p=>p.img));
 
 module.exports={async run(test){
- test('One navigator leads the whole run: chosen once when the run starts, never per question or per trail',()=>{
-  const app=read('app.js'),calls=[...app.matchAll(/setNavigator\(navigators\.next\(\)\)/g)];
-  assert.equal(calls.length,2,'start of the run and the teacher’s own “next navigator” action only');
-  const start=app.slice(app.indexOf('function startRun'),app.indexOf('function startRun')+4000);assert(start.includes('setNavigator(navigators.next())'));
+ test('One navigator leads the whole run: set when the run starts, never per question or per trail (v9.7.0: the board picks one per session)',()=>{
+  const app=read('app.js');
+  assert(!app.includes('navigators.next()'),'no per-run bag any more');assert(!/nextNavigator/.test(app),'no “another student” action');
+  const start=app.slice(app.indexOf('function startRun'),app.indexOf('function startRun')+4000);assert(start.includes('setNavigator(sessionNavigator)'));
   for(const handler of ['function showQuestion','function showAnswer','function showTrail','function showLetter','function endTrail','function showBoss','function bossPhase','function frame']){
    assert(app.includes(handler),handler);const body=app.slice(app.indexOf(handler),app.indexOf('\n  function',app.indexOf(handler)+10));assert(!/setNavigator\((?!'')/.test(body),handler+' keeps the navigator');}
   assert.match(app,/Navigator · \$\{navigator\}/,'the intro card names the navigator for the run');
