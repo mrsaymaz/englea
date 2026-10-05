@@ -1,7 +1,7 @@
 /* v9.5.0/v9.6.0 browser checks: the board fits common smartboard sizes in Light and Animated (v9.6.0 removed
    Performance), a new leader is crowned quietly (v9.6.0 removed the "takes the lead" banner and the point bubbles),
    Award Custom Points closes, the arena dial and damage layer are bounded and cleaned up, and a shared League title
-   lines its champions up. Chromium only; see ../TEST-REPORT-v9.7.0.md. */
+   lines its champions up. Chromium only; see ../TEST-REPORT-v10.0.0.md. */
 const assert=require('assert/strict');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));

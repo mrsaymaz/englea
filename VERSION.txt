@@ -1,9 +1,7 @@
-English League · Island Run Edition · v9.7.0
+English League · Island Run Edition · v10.0.0
 
-Island Run: one navigator for the whole session, chosen at random from the Arena champion's contributors.
-Navigator seals: each island the navigator completes earns that student its seal; the student award card shows ten seal places instead of the points; team cards no longer show seals.
-Google Sheets: Navigator_Seals tab, loaded back with Load islands.
-Remote: a large student controller pops up when a run starts; a Bluetooth keyboard paired with the phone steers the runner (arrows, Space).
+Elemental student cards: the award card takes on the student's team element (fire, nature, water, air) and grows with each navigator seal; at ten seals a crown and a title: Flamebearer, Earthshaker, Tidecaller, Stormrider.
+School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
 
-Apps Script update required: GOOGLE-APPS-SCRIPT-v9.7.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v9.7.0.md.
+Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
+No new Netlify or Cloudflare variables. Read START-HERE-v10.0.0.md.

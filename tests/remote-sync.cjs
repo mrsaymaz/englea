@@ -10,7 +10,7 @@ function environment(role){
  const timers=new Map();let timerId=0,handler;const nodes=new Map();const el=id=>{if(!nodes.has(id))nodes.set(id,{innerText:'',textContent:'',style:{},classList:{add(){},remove(){},toggle(){},contains(){return false;}},setAttribute(){}});return nodes.get(id);};
  const connection={open:true,_syncToken:role+'-token',_stateReady:false,on(name,f){if(name==='data')handler=f;},send(data){messages.push({role,data});if(data.type==='STATE_SYNC'&&dropState-->0)return;if(data.type==='STATE_SYNC_ACK'&&dropAck-->0)return;transport.send(data);transport.flush();},close(){this.open=false;}};let peer;const transport=wire(data=>jobs.push(()=>peer.receive(data)));
 
- const c={console:{...console,warn(){}},REMOTE_BUILD:'9.7.0',remoteRole:role,remoteConnection:connection,boardSyncPatched:true,wheelObserverPatched:true,
+ const c={console:{...console,warn(){}},REMOTE_BUILD:'10.0.0',remoteRole:role,remoteConnection:connection,boardSyncPatched:true,wheelObserverPatched:true,
  setTimeout:f=>{timers.set(++timerId,f);return timerId;},clearTimeout:id=>timers.delete(id),document:{getElementById:el,querySelectorAll:()=>[],addEventListener(){},hidden:false},
  remoteConnectionState:'connecting',latestRemoteSessionId:null,lastRemoteActivityAt:0,sessionId:'lesson-1',selectedClass:null,studentContributions:{},secretAgents:{},remoteStudentClass:null,
  teamsData:['gryffindor','slytherin','hufflepuff','ravenclaw'].map((id,i)=>({id,points:i*10,level:0,pendingEvolution:false})),
@@ -36,13 +36,13 @@ phone.c.startRemoteStateSync(phone.connection,'controller');board.c.startRemoteS
 for(let i=0;i<3;i++){phone.tick();board.tick();flush();}
 assert.equal(board.c.remoteConnectionState,'connected');assert.equal(phone.c.remoteConnectionState,'connected');assert.equal(phone.c.commandReady,true);assert.equal(phone.el('mobile-score-ravenclaw').innerText,'30');assert.equal(board.timers.size,0);assert.equal(phone.timers.size,0);
 // Late approval cannot disable a synchronized phone.
-phone.receive({type:'CONNECTION_APPROVED',build:'9.7.0'});assert.equal(phone.c.remoteConnectionState,'connected');flush();
+phone.receive({type:'CONNECTION_APPROVED',build:'10.0.0'});assert.equal(phone.c.remoteConnectionState,'connected');flush();
 // A stale receipt cannot make a different session/connection ready.
-board.connection._stateReady=false;board.c.remoteConnectionState='connecting';board.receive({type:'STATE_SYNC_ACK',build:'9.7.0',sessionId:'old',syncToken:'host-token'});assert.equal(board.connection._stateReady,false);
-board.receive({type:'STATE_SYNC_ACK',build:'9.7.0',sessionId:'lesson-1',syncToken:'wrong-token'});assert.equal(board.connection._stateReady,false);
+board.connection._stateReady=false;board.c.remoteConnectionState='connecting';board.receive({type:'STATE_SYNC_ACK',build:'10.0.0',sessionId:'old',syncToken:'host-token'});assert.equal(board.connection._stateReady,false);
+board.receive({type:'STATE_SYNC_ACK',build:'10.0.0',sessionId:'lesson-1',syncToken:'wrong-token'});assert.equal(board.connection._stateReady,false);
 board.receive({type:'ACTION',action:'ADD'});assert.equal(board.c.actions,undefined);flush();
 // Applying a state must succeed before controls/commands become ready.
-phone.c.syncStudentState=()=>false;phone.receive({type:'STATE_SYNC',build:'9.7.0',protocol:7,sessionId:'lesson-1',syncToken:'host-token',scores:{gryffindor:0,slytherin:10,hufflepuff:20,ravenclaw:30}});assert.equal(phone.c.remoteConnectionState,'connecting');assert.equal(phone.connection._stateReady,false);
+phone.c.syncStudentState=()=>false;phone.receive({type:'STATE_SYNC',build:'10.0.0',protocol:7,sessionId:'lesson-1',syncToken:'host-token',scores:{gryffindor:0,slytherin:10,hufflepuff:20,ravenclaw:30}});assert.equal(phone.c.remoteConnectionState,'connecting');assert.equal(phone.connection._stateReady,false);
 phone.c.syncStudentState=()=>true;phone.tick();flush();assert.equal(phone.c.remoteConnectionState,'connected');
 // Mixed builds show a specific failure instead of leaving buttons unexplained.
 phone.receive({type:'STATE_SYNC',protocol:7,sessionId:'lesson-1'});assert.equal(phone.c.remoteConnectionState,'failed');assert.match(phone.c.detail,/Version mismatch/);assert.equal(phone.timers.size,0);flush();

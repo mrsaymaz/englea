@@ -89,7 +89,7 @@ test('Sound palette: every cue the app plays exists, and each cue stops and disc
 
 test('Board and runner pages load the v9.5 presentation files on the current release tag',()=>{
  const board=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8'),runner=fs.readFileSync(path.join(__dirname,'../public/island-runner/index.html'),'utf8');
- const release=(board.match(/Island Run Edition · v(9\.\d+\.\d+)/)||[])[1];assert(release&&release!=='9.4.0','edition badge on v9.5.0 or later');const tag=release.replace(/\./g,'\\.');
+ const release=(board.match(/Island Run Edition · v(\d+\.\d+\.\d+)/)||[])[1];assert(release&&release!=='9.4.0','edition badge on v9.5.0 or later');const tag=release.replace(/\./g,'\\.');
  for(const f of ['board-v95.css','board-fx.js','arena-v95.css','arena-fx.js','student-ui.js','game.js'])assert.match(board,new RegExp(f.replace('.','\\.')+'\\?v='+tag),f);
  for(const f of ['visual-v95.css','runner-fx.js','app.js','engine.js','scenery.js'])assert.match(runner,new RegExp(f.replace('.','\\.')+'\\?v='+tag),f);
  assert.match(runner,/id="runBanner"/);assert.match(runner,/id="streakHud"/);assert.match(runner,/id="bossHPTrail"/);assert.match(runner,/id="resultBadges"/);

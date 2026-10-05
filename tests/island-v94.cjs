@@ -84,7 +84,7 @@ test('Team cards carry no seal chip since v9.7.0; the team passport is still rea
 
 test('Board and runner pages load the shared look and the seals script, all on the current release tag',()=>{
  const board=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8'),runner=fs.readFileSync(path.join(__dirname,'../public/island-runner/index.html'),'utf8');
- const release=(board.match(/Island Run Edition · v(9\.\d+\.\d+)/)||[])[1];assert(release,'edition badge present');const tag=release.replace(/\./g,'\\.');
+ const release=(board.match(/Island Run Edition · v(\d+\.\d+\.\d+)/)||[])[1];assert(release,'edition badge present');const tag=release.replace(/\./g,'\\.');
  for(const html of [board,runner]){assert.match(html,new RegExp('league-look\\.css\\?v='+tag));assert.doesNotMatch(html,/\?v=9\.3\.0/);}
  assert.match(board,new RegExp('passport-seals\\.js\\?v='+tag));
  assert.match(runner,/id="laneGuide"/);assert.match(runner,/id="runSoundButton"/);assert.match(runner,new RegExp('visual-v94\\.css\\?v='+tag));

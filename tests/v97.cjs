@@ -101,7 +101,7 @@ test('The student award card shows ten seal places (five to a row) instead of th
  assert.match(ui,/element\('strong','student-contribution-name',person\.name\),\s*sealGrid\(person\)\);/);assert.doesNotMatch(ui,/'student-contribution-points'/);
  assert.match(ui,/for \(let island = 1; island <= 10; island\+\+\)/);
  assert.match(css,/\.student-seal-grid\{[^}]*grid-template-columns:repeat\(5,var\(--seal\)\)/);
- assert.match(pub('index.html'),/league-v97\.css\?v=9\.7\.0/);assert.match(pub('index.html'),/navigator-seals\.js\?v=9\.7\.0/);
+ assert.match(pub('index.html'),/league-v97\.css\?v=\d+\.\d+\.\d+/);assert.match(pub('index.html'),/navigator-seals\.js\?v=\d+\.\d+\.\d+/);
 });
 
 // ---- Google Sheets ----
@@ -183,9 +183,9 @@ test('Board side: steering is a light message bound to the session, applied only
   return (await handleSession(new Request('https://x.invalid/api/session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),fetcher)).json();};
  const v96={status:'success',islandProgress:{},passportVersion:1,questionLogVersion:1,contributionsVersion:1};
  const body={type:'FULL_SESSION',pin:'1',className:'5-A',islandProgress:{},navigatorSeals:[seal()]};
- let r=await call(v96,body);assert.equal(r.status,'error');assert.match(r.message,/Navigator seals are kept on this phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v9\.7\.0\.gs/);
+ let r=await call(v96,body);assert.equal(r.status,'error');assert.match(r.message,/Navigator seals are kept on this phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v\d+\.\d+\.\d+\.gs/);
  r=await call(v96,{...body,navigatorSeals:[]});assert.equal(r.status,'success','no seals yet: an older script still saves');
  r=await call({...v96,navigatorSealsVersion:1},body);assert.equal(r.status,'success');
- checks++;console.log('PASS Netlify session function keeps navigator seals on the phone until the Sheet runs the v9.7.0 script');
+ checks++;console.log('PASS Netlify session function keeps navigator seals on the phone until the Sheet runs the v9.7.0 (or later) script');
  console.log(JSON.stringify({checks}));
 })().catch(e=>{console.error(e);process.exit(1);});
