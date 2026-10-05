@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.0.1
+English League · Island Run Edition · v10.0.2
+
+v10.0.2: the School League Season reaches the board when the PIN is typed on the phone. Apps Script unchanged (v10.0.0).
 
 v10.0.1: the "★ First time" tag sits above the elemental card effects. Apps Script unchanged (v10.0.0).
 

@@ -1,5 +1,7 @@
 # v10.0.0 verification
 
+**v10.0.2:** new `season-relay.cjs` (Chromium, board and phone bridged, the phone's Sheet requests answered by the real v10.0.0 Apps Script in the in-memory spreadsheet): the PIN typed on the phone brings the whole school's season to the board's Champions screen; a board without the season gets it from a phone that already held the same totals (this case failed before the fix); an older Apps Script shows "Update Apps Script to v10.0.0" on the board.
+
 **v10.0.1:** `board-v10.cjs` now also checks that the "★ First time" tag is the top element at its own centre on an elemental card and that no edge effect sits behind it. The suites below were re-run for v10.0.1.
 
 ## Passed

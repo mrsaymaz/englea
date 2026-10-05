@@ -5658,7 +5658,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.0.1';
+        const REMOTE_BUILD = '10.0.2';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6334,7 +6334,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     return;
                 }
                 if(data.type==='LEAGUE_SEASON'&&isHost){
-                    if(data.sessionId===sessionId)globalThis.LeagueSeason?.accept(data.season);return;
+                    if(data.sessionId!==sessionId)return;
+                    if(data.outdated===true){globalThis.LeagueSeason?.outdated();window.syncStateToController?.();}
+                    else if(globalThis.LeagueSeason?.accept(data.season))window.syncStateToController?.();
+                    return;
                 }
                 if(data.type==='NAVIGATOR_SEALS'&&isHost){
                     if(data.sessionId===sessionId&&data.className===selectedClass&&Array.isArray(data.rows))globalThis.LeagueNavigatorSeals?.merge(selectedClass,data.rows);return;
@@ -6437,6 +6440,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if(latestRemoteSessionId!==data.sessionId){LeagueAgent.close();shownAgentRequest=null;LeagueStudentUI.close(true);closeParticipationSummary();pendingRemoteClassSelection=null;cachedLeaderboardRecord=null;cachedBattleRecord=null;pendingRemoteFinish=false;latestRemoteSessionId=data.sessionId;updateMobileRecordAvailability();}
                     updateRemoteSceneControls(data.scene,data.paused,data.islandRun);
                     if(data.islandProgress)LeagueIslandProgress.merge(data.islandProgress,data.selectedClass);
+                    // v10.0.2: the phone loads islands while it is connected, so it passes the school season on whenever
+                    // it holds a newer copy than the board (also when nothing changed on the phone), or reports an old script.
+                    if(globalThis.LeagueSeason){
+                        if(LeagueSeason.data&&LeagueSeason.loadedAt>(Number(data.seasonAt)||0))safeRemoteSend({type:'LEAGUE_SEASON',sessionId:data.sessionId,season:LeagueSeason.data});
+                        else if(!LeagueSeason.data&&LeagueSeason.outdatedScript&&!data.seasonAt&&!data.seasonOutdated)safeRemoteSend({type:'LEAGUE_SEASON',sessionId:data.sessionId,outdated:true});
+                    }
                     if(globalThis.LeagueNavigatorSeals&&Array.isArray(data.navigatorSeals)&&LeagueStudents.validClass(data.selectedClass)){
                         globalThis.LeagueNavigatorSeals?.merge(data.selectedClass,data.navigatorSeals);
                         // The phone may hold seals loaded from Google Sheets that the board has not seen yet.
@@ -6560,6 +6569,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     selectedClass, studentContributions, studentTrackingVersion:1, secretAgents,
                     islandProgress:LeagueIslandProgress.snapshot(selectedClass),
                     navigatorSeals:globalThis.LeagueNavigatorSeals?.rows(selectedClass)||[],
+                    seasonAt:globalThis.LeagueSeason?.loadedAt||0,seasonOutdated:Boolean(globalThis.LeagueSeason?.outdatedScript),
                     questionLogStamp:globalThis.LeagueQuestionLog?.stamp(selectedClass)||'0',
                     rosterSnapshot:LeagueStudents.snapshot(),rosterCatalog:LeagueRoster.current(),
                     levels:Object.fromEntries(teamsData.map(t=>[t.id,t.level])),
@@ -7042,6 +7052,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         }});
         document.addEventListener('league-season-change',()=>{
             if(remoteRole==='controller'&&globalThis.LeagueSeason?.data)safeRemoteSend({type:'LEAGUE_SEASON',sessionId:latestRemoteSessionId,season:LeagueSeason.data});
+        });
+        document.addEventListener('league-season-outdated',()=>{
+            if(remoteRole==='controller')safeRemoteSend({type:'LEAGUE_SEASON',sessionId:latestRemoteSessionId,outdated:true});
         });
         LeagueRecap.configure(()=>({sessionId,className:selectedClass,house:battleState?.fighters?.length?determineArenaWinner().id:null,progress:LeagueIslandProgress.snapshot(selectedClass)}));
         document.addEventListener('teaching-content-change',event=>{

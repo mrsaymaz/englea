@@ -63,7 +63,8 @@ test('Season data travels: Load islands, every save, and phone → board; the pa
  assert.match(pub('sheets-outbox.js'),/if\(result\.season\)root\.LeagueSeason\?\.accept\(result\.season\);/);
  const game=pub('game.js');
  assert.match(game,/safeRemoteSend\(\{type:'LEAGUE_SEASON',sessionId:latestRemoteSessionId,season:LeagueSeason\.data\}\)/);
- assert.match(game,/if\(data\.type==='LEAGUE_SEASON'&&isHost\)\{\s*if\(data\.sessionId===sessionId\)globalThis\.LeagueSeason\?\.accept\(data\.season\);return;/);
+ assert.match(game,/if\(data\.type==='LEAGUE_SEASON'&&isHost\)\{\s*if\(data\.sessionId!==sessionId\)return;/);
+ assert.match(game,/if\(LeagueSeason\.data&&LeagueSeason\.loadedAt>\(Number\(data\.seasonAt\)\|\|0\)\)safeRemoteSend\(\{type:'LEAGUE_SEASON'/,'the phone passes on a newer season even when nothing changed on the phone (season-relay.cjs plays this in Chromium)');
  assert.match(game,/league:battleState\.fighters\.filter\(f=>f\.points===top\)\.map\(f=>f\.id\),arena:determineArenaWinner\(\)\.id/);
  assert.match(pub('league-season.js'),/document\.getElementById\('winner-overlay'\)/);
  const html=pub('index.html'),tag=(html.match(/Island Run Edition · v(10\.\d+\.\d+)/)||[])[1];assert(tag,'edition 10.x');assert(html.includes('league-season.js?v='+tag));assert(html.includes('league-v10.css?v='+tag));assert(html.includes('student-ui.js?v='+tag),'the card fix reaches cached boards');

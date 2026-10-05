@@ -18,8 +18,10 @@
   return {wins,sessions,classes,recent,at:Number(raw.at)||Date.now()};
  }
  try{season=clean(JSON.parse(localStorage.getItem(KEY)||'null'));}catch{season=null;}
+ // Totals passed on from the other device carry the time they were loaded; an older copy never replaces a newer one.
  function accept(raw){
   const next=clean(raw);if(!next)return false;
+  if(season&&Number.isFinite(Number(raw.at))&&next.at<season.at)return false;
   const same=season&&JSON.stringify({...season,at:0})===JSON.stringify({...next,at:0});
   season=next;outdatedScript=false;try{localStorage.setItem(KEY,JSON.stringify(season));}catch{}
   render();if(!same)document.dispatchEvent(new CustomEvent('league-season-change'));return true;
@@ -67,8 +69,8 @@
    `${season.sessions} session${season.sessions===1?'':'s'} · ${season.classes.length?season.classes.join(', '):'all classes'}${state.saved?'':' · today’s wins are saved with Save Record'}`;
  }
  // Load islands answered without a season: the Sheet still runs an older script.
- function outdated(){if(!season){outdatedScript=true;render();}}
+ function outdated(){if(!season){outdatedScript=true;render();document.dispatchEvent(new CustomEvent('league-season-outdated'));}}
  function configure(options){if(typeof options?.session==='function')getSession=options.session;render();}
  document.addEventListener('league-scene-change',()=>render());
- root.LeagueSeason=Object.freeze({configure,accept,outdated,render,standings,sessionWins,get data(){return season?JSON.parse(JSON.stringify(season)):null;}});
+ root.LeagueSeason=Object.freeze({configure,accept,outdated,render,standings,sessionWins,get data(){return season?JSON.parse(JSON.stringify(season)):null;},get loadedAt(){return season?season.at:0;},get outdatedScript(){return outdatedScript;}});
 })(window);

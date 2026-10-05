@@ -2,6 +2,9 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.0.2
+School League Season: the totals loaded on the phone (where the PIN is typed while a phone is connected) now always reach the board when its copy is older or missing, and an older Apps Script is reported on the board as "Update Apps Script to v10.0.0" instead of "Load islands". No Apps Script change.
+
 ## 10.0.1
 The "★ First time" tag sits above the elemental card effects (and the edge effects behind it are left out). No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.0.0.gs`.
 
