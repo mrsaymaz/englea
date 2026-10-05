@@ -1,11 +1,13 @@
 # v10.0.0 — Elemental student cards and the School League Season
 
+**v10.0.1:** the "★ First time" tag now always sits above a card's elemental effects, and the effects behind it are left out. Deploy the project as below; the Apps Script is unchanged (still **GOOGLE-APPS-SCRIPT-v10.0.0.gs**). The opening screens show **v10.0.1**.
+
 ## Deploying this update
 
 1. Finish the active lesson and save the session from the remote, as usual.
 2. **Update the Apps Script (required for the season standings).** Open your Sheet → **Extensions → Apps Script**. Replace the whole script with **GOOGLE-APPS-SCRIPT-v10.0.0.gs**. Check that the `TEACHER_PIN` line still holds your own PIN. Save, then **Deploy → Manage deployments → Edit (pencil) → Version: New version → Deploy**. Keep the same deployment URL and access settings. Do not create a second deployment. (It includes everything from v9.6.0 and v9.7.0.)
 3. Deploy the complete extracted project to your existing Netlify site with your usual method. Include **public**, **netlify/functions** and **netlify.toml**. No new environment variables are needed.
-4. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.0.0**. Mixed versions are refused on purpose.
+4. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.0.1**. Mixed versions are refused on purpose.
 
 Nothing new needs to be set up in the Sheet: the season is counted from the tabs you already have.
 

@@ -2,6 +2,9 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.0.1
+The "★ First time" tag sits above the elemental card effects (and the edge effects behind it are left out). No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.0.0.gs`.
+
 ## 10.0.0
 **Elemental student cards**: the award card takes on the student's team element as they collect navigator seals (fire for Gryffindor, nature for Slytherin, water for Ravenclaw, air for Hufflepuff), growing in four stages with no number shown: tinted frame and particles (1–3), breathing glow (4–6), a flowing elemental frame with flames, leaves, droplets or wind curls along the top edge (7–9), and at all ten seals a crown and a title: Flamebearer, Earthshaker, Tidecaller, Stormrider. One level-up burst on the next card after a new seal; Light mode and reduced motion show the cards still. **School League Season**: one season for every class at the school; League title = 1 win (a shared title gives each tied team a win), Final Arena = 1 win, Grand Champion = 2; every session already in the Sheet counts; a Season Wins panel in the upper right of the Champions screen shows today's wins until they are saved. Apps Script: `GOOGLE-APPS-SCRIPT-v10.0.0.gs` (includes v9.6.0 and v9.7.0).
 

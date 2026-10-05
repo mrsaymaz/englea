@@ -1,5 +1,7 @@
 # v10.0.0 verification
 
+**v10.0.1:** `board-v10.cjs` now also checks that the "★ First time" tag is the top element at its own centre on an elemental card and that no edge effect sits behind it. The suites below were re-run for v10.0.1.
+
 ## Passed
 
 - **Full dependency-free suite** (`npm run test:v10` from `tests`, 113 checks): every v9.7 check, including 240 + 400 scripted Island Run completions, 160 full v9.3 runs and all 4,240 question variants. The new `v10.cjs` checks:

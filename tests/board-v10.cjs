@@ -25,15 +25,21 @@ const card=(p,team)=>p.evaluate(team=>{const c=document.querySelector(`#team-${t
   assert.deepEqual(seen[0].cls,[],'no seals: the regular card');
   assert.deepEqual(seen[2].cls,['el-card','el-nature','el-spark']);assert.equal(seen[2].particles,4);assert.equal(seen[2].edges,0);
   assert.deepEqual(seen[5].cls,['el-card','el-surge','el-water']);assert.equal(seen[5].particles,7);
-  assert.deepEqual(seen[8].cls,['el-air','el-card','el-storm']);assert.equal(seen[8].edges,6);assert.equal(seen[8].title,null);
-  assert.deepEqual(seen[10].cls,['el-card','el-mythic','el-nature']);assert.equal(seen[10].particles,16);assert.equal(seen[10].edges,9);assert.equal(seen[10].title,'Earthshaker');assert.equal(seen[10].crown,true);
+  assert.deepEqual(seen[8].cls,['el-air','el-card','el-storm']);assert.equal(seen[8].edges,4,'six edge shapes, the two behind “★ First time” left out');assert.equal(seen[8].title,null);
+  assert.deepEqual(seen[10].cls,['el-card','el-mythic','el-nature']);assert.equal(seen[10].particles,16);assert.equal(seen[10].edges,6,'nine edge shapes, the three behind “★ First time” left out');assert.equal(seen[10].title,'Earthshaker');assert.equal(seen[10].crown,true);
   for(const c of Object.values(seen))assert.doesNotMatch(c.text,/\bL(?:v|evel)\.?\s*\d/i,'no level number on the card');
+  // "★ First time" sits above the effects, with the centre of the edge row left clear behind it.
+  const tag=await p.evaluate(()=>{const c=document.querySelector('#team-hufflepuff .student-contribution-badge'),t=c.querySelector('.student-contribution-first'),r=t.getBoundingClientRect();
+   const probe=document.createElement('style');probe.textContent='.student-contribution-badge,.student-contribution-badge *{pointer-events:auto!important}';document.head.append(probe); // the card ignores taps; hit-test it for this check only
+   const top=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);probe.remove();
+   return {first:Boolean(t),onTop:t.contains(top),centred:[...c.querySelectorAll('.el-edge')].map(e=>parseFloat(e.style.getPropertyValue('--x'))).filter(x=>x>34&&x<66).length};});
+  assert.deepEqual(tag,{first:true,onTop:true,centred:0});
   for(const n of [2,5,8,10])assert.notEqual(seen[n].anim,'none',`Animated mode moves the level-${n} card`);
   const fire=await p.evaluate(()=>{LeagueNavigatorSeals.merge('5-A',Array.from({length:10},(_,i)=>({studentId:'5-A:gryffindor:3',student:'x',team:'gryffindor',island:i+1})));__qa.studentAward('gryffindor','5-A:gryffindor:3');return document.querySelector('#team-gryffindor .el-title')?.textContent;});
   const titles={fire};await wait(300);
   for(const [team,id] of [['ravenclaw','5-A:ravenclaw:3'],['hufflepuff','5-A:hufflepuff:3']])titles[team]=await p.evaluate(([team,id])=>{LeagueNavigatorSeals.merge('5-A',Array.from({length:10},(_,i)=>({studentId:id,student:'x',team,island:i+1})));__qa.studentAward(team,id);return document.querySelector(`#team-${team} .el-title`)?.textContent;},[team,id]);
   assert.deepEqual(titles,{fire:'Flamebearer',ravenclaw:'Tidecaller',hufflepuff:'Stormrider'});
-  console.log('PASS elemental cards: regular with no seals; nature Spark, water Surge, air Storm and nature Mythic (Earthshaker) by seal count; Flamebearer, Tidecaller and Stormrider; no level number; moving in Animated mode');
+  console.log('PASS elemental cards: regular with no seals; nature Spark, water Surge, air Storm and nature Mythic (Earthshaker) by seal count; Flamebearer, Tidecaller and Stormrider; no level number; “★ First time” above the effects; moving in Animated mode');
 
   // A newly earned seal: one burst on the next card, none after.
   await p.evaluate(()=>LeagueNavigatorSeals.award('5-A',{id:'5-A:slytherin:0',name:'Şeyma',team:'slytherin'},3,'s'));

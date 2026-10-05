@@ -66,7 +66,7 @@ test('Season data travels: Load islands, every save, and phone → board; the pa
  assert.match(game,/if\(data\.type==='LEAGUE_SEASON'&&isHost\)\{\s*if\(data\.sessionId===sessionId\)globalThis\.LeagueSeason\?\.accept\(data\.season\);return;/);
  assert.match(game,/league:battleState\.fighters\.filter\(f=>f\.points===top\)\.map\(f=>f\.id\),arena:determineArenaWinner\(\)\.id/);
  assert.match(pub('league-season.js'),/document\.getElementById\('winner-overlay'\)/);
- const html=pub('index.html');assert.match(html,/league-season\.js\?v=10\.0\.0/);assert.match(html,/league-v10\.css\?v=10\.0\.0/);assert.match(html,/Island Run Edition · v10\.0\.0/);
+ const html=pub('index.html'),tag=(html.match(/Island Run Edition · v(10\.\d+\.\d+)/)||[])[1];assert(tag,'edition 10.x');assert(html.includes('league-season.js?v='+tag));assert(html.includes('league-v10.css?v='+tag));assert(html.includes('student-ui.js?v='+tag),'the card fix reaches cached boards');
 });
 
 // ---- Elemental student cards ----

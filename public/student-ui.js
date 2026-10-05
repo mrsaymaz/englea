@@ -138,7 +138,7 @@
         air:'<path d="M4 12c6-5 13-5 17 0-5-2-10-1-12 3 5-3 12-2 15 3-6-2-11 0-13 4 6-1 12 1 15 5H4c-2-5-2-10 0-15z"/>'
     };
     const tierOf = level => level >= 10 ? 'mythic' : level >= 7 ? 'storm' : level >= 4 ? 'surge' : level >= 1 ? 'spark' : '';
-    function elementalize(node, team, person) {
+    function elementalize(node, team, person, first = false) {
         const level = root.LeagueNavigatorSeals?.islands(person.className, person.id).length || 0, tier = tierOf(level), info = ELEMENTS[team.id];
         if (!tier || !info) return null;
         node.classList.add('el-card', `el-${info.kind}`, `el-${tier}`);
@@ -159,8 +159,10 @@
         // Storm and Mythic: the element breaks out along the top edge (flames, sprouting leaves, droplets, curls).
         const edges = tier === 'mythic' ? 9 : tier === 'storm' ? 6 : 0;
         for (let i = 0; i < edges; i++) {
+            const x = Math.round(8 + (i + 0.5) * (84 / edges));
+            if (first && x > 34 && x < 66) continue; // leave the centre clear for the "★ First time" tag
             const e = element('i','el-edge');
-            e.style.setProperty('--x', `${Math.round(8 + (i + 0.5) * (84 / edges))}%`);
+            e.style.setProperty('--x', `${x}%`);
             e.style.setProperty('--d', `${-((i * 0.29) % 1).toFixed(2)}s`);
             e.style.setProperty('--s', (0.8 + ((i * 5) % 3) * 0.18 + (tier === 'mythic' ? 0.2 : 0)).toFixed(2));
             e.style.setProperty('--r', `${(i % 2 ? 1 : -1) * (12 + (i % 3) * 8)}deg`);
@@ -188,7 +190,7 @@
             sealGrid(person));
         // v9.5.0: a student's first contribution of the session gets its own small flourish.
         if (options.first) { node.classList.add('first-contribution'); node.append(element('span','student-contribution-first','★ First time')); }
-        const elemental = elementalize(node, team, person);
+        const elemental = elementalize(node, team, person, Boolean(options.first));
         host.append(node);
         // Animated mode also carries performance-light (it shares the lean renderer); only real Light stays still.
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || (document.body.classList.contains('performance-light') && !document.body.classList.contains('performance-animated'));

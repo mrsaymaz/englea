@@ -15,6 +15,8 @@
   background:linear-gradient(180deg,rgba(var(--el-glow),calc(.08 + var(--el-level) * .025)),rgba(8,14,26,.93) 62%),rgba(8,14,26,.93)!important;
   box-shadow:0 0 0 1px rgba(2,6,23,.6),0 10px 26px rgba(2,6,23,.55),0 0 calc(6px + var(--el-level) * 2.4px) rgba(var(--el-glow),calc(.25 + var(--el-level) * .05))!important;}
 .mascot-area>.student-contribution-badge.el-card>:not(.el-fx):not(.student-contribution-first){position:relative;z-index:2;}
+/* The "★ First time" tag always sits above the elemental effects, a little higher, with the element's ring. */
+.mascot-area>.student-contribution-badge.el-card>.student-contribution-first{z-index:4;top:-1.1rem;box-shadow:0 0 0 2px var(--el-a),0 2px 10px rgba(0,0,0,.45);}
 .el-card .student-contribution-name{text-shadow:0 0 calc(4px + var(--el-level) * 1px) rgba(var(--el-glow),.75),0 1px 2px rgba(0,0,0,.6);}
 .el-card .student-seal-slot.earned{border-color:var(--el-b);box-shadow:0 0 0 1px rgba(2,6,23,.55),0 0 calc(6px + var(--el-level) * 1.2px) rgba(var(--el-glow),.65);}
 .el-card .student-seal-slot:not(.earned){border-color:rgba(var(--el-glow),.32);}

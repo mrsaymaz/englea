@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.0.0
+English League · Island Run Edition · v10.0.1
+
+v10.0.1: the "★ First time" tag sits above the elemental card effects. Apps Script unchanged (v10.0.0).
 
 Elemental student cards: the award card takes on the student's team element (fire, nature, water, air) and grows with each navigator seal; at ten seals a crown and a title: Flamebearer, Earthshaker, Tidecaller, Stormrider.
 School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
