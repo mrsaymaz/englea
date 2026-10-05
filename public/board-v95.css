@@ -2,7 +2,7 @@
    The board fits a 16:9 smartboard without scrolling, the score leads each card, the leader
    wears a crown, and award feedback stays clear of the creature. Title and fonts are unchanged. */
 
-/* Crown artwork shared by the leader's card and the lead-change banner. */
+/* Crown artwork shared by the leader's card on the board and on the remote. */
 :root{--league-crown:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff7ae'/%3E%3Cstop offset='.55' stop-color='%23facc15'/%3E%3Cstop offset='1' stop-color='%23a16207'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M6 14 19 28 32 7 45 28 58 14 53 40H11Z' fill='url(%23g)' stroke='%23fff7cc' stroke-width='2.5' stroke-linejoin='round'/%3E%3Crect x='11' y='36' width='42' height='8' rx='3' fill='url(%23g)' stroke='%23fff7cc' stroke-width='2'/%3E%3Ccircle cx='32' cy='30' r='4' fill='%23f43f5e' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E");}
 
 /* ---------- Fit the screen (four-column boards) ---------- */
@@ -43,12 +43,12 @@
   #performance-mode-indicator{bottom:3rem;}
 }
 
-/* ---------- Class Mission: a slim meter with one segment per student ---------- */
+/* ---------- Class Mission: a slim, continuous meter that fills a little with each new student ---------- */
 .class-mission-layout{gap:.32rem .8rem;}
 .class-mission-meter{min-height:30px!important;border-radius:999px;}
-.class-mission-meter::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-  background:repeating-linear-gradient(90deg,transparent 0 calc(100%/15 - 2px),rgba(2,6,23,.82) calc(100%/15 - 2px) calc(100%/15));}
 .class-mission-fill{border-radius:999px;}
+/* v9.6.0: Animated mode keeps the fill's smooth growth (the shared lean rules switch transitions off). */
+body.performance-animated .app-shell .class-mission-fill{transition:width .9s cubic-bezier(.2,.8,.2,1)!important;}
 .class-mission-controls{align-content:center;gap:.3rem;min-height:0!important;}
 .class-mission-btn.replay{min-height:30px;}
 
@@ -73,27 +73,12 @@ body.leader-gryffindor #team-gryffindor,body.leader-slytherin #team-slytherin,
 body.leader-hufflepuff #team-hufflepuff,body.leader-ravenclaw #team-ravenclaw{
   box-shadow:0 0 0 3px rgba(250,204,21,.85),0 0 26px rgba(250,204,21,.38),0 14px 30px rgba(2,6,23,.35)!important;}
 
-/* Lead change: a short sweep across the top of the cards. Never blocks a tap. */
-#lead-change-banner{position:fixed;left:0;right:0;z-index:1200;pointer-events:none;display:flex;justify-content:center;opacity:0;}
-#lead-change-banner .lead-strip{display:flex;align-items:center;gap:.8rem;padding:.55rem 2.2rem;border-radius:999px;
-  background:linear-gradient(90deg,transparent,rgba(2,6,23,.92) 14%,rgba(2,6,23,.92) 86%,transparent);
-  box-shadow:inset 0 0 0 1px rgba(250,204,21,.45);color:#fff;text-transform:uppercase;font-weight:900;letter-spacing:.16em;font-size:clamp(.9rem,1.35vw,1.35rem);white-space:nowrap;}
-#lead-change-banner .lead-team{color:var(--lead-color,#facc15);text-shadow:0 0 18px var(--lead-color,#facc15);font-size:1.25em;}
-#lead-change-banner .lead-crown{width:1.6em;height:1.2em;background:center/contain no-repeat var(--league-crown);filter:drop-shadow(0 0 8px rgba(250,204,21,.6));}
-#lead-change-banner.playing{animation:leadBannerSweep 2.1s cubic-bezier(.2,.8,.2,1) both;}
-@keyframes leadBannerSweep{0%{opacity:0;transform:translateX(-14%) scaleX(.82)}16%{opacity:1;transform:translateX(0) scaleX(1)}80%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(10%)}}
-body.performance-light:not(.performance-animated) #lead-change-banner.playing{animation:leadBannerFade 1.6s linear both;}
-@keyframes leadBannerFade{0%,100%{opacity:0}12%,82%{opacity:1}}
-
 /* ---------- Award ribbon: one line along the foot of the creature, not across it ---------- */
 .mascot-area>.student-contribution-badge{left:5%!important;right:14%!important;bottom:4px!important;flex-direction:row!important;flex-wrap:wrap;justify-content:center;align-items:center;
   gap:.15rem .55rem!important;padding:.38rem .8rem!important;border-radius:999px!important;backdrop-filter:none!important;}
 .mascot-area>.student-contribution-badge .student-contribution-kicker{display:none;}
 .mascot-area>.student-contribution-badge .student-contribution-name{font-size:clamp(15px,1.45vw,24px)!important;line-height:1.1!important;}
 .mascot-area>.student-contribution-badge .student-contribution-points{padding:.12rem .5rem;border-radius:999px;background:var(--student-color,#facc15);color:#fff;font-size:clamp(11px,.95vw,15px)!important;text-shadow:0 1px 2px rgba(0,0,0,.35);}
-.score-fly{position:fixed;z-index:1300;pointer-events:none;padding:.12rem .55rem;border-radius:999px;background:var(--fly-color,#facc15);color:#fff;font-weight:900;font-size:clamp(13px,1.1vw,18px);box-shadow:0 0 18px var(--fly-color,#facc15);text-shadow:0 1px 2px rgba(0,0,0,.4);}
-.team-score-panel.score-hit{animation:scorePanelHit .5s ease-out;}
-@keyframes scorePanelHit{0%{box-shadow:0 0 0 0 rgba(255,255,255,.0)}35%{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 24px rgba(var(--element-rgb),.7)}100%{box-shadow:0 6px 14px rgba(15,23,42,.09)}}
 
 /* ---------- Status pills step aside once the class is under way ---------- */
 #remote-connection-indicator,#performance-mode-indicator{transition:opacity .4s ease,max-width .5s ease,padding .4s ease,transform .4s ease;}
@@ -102,7 +87,6 @@ body.performance-light:not(.performance-animated) #lead-change-banner.playing{an
 body.session-started #performance-mode-indicator.board-quiet{opacity:0;transform:translateY(8px);}
 
 @media (prefers-reduced-motion:reduce){
-  #lead-change-banner.playing{animation:leadBannerFade 1.6s linear both;}
   .score-delta.visible{animation-duration:.01s!important;}
   .team-card-title::before{transition:none;}
 }
@@ -115,5 +99,3 @@ body.session-started #performance-mode-indicator.board-quiet{opacity:0;transform
 #mobile-controller .mobile-team-card{position:relative;}
 #mobile-controller .mobile-team-card.mobile-leader{box-shadow:0 0 0 2px rgba(250,204,21,.85),0 0 18px rgba(250,204,21,.28),0 10px 26px rgba(2,8,20,.35)!important;}
 #mobile-controller .mobile-team-card.mobile-leader .mobile-team-name::before{content:"";display:inline-block;width:1.15em;height:.9em;margin-right:.3em;vertical-align:-.05em;background:center/contain no-repeat var(--league-crown);}
-.mobile-score-pop{position:absolute;left:44%;top:28px;z-index:3;pointer-events:none;padding:1px 8px;border-radius:999px;background:var(--mobile-team-color,#facc15);color:#fff;font-size:13px;font-weight:900;box-shadow:0 0 12px var(--mobile-team-color,#facc15);}
-.mobile-score-pop.negative{background:#334155;box-shadow:none;}

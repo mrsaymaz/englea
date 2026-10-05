@@ -15,7 +15,7 @@ function makeGas(){
  ss.insertSheet('Leaderboard').rows=[['Date','Class','First','Second','Third','Fourth','Score','Mission'],['existing lesson']];
  ss.insertSheet('Battle_Results').rows=[['Date','Class','Winner','HP','Damage','Duration'],['existing battle']];
  const c={SpreadsheetApp:{getActiveSpreadsheet:()=>ss,flush(){}},PropertiesService:{getScriptProperties:()=>({getProperty:k=>properties.get(k),setProperty:(k,v)=>properties.set(k,v)})},LockService:{getScriptLock:()=>({tryLock(){if(denyLock||locked)return false;locked=true;return true;},hasLock:()=>locked,releaseLock(){locked=false;}})},Utilities:{DigestAlgorithm:{SHA_256:'sha256'},Charset:{UTF_8:'utf8'},computeDigest:(a,s)=>[...crypto.createHash('sha256').update(s).digest()]},ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({setMimeType:()=>({text})})}};
- vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../GOOGLE-APPS-SCRIPT-v9.3.0.gs'),'utf8'),c);
+ vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../GOOGLE-APPS-SCRIPT-v9.6.0.gs'),'utf8'),c);
  return {post:data=>JSON.parse(c.doPost({postData:{contents:JSON.stringify(data)}}).text),ss,sheets,active(name){active=name;},lock(value){denyLock=value;},get locked(){return locked;}};
 }
 module.exports={makeGas};

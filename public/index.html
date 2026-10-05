@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- English League Island Run Edition v9.5.0 -->
+<!-- English League Island Run Edition v9.6.0 -->
 <html lang="en" class="access-locked">
 <head>
     <meta charset="UTF-8">
@@ -18,12 +18,12 @@
     <script src="./session-recovery.js?v=8.7.0"></script>
     <script src="./remote-protocol.js?v=8.7.0"></script>
     <script src="./performance-budget.js?v=8.7.0"></script>
-    <script src="./sheets-outbox.js?v=9.5.0"></script>
+    <script src="./sheets-outbox.js?v=9.6.0"></script>
     <link rel="stylesheet" href="./classroom.css?v=8.7.0">
     <link rel="stylesheet" href="./students.css?v=8.7.0">
-    <script src="./student-rosters.js?v=8.7.0"></script>
-    <script src="./roster-manager.js?v=9.5.0"></script>
-    <script src="./student-ui.js?v=9.5.0"></script>
+    <script src="./student-rosters.js?v=9.6.0"></script>
+    <script src="./roster-manager.js?v=9.6.0"></script>
+    <script src="./student-ui.js?v=9.6.0"></script>
     <script src="./secret-agent.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./secret-agent.css?v=8.7.0">
     <script src="./motion.js?v=8.7.0"></script>
@@ -37,28 +37,28 @@
     <script src="./animated-mode.js?v=8.7.0"></script>
     <script src="./raid-motion.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./roster-manager.css?v=8.7.0">
-    <link rel="stylesheet" href="./island-run.css?v=9.5.0">
-    <script src="./adventure.js?v=9.5.0"></script>
-    <script src="./island-runner/content.js?v=9.5.0"></script>
-    <script src="./teaching-model.js?v=9.5.0"></script>
-    <script src="./teaching.js?v=9.5.0"></script>
-    <script src="./teacher-studio.js?v=9.5.0"></script>
-    <link rel="stylesheet" href="./teacher-studio.css?v=9.5.0">
-    <script src="./lesson-recap.js?v=9.5.0"></script>
-    <link rel="stylesheet" href="./adventure.css?v=9.5.0">
-    <script src="./island-progress.js?v=9.5.0"></script>
-    <script src="./passport-seals.js?v=9.5.0"></script>
-    <link rel="stylesheet" href="./island-progress.css?v=9.5.0">
-    <link rel="stylesheet" href="./remote-sync.css?v=9.5.0">
-    <script src="./question-log.js?v=9.5.0"></script>
-    <script src="./island-run.js?v=9.5.0"></script>
-    <script src="./run-remote.js?v=9.5.0"></script>
-    <link rel="stylesheet" href="./remote-compact.css?v=9.5.0">
-    <link rel="stylesheet" href="./league-look.css?v=9.5.0">
-    <link rel="stylesheet" href="./board-v95.css?v=9.5.0">
-    <script src="./board-fx.js?v=9.5.0"></script>
-    <link rel="stylesheet" href="./arena-v95.css?v=9.5.0">
-    <script src="./arena-fx.js?v=9.5.0"></script>
+    <link rel="stylesheet" href="./island-run.css?v=9.6.0">
+    <script src="./adventure.js?v=9.6.0"></script>
+    <script src="./island-runner/content.js?v=9.6.0"></script>
+    <script src="./teaching-model.js?v=9.6.0"></script>
+    <script src="./teaching.js?v=9.6.0"></script>
+    <script src="./teacher-studio.js?v=9.6.0"></script>
+    <link rel="stylesheet" href="./teacher-studio.css?v=9.6.0">
+    <script src="./lesson-recap.js?v=9.6.0"></script>
+    <link rel="stylesheet" href="./adventure.css?v=9.6.0">
+    <script src="./island-progress.js?v=9.6.0"></script>
+    <script src="./passport-seals.js?v=9.6.0"></script>
+    <link rel="stylesheet" href="./island-progress.css?v=9.6.0">
+    <link rel="stylesheet" href="./remote-sync.css?v=9.6.0">
+    <script src="./question-log.js?v=9.6.0"></script>
+    <script src="./island-run.js?v=9.6.0"></script>
+    <script src="./run-remote.js?v=9.6.0"></script>
+    <link rel="stylesheet" href="./remote-compact.css?v=9.6.0">
+    <link rel="stylesheet" href="./league-look.css?v=9.6.0">
+    <link rel="stylesheet" href="./board-v95.css?v=9.6.0">
+    <script src="./board-fx.js?v=9.6.0"></script>
+    <link rel="stylesheet" href="./arena-v95.css?v=9.6.0">
+    <script src="./arena-fx.js?v=9.6.0"></script>
 </head>
 <body class="p-4 sm:p-8">
     <section id="access-screen" aria-labelledby="access-title">
@@ -70,16 +70,11 @@
 <!-- STARTUP SCREEN -->
     <div id="startup-overlay" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
         <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase tracking-widest mb-8">English League</h1>
-        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v9.5.0</div>
+        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v9.6.0</div>
         <div class="startup-card bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
             <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Smartboard Display</h2>
             <div class="performance-selector" role="group" aria-label="Smartboard visual quality">
-                <button id="performance-option-ultra" type="button" class="performance-option" data-mode="ultra" aria-pressed="true" onclick="selectPerformanceMode('ultra')">
-                    <span class="performance-option-icon" aria-hidden="true">✨</span>
-                    <span class="performance-option-title">PERFORMANCE</span>
-                    <span class="performance-option-copy">Full scenery, particles, reactions and effects</span>
-                </button>
-                <button id="performance-option-animated" type="button" class="performance-option" data-mode="animated" aria-pressed="false" onclick="selectPerformanceMode('animated')">
+                <button id="performance-option-animated" type="button" class="performance-option" data-mode="animated" aria-pressed="true" onclick="selectPerformanceMode('animated')">
                     <span class="performance-option-icon" aria-hidden="true">🎬</span>
                     <span class="performance-option-title">ANIMATED</span>
                     <span class="performance-option-copy">Evolving artwork and brief, lightweight effects</span>
@@ -225,7 +220,6 @@
                 <section aria-labelledby="remote-visual-title">
                     <h3 id="remote-visual-title">Board visuals</h3>
                     <div class="mobile-visual-modes" role="group" aria-label="Board visual mode">
-                        <button type="button" class="mobile-visual-mode mobile-remote-action" data-remote-mode="ultra" data-closes-sheet onclick="requestRemoteVisualMode('ultra')" aria-label="Performance mode" title="Performance" aria-pressed="false"><span aria-hidden="true">✨</span> Performance</button>
                         <button type="button" class="mobile-visual-mode mobile-remote-action" data-remote-mode="animated" data-closes-sheet onclick="requestRemoteVisualMode('animated')" aria-label="Animated mode" title="Animated" aria-pressed="false"><span aria-hidden="true">🎬</span> Animated</button>
                         <button type="button" class="mobile-visual-mode mobile-remote-action" data-remote-mode="light" data-closes-sheet onclick="requestRemoteVisualMode('light')" aria-label="Light mode" title="Light" aria-pressed="false"><span aria-hidden="true">⚡</span> Light</button>
                     </div>
@@ -376,7 +370,7 @@
     </div>
     <div id="event-banner"></div>
     <div id="focus-mode-indicator">FOCUS MODE</div>
-    <div id="performance-mode-indicator">✨ ULTRA MODE</div>
+    <div id="performance-mode-indicator">🎬 ANIMATED MODE</div>
     <div id="remote-connection-indicator" data-remote-state="offline" role="status" aria-live="polite">
         <span class="remote-state-dot"></span><span id="remote-connection-text">REMOTE OFFLINE</span>
     </div>
@@ -979,7 +973,7 @@
 
     <div id="custom-points-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; width: 90%;">
-            <button class="modal-close-btn absolute top-4 right-4 text-slate-400 hover:text-white" onclick="closeWheelModal()">&times;</button>
+            <button id="custom-points-close" type="button" class="modal-close-btn absolute top-4 right-4 text-slate-400 hover:text-white" onclick="closeCustomPointsModal()" aria-label="Close Award Custom Points">&times;</button>
             <h3 class="text-xl font-bold mb-6 uppercase tracking-widest text-slate-300">Award Custom Points</h3>
             <form id="custom-points-form" class="space-y-4">
                 <div class="text-left">
@@ -1015,7 +1009,7 @@
         </div>
     </div>
 
-    <script src="./game.js?v=9.5.0"></script>
+    <script src="./game.js?v=9.6.0"></script>
 
 </body>
 </html>

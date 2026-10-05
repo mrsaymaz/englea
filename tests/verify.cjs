@@ -28,7 +28,7 @@ const assert=require('assert/strict'),fs=require('fs');const {setup}=require('./
    await p.locator('#wheel-continue-btn').click();
   }
   await p.waitForFunction(()=>!__qa.state().spin&&!__qa.state().wheels&&!LeagueScenes.active,{},{timeout:10000});pass('Queued Level 5 wheels pause, show a held result, and resume; visibility change cannot undo teacher Pause');
-  for(const mode of ['light','animated','ultra']){
+  for(const mode of ['light','animated']){
    await p.evaluate(mode=>{__qa.seed(10);__qa.mode(mode);__qa.arena();},mode);await p.waitForFunction(()=>LeagueScenes.active==='arena');
    if(mode==='light'){
     await p.evaluate(()=>LeagueScenes.pause());const hp=(await state()).battle.hp;await p.waitForTimeout(700);assert.deepEqual((await state()).battle.hp,hp);await p.evaluate(()=>LeagueScenes.resume());
@@ -38,7 +38,7 @@ const assert=require('assert/strict'),fs=require('fs');const {setup}=require('./
    await p.waitForTimeout(650);await p.screenshot({path:`output/champions-${mode}.png`});await p.evaluate(()=>LeagueScenes.cancel());assert.equal((await state()).scene,null);
    pass(mode+': Arena Skip simulates remaining combat and reaches clean champion results');
   }
-  for(const mode of ['light','animated','ultra']){
+  for(const mode of ['light','animated']){
    await p.evaluate(mode=>{__qa.seed(10);__qa.mode(mode);__qa.raid(true);__qa.raidThreshold();},mode);
    await p.evaluate(()=>LeagueScenes.skip());s=await state();assert.equal(s.raid.completed,true);assert.equal(s.raid.hp,0);assert.ok(s.raid.fighters.every(f=>f.alive&&f.hp===f.max));
    await p.screenshot({path:`output/vixar-${mode}.png`});await p.evaluate(()=>LeagueScenes.cancel());assert.equal((await state()).scene,null);assert.equal((await state()).clocks.raid.tasks,0);pass(mode+': VIXAR finale Skip calculates Guardian victory and full revival; Exit clears scene');

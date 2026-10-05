@@ -102,16 +102,15 @@
 .remote-sheet-head button{width:44px;height:44px;border:1px solid var(--r-line);border-radius:12px;background:var(--r-raise);color:var(--r-ink);font-size:24px;line-height:1}
 .remote-sheet-card section{display:grid;gap:8px}
 .remote-sheet-card h3{margin:0;color:var(--r-muted);font-size:13px;font-weight:750}
-#mobile-controller .remote-sheet .mobile-visual-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#mobile-controller .remote-sheet .mobile-visual-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 #mobile-controller .remote-sheet .mobile-visual-mode{width:auto;min-height:48px;padding:4px 6px;border:1px solid var(--r-line);border-radius:12px;background:var(--r-raise);color:var(--r-ink);font-size:13px;font-weight:700}
 #mobile-controller .remote-sheet .mobile-visual-mode[aria-pressed="true"]{border-color:#fbbf24;background:#3a2c0b;color:#fde68a}
 .remote-sheet-actions{grid-template-columns:1fr}
 #mobile-controller #mobile-manage-btn{min-height:48px;border-radius:12px;font-size:14px}
 .remote-disconnect{min-height:48px;border:1px solid #7f1d1d;border-radius:12px;background:#2a0f14;color:#fecdd3;font-size:14px;font-weight:750}
 
-/* Very short viewports (landscape phones, zoomed text) may scroll rather than clip. */
-/* Shorter Safari views (toolbars expanded): two invite names rather than a clipped third. */
-@media (max-height:575px){#mobile-controller .mobile-invite-row:nth-child(n+3){display:none}#mobile-controller .mobile-team-score{font-size:24px}}
-@media (max-height:560px){#mobile-controller .mobile-team-grid{grid-template-rows:repeat(2,minmax(150px,1fr))}}
-@media (min-width:600px){#mobile-controller .mobile-team-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}}
+/* v9.6.0: every card always shows three "Next to invite" names. On shorter Safari views (toolbars
+   expanded) the page grows a little and scrolls instead of clipping names. */
+#mobile-controller .mobile-team-grid{flex:1 0 auto;grid-template-rows:repeat(2,minmax(220px,1fr))}
+@media (min-width:600px){#mobile-controller .mobile-team-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(220px,1fr)}}
 @media (prefers-reduced-motion:reduce){#mobile-controller *{transition:none!important}}

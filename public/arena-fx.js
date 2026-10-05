@@ -1,4 +1,4 @@
-/* v9.5.0 · Final Arena presentation: a countdown dial in the empty centre, floating damage numbers,
+/* v9.5.0 (v9.6.0: no attack names) · Final Arena presentation: a countdown dial in the empty centre, floating damage numbers,
    short callouts and a small shake on critical hits. Visual only; HP and outcomes belong to game.js.
    Everything lives in one layer inside #battle-arena and is cleared when the battle closes. */
 (function(root){
@@ -51,7 +51,7 @@
  function announce(text,color){
   if(!document.body.classList.contains('battle-active')||!ensure()||!text)return;
   const now=performance.now(),priority=priorityOf(text);
-  // A signature move never pushes a knockout or the result off the screen early.
+  // A lesser callout never pushes a knockout or the result off the screen early. (v9.6.0: attack names are not shown.)
   if(now-lastCallout<1100&&priority<calloutPriority)return;
   lastCallout=now;calloutPriority=priority;
   callout.textContent=text;callout.style.setProperty('--fx-color',color||'#fde68a');

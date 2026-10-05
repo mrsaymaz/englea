@@ -48,10 +48,13 @@
                 || (Number(navigator.hardwareConcurrency) > 0 && Number(navigator.hardwareConcurrency) <= 4)
                 || window.matchMedia('(prefers-reduced-motion: reduce)').matches
             );
-            const VISUAL_MODES = ['ultra', 'animated', 'light'];
-            const visualModeNames = { ultra:'Performance', animated:'Animated', light:'Light' };
-            const visualModeSymbols = { ultra:'✨', animated:'🎬', light:'⚡' };
-            let performanceMode = hardwarePrefersLight ? 'light' : 'ultra';
+            // v9.6.0: Performance mode is retired. Animated and Light remain; an older saved or
+            // remote 'ultra' (Performance) choice opens in Animated.
+            const VISUAL_MODES = ['animated', 'light'];
+            const visualModeNames = { animated:'Animated', light:'Light' };
+            const visualModeSymbols = { animated:'🎬', light:'⚡' };
+            const normalizeVisualMode = mode => mode === 'ultra' ? 'animated' : mode;
+            let performanceMode = hardwarePrefersLight ? 'light' : 'animated';
             let deferredPerformanceMode = null;
             let pendingAnimatedWheels = [];
             const deferredAnimatedEvolutions = new Set();
@@ -65,7 +68,7 @@
             let activeWheelSpin = null;
             function isLeanMode() { return performanceMode !== 'ultra'; }
             try {
-                const savedPerformanceMode = localStorage.getItem(PERFORMANCE_MODE_STORAGE_KEY);
+                const savedPerformanceMode = normalizeVisualMode(localStorage.getItem(PERFORMANCE_MODE_STORAGE_KEY));
                 if (VISUAL_MODES.includes(savedPerformanceMode)) performanceMode = savedPerformanceMode;
             } catch (error) {
                 // Storage can be unavailable in strict/private browser modes. The selector still works for this session.
@@ -1840,6 +1843,7 @@
             }
 
             function setPerformanceMode(mode, { persist = true, initializeScenery = false } = {}) {
+                mode = normalizeVisualMode(mode);
                 if (!VISUAL_MODES.includes(mode)) return performanceMode;
                 if (mode !== performanceMode && (LeagueScenes.active || isEvolving || unityEventRunning || battleState?.running || vixarRaidState?.running
                     || document.body.classList.contains('battle-active') || document.body.classList.contains('unity-event-active')
@@ -3657,7 +3661,8 @@
             function performSignature(f,target) {
                 if (!target || f.energy<3) return performBasicAttack(f,target);
                 f.energy-=3; f.signatureUses++; f.actions++; f.signatureCooldownUntil=SceneRuntime.now()+6800; updateBattleHUD(f);
-                setArenaTeamFlare(f.id,1400); battleAnnounce(`${f.name}: ${battleProfiles[f.id].signature}`,f.color); playSound('signature');
+                // v9.6.0: attack names stay off screen; the flare and sound carry the moment.
+                setArenaTeamFlare(f.id,1400); playSound('signature');
                 f._arenaImpactDelay={gryffindor:720,slytherin:710,hufflepuff:680,ravenclaw:720}[f.id];
                 setMotionVector(f,target);
                 showSignatureSpotlight(f,920);
@@ -3720,7 +3725,6 @@
                 if (!f.hasRelic || f.relicUsed) return false;
                 f.relicUsed=true; const now=SceneRuntime.now();
                 const relicEl=document.getElementById(`battle-relic-${f.id}`); if (relicEl) relicEl.textContent=`${teamRelics[f.id].icon} USED`;
-                battleAnnounce(`${teamRelics[f.id].name}: ${battleProfiles[f.id].relic}`, '#fde68a');
                 setBattleStatus(f,battleProfiles[f.id].relic,1300); setArenaTeamFlare(f.id,1450); playSound('relic'); screenFlash('rgba(250,204,21,.32)');
                 const shell=shellElement(f.id);
                 if (f.id==='gryffindor') {
@@ -5292,6 +5296,11 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
             // Utilities & Wheel
             document.getElementById('learn-btn').addEventListener('click', () => document.getElementById('custom-points-modal').classList.add('visible'));
+            // v9.6.0: the dialog's × used to call the subject wheel's close function, so it never closed this dialog.
+            window.closeCustomPointsModal = function() { document.getElementById('custom-points-modal').classList.remove('visible'); };
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && document.getElementById('custom-points-modal').classList.contains('visible')) window.closeCustomPointsModal();
+            });
             function applyCustomPoints(t, pts, person = null) {
                 if (!Number.isFinite(pts) || pts === 0) return;
                 const rankingBefore = captureRankingSnapshot(); saveState();
@@ -5649,7 +5658,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '9.5.0';
+        const REMOTE_BUILD = '9.6.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6825,7 +6834,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 (s.deferredEvolutions||[]).filter(id=>teamsData.some(t=>t.id===id)).forEach(id=>deferredAnimatedEvolutions.add(id));
                 boardSummaries=s.boardSummaries||{};lastMatchSummaryPayload=boardSummaries.BATTLE_OUTCOME||boardSummaries.LEADERBOARD_FINAL||null;
                 vixarDefeatedThisSession=Boolean(s.vixarDefeatedThisSession);lastVortexTime=s.lastVortexTime||0;
-                pendingAnimatedFinish=Boolean(s.pendingFinish);setPerformanceMode(VISUAL_MODES.includes(s.performanceMode)?s.performanceMode:'light',{persist:true});
+                pendingAnimatedFinish=Boolean(s.pendingFinish);const restoredVisualMode=normalizeVisualMode(s.performanceMode);setPerformanceMode(VISUAL_MODES.includes(restoredVisualMode)?restoredVisualMode:'light',{persist:true});
                 if(s.unity&&Array.isArray(s.unity.teamPlans)&&!classMission.rewardGranted)resumeUnityPlan={...s.unity,teamPlans:new Map(s.unity.teamPlans)};
                 setWheelMode(s.wheelMode==='english'?'english':'all');
                 teamsData.forEach(normalizeTeamRuntimeState);handlePointChange();updateProgressionModeUI();updateClassMissionUI();updateGameState(true);
@@ -6912,7 +6921,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             if(data.action==='SCENE_PAUSE'){scene&&(LeagueScenes.paused?LeagueScenes.resume():LeagueScenes.pause());return {ok:Boolean(scene)};}
             if(data.action==='SCENE_SKIP'){LeagueScenes.skip();return {ok:Boolean(scene)};}
             if(data.action==='SCENE_EXIT'){LeagueScenes.cancel();return {ok:Boolean(scene)};}
-            if(data.action==='SET_VISUAL_MODE'){if(!VISUAL_MODES.includes(data.mode))return {ok:false,message:'Unknown visual mode'};window.selectPerformanceMode(data.mode);return;}
+            if(data.action==='SET_VISUAL_MODE'){const mode=normalizeVisualMode(data.mode);if(!VISUAL_MODES.includes(mode))return {ok:false,message:'Unknown visual mode'};window.selectPerformanceMode(mode);return;}
             if(data.action==='CLOSE_WHEEL'){if(scene!=='wheel')return {ok:false,message:'No wheel is open'};requestWheelClose();return;}
             if(['arena','raid','results','agent'].includes(scene))return {ok:false,message:'Return to the scoreboard to change points'};
             if(data.action==='SET_CLASS')return setSessionClass(data.className);

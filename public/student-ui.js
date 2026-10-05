@@ -123,7 +123,6 @@
         // v9.5.0: a student's first contribution of the session gets its own small flourish.
         if (options.first) { node.classList.add('first-contribution'); node.append(element('span','student-contribution-first','★ First time')); }
         host.append(node);
-        root.LeagueBoardFX?.flyPoints(node.querySelector('.student-contribution-points'),team.id,team.color);
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('performance-light');
         const motion = reduced ? null : node.animate([
             {opacity:0,transform:'translateY(9px) scale(.98)'},

@@ -96,7 +96,7 @@ test('Apps Script v9.3.0 appends answers once, rebuilds the summary and returns 
  const call=async(capability,body)=>{const fetcher=async(url,o)=>{const d=JSON.parse(o.body);return {ok:true,json:async()=>d.type==='ISLAND_GET'?capability:{status:'success',islandProgress:{}}};};
   return (await handleSession(new Request('https://x.invalid/api/session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),fetcher)).json();};
  const body={type:'FULL_SESSION',pin:'1',className:'5-A',islandProgress:{},questionLog:[row('runZ:0','be',false)]};
- let r=await call({status:'success',islandProgress:{},passportVersion:1},body);assert.equal(r.status,'error');assert.match(r.message,/v9\.3\.0/);
+ let r=await call({status:'success',islandProgress:{},passportVersion:1},body);assert.equal(r.status,'error');assert.match(r.message,/v9\.6\.0/); // the current script includes the v9.3.0 answer log
  r=await call({status:'success',islandProgress:{},passportVersion:1,questionLogVersion:1},body);assert.equal(r.status,'success');
  checks++;console.log('PASS Netlify session function refuses to drop answers when the Sheet still runs an older Apps Script');
  console.log(JSON.stringify({checks}));

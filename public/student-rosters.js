@@ -95,7 +95,10 @@
     const hasCredits = totals => Object.values(totals).some(entry => entry.points > 0);
     const contributors = (className, teamId, totals) => members(className,teamId).filter(person => totals[person.id]?.awards > 0);
     const uniqueCount = (className, totals) => teams.reduce((sum,teamId) => sum + contributors(className,teamId,totals).length,0);
+    // v9.6.0: `everyone` lists every student of the class in roster order with their contribution
+    // count (zero included), so the Sheet keeps the whole class's record, not just the leaders.
     const summary = (className, totals) => ({className:className || null, metric:'contribution_count',
-        teams:Object.fromEntries(teams.map(teamId => [teamId, ranked(className, teamId, totals)]))});
+        teams:Object.fromEntries(teams.map(teamId => [teamId, ranked(className, teamId, totals)])),
+        everyone:Object.fromEntries(teams.map(teamId => [teamId, members(className, teamId).map(person => ({name:person.name, awards:totals[person.id]?.awards || 0}))]))});
     root.LeagueStudents = Object.freeze({defaults, snapshot, useRoster, validateRoster, classes, teams, members, student, validClass, restore, credit, ranked, nextToInvite, hasCredits, contributors, uniqueCount, summary});
 })(window);
