@@ -28,14 +28,14 @@
   status=el('p','','roster-status');status.id='roster-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   body=el('div',undefined,'roster-body');dialog.append(header,status,body);dialog.addEventListener('cancel',e=>{e.preventDefault();close();});document.body.append(dialog);
  }
- async function request(type,extra={}){
+ async function request(type,extra={},key=pin){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000);
   try{
-   const response=await fetch('/api/roster',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:controller.signal,body:JSON.stringify({type,pin,...extra})});
+   const response=await fetch('/api/roster',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:controller.signal,body:JSON.stringify({type,pin:key,...extra})});
    const result=await response.json();
-   if(!response.ok||result.status!=='success')throw Error(result.message||result.error||(result.status==='unauthorized'?'Incorrect Teacher PIN.':'Update the Apps Script deployment, then reload.'));
+   if(!response.ok||result.status!=='success')throw Object.assign(Error(result.message||result.error||(result.status==='unauthorized'?'Incorrect Teacher PIN.':'Update the Apps Script deployment, then reload.')),{unauthorized:result.status==='unauthorized'});
    return valid(result);
-  }catch(error){if(error.name==='AbortError'||error instanceof TypeError)throw Error('Connection interrupted. Saving was not confirmed. Reload online before retrying.');throw error;}
+  }catch(error){if(error.name==='AbortError'||error instanceof TypeError)throw Object.assign(Error('Connection interrupted. Saving was not confirmed. Reload online before retrying.'),{offline:true});throw error;}
   finally{clearTimeout(timer);}
  }
  async function load(){
@@ -84,5 +84,7 @@
    },'roster-remove');remove.id='roster-remove';body.append(remove);}
   body.append(button('Back',()=>{renderList();message('Edits not saved.');}),button('Reload online',load));name.focus();
  }
- root.LeagueRoster={get busy(){return busy;},mount(container,teacherPin,className){ensure();embedded=container;container.classList.add('roster-manager','roster-embedded');container.append(status,body);chosenClass=className||getClass()||'5-A';pin=teacherPin;load();},unmount(){if(embedded){dialog.append(status,body);embedded=null;pin='';editBase=null;}},current:()=>catalog?clone(catalog):null,accept,configure(options){onSaved=options.onSaved;getClass=options.getClass;},open(){ensure();pin='';editBase=null;chosenClass=getClass()||'5-A';if(!dialog.open)dialog.showModal();auth();},get storageOK(){return storageOK;}};
+ root.LeagueRoster={get busy(){return busy;},mount(container,teacherPin,className){ensure();embedded=container;container.classList.add('roster-manager','roster-embedded');container.append(status,body);chosenClass=className||getClass()||'5-A';pin=teacherPin;load();},unmount(){if(embedded){dialog.append(status,body);embedded=null;pin='';editBase=null;}},current:()=>catalog?clone(catalog):null,accept,configure(options){onSaved=options.onSaved;getClass=options.getClass;},open(){ensure();pin='';editBase=null;chosenClass=getClass()||'5-A';if(!dialog.open)dialog.showModal();auth();if(root.LeagueTeacher?.pin){pin=root.LeagueTeacher.pin;load();}},
+  // v10.1.0 Teacher sign-in: load the online roster with the PIN typed when the phone connected.
+  async signIn(key){try{const data=await request('ROSTER_GET',{},key);accept(data);onSaved(data,{signIn:true});return {ok:true};}catch(error){return {ok:false,unauthorized:Boolean(error.unauthorized),message:error.offline?'Google Sheets could not be reached.':error.message};}},get storageOK(){return storageOK;}};
 })(window);

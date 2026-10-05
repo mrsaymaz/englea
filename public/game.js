@@ -5658,7 +5658,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.0.2';
+        const REMOTE_BUILD = '10.1.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6297,6 +6297,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             }
 
             document.getElementById('connect-phone-btn').disabled = true;
+            // v10.1.0: the Teacher PIN typed here signs in to Google Sheets once the board allows this phone.
+            const teacherPin=document.getElementById('teacher-pin-startup');globalThis.LeagueTeacher?.start(teacherPin?.value);if(teacherPin)teacherPin.value='';
             activeRoomCode = inputCode;
             remoteRole = 'controller';
             document.getElementById('startup-overlay').classList.add('hidden');
@@ -6351,7 +6353,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 }
                 if(data.type==='ROSTER_CATALOG' && isHost){
                     try {if(LeagueRoster.accept(data.catalog)){
-                        if(!selectedClass){LeagueStudents.useRoster(LeagueRoster.current().students);updateStudentSessionUI();scheduleCheckpoint();}
+                        // v10.1.0: the Teacher sign-in's names also reach a lesson that has not awarded anyone yet.
+                        const lessonOpen=data.signIn===true&&!LeagueStudents.hasCredits(studentContributions)&&!secretAgents.request&&!Object.keys(secretAgents.assignments).length;
+                        if(!selectedClass||lessonOpen){LeagueStudents.useRoster(LeagueRoster.current().students);updateStudentSessionUI();scheduleCheckpoint();}
                         window.syncStateToController();
                     }} catch { safeRemoteSend({type:'ROSTER_ERROR',message:'Invalid roster. Load online again from Manage.'},connection); }
                     return;
@@ -6502,6 +6506,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     // The receipt precedes commands, so the host is ready before a queued action arrives.
                     safeRemoteSend({type:'STATE_SYNC_ACK',build:REMOTE_BUILD,sessionId:data.sessionId,syncToken:data.syncToken},connection);
                     remoteCommands.sync(data.sessionId);
+                    globalThis.LeagueTeacher?.connected();
                     if(data.selectedClass&&connection._teachingClass!==data.selectedClass){connection._teachingClass=data.selectedClass;LeagueTeaching.send(safeRemoteSend,data.sessionId,Number(data.selectedClass[0]));}
                     }catch(error){
                         console.warn('Remote state could not be applied.',error);connection._stateReady=false;
@@ -6654,13 +6659,14 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             }, 15000);
         };
 
-        LeagueRoster.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass,onSaved:catalog=>{
-            if(remoteRole==='controller')safeRemoteSend({type:'ROSTER_CATALOG',catalog});
+        LeagueRoster.configure({getClass:()=>remoteRole==='controller'?remoteStudentClass:selectedClass,onSaved:(catalog,options)=>{
+            if(remoteRole==='controller')safeRemoteSend({type:'ROSTER_CATALOG',catalog,signIn:options?.signIn===true});
             else {
                 if(!selectedClass){LeagueStudents.useRoster(catalog.students);updateStudentSessionUI();scheduleCheckpoint();}
                 window.syncStateToController?.();
             }
         }});
+        globalThis.LeagueTeacher?.configure({remote:()=>remoteRole==='controller',ready:()=>remoteRole==='controller'&&Boolean(window.remoteConnection?.open&&window.remoteConnection._stateReady)});
         // --- GOOGLE SHEETS CLOUD LOGGER CONFIGURATION ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1slB2qFrDkSp_4AsW7NGiADQju3TisakEWG-s1lGwAoho9gkAoz9enWZbAIEMT9eZww/exec";
         
@@ -6735,7 +6741,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             }
             document.getElementById('teacher-class-input').value = cachedLeaderboardRecord?.className || cachedBattleRecord?.className || remoteStudentClass || '';
             document.getElementById('mobile-save-modal').classList.remove('hidden');
-            document.getElementById('teacher-pin-input').value = '';
+            document.getElementById('teacher-pin-input').value = globalThis.LeagueTeacher?.pin||'';
             document.getElementById('mobile-save-status').textContent = '';
         };
 
@@ -6826,7 +6832,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 await LeagueOutbox.send(entry,pin,{retry:true});
                 statusEl.textContent=(entry.error||LeagueOutbox.labels[entry.state])+(LeagueOutbox.storageOK?'':' · local storage unavailable');
                 statusEl.style.color=entry.state==='sent'?'#7dd3fc':'#fcd34d';
-                document.getElementById('teacher-pin-input').value='';
+                if(entry.state==='sent')globalThis.LeagueTeacher?.accepted(pin);
+                document.getElementById('teacher-pin-input').value=globalThis.LeagueTeacher?.pin||'';
                 submitBtn.disabled=false;
 
             } catch (err) {
@@ -7144,9 +7151,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if(entry.state!=='sending'){
                     const button=document.createElement('button');button.type='button';button.textContent=entry.state==='waiting'?'Send':'Retry';
                     button.addEventListener('click',async()=>{
-                        const pin=document.getElementById('teacher-pin-input').value.trim();if(!pin){document.getElementById('mobile-save-status').textContent='Enter your Teacher PIN to send this saved result.';return;}
+                        const pin=document.getElementById('teacher-pin-input').value.trim()||globalThis.LeagueTeacher?.pin||'';if(!pin){document.getElementById('mobile-save-status').textContent='Enter your Teacher PIN to send this saved result.';return;}
                         if(!entry.payload.sessionId&&entry.state!=='waiting'&&!window.confirm('Check the Google Sheet first. Retry only if this lesson row is missing. Continue?'))return;
-                        await LeagueOutbox.send(LeagueOutbox.find(entry.id),pin,{retry:true});document.getElementById('teacher-pin-input').value='';
+                        await LeagueOutbox.send(LeagueOutbox.find(entry.id),pin,{retry:true});document.getElementById('teacher-pin-input').value=globalThis.LeagueTeacher?.pin||'';
                         document.getElementById('mobile-save-status').textContent=LeagueOutbox.labels[LeagueOutbox.find(entry.id).state];
                     });row.appendChild(button);
                 }outboxHost.appendChild(row);

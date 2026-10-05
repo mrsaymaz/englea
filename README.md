@@ -1,8 +1,12 @@
-# English League with Mr. Saymaz — v10.0.0
+# English League with Mr. Saymaz — v10.1.0
 
-Start with **START-HERE-v10.0.0.md**. A student's award card now takes on their team's element as they collect Island Run navigator seals (fire, nature, water, air), growing stronger with every seal until, at all ten, it wears a crown and a title: **Flamebearer**, **Earthshaker**, **Tidecaller** or **Stormrider**. The whole school now plays one **League Season**: a Season Wins panel on the Champions screen ranks the four teams by League titles and Final Arena wins across every class, counting every session already in the Sheet.
+Start with **START-HERE-v10.1.0.md**. Type your Teacher PIN under the room code when you connect the phone: after **Allow** on the board, the phone signs in once and loads the student names, islands, seals and the School League Season, and Save Record, Manage and Studio stop asking for the PIN.
 
-**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v10.0.0.gs** (deploy a New version of the existing web app; it includes v9.6.0 and v9.7.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v10.0.2** (v10.0.1 keeps the "★ First time" tag above the elemental card effects; v10.0.2 brings the school season from the phone to the board).
+## v10.0 (retained)
+
+Guide: `archive/START-HERE-v10.0.0.md`. A student's award card now takes on their team's element as they collect Island Run navigator seals (fire, nature, water, air), growing stronger with every seal until, at all ten, it wears a crown and a title: **Flamebearer**, **Earthshaker**, **Tidecaller** or **Stormrider**. The whole school now plays one **League Season**: a Season Wins panel on the Champions screen ranks the four teams by League titles and Final Arena wins across every class, counting every session already in the Sheet.
+
+**Apps Script**: **GOOGLE-APPS-SCRIPT-v10.0.0.gs**, unchanged in v10.1.0 (if your Sheet runs an older script, deploy it as a New version of the existing web app; it includes v9.6.0 and v9.7.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v10.1.0** (v10.0.1 keeps the "★ First time" tag above the elemental card effects; v10.0.2 brings the school season from the phone to the board).
 
 ## v9.7.0 (retained)
 
@@ -24,7 +28,7 @@ v9.4.0 gave Island Run a single header while running, a daylight scene for each 
 
 v9.3.0 turned Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named (since v9.7.0, one navigator leads the whole session). The teacher remote fits an iPhone 14 Pro in Safari without scrolling.
 
-Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v10.0.0.md**.
+Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v10.1.0.md**.
 
 ## Retained features and earlier fixes
 
@@ -39,7 +43,7 @@ Version 9 adds the four selected features:
 - Teacher Studio: use **Manage** on the phone or board to edit questions and learning objectives, preview choices, paste vocabulary pairs, maintain rosters and view class progression. Teaching material saves online by grade and island.
 - A compact expedition recap below the existing champion and contributor sections, with team progress, this lesson's new completions and a next-island teaser.
 
-For this release, use **START-HERE-v10.0.0.md** and update to **GOOGLE-APPS-SCRIPT-v10.0.0.gs**. The startup badge should read **Island Run Edition · v10.0.2** on both devices. No new environment variables are required.
+For this release, use **START-HERE-v10.1.0.md** and keep **GOOGLE-APPS-SCRIPT-v10.0.0.gs**. The startup badge should read **Island Run Edition · v10.1.0** on both devices. No new environment variables are required.
 
 Remote startup synchronization, Retry sync, class/team cloud progress and session-save deduplication from v8.9.1 remain included. Existing artwork, grade curricula, 4,240 question variants, scoring, coin targets and Soft/Hard rules are retained.
 

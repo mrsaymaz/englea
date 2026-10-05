@@ -2,6 +2,18 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.1.0
+**One-step Teacher sign-in**:
+- A Teacher PIN box sits under the room code on the phone's opening screen.
+- After Allow on the board, the phone signs in once. It loads the online roster (student names), then the class's islands, navigator seals, questions, answer log and School League Season, and passes them to the board.
+- Load islands, Save Record (prefilled), saved-result Send/Retry, Manage and Studio reuse the same PIN, so there are no separate prompts.
+- New names reach today's lesson until the first award.
+- A wrong PIN is reported on the phone and asked for once; the PIN that works there signs in for everything.
+- A status pill on the phone shows the result, and the More sheet adds **Teacher sign-in**.
+- The PIN stays in memory only.
+
+No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.0.0.gs`.
+
 ## 10.0.2
 School League Season: the totals loaded on the phone (where the PIN is typed while a phone is connected) now always reach the board when its copy is older or missing, and an older Apps Script is reported on the board as "Update Apps Script to v10.0.0" instead of "Load islands". No Apps Script change.
 

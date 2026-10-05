@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.0.2
+English League · Island Run Edition · v10.1.0
+
+v10.1.0: one-step Teacher sign-in. Type the Teacher PIN under the room code when connecting the phone; after Allow the phone loads names, islands, seals and the season, and Save Record, Manage and Studio reuse the PIN. Apps Script unchanged (v10.0.0).
 
 v10.0.2: the School League Season reaches the board when the PIN is typed on the phone. Apps Script unchanged (v10.0.0).
 
@@ -8,4 +10,4 @@ Elemental student cards: the award card takes on the student's team element (fir
 School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
 
 Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v10.0.0.md.
+No new Netlify or Cloudflare variables. Read START-HERE-v10.1.0.md.

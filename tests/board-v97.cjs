@@ -1,6 +1,6 @@
 /* v9.7.0 browser checks (Chromium): the student award card with ten seal places, no seal chips on team cards,
    one Island Run navigator for the whole session, the phone's student controller popping up, a keyboard on the
-   phone steering the runner on the board, and a navigator seal reaching the phone. See ../TEST-REPORT-v10.0.0.md. */
+   phone steering the runner on the board, and a navigator seal reaching the phone. See ../archive/TEST-REPORT-v10.0.0.md. */
 const assert=require('assert/strict');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));

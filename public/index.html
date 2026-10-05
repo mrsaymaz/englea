@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- English League Island Run Edition v10.0.2 -->
+<!-- English League Island Run Edition v10.1.0 -->
 <html lang="en" class="access-locked">
 <head>
     <meta charset="UTF-8">
@@ -18,12 +18,13 @@
     <script src="./session-recovery.js?v=8.7.0"></script>
     <script src="./remote-protocol.js?v=8.7.0"></script>
     <script src="./performance-budget.js?v=8.7.0"></script>
-    <script src="./sheets-outbox.js?v=10.0.2"></script>
+    <script src="./sheets-outbox.js?v=10.1.0"></script>
     <link rel="stylesheet" href="./classroom.css?v=8.7.0">
     <link rel="stylesheet" href="./students.css?v=8.7.0">
-    <script src="./student-rosters.js?v=10.0.2"></script>
-    <script src="./roster-manager.js?v=10.0.2"></script>
-    <script src="./student-ui.js?v=10.0.2"></script>
+    <script src="./student-rosters.js?v=10.1.0"></script>
+    <script src="./roster-manager.js?v=10.1.0"></script>
+    <script src="./teacher-signin.js?v=10.1.0"></script>
+    <script src="./student-ui.js?v=10.1.0"></script>
     <script src="./secret-agent.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./secret-agent.css?v=8.7.0">
     <script src="./motion.js?v=8.7.0"></script>
@@ -37,32 +38,32 @@
     <script src="./animated-mode.js?v=8.7.0"></script>
     <script src="./raid-motion.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./roster-manager.css?v=8.7.0">
-    <link rel="stylesheet" href="./island-run.css?v=10.0.2">
-    <script src="./adventure.js?v=10.0.2"></script>
-    <script src="./island-runner/content.js?v=10.0.2"></script>
-    <script src="./teaching-model.js?v=10.0.2"></script>
-    <script src="./teaching.js?v=10.0.2"></script>
-    <script src="./teacher-studio.js?v=10.0.2"></script>
-    <link rel="stylesheet" href="./teacher-studio.css?v=10.0.2">
-    <script src="./lesson-recap.js?v=10.0.2"></script>
-    <link rel="stylesheet" href="./adventure.css?v=10.0.2">
-    <script src="./island-progress.js?v=10.0.2"></script>
-    <script src="./passport-seals.js?v=10.0.2"></script>
-    <script src="./navigator-seals.js?v=10.0.2"></script>
-    <script src="./league-season.js?v=10.0.2"></script>
-    <link rel="stylesheet" href="./island-progress.css?v=10.0.2">
-    <link rel="stylesheet" href="./remote-sync.css?v=10.0.2">
-    <script src="./question-log.js?v=10.0.2"></script>
-    <script src="./island-run.js?v=10.0.2"></script>
-    <script src="./run-remote.js?v=10.0.2"></script>
-    <link rel="stylesheet" href="./remote-compact.css?v=10.0.2">
-    <link rel="stylesheet" href="./league-look.css?v=10.0.2">
-    <link rel="stylesheet" href="./board-v95.css?v=10.0.2">
-    <link rel="stylesheet" href="./league-v97.css?v=10.0.2">
-    <link rel="stylesheet" href="./league-v10.css?v=10.0.2">
-    <script src="./board-fx.js?v=10.0.2"></script>
-    <link rel="stylesheet" href="./arena-v95.css?v=10.0.2">
-    <script src="./arena-fx.js?v=10.0.2"></script>
+    <link rel="stylesheet" href="./island-run.css?v=10.1.0">
+    <script src="./adventure.js?v=10.1.0"></script>
+    <script src="./island-runner/content.js?v=10.1.0"></script>
+    <script src="./teaching-model.js?v=10.1.0"></script>
+    <script src="./teaching.js?v=10.1.0"></script>
+    <script src="./teacher-studio.js?v=10.1.0"></script>
+    <link rel="stylesheet" href="./teacher-studio.css?v=10.1.0">
+    <script src="./lesson-recap.js?v=10.1.0"></script>
+    <link rel="stylesheet" href="./adventure.css?v=10.1.0">
+    <script src="./island-progress.js?v=10.1.0"></script>
+    <script src="./passport-seals.js?v=10.1.0"></script>
+    <script src="./navigator-seals.js?v=10.1.0"></script>
+    <script src="./league-season.js?v=10.1.0"></script>
+    <link rel="stylesheet" href="./island-progress.css?v=10.1.0">
+    <link rel="stylesheet" href="./remote-sync.css?v=10.1.0">
+    <script src="./question-log.js?v=10.1.0"></script>
+    <script src="./island-run.js?v=10.1.0"></script>
+    <script src="./run-remote.js?v=10.1.0"></script>
+    <link rel="stylesheet" href="./remote-compact.css?v=10.1.0">
+    <link rel="stylesheet" href="./league-look.css?v=10.1.0">
+    <link rel="stylesheet" href="./board-v95.css?v=10.1.0">
+    <link rel="stylesheet" href="./league-v97.css?v=10.1.0">
+    <link rel="stylesheet" href="./league-v10.css?v=10.1.0">
+    <script src="./board-fx.js?v=10.1.0"></script>
+    <link rel="stylesheet" href="./arena-v95.css?v=10.1.0">
+    <script src="./arena-fx.js?v=10.1.0"></script>
 </head>
 <body class="p-4 sm:p-8">
     <section id="access-screen" aria-labelledby="access-title">
@@ -74,7 +75,7 @@
 <!-- STARTUP SCREEN -->
     <div id="startup-overlay" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
         <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase tracking-widest mb-8">English League</h1>
-        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v10.0.2</div>
+        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v10.1.0</div>
         <div class="startup-card bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
             <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Smartboard Display</h2>
             <div class="performance-selector" role="group" aria-label="Smartboard visual quality">
@@ -96,6 +97,8 @@
             <hr class="startup-divider border-slate-700 mb-8">
             <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Remote Control</h2>
             <input type="text" id="room-code-input" placeholder="4-DIGIT CODE" class="w-full bg-slate-950 border-2 border-slate-700 rounded-xl p-4 text-center text-2xl font-black text-white uppercase tracking-[0.5em] mb-4 outline-none focus:border-blue-500" maxlength="4">
+            <label for="teacher-pin-startup" class="startup-pin-label">Teacher PIN <span>optional · signs in to Google Sheets after you tap Allow on the board</span></label>
+            <input type="password" id="teacher-pin-startup" inputmode="numeric" autocomplete="off" maxlength="100" placeholder="TEACHER PIN" class="w-full bg-slate-950 border-2 border-slate-700 rounded-xl p-3 text-center text-xl font-black text-white tracking-[0.4em] mb-4 outline-none focus:border-blue-500">
             <button id="connect-phone-btn" onclick="startControllerMode()" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-transform uppercase tracking-wider disabled:opacity-50 disabled:cursor-wait">Connect Phone</button>
             <button id="open-saved-results-btn" type="button" hidden>Open saved lesson results</button>
         </div>
@@ -115,6 +118,7 @@
 
         <div id="mobile-sync-panel"><span id="mobile-sync-detail" role="status">Waiting for board synchronization</span><button id="remote-resync-btn" type="button" onclick="retryRemoteSync()">Retry sync</button></div>
         <div id="mobile-command-status" role="status" aria-live="polite"></div>
+        <button id="mobile-teacher-status" type="button" role="status" aria-live="polite" hidden></button>
         <div id="mobile-scene-controls" hidden><span id="mobile-scene-name"></span><button id="remote-pause-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_PAUSE')">Pause</button><button id="remote-skip-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_SKIP')">Skip</button><button id="remote-exit-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_EXIT')">Exit</button></div>
         <main class="mobile-controller-main">
             <section id="mobile-run-panel" class="remote-run-panel" aria-label="Island Run controls" hidden>
@@ -250,6 +254,7 @@
                     </div>
                 </section>
                 <section class="remote-sheet-actions">
+                    <button id="mobile-teacher-btn" type="button" data-closes-sheet onclick="LeagueTeacher.ask()">Teacher sign-in</button>
                     <button id="mobile-manage-btn" type="button" data-closes-sheet onclick="LeagueStudio.open()">Manage roster and questions</button>
                     <button type="button" class="remote-disconnect" onclick="location.reload()">Disconnect this remote</button>
                 </section>
@@ -1027,7 +1032,7 @@
         </div>
     </div>
 
-    <script src="./game.js?v=10.0.2"></script>
+    <script src="./game.js?v=10.1.0"></script>
 
 </body>
 </html>

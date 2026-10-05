@@ -1,6 +1,6 @@
 /* v10.0.0 browser checks (Chromium): elemental student cards by seal count and team element (moving in Animated
    mode, still in Light), the one-time level-up burst, and the School League Season panel on the Champions screen
-   at three board sizes. See ../TEST-REPORT-v10.0.0.md. */
+   at three board sizes. See ../archive/TEST-REPORT-v10.0.0.md. */
 const assert=require('assert/strict');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));

@@ -1,3 +1,13 @@
+# v10.1.0 checks
+
+Run `npm run test:v101` for the full dependency-free suite (all v10.0 checks plus `v101.cjs`). `v101.cjs` covers:
+
+- the one-step Teacher sign-in: the PIN waits for Allow, signs in once (roster, then islands), forgets a wrong PIN and keeps one when the Sheet is unreachable;
+- Load islands, Save Record, saved-result retry, Manage and Studio reusing the PIN;
+- the PIN box between the room code and Connect Phone.
+
+`npm run test:board` now also runs `teacher-signin.cjs` (Chromium, real Apps Script in the in-memory spreadsheet). It checks that names, islands, seals and the season reach the board with no PIN prompt, that a wrong PIN is asked for once, and that the remote works without a PIN.
+
 # v10.0.0 checks
 
 Run `npm run test:v10` for the full dependency-free suite (all v9.7 checks plus `v10.cjs`): season wins counted by the Apps Script (League title and Arena once each, a Grand Champion twice, a shared title once per tied team, older rows without session IDs, re-saves counted once, unreadable rows skipped), the board's season module (today's wins added until saved, no double counting, kept for the next lesson), how season data travels, and the elemental card rules. `npm run test:board` (Playwright with Chromium) also runs `board-v10.cjs`: the elemental cards at every stage and element, the level-up burst once, still cards in Light mode, and the Season Wins panel at 1280×720, 1366×768 and 1920×1080. See `../TEST-REPORT-v10.0.0.md`.
