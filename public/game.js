@@ -2286,17 +2286,24 @@
                 // one short transform-only FLIP with no shadows, filters or queued motion.
                 if (isLeanMode()) {
                     const firstPositions = {};
-                    teamElements.forEach(el => {
-                        firstPositions[el.id] = el.getBoundingClientRect();
+                    // v10.1.1: the four team cards share one grid, so a card's new place is the old place of the slot
+                    // it moves into. Without a slide in flight, layout offsets give both ends with a single layout
+                    // pass and no second (forced) layout after the cards are moved.
+                    const settled = teamElements.every(el => !el._lightOrderMotion);
+                    const slots = settled ? teamElements.map(el => ({left:el.offsetLeft, top:el.offsetTop})) : null;
+                    teamElements.forEach((el, index) => {
+                        firstPositions[el.id] = settled ? slots[index] : el.getBoundingClientRect();
                         el._lightOrderMotion?.cancel();
                         el._lightOrderMotion = null;
                         el.style.zIndex = '';
                     });
                     desiredOrder.forEach(id => grid.appendChild(document.getElementById(id)));
                     const duration = motionReason === 'switch' ? LeagueMotion.timing.switch : LeagueMotion.timing.reorder;
+                    // v10.1.1: a student card on screen fades first; the slide waits for it (fill keeps the old places).
+                    const hold = LeagueStudentUI.beforeSlide(duration);
                     teamElements.forEach(el => {
                         const firstPos = firstPositions[el.id];
-                        const lastPos = el.getBoundingClientRect();
+                        const lastPos = settled ? slots[desiredOrder.indexOf(el.id)] : el.getBoundingClientRect();
                         const deltaX = firstPos.left - lastPos.left;
                         const deltaY = firstPos.top - lastPos.top;
                         if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
@@ -2306,6 +2313,8 @@
                             { transform:'translate3d(0,0,0)' }
                         ],{
                             duration,
+                            delay:hold,
+                            fill:'backwards',
                             easing:'cubic-bezier(.2,.78,.22,1)'
                         });
                         el._lightOrderMotion = motion;
@@ -2323,6 +2332,7 @@
                 const firstPositions = {};
                 teamElements.forEach(el => { firstPositions[el.id] = el.getBoundingClientRect(); });
                 desiredOrder.forEach(id => grid.appendChild(document.getElementById(id)));
+                const hold = LeagueStudentUI.beforeSlide(500);
 
                 // Ultra preserves the existing animated FLIP reorder when ranking changes.
                 teamElements.forEach(el => {
@@ -2340,14 +2350,14 @@
                         el.offsetWidth;
                         
                         // Play: Restore transition and slide to actual spot (0,0)
-                        el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease';
+                        el.style.transition = `transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${hold}ms, box-shadow 0.3s ease, border-color 0.3s ease`;
                         el.style.transform = 'translate(0, 0)';
                         
                         // Cleanup after animation completes to restore normal hover effects
                         setTimeout(() => {
                             el.style.transition = '';
                             el.style.transform = '';
-                        }, 500);
+                        }, 500 + hold);
                     }
                 });
             }
@@ -5658,7 +5668,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.1.0';
+        const REMOTE_BUILD = '10.1.1';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;

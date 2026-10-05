@@ -1,5 +1,12 @@
 # v10.1.0 — One-step Teacher sign-in
 
+**v10.1.1: student cards on the board.**
+
+- **One card at a time.** When another student earns points, the card on screen fades out in about 0.2 s, then the new card appears.
+- **No card during a ranking change.** If the award changes the ranking, the card fades first, the team cards slide, and the new card appears once its team card has landed.
+- **A shorter pause at each award**, with the same card look.
+- Deploy the project as below. The Apps Script is unchanged, and both opening screens show **v10.1.1**.
+
 Type your Teacher PIN once, when you connect the phone. After you tap **Allow** on the board, the phone signs in to Google Sheets and loads everything for the lesson:
 
 - the online **roster** (student names);
@@ -35,11 +42,11 @@ No more separate PIN prompts: **Load islands**, **Save Record**, saved-result **
 1. Finish the active lesson and save the session from the remote, as usual.
 2. **Apps Script: no change.** Keep **GOOGLE-APPS-SCRIPT-v10.0.0.gs**. If your Sheet still runs an older script, follow step 2 of `archive/START-HERE-v10.0.0.md` first.
 3. Deploy the complete extracted project to your existing Netlify site with your usual method. Include **public**, **netlify/functions** and **netlify.toml**. No new environment variables are needed.
-4. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.1.0**. Mixed versions are refused on purpose.
+4. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.1.1**. Mixed versions are refused on purpose.
 
 ## Quick classroom check
 
-1. Board and phone show **v10.1.0**.
+1. Board and phone show **v10.1.1**.
 2. Connect the phone with the room code and your Teacher PIN, then tap **Allow**.
 3. Choose the class. The phone shows **✓ Signed in · names, islands, seals and season loaded**, and no PIN box appears.
 4. At the end, **Save Record** has the PIN filled in already. Tap **Submit**.

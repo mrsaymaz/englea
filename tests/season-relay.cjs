@@ -10,7 +10,8 @@ async function pair(e,{answer,phoneContext=null,boardContext=null}){
  const pctx=phoneContext||await e.browser.newContext({viewport:{width:393,height:660},isMobile:true,hasTouch:true});
  const phone=await e.page(pctx);
  await phone.route('**/api/session',async r=>{const data=JSON.parse(r.request().postData()||'{}');r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(answer(data))});});
- await phone.exposeFunction('__send',d=>board.evaluate(d=>window.__receive(d),d));await board.exposeFunction('__send',d=>phone.evaluate(d=>window.__receive(d),d));
+ // A message still in flight when the test closes one side is dropped (the real link would be gone too).
+ await phone.exposeFunction('__send',d=>board.evaluate(d=>window.__receive(d),d).catch(()=>{}));await board.exposeFunction('__send',d=>phone.evaluate(d=>window.__receive(d),d).catch(()=>{}));
  await board.evaluate(()=>{__qa.start();__qa.mode('animated');});
  await phone.evaluate(()=>{document.getElementById('startup-overlay').classList.add('hidden');document.querySelector('.app-shell').style.display='none';document.getElementById('mobile-controller').classList.remove('hidden');__qa.connect('controller');});
  await board.evaluate(()=>__qa.connect('host'));await phone.waitForFunction(()=>Boolean(__qa.remoteSession()));

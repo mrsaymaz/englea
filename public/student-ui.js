@@ -3,7 +3,9 @@
     'use strict';
     const number = value => Math.round(value).toLocaleString('en-US');
     let dialog, body, title, subtitle, cancelAction = null, pickerKind = null;
-    const celebrations = new Map();
+    // v10.1.1: one student card at a time on the board (see celebrate below).
+    const shown = new Set(), FADE_MS = 200;
+    let pending = null, pendingFrame = 0, pendingTimer = 0, slideUntil = 0, fadeUntil = 0;
     function element(tag, className, text) {
         const node = document.createElement(tag);
         node.className = className;
@@ -106,9 +108,25 @@
         body.append(element('p','student-picker-note','Points are added only after you choose a name.'));
         reveal();
     }
+    function drop(entry) {
+        clearTimeout(entry.timer); entry.motion?.cancel(); entry.fade?.cancel(); entry.node.remove(); shown.delete(entry);
+    }
+    // Animated mode also carries performance-light (it shares the lean renderer); only real Light stays still.
+    const stillCards = () => matchMedia('(prefers-reduced-motion: reduce)').matches || (document.body.classList.contains('performance-light') && !document.body.classList.contains('performance-animated'));
+    // The card on screen leaves quickly (about 0.2 s) so the next one never overlaps it.
+    function fadeOut() {
+        for (const entry of shown) {
+            if (entry.leaving) continue;
+            entry.leaving = true; clearTimeout(entry.timer);
+            if (stillCards() || !entry.node.isConnected) { drop(entry); continue; }
+            entry.fade = entry.node.animate([{opacity:0}],{duration:FADE_MS,easing:'ease-in',fill:'forwards'});
+            entry.fade.addEventListener('finish',() => drop(entry),{once:true});
+            fadeUntil = Math.max(fadeUntil, performance.now() + FADE_MS);
+        }
+    }
     function clearCelebration(teamId) {
-        const active = celebrations.get(teamId);
-        if (active) { clearTimeout(active.timer); active.motion?.cancel(); active.node.remove(); celebrations.delete(teamId); }
+        if (pending?.team.id === teamId) pending = null;
+        for (const entry of [...shown]) if (entry.teamId === teamId) drop(entry);
     }
     // v9.7.0: the award card shows the Island Run seals this student earned as navigator (islands 1–10,
     // five to a row) instead of the points; the score panel and the history still show the points.
@@ -145,7 +163,7 @@
         node.style.setProperty('--el-level', String(level));
         const fx = element('span','el-fx'); fx.setAttribute('aria-hidden','true');
         fx.append(element('span','el-glow'));
-        if (tier === 'storm' || tier === 'mythic') fx.append(element('span','el-frame'));
+        if (tier === 'storm' || tier === 'mythic') { const frame = element('span','el-frame'); frame.append(element('span','el-strip')); fx.append(frame); }
         // Particles grow in number with each seal; spread and timing are fixed per index, so no two cards flicker alike.
         const count = Math.min(16, 2 + level + (tier === 'mythic' ? 4 : 0));
         for (let i = 0; i < count; i++) {
@@ -178,10 +196,40 @@
         }
         return {level, tier};
     }
+    // v10.1.1: one card at a time. A new award fades the previous card out first; while the team cards slide into a
+    // new ranking no card is shown, and the new card appears once its team card has landed. The card is built in the
+    // frame after the score update (so it does not add to that frame's work), and its entrance starts only after it
+    // has been drawn once (so a busy frame never skips the fade-in).
     function celebrate(team, person, points, detail = '', options = {}) {
+        pending = {team, person, options};
+        fadeOut();
+        schedule();
+    }
+    function schedule() {
+        if (pendingFrame || pendingTimer) return;
+        pendingFrame = requestAnimationFrame(() => {
+            pendingFrame = 0;
+            const wait = Math.max(slideUntil, fadeUntil) - performance.now();
+            if (wait > 0) { pendingTimer = setTimeout(() => { pendingTimer = 0; schedule(); }, wait); return; }
+            showCard();
+        });
+    }
+    // Called by the board just before the team cards slide into a new order. Returns how long the slide should wait
+    // so that a card on screen has faded first.
+    function beforeSlide(duration) {
+        fadeOut(); // the award itself may already have started the fade: wait for whatever is left of it
+        const hold = stillCards() || !shown.size ? 0 : Math.max(0, Math.ceil(fadeUntil - performance.now()));
+        // The slide starts with the next drawn frame, which can come late on a busy board: allow a margin.
+        slideUntil = Math.max(slideUntil, performance.now() + hold + duration + 120);
+        return hold;
+    }
+    function showCard() {
+        const p = pending; pending = null;
+        if (!p) return;
+        const {team, person, options} = p;
         const host = document.querySelector(`#team-${team.id} .mascot-area`);
         if (!host) return;
-        clearCelebration(team.id);
+        for (const entry of [...shown]) drop(entry);
         const node = element('div','student-contribution-badge');
         node.style.setProperty('--student-color',team.color);
         node.setAttribute('role','status'); node.setAttribute('aria-live','polite');
@@ -191,23 +239,32 @@
         // v9.5.0: a student's first contribution of the session gets its own small flourish.
         if (options.first) { node.classList.add('first-contribution'); node.append(element('span','student-contribution-first','★ First time')); }
         const elemental = elementalize(node, team, person, Boolean(options.first));
+        const entry = {node, teamId:team.id, motion:null, timer:0};
+        shown.add(entry);
+        if (stillCards()) { host.append(node); entry.timer = setTimeout(() => drop(entry),4300); return; }
+        node.style.opacity = '0.01'; // drawn once, nearly invisible, before the entrance starts
         host.append(node);
-        // Animated mode also carries performance-light (it shares the lean renderer); only real Light stays still.
-        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || (document.body.classList.contains('performance-light') && !document.body.classList.contains('performance-animated'));
-        // A new seal since this student's last card: one short burst of their element.
-        if (elemental && root.LeagueNavigatorSeals?.takeLevelUp(person.className, person.id) && !reduced) {
-            node.classList.add('el-levelup');
-            node.querySelector('.el-glow')?.animate([{opacity:0,transform:'scale(.7)'},{opacity:1,transform:'scale(1.35)',offset:.35},{opacity:0,transform:'scale(1.6)'}],{duration:1100,delay:250,easing:'ease-out'});
-        }
-        const motion = reduced ? null : node.animate([
-            {opacity:0,transform:'translateY(9px) scale(.98)'},
-            {opacity:1,transform:'translateY(0) scale(1)',offset:.12},
-            {opacity:1,transform:'translateY(0) scale(1)',offset:.88},
-            {opacity:0,transform:'translateY(-6px) scale(1)'}
-        ],{duration:4200,easing:'ease-out'});
-        celebrations.set(team.id,{node,motion,timer:setTimeout(() => clearCelebration(team.id),4300)});
+        requestAnimationFrame(() => {
+            if (!shown.has(entry) || entry.leaving) return;
+            node.style.opacity = '';
+            // A new seal since this student's last card: one short burst of their element.
+            if (elemental && root.LeagueNavigatorSeals?.takeLevelUp(person.className, person.id)) {
+                node.classList.add('el-levelup');
+                node.querySelector('.el-glow')?.animate([{opacity:0,transform:'scale(.7)'},{opacity:1,transform:'scale(1.35)',offset:.35},{opacity:0,transform:'scale(1.6)'}],{duration:1100,delay:250,easing:'ease-out'});
+            }
+            entry.motion = node.animate([
+                {opacity:0,transform:'translateY(9px) scale(.98)'},
+                {opacity:1,transform:'translateY(0) scale(1)',offset:.12},
+                {opacity:1,transform:'translateY(0) scale(1)',offset:.88},
+                {opacity:0,transform:'translateY(-6px) scale(1)'}
+            ],{duration:4200,easing:'ease-out'});
+            entry.timer = setTimeout(() => drop(entry),4300);
+        });
     }
-    function clearCelebrations() { for (const teamId of [...celebrations.keys()]) clearCelebration(teamId); }
+    function clearCelebrations() {
+        pending = null; cancelAnimationFrame(pendingFrame); clearTimeout(pendingTimer); pendingFrame = pendingTimer = 0;
+        for (const entry of [...shown]) drop(entry);
+    }
     function renderContributors(host, teams, className, totals) {
         host.replaceChildren();
         const any = teams.some(team => LeagueStudents.ranked(className,team.id,totals).length);
@@ -293,5 +350,5 @@
             container.append(star);
         });
     }
-    root.LeagueStudentUI = {chooseClass,chooseStudent,close,celebrate,clearCelebration,clearCelebrations,renderContributors,renderTeamRecognition,renderConstellation,renderNextToInvite,get active(){return pickerKind;}};
+    root.LeagueStudentUI = {chooseClass,chooseStudent,close,celebrate,beforeSlide,clearCelebration,clearCelebrations,renderContributors,renderTeamRecognition,renderConstellation,renderNextToInvite,get active(){return pickerKind;}};
 })(window);

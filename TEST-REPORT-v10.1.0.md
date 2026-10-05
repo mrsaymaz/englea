@@ -1,5 +1,33 @@
 # v10.1.0 verification
 
+## v10.1.1
+
+**New `board-v101.cjs`** (Chromium, Animated and Light). It samples every frame while awards go to different teams, with and without a change of ranking:
+
+- at most one student card is visible in any frame;
+- no card is visible while the team cards slide;
+- the previous card leaves within about 0.3 s (immediately in Light);
+- each new card appears on its own team after the slide has landed.
+
+It also checks that:
+
+- the frame stripe animates `transform` only;
+- the edge shapes and the crown have no blurred shadows;
+- a scene change cancels a waiting card.
+
+**Other changes to the tests:**
+
+- `v101.cjs` adds a check that no function name is declared twice in `student-ui.js`. A first draft of this release did so, and `next-to-invite.cjs` caught it: choosing a student name failed.
+- `board-v10.cjs` now waits for each card, because it appears one frame after the award.
+- The phone–board bridge in `season-relay.cjs` and `teacher-signin.cjs` ignores a message still in flight when the test closes a page.
+
+**Results:**
+
+- `npm run test:board` passed 22 of 22, three runs in a row. `npm run test:v101` passed 118 checks.
+- `next-to-invite.cjs`, the access gate, arena techniques, projectiles and HP, and Unity reward visibility pass.
+- **Freeze at an award** (Chromium at a quarter CPU speed, 16 awards per version, cards with 5–10 seals): the longest frame averaged about 136–146 ms in v10.1.0 and about 97–114 ms in v10.1.1. Time spent in slow frames fell from about 190–210 ms to about 155–190 ms per award. These figures come from a simulated slow CPU, not a real smart board. Most of the remaining time is the board's own score and team-card update, which is unchanged.
+
+
 ## Passed
 
 - **Full dependency-free suite** (`npm run test:v101` from `tests`): 117 checks. It covers every v10.0 check, including 240 + 400 scripted Island Run completions, 160 full v9.3 runs and all 4,240 question variants.

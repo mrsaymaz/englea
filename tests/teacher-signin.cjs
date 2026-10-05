@@ -25,7 +25,8 @@ async function pair(e,gas,typed){
  for(const [name,page] of [['phone',phone],['board',board]])for(const api of ['**/api/session','**/api/roster'])
   await page.route(api,r=>{const data=JSON.parse(r.request().postData()||'{}');calls[name].push(data.type);r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(gas.post(data))});});
  await phone.evaluate(()=>{window.__dialogs=[];const show=HTMLDialogElement.prototype.showModal;HTMLDialogElement.prototype.showModal=function(){window.__dialogs.push(this.id);return show.call(this);};});
- await phone.exposeFunction('__send',d=>board.evaluate(d=>window.__receive(d),d));await board.exposeFunction('__send',d=>phone.evaluate(d=>window.__receive(d),d));
+ // A message still in flight when the test closes one side is dropped (the real link would be gone too).
+ await phone.exposeFunction('__send',d=>board.evaluate(d=>window.__receive(d),d).catch(()=>{}));await board.exposeFunction('__send',d=>phone.evaluate(d=>window.__receive(d),d).catch(()=>{}));
  // The board starts the lesson and chooses the class before the phone connects (no one awarded yet).
  await board.evaluate(()=>{__qa.start();__qa.mode('animated');__qa.selectClass('5-A');document.querySelectorAll('dialog[open]').forEach(d=>d.close());});
  calls.board.length=0;

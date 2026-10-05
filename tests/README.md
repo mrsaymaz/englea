@@ -6,7 +6,7 @@ Run `npm run test:v101` for the full dependency-free suite (all v10.0 checks plu
 - Load islands, Save Record, saved-result retry, Manage and Studio reusing the PIN;
 - the PIN box between the room code and Connect Phone.
 
-`npm run test:board` now also runs `teacher-signin.cjs` (Chromium, real Apps Script in the in-memory spreadsheet). It checks that names, islands, seals and the season reach the board with no PIN prompt, that a wrong PIN is asked for once, and that the remote works without a PIN.
+`npm run test:board` now also runs `board-v101.cjs` (v10.1.1: one student card at a time, never during a ranking slide; frame-by-frame sampling) and `teacher-signin.cjs` (Chromium, real Apps Script in the in-memory spreadsheet). It checks that names, islands, seals and the season reach the board with no PIN prompt, that a wrong PIN is asked for once, and that the remote works without a PIN.
 
 # v10.0.0 checks
 

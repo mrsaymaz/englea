@@ -2,6 +2,19 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.1.1
+**Student cards on the board**:
+- One card at a time: a new award fades the previous card out in about 0.2 s before the next one appears.
+- When an award changes the ranking, the card on screen fades first, then the team cards slide, and the new card appears once its team card has landed. Before, cards rode along with the sliding team cards and crossed over each other.
+- Shorter freeze at each award:
+  - the card is built in the frame after the score update;
+  - its entrance starts once it has been drawn;
+  - the ranking slide no longer measures the cards a second time;
+  - the frame stripe flows by transform instead of being redrawn every frame;
+  - the edge shapes and the crown have no blurred shadows.
+
+In a quarter-speed CPU test, the longest frame at an award dropped from about 140 ms to about 100–110 ms. The card's look is unchanged. No Apps Script change.
+
 ## 10.1.0
 **One-step Teacher sign-in**:
 - A Teacher PIN box sits under the room code on the phone's opening screen.

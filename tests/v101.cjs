@@ -52,8 +52,14 @@ await test('The opening screen has the Teacher PIN box under the room code; the 
  assert(code>0&&code<pinBox&&pinBox<connect,'room code, Teacher PIN, Connect Phone');
  assert.match(html,/id="teacher-pin-startup" inputmode="numeric" autocomplete="off"/);assert.match(html,/<input type="password" id="teacher-pin-startup"/);
  assert(html.includes('id="mobile-teacher-status"')&&html.includes('onclick="LeagueTeacher.ask()"'));
- const tag=(html.match(/Island Run Edition · v(10\.\d+\.\d+)/)||[])[1];assert.equal(tag,'10.1.0');assert(html.includes('teacher-signin.js?v='+tag));
+ const tag=(html.match(/Island Run Edition · v(10\.\d+\.\d+)/)||[])[1];assert.match(tag,/^10\.1\.\d+$/);assert(html.includes('teacher-signin.js?v='+tag));
  assert(html.indexOf('teacher-signin.js')<html.indexOf('game.js?v='),'loaded before game.js');
+});
+await test('v10.1.1 one student card at a time: no function name is declared twice in student-ui.js (a second declaration silently replaces the first)',()=>{
+ const ui=pub('student-ui.js'),names=[...ui.matchAll(/^\s*function (\w+)\s*\(/gm)].map(m=>m[1]);
+ assert.deepEqual(names.filter((n,i)=>names.indexOf(n)!==i),[]);
+ assert.match(ui,/function beforeSlide\(duration\)/);assert.match(pub('game.js'),/const hold = LeagueStudentUI\.beforeSlide\(duration\);/);
+ assert.match(pub('game.js'),/delay:hold,\s*fill:'backwards',/,'the ranking slide waits for the card to fade');
 });
 console.log(JSON.stringify({checks}));
 })().catch(error=>{console.error(error);process.exit(1);});
