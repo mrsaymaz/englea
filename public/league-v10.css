@@ -139,3 +139,10 @@
 /* The phone marks the Comeback Halo teams with a small gold "×2". */
 #mobile-controller .mobile-team-card{position:relative}
 #mobile-controller .mobile-halo-chip{position:absolute;top:10px;right:12px;z-index:2;padding:1px 7px;border-radius:999px;background:#2a1a03;border:1.5px solid #f6c453;color:#ffe9a8;font:900 11px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 0 0 2px rgba(246,196,83,.22);pointer-events:none}
+
+/* v10.3.0 smoother Arena: the flare behind the fighters is drawn at screen size (it was 2.6 screens because it
+   overflowed the edges, and its edges are transparent anyway), it stays still on boards that need lighter effects,
+   and the board's animated background is not drawn while the almost-opaque Arena covers it. */
+#battle-overlay::before{inset:0!important}
+body[data-effects-budget="1"] #battle-overlay::before,body[data-effects-budget="2"] #battle-overlay::before{animation:none!important}
+body.arena-covering #dynamic-background{visibility:hidden!important}

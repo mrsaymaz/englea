@@ -2,6 +2,19 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.3.0
+**Smoother class moments on slow smart boards** (nothing looks or plays differently):
+- **Island Run:** resolution steps (100%, 75%, 55%) chosen by the run's own speed and remembered by each board. On a quarter-speed CPU, later runs reach 53 fps instead of 26.
+- **Awards:** no whole-board layout recalculation while an award runs:
+  - score, level badge and leader-crown restarts no longer force a layout;
+  - the ranking slide uses card places measured when the grid changes size;
+  - the page's leader class changes only when the leader changes.
+  The worst frame went from 233 ms to 83 ms on the slowed CPU.
+- **Battle Arena:** the board background is not drawn under the Arena; the glow behind the fighters is screen-sized, and still on boards that need lighter effects; the effects level is checked every 4 s during a fight and remembered for each board.
+- **Session recovery:** saved when the board is idle (within 0.6 s), and at once when the page is closed or hidden.
+
+No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.2.0.gs`.
+
 ## 10.2.0
 **Comeback Halo**:
 - Teams that won neither the League title nor the Final Arena in a class's last session earn ×2 on every positive award (+ button and custom points; never deductions) for that class's next session.

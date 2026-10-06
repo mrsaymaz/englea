@@ -23,20 +23,26 @@
   if(!root.Path2D)return;const l=get(n);c.save();c.translate(x-size*.5,y-size*.47);c.scale(size/200,size/200);c.globalAlpha=.45;
   for(const [d,fill,stroke]of [[l.broken,p.stone,p.mist]]){if(!paths.has(d))paths.set(d,new root.Path2D(d));const path=paths.get(d);if(fill){c.fillStyle=fill;c.fill(path);}if(stroke){c.strokeStyle=stroke;c.lineWidth=2;c.stroke(path);}}c.restore();
  }
+ // v10.3.0: each step also draws the run at a lower resolution (the picture is scaled up smoothly). On slow boards
+ // the cost of a frame is mostly the number of pixels sent to the screen, so this is what makes a run smooth.
+ // The board remembers the step it settled on, so later runs start smooth instead of adjusting during the run.
+ const QUALITY_KEY='island-run-quality-v1',store=()=>{try{return root.localStorage||null;}catch{return null;}};
  class Quality{
-  constructor(){this.tier=0;this.reset();}
-  reset(light=false){this.manual=light;this.tier=light?2:0;this.warm=1.5;this.slow=0;this.fast=0;this.cost=0;this.interval=1/60;this.sinceUp=Infinity;this.locked=false;}
+  constructor(){this.start=0;try{const v=Number(store()?.getItem(QUALITY_KEY));if(v===1||v===2)this.start=v;}catch{}this.tier=0;this.reset();}
+  reset(light=false){this.manual=light;this.tier=light?2:this.start;this.warm=1.5;this.slow=0;this.fast=0;this.cost=0;this.interval=1/60;this.sinceUp=Infinity;this.locked=false;}
+  remember(){if(this.manual)return;this.start=this.tier;try{store()?.setItem(QUALITY_KEY,String(this.tier));}catch{}}
   // v9.6.0: a board that slows down again soon after stepping up stays on the lower tier for the rest of the run,
   // so quality never bounces back and forth (each change resizes the canvas).
   sample(seconds,cost){if(this.manual||seconds<=0||seconds>.75||!Number.isFinite(cost))return false;seconds=Math.min(.1,seconds);this.sinceUp+=seconds;if(this.warm>0){this.warm-=seconds;return false;}
    this.cost+=.06*(cost-this.cost);this.interval+=.06*(seconds-this.interval);
-   const slow=this.cost>(this.tier===0?11:19)||this.interval>(this.tier===0?.026:.043);
+   // Slow: fewer than about 42 frames a second, or drawing that takes too long.
+   const slow=this.cost>(this.tier===0?11:19)||this.interval>.024;
    this.slow=slow?this.slow+seconds:Math.max(0,this.slow-seconds*2);
-   this.fast=this.cost<6&&this.interval<.022?this.fast+seconds:0;
-   if(this.slow>2.5&&this.tier<2){this.tier++;this.slow=this.fast=0;this.warm=2;if(this.sinceUp<30)this.locked=true;return true;}
-   if(this.fast>12&&this.tier>0&&!this.locked){this.tier--;this.slow=this.fast=0;this.warm=3;this.sinceUp=0;return true;}return false;
+   this.fast=this.cost<6&&this.interval<.0185?this.fast+seconds:0;
+   if(this.slow>2&&this.tier<2){this.tier++;this.slow=this.fast=0;this.warm=2;if(this.sinceUp<30)this.locked=true;this.remember();return true;}
+   if(this.fast>12&&this.tier>0&&!this.locked){this.tier--;this.slow=this.fast=0;this.warm=3;this.sinceUp=0;this.remember();return true;}return false;
   }
-  get limits(){return [{particles:60,strips:16,pixels:2400000,parallax:3},{particles:36,strips:10,pixels:1600000,parallax:2},{particles:18,strips:6,pixels:1000000,parallax:1}][this.tier];}
+  get limits(){return [{particles:60,strips:16,pixels:2400000,parallax:3,scale:1},{particles:36,strips:10,pixels:1600000,parallax:2,scale:.75},{particles:18,strips:6,pixels:1000000,parallax:1,scale:.55}][this.tier];}
  }
  function projectile(c,n,x,y,r,time,reduced,color){
   c.save();c.translate(x,y);c.strokeStyle=color;c.fillStyle=color+'aa';c.lineWidth=3;

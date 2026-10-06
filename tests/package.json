@@ -18,13 +18,14 @@
     "test:runner": "node island-run-integration.cjs && node island-run-tally-hooks.cjs && node island-runner/test-engine.cjs",
     "test:v94": "npm run test:v93 && node island-v94.cjs",
     "test:v95": "npm run test:v94 && node island-v95.cjs",
-    "test:board": "node board-v95.cjs && node board-v97.cjs && node board-v10.cjs && node season-relay.cjs && node teacher-signin.cjs && node board-v101.cjs && node board-v102.cjs",
+    "test:board": "node board-v95.cjs && node board-v97.cjs && node board-v10.cjs && node season-relay.cjs && node teacher-signin.cjs && node board-v101.cjs && node board-v102.cjs && node board-v103.cjs",
     "test:v96": "npm run test:v95 && node v96.cjs",
     "test:v97": "npm run test:v96 && node v97.cjs",
     "test:v10": "npm run test:v97 && node v10.cjs",
     "test:v101": "npm run test:v10 && node v101.cjs",
     "test:v1012": "npm run test:v101 && node v1012.cjs",
-    "test:v102": "npm run test:v1012 && node v102.cjs"
+    "test:v102": "npm run test:v1012 && node v102.cjs",
+    "test:v103": "npm run test:v102 && node v103.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

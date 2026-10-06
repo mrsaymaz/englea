@@ -240,7 +240,7 @@
   class Renderer {
     constructor(canvas,options={}){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.makeCanvas=options.makeCanvas||defaultCanvas;this.w=1000;this.h=500;this.dpr=1;this.particles=Array.from({length:60},()=>({life:0}));this.quality=new V.Quality();this.house=null;this.image=null;this.realm='academy';this.reduced=false;this.sprites=new Map();this.layers=null;this.layerKey='';this.gradients=new Map();this.bakes=new Map();this.shown=this.next=null;this.mix=0;this.bakeDPR=0;}
     resize(w,h,dpr=1){
-      if(w<1||h<1)return;this.w=w;this.h=h;this.requestedDPR=dpr;dpr=Math.min(dpr,2,Math.sqrt(this.quality.limits.pixels/(w*h)));
+      if(w<1||h<1)return;this.w=w;this.h=h;this.requestedDPR=dpr;dpr=Math.min(dpr*(this.quality.limits.scale||1),2,Math.sqrt(this.quality.limits.pixels/(w*h)));
       const cw=Math.max(1,Math.floor(w*dpr)),ch=Math.max(1,Math.floor(h*dpr));
       // Reassigning the same size would clear and reallocate the canvas; skip it.
       if(this.canvas.width!==cw||this.canvas.height!==ch){this.canvas.width=cw;this.canvas.height=ch;}

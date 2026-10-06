@@ -636,6 +636,16 @@
                 [...scoreAnimationControllers.keys()].forEach(teamId => cancelTeamScoreAnimation(teamId, { settle }));
             }
 
+            // v10.3.0: restart a CSS animation without reading the layout in the middle of an award (an offsetWidth
+            // read makes the browser lay out the whole board at once): if the class is on, it comes off for one
+            // drawn frame and goes back on.
+            function restartClass(el, cls) {
+                if (!el) return;
+                if (!el.classList.contains(cls)) { el.classList.add(cls); return; }
+                el.classList.remove(cls);
+                const token = (el._restartToken = (el._restartToken || 0) + 1);
+                requestAnimationFrame(() => requestAnimationFrame(() => { if (el._restartToken === token) el.classList.add(cls); }));
+            }
             function animateTeamScore(teamId, { fromValue, targetValue, delta, modifiers = [] }) {
                 const active = scoreAnimationControllers.get(teamId);
                 const visualStart = active ? active.currentValue : fromValue;
@@ -683,15 +693,11 @@
                     return;
                 }
 
-                numberEl.classList.remove('score-counting');
-                void numberEl.offsetWidth;
-                numberEl.classList.add('score-counting');
+                restartClass(numberEl, 'score-counting');
 
                 if (deltaEl) {
                     deltaEl.textContent = `${delta >= 0 ? '+' : '−'}${Math.abs(delta).toLocaleString()}`;
-                    deltaEl.classList.remove('visible');
-                    void deltaEl.offsetWidth;
-                    deltaEl.classList.add('visible');
+                    restartClass(deltaEl, 'visible');
                 }
                 if (modifiersEl) {
                     modifiersEl.innerHTML = modifiers.map((modifier, index) =>
@@ -1330,9 +1336,7 @@
                         levelDisplay.dataset.level = String(team.level);
                         levelDisplay.setAttribute('aria-label', `${team.name} Level ${team.level}`);
                         if (team.level > previousDisplayedLevel && !recoveryRestoring) {
-                            levelDisplay.classList.remove('level-up');
-                            void levelDisplay.offsetWidth;
-                            levelDisplay.classList.add('level-up');
+                            restartClass(levelDisplay, 'level-up');
                             setTimeout(() => levelDisplay.classList.remove('level-up'), 900);
                         }
                     }
@@ -2198,11 +2202,11 @@
                 if (isLeanMode()) {
                     clearTimeout(idleTimer);
                     isFocusMode = false;
-                    document.body.classList.remove('focus-mode');
+                    if (document.body.classList.contains('focus-mode')) document.body.classList.remove('focus-mode');
                     return;
                 }
                 isFocusMode = false;
-                document.body.classList.remove('focus-mode');
+                if (document.body.classList.contains('focus-mode')) document.body.classList.remove('focus-mode');
                 clearTimeout(idleTimer);
                 idleTimer = setTimeout(activateFocusMode, 12000);
             }
@@ -2285,6 +2289,18 @@
                 }
             }
 
+            // v10.3.0: the four card places are measured whenever the grid changes size (the browser has just laid it
+            // out, so reading them costs nothing), not in the middle of an award.
+            let gridSlots = null;
+            function measureGridSlots() {
+                const grid = document.getElementById('teams-grid');
+                if (!grid || !grid.offsetWidth || grid.children.length !== 4) { gridSlots = null; return; }
+                gridSlots = Array.from(grid.children).map(el => ({ left: el.offsetLeft, top: el.offsetTop }));
+            }
+            if (typeof ResizeObserver === 'function') {
+                const watchGrid = () => { const grid = document.getElementById('teams-grid'); if (grid) new ResizeObserver(measureGridSlots).observe(grid); else requestAnimationFrame(watchGrid); };
+                watchGrid();
+            }
             function reorderUI(motionReason='rank') {
                 const grid = document.getElementById('teams-grid');
                 if (!grid) return;
@@ -2305,8 +2321,10 @@
                     // v10.1.1: the four team cards share one grid, so a card's new place is the old place of the slot
                     // it moves into. Without a slide in flight, layout offsets give both ends with a single layout
                     // pass and no second (forced) layout after the cards are moved.
-                    const settled = teamElements.every(el => !el._lightOrderMotion);
-                    const slots = settled ? teamElements.map(el => ({left:el.offsetLeft, top:el.offsetTop})) : null;
+                    if (!gridSlots && teamElements.every(el => !el._lightOrderMotion)) measureGridSlots();
+                    // Places known (cards at rest, grid on screen): no layout reads at all. Otherwise measure the cards.
+                    const settled = Boolean(gridSlots) && teamElements.every(el => !el._lightOrderMotion);
+                    const slots = settled ? gridSlots : null;
                     teamElements.forEach((el, index) => {
                         firstPositions[el.id] = settled ? slots[index] : el.getBoundingClientRect();
                         el._lightOrderMotion?.cancel();
@@ -2379,14 +2397,15 @@
             }
 
             function updateDynamicBackground() {
+                // v10.3.0: the page's leader class changes only when the leader changes. Taking it off and putting it back
+                // on every award made the browser re-check the style of every element on the board.
                 const leaderClasses = ['leader-gryffindor', 'leader-slytherin', 'leader-hufflepuff', 'leader-ravenclaw'];
-                document.body.classList.remove(...leaderClasses);
                 const max = Math.max(...teamsData.map(t => t.points));
-                if (max > 0) {
-                    const leaders = teamsData.filter(t => t.points === max);
-                    if (leaders.length === 1) document.body.classList.add(`leader-${leaders[0].id}`);
-                }
-                document.body.classList.toggle('focus-mode', isFocusMode);
+                const leaders = max > 0 ? teamsData.filter(t => t.points === max) : [];
+                const wanted = leaders.length === 1 ? `leader-${leaders[0].id}` : null;
+                for (const name of leaderClasses) if (name !== wanted && document.body.classList.contains(name)) document.body.classList.remove(name);
+                if (wanted && !document.body.classList.contains(wanted)) document.body.classList.add(wanted);
+                if (document.body.classList.contains('focus-mode') !== isFocusMode) document.body.classList.toggle('focus-mode', isFocusMode);
             }
 
             function showFloatingText(el, text, color) {
@@ -5690,7 +5709,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.2.0';
+        const REMOTE_BUILD = '10.3.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6890,10 +6909,17 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         const remoteCommands=LeagueRemote.controller({send:message=>safeRemoteSend(message),status:(message,state)=>{
             const el=document.getElementById('mobile-command-status');el.textContent=message;el.dataset.state=state;
         }});
+        // v10.3.0: the recovery snapshot is written when the board is idle (at most 0.6 s after a change) instead of at
+        // the end of every award, and at once when the page is closed or hidden, so nothing is lost on a reload.
+        let checkpointHandle=0;
+        function flushCheckpoint(){if(!checkpointQueued)return;checkpointQueued=false;if(window.cancelIdleCallback)cancelIdleCallback(checkpointHandle);else clearTimeout(checkpointHandle);checkpointNow();}
         function scheduleCheckpoint(){
             if(!recoveryReady||recoveryRestoring||checkpointQueued)return;
-            checkpointQueued=true;queueMicrotask(()=>{checkpointQueued=false;checkpointNow();});
+            checkpointQueued=true;
+            checkpointHandle=window.requestIdleCallback?requestIdleCallback(flushCheckpoint,{timeout:600}):setTimeout(flushCheckpoint,250);
         }
+        addEventListener('pagehide',flushCheckpoint);
+        document.addEventListener('visibilitychange',()=>{if(document.hidden)flushCheckpoint();});
         function cleanTeam(team){return {id:team.id,points:team.points,level:team.level,evolutionProgress:team.evolutionProgress,
             milestonesReached:[...team.milestonesReached],wheelMilestonesReached:[...team.wheelMilestonesReached],powerups:{...team.powerups},traits:[...team.traits],hasRelic:team.hasRelic,pendingEvolution:team.pendingEvolution?{...team.pendingEvolution}:null};}
         function checkpointNow(){

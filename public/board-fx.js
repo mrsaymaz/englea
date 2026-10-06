@@ -31,8 +31,11 @@
   if(!ready||!team||team===crowned)return;
   crowned=team;
   if(sceneOpen()||light()||reduced())return;
-  const title=document.querySelector('#team-'+team+' .team-card-title');
-  if(title)try{const [frames,options]=presets.crown;title.animate(frames,{...options,pseudoElement:'::before'});}catch{}
+  // v10.3.0: started just after the next frame is drawn: animating the ::before crown makes the browser resolve
+  // the whole board's styles, which costs nothing once the frame is drawn but a lot in the middle of an award.
+  requestAnimationFrame(()=>setTimeout(()=>{if(crowned!==team||sceneOpen())return;
+   const title=document.querySelector('#team-'+team+' .team-card-title');
+   if(title)try{const [frames,options]=presets.crown;title.animate(frames,{...options,pseudoElement:'::before'});}catch{}},0));
  }
 
  // ---- Status pills: shown while something changes, then they step aside ----

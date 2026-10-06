@@ -1,3 +1,15 @@
+# v10.3.0 checks
+
+Run `npm run test:v103` for the full dependency-free suite (all v10.2 checks plus `v103.cjs`). `v103.cjs` covers:
+
+- Island Run's resolution steps, and the step each board remembers;
+- awards that read no layout;
+- recovery saved when idle and on close;
+- the remembered effects level;
+- the Arena not drawing the board behind it.
+
+`npm run test:board` now also runs `board-v103.cjs`, which counts layout reads during real awards, times the recovery save, and checks the remembered Island Run step and effects level. Frame-rate comparisons are in ../TEST-REPORT-v10.3.0.md.
+
 # v10.2.0 checks
 
 Run `npm run test:v102` for the full dependency-free suite (all v10.1.2 checks plus `v102.cjs`). `v102.cjs` covers the Comeback Halo:

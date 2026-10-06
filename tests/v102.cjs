@@ -87,6 +87,6 @@ test('Wiring: chosen with the class, fixed from the first award, kept in the che
  assert.match(game,/seasonOutdated:Boolean\(globalThis\.LeagueSeason\?\.outdatedScript\),haloTeams,/);
  assert.match(game,/if\(data\.type==='HALO_RESULT'&&isHost\)\{/);
  assert.match(pub('island-progress.js'),/if\(result\.lastSession\)root\.LeagueHalo\?\.accept\(c,result\.lastSession\);/);
- const html=pub('index.html');assert(html.indexOf('comeback-halo.js?v=10.2.0')>0&&html.indexOf('comeback-halo.js')<html.indexOf('game.js?v='));
+ const html=pub('index.html');assert(html.indexOf('comeback-halo.js?v=10.3.0')>0&&html.indexOf('comeback-halo.js')<html.indexOf('game.js?v='));
 });
 console.log(JSON.stringify({checks}));
