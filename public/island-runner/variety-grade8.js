@@ -3,9 +3,9 @@
 const pack=(words,gaps,questions)=>({words,gaps,questions});
 root.RunnerVariety=root.RunnerVariety||{};
 root.RunnerVariety[8]=[
-pack(`thoughtful|düşünceli|showing care for other people's needs
-reunion|yeniden buluşma|a meeting of people after time apart
-understanding|anlayışlı|showing sympathy for another person's situation
+pack(`thoughtful|düşünceli|kind and caring about what others need
+reunion|yeniden buluşma|when old friends meet again after years
+understanding|anlayışlı|able to see how others feel
 mutual|karşılıklı|shared or felt by both people`,
 `Would you like ___ us for lunch?|to join|joins|joined
 I'd love to, ___ I have another appointment.|but|because|under
@@ -13,20 +13,20 @@ Thank you ___ inviting me.|for|at|from
 A good friend listens ___ you have a problem.|when|whose|which
 We enjoy ___ time together.|spending|spend|spent
 Can you count ___ your closest friend?|on|under|between
-She is thoughtful; she always ___ others' needs.|considers|consider|considering
-Our friendship is based on ___ respect.|mutual|mutually|mutuality`,
-`“Would you like to come on Saturday?” Which answer accepts the invitation?|I'd love to. What time?|Sorry, I can't make it.|Thanks, but I'm busy.
-You cannot attend because of a family visit. Which reply is polite and gives a reason?|Thanks, but I'm visiting my family.|No. Stop asking.|Maybe the sky is blue.
-A friend is upset after missing an event. Which response shows understanding?|I'm sorry. Shall we plan another time?|You always ruin everything.|I don't care how you feel.
-Friends meet again after several years. What is this gathering?|A reunion.|A daily lesson.|A rehearsal before every show.
-Ali keeps Efe's private story to himself. What quality does this show?|Trustworthiness.|Dishonesty.|Impatience.
-Invitation: picnic Sunday at 12, bring water. Which detail tells what to bring?|Water.|Sunday.|Twelve o'clock.
-A thoughtful friend notices you have no pen. Which action fits?|Offers to lend one.|Laughs and hides every pen.|Changes the subject deliberately.
-Two friends respect each other's opinions. What does “mutual” mean here?|It works both ways.|Only one person does it.|Neither person does it.`),
+She is thoughtful. She always ___ about others.|thinks|think|thinking
+We have ___ respect for each other.|mutual|mutually|mutuality`,
+`“Would you like to come?” Which reply says yes?|I'd love to. What time?|Sorry, I can't make it.|Thanks, but I'm busy.
+Which polite reply gives a reason?|Sorry, I'm visiting my family.|No. Stop asking.|I don't care.
+Your friend is sad. Which reply is kind?|Sorry. Let's try again soon.|You always ruin everything.|I don't care.
+Old friends meet again after years. What is it?|A reunion.|A lesson.|A rehearsal.
+Ali keeps Efe's secret. What is Ali like?|Trustworthy.|Dishonest.|Impatient.
+Picnic: Sunday at 12. Bring water. What do you bring?|Water.|Juice.|Chairs.
+You have no pen. What does a thoughtful friend do?|Lends you one.|Hides your pens.|Laughs at you.
+“Mutual respect”: what does “mutual” mean?|Both people do it.|Only one person does it.|Nobody does it.`),
 pack(`non-fiction|kurgu dışı eser|writing about facts and real events
-performance|performans|an act of presenting music or drama to an audience
-rehearsal|prova|practice before a performance
-subscription|abonelik|regular access paid for over a period of time`,
+performance|performans|a show of music or drama for people
+rehearsal|prova|practice before a show
+subscription|abonelik|money you pay regularly for a service`,
 `I prefer reading books ___ watching videos.|to|than|from
 I am keen ___ learning guitar.|on|in|at
 We practise ___ the performance.|before|because|whose
@@ -35,19 +35,19 @@ How ___ do you visit the library?|often|many|much
 He would rather read ___ play video games tonight.|than|to|from
 There are three ___ this week.|rehearsals|rehearsal|rehearsing
 I read non-fiction ___ I enjoy learning real facts.|because|but|or`,
-`Ada enjoys true accounts of nature. Which book would suit her?|A non-fiction book about forests.|A fantasy about a magic kingdom.|A fictional detective story.
-Efe practises guitar on Tuesday and Thursday. How often is that?|Twice a week.|Every day.|Once a month.
-“I'm keen on photography.” What does this mean?|I am interested in it.|I cannot stand it.|I have never heard of it.
-A performance is on Friday; practice is on Wednesday. What is the Wednesday activity?|A rehearsal.|The final performance.|A holiday after the show.
-A service costs 30 lira per month. What is a three-month total?|90 lira.|60 lira.|30 lira.
-Can prefers quiet activities; Ali loves concerts. Which activity is more likely to suit Can?|Reading at home.|A loud music festival.|A crowded live concert.
-Which reply explains a personal preference?|I enjoy biographies because I learn from real lives.|The book is on the table.|The library closes at six.
-“I rarely watch TV.” Which description matches?|Not very often.|Every evening without fail.|All day, every day.`),
-pack(`knead|yoğurmak|to work dough by pressing and folding it
-simmer|kısık ateşte pişirmek|to cook gently just below boiling
-drain|süzmek|to remove liquid from food
-preheat|önceden ısıtmak|to heat an oven before putting food in it`,
-`First, ___ the oven to the required temperature.|preheat|preheats|preheating
+`Ada likes true facts about nature. Which book?|A non-fiction nature book.|A magic fantasy story.|A detective story.
+Efe plays guitar on Tuesdays and Thursdays. How often?|Twice a week.|Every day.|Once a month.
+“I'm keen on photography.” What does this mean?|I like it a lot.|I hate it.|I don't know it.
+Show: Friday. Practice: Wednesday. What is Wednesday's practice?|A rehearsal.|A performance.|A holiday.
+Subscription: 30 lira a month. Total for three months?|90 lira.|60 lira.|30 lira.
+Can likes quiet activities. What will he enjoy?|Reading at home.|A loud music festival.|A busy concert.
+Which sentence says why you like something?|I read because it's fun.|The book is green.|The library closes at six.
+“I rarely watch TV.” What does “rarely” mean?|Not very often.|Every evening.|All day.`),
+pack(`knead|yoğurmak|to press and fold dough with your hands
+simmer|kısık ateşte pişirmek|to cook slowly on low heat
+drain|süzmek|to take the water away from food
+preheat|önceden ısıtmak|to heat the oven before cooking`,
+`First, ___ the oven to 180 degrees.|preheat|preheats|preheating
 After boiling the pasta, ___ the water.|drain|drains|draining
 There isn't ___ butter left for the cake.|much|many|few
 Cut the onion into thin ___.|slices|slice|slicing
@@ -55,18 +55,18 @@ Let the soup ___ gently for ten minutes.|simmer|simmers|simmered
 ___ the dough until it is smooth.|Knead|Kneads|Kneading
 We need a knife ___ chop the onions.|to|for|at
 Don't add too ___ salt.|much|many|few`,
-`Recipe: mix, knead, bake. What happens immediately before baking?|Kneading.|Serving.|Washing the plate.
-The pasta is cooked but still in water. What should you do next?|Drain it.|Add raw flour.|Freeze the pot immediately.
-A recipe for two uses one egg. You double the recipe. How many eggs?|Two.|One.|Four.
-“Preheat the oven.” When should you heat it?|Before putting the food in.|Only after serving the food.|After switching it off.
-The soup should cook gently, not boil strongly. Which action fits?|Simmer it.|Freeze it.|Chop it.
-You need thin pieces of carrot. Which instruction fits?|Slice the carrot.|Pour the carrot.|Whisk the whole carrot without cutting.
-A guest cannot eat eggs. What should you do before choosing a recipe?|Check ingredients and suitable alternatives.|Hide the eggs in the mixture.|Assume baking removes the problem.
-Which sequence makes sense for a salad?|Wash, chop, mix.|Serve, wash, chop.|Mix, serve, wash.`),
-pack(`signal|sinyal|a connection that allows a phone to send or receive
+`Recipe: mix, knead, bake. What comes before baking?|Kneading.|Serving.|Washing up.
+The pasta is ready but in water. What next?|Drain it.|Add flour.|Freeze it.
+A recipe for two needs one egg. For four people?|Two eggs.|One egg.|Four eggs.
+“Preheat the oven.” When do you heat it?|Before the food goes in.|After you serve the food.|After you turn it off.
+Cook the soup slowly on low heat. Which verb?|Simmer it.|Freeze it.|Chop it.
+You want thin pieces of carrot. What do you do?|Slice the carrot.|Pour the carrot.|Whisk the carrot.
+Your guest can't eat eggs. What should you do?|Choose a recipe without eggs.|Hide eggs in the food.|Add more eggs.
+Which order is right for a salad?|Wash, chop, mix.|Serve, wash, chop.|Mix, serve, wash.`),
+pack(`signal|sinyal|the connection a phone needs for calls
 operator|telefon operatörü|a person who connects or helps with calls
-mute|sessize almak|to switch off a microphone's sound
-speakerphone|hoparlör modu|a mode that plays a call aloud`,
+mute|sessize almak|to turn off the sound of your microphone
+speakerphone|hoparlör modu|a setting that plays a call out loud`,
 `Could I ___ to Ms Kaya, please?|speak|speaks|speaking
 I'm afraid she ___ available at the moment.|isn't|aren't|don't
 I'm calling ___ ask about the meeting.|to|for|at
@@ -75,78 +75,78 @@ I can't hear you. The signal is ___.|weak|weakly|weakness
 Could you ___ that more slowly?|repeat|repeats|repeated
 He asked me ___ call again later.|to|at|under
 The microphone is muted, ___ nobody can hear me.|so|but|although`,
-`“May I speak to Deniz?” “He is out.” Which reply keeps the conversation useful?|Could I leave a message?|Yes, I am a sandwich.|The weather is blue.
-The voice keeps breaking up. What might be wrong?|The signal is weak.|The battery is definitely new.|The contact's name is too short.
-You didn't understand a phone number. What should you say?|Could you repeat it, please?|Never use numbers again.|I know it even though I missed it.
-A caller asks you to tell Mina the meeting is at four. What should you record?|The caller's message and relevant details.|A different time from memory.|Only today's weather.
-Your microphone is muted. What happens?|Others cannot hear your microphone.|Your camera must be on.|Your screen must be broken.
-The operator says, “I'll put you through.” What will they do?|Connect your call.|End every phone service.|Send you a parcel.
-You want privacy for a call in a shared room. Which choice is considerate?|Use a private spot and avoid speakerphone.|Turn speakerphone up loudly.|Read the message to everyone.
-“I'll call you back in ten minutes.” What is the speaker promising?|Another call shortly.|A visit last week.|No further contact.`),
-pack(`notification|bildirim|an alert about a new message or event
-update|güncelleme|a newer version that changes or improves software
-bookmark|yer imi|a saved link for finding a page again
-digital footprint|dijital ayak izi|the traces left by your online activities`,
+`“Deniz is out.” What can you ask?|Could I leave a message?|Can I buy a phone?|Is it raining?
+The call keeps cutting out. Why?|The signal is weak.|The battery is new.|The name is short.
+You didn't understand a phone number. What do you say?|Could you repeat it, please?|Never use numbers again.|I know it already.
+Tell Mina: meeting at four. What do you write?|The meeting is at four.|The meeting is at two.|Today's weather.
+Your microphone is muted. What happens?|Others can't hear you.|Your camera turns on.|Your screen breaks.
+The operator says, “I'll put you through.” What happens?|They connect your call.|They end the call.|They send a parcel.
+Others are nearby. How do you take a private call?|Go somewhere quiet.|Use speakerphone loudly.|Read it to everyone.
+“I'll call you back in ten minutes.” What will happen?|Another call soon.|A visit last week.|No more calls.`),
+pack(`notification|bildirim|a small message telling you something new
+update|güncelleme|a newer version of an app or program
+bookmark|yer imi|a saved link to find a page again
+digital footprint|dijital ayak izi|the record of everything you do online`,
 `Remember ___ out when you finish on a shared computer.|to log|logs|logged
 You should ___ your private password to yourself.|keep|keeps|keeping
 I saved a ___ so I can find the page again.|bookmark|keyboard|headphone
 Don't click ___ links you do not trust.|on|under|between
 She uses the internet ___ research her project.|to|for|at
 How ___ time do you spend online each day?|much|many|few
-An update can ___ known software problems.|fix|fixes|fixing
-Think carefully ___ sharing personal information.|before|because|whose`,
-`You need to return to a useful webpage tomorrow. What can you save?|A bookmark.|A spoon.|A phone's volume setting.
-A message asks for your password urgently. What is the safest response?|Do not share it; verify through a trusted route.|Reply with the password.|Post the password publicly.
-You finish using a shared school computer. What should you do?|Log out of your account.|Leave the account open.|Save your password for strangers.
-An alert appears for a new message. What is it?|A notification.|A printer cartridge.|A paper notebook.
-Your public posts can remain part of your online history. What is this called?|A digital footprint.|A shoe size.|An offline timetable.
-A search result makes an unusual claim. What should you do before sharing it?|Check reliable sources.|Assume every headline is correct.|Change a word and repost it.
-A class website needs a username, not your password in a public comment. What should you avoid posting?|Your password.|The title of the class project.|A general greeting.
-You receive many alerts while studying. Which action may help concentration?|Silence unnecessary notifications.|Open every alert instantly.|Add more distracting feeds.`),
+An update can ___ problems in an app.|fix|fixes|fixing
+Think ___ you share personal information.|before|because|whose`,
+`What do you save to find a page again?|A bookmark.|A comment.|A notification.
+A message asks for your password. What do you do?|Don't share it.|Send the password.|Post it online.
+You finish using a school computer. What should you do?|Log out of your account.|Leave the account open.|Give your password away.
+Your phone says: “1 new message.” What is this?|A notification.|A bookmark.|An update.
+Your posts stay online for years. What is this called?|A digital footprint.|A bookmark.|A password.
+You see strange news online. What should you do first?|Check other good websites.|Share it right away.|Change it and share.
+What should you never post in a comment?|Your password.|Your project title.|Hello, everyone.
+Many alerts come while you study. What helps?|Turn off notifications.|Open every alert.|Add more apps.`),
 pack(`summit|zirve|the highest point of a mountain
-altitude|rakım|height above sea level
-trail|patika|a path used for walking in the countryside
-life jacket|can yeleği|a safety vest that helps a person float`,
+altitude|rakım|height above the sea
+trail|patika|a path for walking in nature
+life jacket|can yeleği|a safety vest that helps you float`,
 `I would rather hike ___ go rafting today.|than|to|from
-Climbing can be more demanding ___ walking on flat ground.|than|then|that
-We need ___ a guide before choosing a difficult route.|to consult|consults|consulted
+Climbing is harder ___ walking on flat ground.|than|then|that
+We need ___ a map before we start.|to check|checks|checked
 Wear a life jacket ___ you go rafting.|when|whose|which
-This trail is ___ than the short route: 12 km instead of 4 km.|longer|longest|long
+The 12 km trail is ___ than the 4 km trail.|longer|longest|long
 How ___ is the summit above sea level?|high|many|often
 The hikers checked their equipment ___ leaving.|before|because|whose
 She prefers ___ to extreme sports.|hiking|hike|hiked`,
-`Route A is 4 km on flat ground; Route B is 12 km uphill. Which is generally less demanding?|Route A.|Route B.|They require exactly the same effort.
-You are preparing for rafting. Which safety equipment belongs on you?|A life jacket.|A wool scarf only.|A desk lamp.
-A climber reaches the mountain's highest point. Where are they?|The summit.|The valley floor.|The departure lounge.
-The trail is closed due to dangerous weather. What should you do?|Choose a safe alternative and follow the closure.|Ignore the sign.|Go faster through the danger.
-Ada prefers calm walks; Can enjoys high-adrenaline activities. Which suits Ada?|An easy nature trail.|A difficult cliff climb.|An extreme rafting route.
-A route rises from 500 m to 800 m above sea level. How much altitude is gained?|300 m.|500 m.|1,300 m.
-Which sentence gives a reason for a preference?|I prefer hiking because I enjoy quiet scenery.|The trail is 6 km long.|The bus leaves at eight.
-Your group is unsure about the route. What should you do before starting?|Check a reliable map and seek qualified guidance.|Separate without a plan.|Hide the map from everyone.`),
-pack(`itinerary|gezi programı|a plan listing the places and times of a trip
-check-in|giriş işlemi|the process of registering on arrival
-scenic|manzaralı|having attractive natural views
-heritage|kültürel miras|important traditions and places passed down from the past`,
+`Which is easier: 4 km flat or 12 km uphill?|4 km flat.|12 km uphill.|Both are the same.
+You are going rafting. What should you wear?|A life jacket.|A wool scarf.|A heavy coat.
+A climber is at the top of the mountain. Where?|At the summit.|In the valley.|At the airport.
+Sign: Trail closed. Bad weather. What do you do?|Choose another safe path.|Ignore the sign.|Walk faster.
+Ada likes calm walks. What suits her?|An easy nature trail.|A hard cliff climb.|Extreme rafting.
+Altitude: 500 m, then 800 m. How much higher?|300 m.|500 m.|1,300 m.
+Which sentence says why you prefer something?|I hike because it's quiet.|The trail is 6 km.|The bus leaves at eight.
+You don't know the route. What do you do first?|Check a map or guide.|Split up without a plan.|Hide the map.`),
+pack(`itinerary|gezi programı|a trip plan with places and times
+check-in|giriş işlemi|signing in when you arrive at a hotel
+scenic|manzaralı|with beautiful views of nature
+heritage|kültürel miras|old traditions and places from the past`,
 `We ___ the old castle last summer.|visited|visit|visiting
 I'd rather explore the town ___ stay indoors all day.|than|to|from
-This route is famous ___ its coastal views.|for|under|between
+This route is famous ___ its sea views.|for|under|between
 Did you ___ a room in advance?|book|booked|booking
 The guide asked us ___ stay together.|to|at|on
 There are many historical ___ in the city.|buildings|building|build
-The hotel is ___ than the hostel: 900 lira instead of 400.|more expensive|most expensive|expensively
+The 900-lira hotel is ___ than the 400-lira hostel.|more expensive|most expensive|expensively
 ___ did you stay? At a small guesthouse.|Where|Who|Whose`,
-`Itinerary: museum at 10, lunch at 12, castle at 14. What follows lunch?|The castle visit.|The museum visit.|The trip home at 9.
-You arrive at a hotel with a reservation. Which process comes first?|Check-in.|Check-out after the stay.|Buying the building.
-A route is described as scenic. What should you expect?|Attractive views.|No scenery at all.|Only underground corridors.
-A town protects an ancient bridge as part of its heritage. Why?|It has historical and cultural value.|It was built yesterday for a game.|All old objects are worthless.
-Two nights cost 600 lira each. What is the room total before any extras?|1,200 lira.|600 lira.|1,800 lira.
-You prefer history to beach activities. Which destination suits you best?|A city with museums and historic sites.|A beach resort with no historic visits.|A water park only.
-A sign says “Please do not touch the exhibits.” What should you do?|Look without touching.|Move the objects for a photo.|Take one home.
-“Was the trip enjoyable?” Which reply describes an experience?|Yes, the views were wonderful.|It will start next year.|The ticket is in my pocket.`),
-pack(`schedule|görev çizelgesi|a plan showing when different tasks should be done
-detergent|deterjan|a cleaning substance used for clothes or dishes
-rinse|durulamak|to wash away soap with clean water
-clutter|dağınıklık|things left around in an untidy way`,
+`Itinerary: museum 10:00, lunch 12:00, castle 14:00. What's after lunch?|The castle.|The museum.|Going home.
+You arrive at your hotel. What do you do first?|Check in.|Check out.|Go to the beach.
+The route is scenic. What will you see?|Beautiful views.|Nothing nice.|Only tunnels.
+Why does a town protect its old bridge?|It's important history.|It was built yesterday.|Old things are useless.
+One night costs 600 lira. How much for two nights?|1,200 lira.|600 lira.|1,800 lira.
+You love history. Where should you go?|A city with museums.|A beach resort.|A water park.
+Sign: “Do not touch.” What should you do?|Look but don't touch.|Touch it for a photo.|Take one home.
+“Did you enjoy the trip?” Which reply fits?|Yes, the views were great.|It starts next year.|My ticket is here.`),
+pack(`schedule|görev çizelgesi|a plan that shows when to do tasks
+detergent|deterjan|soap for washing clothes or dishes
+rinse|durulamak|to wash soap off with clean water
+clutter|dağınıklık|many things left around in a messy way`,
 `I have ___ tidy my room before going out.|to|at|for
 She ___ to take out the rubbish today.|has|have|having
 We must ___ the instructions on cleaning products.|read|reads|reading
@@ -155,18 +155,18 @@ After washing, ___ the dishes with clean water.|rinse|rinses|rinsed
 There is too ___ clutter on the desk.|much|many|few
 They don't have to ___ the car today.|wash|washes|washed
 ___ turn is it to set the table? Mine.|Whose|Who|Where`,
-`Chore chart: Ece—dishes; Ali—rubbish; Can—table. Who should take out the rubbish?|Ali.|Ece.|Can.
-“You must tidy your room.” What does this express?|An obligation.|A past event.|An optional prediction.
-The dishes are soapy after washing. What should you do next?|Rinse them.|Put more dirty food on them.|Hide them under the bed.
-A desk is covered with unused items. What would reduce the clutter?|Put items in their proper places.|Add more piles.|Close your eyes.
-Efe is responsible for feeding the cat, but he will be away. What is a responsible plan?|Arrange with someone to cover the task.|Leave without telling anyone.|Assume the cat does not need food.
-A cleaning product has safety instructions. What should you do?|Read them and ask an adult if unsure.|Mix it with random products.|Use it without checking.
-You set the table Monday, Wednesday and Friday. How many times is that?|Three.|Two.|Five.
-Which statement shows sharing chores fairly?|We agree on tasks and help when needed.|One person must do everything.|Nobody ever takes responsibility.`),
-pack(`hypothesis|hipotez|a testable possible explanation
-sample|örnek|a small amount selected for examination
-variable|değişken|a factor that can change in an experiment
-conclusion|sonuç çıkarımı|an interpretation drawn from evidence`,
+`Chores: Ece—dishes, Ali—rubbish, Can—table. Who takes the rubbish out?|Ali.|Ece.|Can.
+“You must tidy your room.” What is this?|An obligation.|A past event.|A prediction.
+The dishes are soapy. What do you do next?|Rinse them.|Add more food.|Hide them.
+Your desk is full of clutter. What helps?|Put things away.|Add more things.|Close your eyes.
+Efe must feed the cat but is away. What now?|Ask someone to help.|Leave and tell nobody.|Forget the cat.
+A cleaning product has safety instructions. What should you do?|Read them first.|Mix it with others.|Use it without reading.
+Monday, Wednesday, Friday: you set the table. How many times?|Three.|Two.|Five.
+Which sentence shows fair sharing of chores?|We all help with tasks.|One person does everything.|Nobody does anything.`),
+pack(`hypothesis|hipotez|a possible answer that you can test
+sample|örnek|a small amount taken to study
+variable|değişken|something you change in an experiment
+conclusion|sonuç çıkarımı|what you decide after looking at evidence`,
 `The researcher ___ the results yesterday.|recorded|record|recording
 They didn't ___ the experiment without checking the equipment.|start|started|starting
 A hypothesis should be ___.|testable|testably|testing
@@ -175,33 +175,33 @@ Did the scientist ___ the samples carefully?|label|labelled|labelling
 The conclusion was based ___ the evidence.|on|under|between
 There were three ___ in each group.|samples|sample|sampling
 ___ did they repeat the test? To check the result.|Why|Who|Whose`,
-`Two plants get equal water but different light. Which factor is being changed?|Light.|Water.|The number of pots, if both have one.
-A scientist predicts that more light may help growth. Before testing, what is this idea?|A hypothesis.|A guaranteed fact.|A final award.
-A sample is selected for examination. Which example fits?|A small water sample from a lake.|Every lake on Earth.|A guess with no material or data.
-The result was surprising. What helps check whether it is reliable?|Repeat the test carefully.|Hide the result.|Change the numbers to match the guess.
-A report must explain what the data suggest. Which part does this?|The conclusion.|The shopping list.|The invitation.
-A researcher measured 5 cm, then 8 cm of growth. What is the increase?|3 cm.|5 cm.|13 cm.
-Which statement distinguishes evidence from a guess?|Measurements support the conclusion.|The conclusion is true because I like it.|No observations are needed.
-A new result does not support the first hypothesis. What should a scientist do?|Review the evidence and revise the explanation.|Ignore all the measurements.|Declare every experiment useless.`),
-pack(`aftershock|artçı sarsıntı|a smaller earthquake after a larger one
-shelter|sığınak|a protected place to stay during danger
-relief|afet yardımı|help given to people affected by a disaster
-forecast|tahmin|a statement about what is expected to happen`,
+`Two plants: same water, different light. What is changing?|Light.|Water.|The pots.
+“Light helps plants grow.” We’ll test it. What is it?|A hypothesis.|A fact.|A result.
+Which is a sample?|A cup of lake water.|Every lake on Earth.|A guess.
+The result is surprising. How can you check it?|Repeat the test.|Hide the result.|Change the numbers.
+Which part of a report explains the results?|The conclusion.|The title.|The date.
+Plant height: 5 cm, then 8 cm. How much growth?|3 cm.|5 cm.|13 cm.
+Which sentence uses evidence?|Our measurements show this.|I just feel it's true.|I like this answer.
+The result doesn't match the hypothesis. What next?|Check and change the idea.|Ignore the result.|Stop all experiments.`),
+pack(`aftershock|artçı sarsıntı|a smaller earthquake after a big one
+shelter|sığınak|a safe place to stay during danger
+relief|afet yardımı|help given to people after a disaster
+forecast|tahmin|a report of the weather to come`,
 `The forecast says there ___ be heavy rain tonight.|will|was|did
 People should ___ official warnings.|follow|follows|following
 The rescue team ___ supplies yesterday.|delivered|deliver|delivering
 There were ___ homes without power after the storm.|many|much|a little
 A smaller quake after the main one is an ___.|aftershock|itinerary|invention
 We mustn't ___ flooded roads.|cross|crosses|crossing
-Emergency supplies should be kept ___ an accessible place.|in|under|through
+Keep emergency supplies ___ an easy place to reach.|in|under|through
 ___ did the river overflow? Because of very heavy rain.|Why|Who|Whose`,
-`A weather warning predicts heavy rain. Which action is sensible?|Follow local safety advice and prepare.|Ignore every official warning.|Camp in a riverbed.
-A smaller earthquake follows the main one. What is it called?|An aftershock.|A rehearsal.|A tide by definition.
-Relief workers deliver food, water and blankets. What are they providing?|Disaster assistance.|A holiday itinerary.|A sports competition.
-A road is covered by floodwater. What should you do?|Avoid crossing and follow official directions.|Walk through to test the depth.|Drive faster into it.
-A family is told to move to an official shelter. Why?|To stay in a designated safer place.|To collect souvenirs.|To watch a concert.
-There were 20 supply boxes; 12 were distributed. How many remain?|Eight.|Twelve.|Thirty-two.
-Which sentence is a prediction about weather?|There may be strong winds tomorrow.|The storm ended yesterday.|The rain gauge is blue.
-An emergency message names a meeting point and a safe route. What should you check?|Both the location and the route.|Only the font colour.|Only who shared the message first.`)
+`Warning: heavy rain tonight. What should you do?|Follow the safety advice.|Ignore the warning.|Camp by the river.
+A smaller earthquake follows the main one. What is it?|An aftershock.|A rehearsal.|A landslide.
+After the flood, workers bring food. What is this?|Disaster relief.|A holiday plan.|A sports game.
+A road is under floodwater. What should you do?|Don't cross it.|Walk through it.|Drive faster.
+Why do families go to a shelter?|To stay safe.|To buy souvenirs.|To watch a concert.
+20 boxes. 12 were given out. How many are left?|Eight.|Twelve.|Thirty-two.
+Which sentence is a weather forecast?|It will be windy tomorrow.|The storm ended yesterday.|It was windy yesterday.
+Message: Go to the school by Park Road. What matters?|The place and the road.|The text colour.|Who sent it first.`)
 ];
 })(typeof globalThis!=='undefined'?globalThis:this);
