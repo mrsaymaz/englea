@@ -25,6 +25,8 @@
             let selectedClass = null;
             let studentContributions = {};
             let secretAgents = LeagueAgent.fresh(), remoteAgents = LeagueAgent.fresh(), shownAgentRequest = null;
+            // v10.2.0 Comeback Halo: teams with ×2 points this session, fixed from the first award on.
+            let haloTeams = [], haloLocked = false, remoteHaloTeams = [];
             let remoteStudentClass = null, remoteStudentContributions = {}, remoteStudentTracking = false;
             let remotePointValue = 10, pendingRemoteClassSelection = null;
             let evolutionResolutionTimer = null;
@@ -1354,6 +1356,7 @@
                         }
                     }
                 }
+                globalThis.LeagueHalo?.paint(team, haloTeams.includes(team.id));
             }
 
             // --- MAIN LOGIC & EVENTS ---
@@ -1965,6 +1968,18 @@
                     LeagueStudentUI.renderNextToInvite(document.getElementById(`mobile-invite-${teamId}`),remoteStudentClass,teamId,remoteStudentContributions);
                 }
             }
+            // v10.2.0 Comeback Halo: every team that won neither the League title nor the Final Arena in this class's
+            // last session earns ×2 this session. Chosen with the class; a result that arrives later (Load islands, or
+            // passed on by the phone) still counts until the first award, then the halo stays for the whole session.
+            function refreshHalo() {
+                if (remoteRole === 'controller') return;
+                const last = LeagueStudents.validClass(selectedClass) ? globalThis.LeagueHalo?.result(selectedClass) : null;
+                if (!haloLocked && last?.sessionId !== sessionId) haloTeams = LeagueStudents.validClass(selectedClass) && globalThis.LeagueHalo ? LeagueHalo.teams(selectedClass, sessionId) : [];
+                paintHalos();
+            }
+            function paintHalos() { for (const team of teamsData) globalThis.LeagueHalo?.paint(team, haloTeams.includes(team.id)); }
+            function lockHalo() { if (LeagueStudents.validClass(selectedClass)) haloLocked = true; }
+            document.addEventListener('league-halo-result', () => { if (remoteRole !== 'controller') { refreshHalo(); window.syncStateToController?.(); } });
             function setSessionClass(className) {
                 if (!LeagueStudents.validClass(className)) return {ok:false,message:'Unknown class'};
                 if(selectedClass!==className&&(secretAgents.request||Object.keys(secretAgents.assignments).length))return {ok:false,message:'Start a new session to change class after choosing Secret Agent.'};
@@ -1973,7 +1988,7 @@
                 }
                 const classChanged = selectedClass !== className;
                 selectedClass = className;
-                if (classChanged) handlePointChange(CLASS_STARTING_POINT_TIERS[className]);
+                if (classChanged) { handlePointChange(CLASS_STARTING_POINT_TIERS[className]); haloLocked = false; refreshHalo(); }
                 updateStudentSessionUI(); scheduleCheckpoint();
                 window.syncStateToController?.();
                 return {ok:true};
@@ -2073,7 +2088,8 @@
                         saveState();
                         
                         const previousPoints = team.points;
-                        const award = LeagueRules.award({team,teams:teamsData,base:currentPointValue,lastTeam:lastTeamClicked,combo:comboCount,event:currentEvent});
+                        const award = LeagueRules.award({team,teams:teamsData,base:currentPointValue,lastTeam:lastTeamClicked,combo:comboCount,event:currentEvent,halo:haloTeams.includes(team.id)});
+                        lockHalo();
                         comboCount=award.combo;lastTeamClicked=award.lastTeam;
                         const pts=award.points,scoreModifiers=award.modifiers;
                         team.points += pts;
@@ -3142,7 +3158,7 @@
                 if (saveUndo) saveState();
                 sessionEpoch++;
                 LeagueStudents.useRoster(LeagueRoster.current()?.students || LeagueStudents.defaults());
-                selectedClass=null;studentContributions={};pendingRemoteClassSelection=null;
+                selectedClass=null;studentContributions={};pendingRemoteClassSelection=null;haloTeams=[];haloLocked=false;
                 secretAgents=LeagueAgent.fresh();LeagueAgent.close();
                 LeagueStudentUI.close(true);LeagueStudentUI.clearCelebrations();updateStudentSessionUI();
                 abandonScenes();
@@ -3802,6 +3818,8 @@
                 const arenaWinner=determineArenaWinner();
                 const leagueMax=Math.max(...battleState.fighters.map(f=>f.points));
                 const leagueWinners=battleState.fighters.filter(f=>f.points===leagueMax);
+                // v10.2.0: this class's result decides next session's Comeback Halo.
+                if(globalThis.LeagueStudents?.validClass(selectedClass))globalThis.LeagueHalo?.record(selectedClass,{sessionId,at:Date.now(),league:leagueWinners.map(f=>f.id),arena:arenaWinner.id});
                 const soleLeagueWinner=leagueWinners.length===1?leagueWinners[0]:null;
                 const grand=soleLeagueWinner?.id===arenaWinner.id;
                 document.getElementById('battle-phase').textContent='Battle complete';
@@ -5314,8 +5332,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function applyCustomPoints(t, pts, person = null) {
                 if (!Number.isFinite(pts) || pts === 0) return;
                 const rankingBefore = captureRankingSnapshot(); saveState();
+                // v10.2.0: the Comeback Halo doubles custom points too (never a deduction).
+                const halo = pts > 0 && haloTeams.includes(t.id);
+                if (halo) pts *= 2;
+                if (pts > 0) lockHalo();
                 const previousPoints = t.points; t.points += pts;
-                addHistoryLog(`Awarded ${pts.toLocaleString()} to ${t.name}${person ? ` · ${person.name} (${selectedClass})` : ''}`,t.color);
+                addHistoryLog(`Awarded ${pts.toLocaleString()} to ${t.name}${halo ? ' (Halo ×2)' : ''}${person ? ` · ${person.name} (${selectedClass})` : ''}`,t.color);
                 checkMilestones(t);
                 if (pts > 0) recordStudentAward(t,person,t.points-previousPoints);
                 animateTeamScore(t.id,{fromValue:previousPoints,targetValue:t.points,delta:t.points-previousPoints,modifiers:[]});
@@ -5668,7 +5690,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.1.2';
+        const REMOTE_BUILD = '10.2.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6345,6 +6367,11 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     }else if(data.sessionId===latestRemoteSessionId)LeagueQuestionLog.merge(data.className,data.rows);
                     return;
                 }
+                if(data.type==='HALO_RESULT'&&isHost){
+                    // v10.2.0: a class's last result loaded on the phone (Google Sheets) decides the Comeback Halo.
+                    if(data.sessionId===sessionId&&data.className===selectedClass)globalThis.LeagueHalo?.accept(data.className,data.result);
+                    return;
+                }
                 if(data.type==='LEAGUE_SEASON'&&isHost){
                     if(data.sessionId!==sessionId)return;
                     if(data.outdated===true){globalThis.LeagueSeason?.outdated();window.syncStateToController?.();}
@@ -6459,6 +6486,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if(globalThis.LeagueSeason){
                         if(LeagueSeason.data&&LeagueSeason.loadedAt>(Number(data.seasonAt)||0))safeRemoteSend({type:'LEAGUE_SEASON',sessionId:data.sessionId,season:LeagueSeason.data});
                         else if(!LeagueSeason.data&&LeagueSeason.outdatedScript&&!data.seasonAt&&!data.seasonOutdated)safeRemoteSend({type:'LEAGUE_SEASON',sessionId:data.sessionId,outdated:true});
+                    }
+                    if(globalThis.LeagueHalo){
+                        remoteHaloTeams=Array.isArray(data.haloTeams)?LeagueStudents.teams.filter(t=>data.haloTeams.includes(t)):[];renderMobileHalo();
+                        // The phone may hold the class's last result from Google Sheets that the board does not have yet.
+                        const last=LeagueStudents.validClass(data.selectedClass)?LeagueHalo.result(data.selectedClass):null,mark=last&&data.sessionId+'|'+data.selectedClass+'|'+last.sessionId+'|'+last.at;
+                        if(last&&connection._haloSent!==mark){connection._haloSent=mark;safeRemoteSend({type:'HALO_RESULT',sessionId:data.sessionId,className:data.selectedClass,result:last});}
                     }
                     if(globalThis.LeagueNavigatorSeals&&Array.isArray(data.navigatorSeals)&&LeagueStudents.validClass(data.selectedClass)){
                         globalThis.LeagueNavigatorSeals?.merge(data.selectedClass,data.navigatorSeals);
@@ -6584,7 +6617,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     selectedClass, studentContributions, studentTrackingVersion:1, secretAgents,
                     islandProgress:LeagueIslandProgress.snapshot(selectedClass),
                     navigatorSeals:globalThis.LeagueNavigatorSeals?.rows(selectedClass)||[],
-                    seasonAt:globalThis.LeagueSeason?.loadedAt||0,seasonOutdated:Boolean(globalThis.LeagueSeason?.outdatedScript),
+                    seasonAt:globalThis.LeagueSeason?.loadedAt||0,seasonOutdated:Boolean(globalThis.LeagueSeason?.outdatedScript),haloTeams,
                     questionLogStamp:globalThis.LeagueQuestionLog?.stamp(selectedClass)||'0',
                     rosterSnapshot:LeagueStudents.snapshot(),rosterCatalog:LeagueRoster.current(),
                     levels:Object.fromEntries(teamsData.map(t=>[t.id,t.level])),
@@ -6870,7 +6903,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 selectedClass,studentContributions,secretAgents,rosterSnapshot:LeagueStudents.snapshot(),
                 classMission:{...classMission},lastTeamClicked,comboCount,historyLog:historyLog.slice(0,120),historyStack:historyStack.slice(-20),
                 wheels:[...(active?[active]:[]),...pendingAnimatedWheels],wheelMode:activeWheelMode,pendingFinish:pendingAnimatedFinish,
-                deferredEvolutions:[...deferredAnimatedEvolutions],commandLedger,boardSummaries,vixarDefeatedThisSession,lastVortexTime,sessionNavigator,
+                deferredEvolutions:[...deferredAnimatedEvolutions],commandLedger,boardSummaries,vixarDefeatedThisSession,lastVortexTime,sessionNavigator,haloTeams,haloLocked,
                 unity:unityAscensionState?{wave:unityAscensionState.wave,totalGranted:unityAscensionState.totalGranted,teamPlans:[...unityAscensionState.teamPlans]}:null,
                 scene:LeagueScenes.active,arenaResult:battleState&&!battleState.running?battleState.fighters.map(f=>({id:f.id,hp:f.hp,maxHP:f.maxHP,alive:f.alive,damageDealt:f.damageDealt,points:f.points,traits:f.traits,level:f.level})):null};
             const saved=LeagueRecovery.save(snapshot);
@@ -6904,6 +6937,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 boardSummaries=s.boardSummaries||{};lastMatchSummaryPayload=boardSummaries.BATTLE_OUTCOME||boardSummaries.LEADERBOARD_FINAL||null;
                 vixarDefeatedThisSession=Boolean(s.vixarDefeatedThisSession);lastVortexTime=s.lastVortexTime||0;
                 sessionNavigator=s.sessionNavigator&&s.sessionNavigator.sessionId===s.sessionId&&typeof s.sessionNavigator.id==='string'&&typeof s.sessionNavigator.name==='string'?{...s.sessionNavigator}:null;
+                haloTeams=Array.isArray(s.haloTeams)?teamsData.map(t=>t.id).filter(id=>s.haloTeams.includes(id)):[];haloLocked=Boolean(s.haloLocked);
                 pendingAnimatedFinish=Boolean(s.pendingFinish);const restoredVisualMode=normalizeVisualMode(s.performanceMode);setPerformanceMode(VISUAL_MODES.includes(restoredVisualMode)?restoredVisualMode:'light',{persist:true});
                 if(s.unity&&Array.isArray(s.unity.teamPlans)&&!classMission.rewardGranted)resumeUnityPlan={...s.unity,teamPlans:new Map(s.unity.teamPlans)};
                 setWheelMode(s.wheelMode==='english'?'english':'all');
@@ -7067,6 +7101,20 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             const top=Math.max(...battleState.fighters.map(f=>f.points));
             return {sessionId,league:battleState.fighters.filter(f=>f.points===top).map(f=>f.id),arena:determineArenaWinner().id};
         }});
+        // v10.2.0: the phone shows "×2" on the Comeback Halo teams and passes on a last result loaded from Sheets.
+        function renderMobileHalo(){
+            for(const id of LeagueStudents.teams){
+                const card=document.getElementById(`mobile-score-${id}`)?.closest('.mobile-team-card');if(!card)continue;
+                const on=remoteHaloTeams.includes(id);card.classList.toggle('halo-active',on);
+                let chip=card.querySelector('.mobile-halo-chip');
+                if(on&&!chip){chip=document.createElement('span');chip.className='mobile-halo-chip';chip.textContent='×2';chip.title='Comeback Halo: double points this session';card.append(chip);}
+                else if(!on)chip?.remove();
+            }
+        }
+        document.addEventListener('league-halo-result',event=>{
+            const c=event.detail?.className;
+            if(remoteRole==='controller'&&c&&c===remoteStudentClass)safeRemoteSend({type:'HALO_RESULT',sessionId:latestRemoteSessionId,className:c,result:LeagueHalo.result(c)});
+        });
         document.addEventListener('league-season-change',()=>{
             if(remoteRole==='controller'&&globalThis.LeagueSeason?.data)safeRemoteSend({type:'LEAGUE_SEASON',sessionId:latestRemoteSessionId,season:LeagueSeason.data});
         });

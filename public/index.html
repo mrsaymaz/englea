@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- English League Island Run Edition v10.1.2 -->
+<!-- English League Island Run Edition v10.2.0 -->
 <html lang="en" class="access-locked">
 <head>
     <meta charset="UTF-8">
@@ -18,13 +18,13 @@
     <script src="./session-recovery.js?v=8.7.0"></script>
     <script src="./remote-protocol.js?v=8.7.0"></script>
     <script src="./performance-budget.js?v=8.7.0"></script>
-    <script src="./sheets-outbox.js?v=10.1.2"></script>
+    <script src="./sheets-outbox.js?v=10.2.0"></script>
     <link rel="stylesheet" href="./classroom.css?v=8.7.0">
     <link rel="stylesheet" href="./students.css?v=8.7.0">
-    <script src="./student-rosters.js?v=10.1.2"></script>
-    <script src="./roster-manager.js?v=10.1.2"></script>
-    <script src="./teacher-signin.js?v=10.1.2"></script>
-    <script src="./student-ui.js?v=10.1.2"></script>
+    <script src="./student-rosters.js?v=10.2.0"></script>
+    <script src="./roster-manager.js?v=10.2.0"></script>
+    <script src="./teacher-signin.js?v=10.2.0"></script>
+    <script src="./student-ui.js?v=10.2.0"></script>
     <script src="./secret-agent.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./secret-agent.css?v=8.7.0">
     <script src="./motion.js?v=8.7.0"></script>
@@ -38,32 +38,33 @@
     <script src="./animated-mode.js?v=8.7.0"></script>
     <script src="./raid-motion.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./roster-manager.css?v=8.7.0">
-    <link rel="stylesheet" href="./island-run.css?v=10.1.2">
-    <script src="./adventure.js?v=10.1.2"></script>
-    <script src="./island-runner/content.js?v=10.1.2"></script>
-    <script src="./teaching-model.js?v=10.1.2"></script>
-    <script src="./teaching.js?v=10.1.2"></script>
-    <script src="./teacher-studio.js?v=10.1.2"></script>
-    <link rel="stylesheet" href="./teacher-studio.css?v=10.1.2">
-    <script src="./lesson-recap.js?v=10.1.2"></script>
-    <link rel="stylesheet" href="./adventure.css?v=10.1.2">
-    <script src="./island-progress.js?v=10.1.2"></script>
-    <script src="./passport-seals.js?v=10.1.2"></script>
-    <script src="./navigator-seals.js?v=10.1.2"></script>
-    <script src="./league-season.js?v=10.1.2"></script>
-    <link rel="stylesheet" href="./island-progress.css?v=10.1.2">
-    <link rel="stylesheet" href="./remote-sync.css?v=10.1.2">
-    <script src="./question-log.js?v=10.1.2"></script>
-    <script src="./island-run.js?v=10.1.2"></script>
-    <script src="./run-remote.js?v=10.1.2"></script>
-    <link rel="stylesheet" href="./remote-compact.css?v=10.1.2">
-    <link rel="stylesheet" href="./league-look.css?v=10.1.2">
-    <link rel="stylesheet" href="./board-v95.css?v=10.1.2">
-    <link rel="stylesheet" href="./league-v97.css?v=10.1.2">
-    <link rel="stylesheet" href="./league-v10.css?v=10.1.2">
-    <script src="./board-fx.js?v=10.1.2"></script>
-    <link rel="stylesheet" href="./arena-v95.css?v=10.1.2">
-    <script src="./arena-fx.js?v=10.1.2"></script>
+    <link rel="stylesheet" href="./island-run.css?v=10.2.0">
+    <script src="./adventure.js?v=10.2.0"></script>
+    <script src="./island-runner/content.js?v=10.2.0"></script>
+    <script src="./teaching-model.js?v=10.2.0"></script>
+    <script src="./teaching.js?v=10.2.0"></script>
+    <script src="./teacher-studio.js?v=10.2.0"></script>
+    <link rel="stylesheet" href="./teacher-studio.css?v=10.2.0">
+    <script src="./lesson-recap.js?v=10.2.0"></script>
+    <link rel="stylesheet" href="./adventure.css?v=10.2.0">
+    <script src="./island-progress.js?v=10.2.0"></script>
+    <script src="./passport-seals.js?v=10.2.0"></script>
+    <script src="./navigator-seals.js?v=10.2.0"></script>
+    <script src="./league-season.js?v=10.2.0"></script>
+    <script src="./comeback-halo.js?v=10.2.0"></script>
+    <link rel="stylesheet" href="./island-progress.css?v=10.2.0">
+    <link rel="stylesheet" href="./remote-sync.css?v=10.2.0">
+    <script src="./question-log.js?v=10.2.0"></script>
+    <script src="./island-run.js?v=10.2.0"></script>
+    <script src="./run-remote.js?v=10.2.0"></script>
+    <link rel="stylesheet" href="./remote-compact.css?v=10.2.0">
+    <link rel="stylesheet" href="./league-look.css?v=10.2.0">
+    <link rel="stylesheet" href="./board-v95.css?v=10.2.0">
+    <link rel="stylesheet" href="./league-v97.css?v=10.2.0">
+    <link rel="stylesheet" href="./league-v10.css?v=10.2.0">
+    <script src="./board-fx.js?v=10.2.0"></script>
+    <link rel="stylesheet" href="./arena-v95.css?v=10.2.0">
+    <script src="./arena-fx.js?v=10.2.0"></script>
 </head>
 <body class="p-4 sm:p-8">
     <section id="access-screen" aria-labelledby="access-title">
@@ -75,7 +76,7 @@
 <!-- STARTUP SCREEN -->
     <div id="startup-overlay" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
         <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase tracking-widest mb-8">English League</h1>
-        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v10.1.2</div>
+        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v10.2.0</div>
         <div class="startup-card bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
             <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Smartboard Display</h2>
             <div class="performance-selector" role="group" aria-label="Smartboard visual quality">
@@ -1032,7 +1033,7 @@
         </div>
     </div>
 
-    <script src="./game.js?v=10.1.2"></script>
+    <script src="./game.js?v=10.2.0"></script>
 
 </body>
 </html>

@@ -1,3 +1,16 @@
+# v10.2.0 checks
+
+Run `npm run test:v102` for the full dependency-free suite (all v10.1.2 checks plus `v102.cjs`). `v102.cjs` covers the Comeback Halo:
+
+- who gets the halo (Grand Champions, shared titles, everyone winning);
+- the store of each class's last session, from the board and from Google Sheets;
+- the ×2 scoring rule;
+- the Apps Script's last session per class;
+- the head positions for all 44 Animated avatars and the Light avatars;
+- the board and phone wiring.
+
+`npm run test:board` now also runs `board-v102.cjs`: a real session decides the next session's halo; the ×2 award; the halo stays fixed after the first award and after a reload; it stays on the head at levels 0–10 and in Light mode, clear of the team name; and it arrives from Sheets via the phone.
+
 # v10.1.2 checks
 
 Run `npm run test:v1012` for the full dependency-free suite (all v10.1 checks plus `v1012.cjs`). `v1012.cjs` runs the real Apps Script in the in-memory spreadsheet and checks that:

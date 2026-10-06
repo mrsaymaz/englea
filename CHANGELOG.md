@@ -2,6 +2,17 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.2.0
+**Comeback Halo**:
+- Teams that won neither the League title nor the Final Arena in a class's last session earn ×2 on every positive award (+ button and custom points; never deductions) for that class's next session.
+- Shown as a golden halo with "×2" above the avatar's head. Its position is set for each of the 44 evolution pictures and for the Light avatars, so it follows the creature as it evolves. The avatar shrinks slightly when needed so the halo clears the team name.
+- The phone marks halo teams with "×2".
+- Shared League titles count every tied team as a winner.
+- The halo is chosen with the class and fixed from the first award; it is kept after a reload.
+- The board records each class's result when the Arena ends. Load islands also returns each class's last saved session from Google Sheets, so a class keeps its halo on any board.
+
+Apps Script: `GOOGLE-APPS-SCRIPT-v10.2.0.gs` (includes v10.1.2).
+
 ## 10.1.2
 **Dates in Google Sheets are day first (DD/MM/YYYY)**:
 - The Apps Script now writes every date as a real date shown `dd/mm/yyyy hh:mm:ss`, whatever the Sheet's locale. This covers Leaderboard, Battle_Results, Student_Contributions, Navigator_Seals, Island_Progress (Last updated) and Question_Log.

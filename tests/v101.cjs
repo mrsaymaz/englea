@@ -52,7 +52,7 @@ await test('The opening screen has the Teacher PIN box under the room code; the 
  assert(code>0&&code<pinBox&&pinBox<connect,'room code, Teacher PIN, Connect Phone');
  assert.match(html,/id="teacher-pin-startup" inputmode="numeric" autocomplete="off"/);assert.match(html,/<input type="password" id="teacher-pin-startup"/);
  assert(html.includes('id="mobile-teacher-status"')&&html.includes('onclick="LeagueTeacher.ask()"'));
- const tag=(html.match(/Island Run Edition · v(10\.\d+\.\d+)/)||[])[1];assert.match(tag,/^10\.1\.\d+$/);assert(html.includes('teacher-signin.js?v='+tag));
+ const tag=(html.match(/Island Run Edition · v(10\.\d+\.\d+)/)||[])[1];assert.match(tag,/^10\.\d+\.\d+$/);assert(html.includes('teacher-signin.js?v='+tag));
  assert(html.indexOf('teacher-signin.js')<html.indexOf('game.js?v='),'loaded before game.js');
 });
 await test('v10.1.1 one student card at a time: no function name is declared twice in student-ui.js (a second declaration silently replaces the first)',()=>{

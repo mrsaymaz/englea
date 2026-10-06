@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.1.2
+English League · Island Run Edition · v10.2.0
+
+v10.2.0: Comeback Halo. Teams that won neither title in a class's last session earn ×2 next session, shown as a halo with ×2 on the avatar's head. Apps Script update: GOOGLE-APPS-SCRIPT-v10.2.0.gs.
 
 v10.1.2: Google Sheets dates are day first (DD/MM/YYYY). Apps Script update required: GOOGLE-APPS-SCRIPT-v10.1.2.gs. Run formatOldDates once to convert earlier rows (optional).
 
@@ -14,4 +16,4 @@ Elemental student cards: the award card takes on the student's team element (fir
 School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
 
 Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v10.1.2.md.
+No new Netlify or Cloudflare variables. Read START-HERE-v10.2.0.md.
