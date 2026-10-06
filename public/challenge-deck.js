@@ -13,8 +13,18 @@
  const TYPES=['Vocabulary','Grammar','Pronunciation','Speaking','Listening','Sentence Repair','Taboo Description','Translation','Ask a Question'];
  const CHOICE=new Set(['Vocabulary','Translation','Grammar','Sentence Repair','Listening','Ask a Question']);
  const ICONS={Vocabulary:'📘',Grammar:'🧩',Pronunciation:'🗣️',Speaking:'💬',Listening:'🎧','Sentence Repair':'🔧','Taboo Description':'🚫',Translation:'🌍','Ask a Question':'❓'};
- const WH={'how many':'a number','how much':'an amount or a price','how old':'age','how long':'a length of time','how often':'how many times something happens','how far':'a distance',
-  what:'a thing or an idea',where:'a place',when:'a time',who:'a person',which:'a choice between things',why:'a reason',how:'the way something happens'};
+ // What each question word asks about (Ask a Question explains the right question with it).
+ const WH={'how many':'a number','how much':'an amount or a price','how old':'age','how long':'a length of time','how often':'how many times something happens',
+  'how far':'a distance','how tall':'height','what time':'a time','what kind':'a type of thing','what colour':'a colour',
+  what:'a thing or an idea',where:'a place',when:'a time',who:'a person',whose:'who something belongs to',which:'one choice from a group',why:'a reason',
+  how:'the way something is or happens'};
+ const YES_NO=/^(can|could|is|are|was|were|do|does|did|have|has|will|would)\b/i;
+ function asks(question){
+  if(YES_NO.test(question))return `“${question}” is a yes/no question.`;
+  const two=question.toLowerCase().replace(/['’]s\b/g,'').split(/\s+/).slice(0,2).join(' ').replace(/[^a-z ]/g,''),one=two.split(' ')[0];
+  const key=WH[two]?two:WH[one]?one:null;
+  return key?`“${question}” — “${key[0].toUpperCase()+key.slice(1)}” asks about ${WH[key]}.`:`The question is: “${question}”`;
+ }
  // Turkish of the words that most often carry a meaning in the islands' English definitions (Taboo forbids them).
  const KEY_TR=Object.fromEntries(('person:kişi place:yer food:yiyecek small:küçük large:büyük big:büyük event:etkinlik time:zaman building:bina long:uzun animal:hayvan '+
   'space:uzay natural:doğal body:vücut water:su work:iş job:meslek information:bilgi planet:gezegen material:malzeme meal:yemek device:cihaz road:yol school:okul tool:alet '+
@@ -73,13 +83,12 @@
    const target=pick(m.pairs,random);if(!target)return null;const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;
    return {prompt:'Listen carefully. Which word did you hear?',instruction:'Tap 🔊 to hear it again.',speak:target.en,...options(target.en,wrong,random),word:target.en,
     explain:`You heard “${target.en}”${target.tr?` (${target.tr})`:''}.`};},
+  // v10.4.1: short cards from the island's own Ask a Question list (ask-questions.js): a short answer, the question
+  // that asks for it, and two proper questions that ask for something else.
   'Ask a Question'(m,ctx,random){
-   const asks=m.questions.map(q=>{const parts=q.prompt.match(/^(.*?)([^.!?]*\?)\s*$/);if(!parts)return null;const question=parts[2].trim(),wh=/^(How (?:many|much|old|long|often|far)|What|Where|When|Who|Which|Why|How)\b/.exec(question);
-    return wh?{context:parts[1].trim(),question,wh:wh[1],answer:q.right}:null;}).filter(Boolean);
-   const a=pick(asks,random);if(!a)return null;
-   const swaps=others(['What','Where','When','Who','Which','Why','How','How many','How much'],a.wh,2,random).map(w=>a.question.replace(a.wh,w));
-   return {prompt:a.answer,context:a.context,instruction:'Here is the answer. Choose the question that asks for it.',...options(a.question,swaps,random),word:a.wh,
-    explain:`The question is: “${a.question}” — “${a.wh}” asks about ${WH[a.wh.toLowerCase()]}.`};},
+   const a=pick((m.asks||[]).filter(r=>Array.isArray(r)&&r.length===4&&r.every(Boolean)),random);if(!a)return null;
+   const [answer,question,...wrong]=a.map(clean);
+   return {prompt:answer,instruction:'Here is the answer. Choose the question that asks for it.',...options(question,wrong,random),word:question.split(' ')[0],explain:asks(question)};},
   'Taboo Description'(m,ctx,random){const target=pick(m.pairs.filter(p=>p.tr&&p.def),random)||pick(m.pairs.filter(p=>p.tr),random);if(!target)return null;
    // Forbidden: the Turkish translation, and the Turkish of other words from this grade that appear in its meaning.
    const inMeaning=target.def?ctx.gradePool.filter(p=>p.tr&&p.en.toLowerCase()!==target.en.toLowerCase()&&new RegExp(`\\b${p.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(target.def)).map(p=>p.tr):[];
@@ -96,7 +105,8 @@
  // The current island is used first; earlier islands when it has nothing for this card.
  function deal(type,ctx,random=Math.random){
   if(!builders[type])return null;
-  const current=material(ctx.current),earlier=(ctx.earlier||[]).map(material),all=(ctx.gradeBanks||[]).map(material);
+  // ctx.asks: {current: rows, earlier: [rows, …]} from ask-questions.js, in the same order as the islands.
+  const current={...material(ctx.current),asks:ctx.asks?.current||[]},earlier=(ctx.earlier||[]).map((bank,i)=>({...material(bank),asks:ctx.asks?.earlier?.[i]||[]})),all=(ctx.gradeBanks||[]).map(material);
   const wordPool=[...current.pairs,...earlier.flatMap(m=>m.pairs)],gradePool=all.flatMap(m=>m.pairs);
   for(const m of [current,...earlier.slice().sort(()=>random()-.5)]){
    const card=builders[type](m,{grade:ctx.grade,theme:ctx.theme,wordPool,gradePool},random);

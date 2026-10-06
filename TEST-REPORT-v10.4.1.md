@@ -1,3 +1,18 @@
+# v10.4.1 verification
+
+## v10.4.1: short Ask a Question cards
+
+`tests/v104.cjs` now checks the new Ask a Question list (`public/ask-questions.js`):
+- six cards for each of the 40 islands of grades 5–8 (240 in all);
+- every question ends with "?" and has eight words or fewer, and the three questions on a card are different;
+- a card shows its own right question and its two written wrong questions, with no reading text;
+- the explanation names the question word ("What time" asks about a time; "Who's" asks about a person; "Can I…?" is a yes/no question);
+- Island Run's reading questions are no longer turned into cards.
+
+Every card was written so that the wrong questions are proper English but ask for something else, so only one question fits the answer.
+
+The rest of this report is the v10.4.0 verification. It still applies.
+
 # v10.4.0 verification
 
 ## The Challenge Deck
@@ -11,7 +26,7 @@
 - **Card details:**
   - Sentence Repair marks a wrong word that is also an option.
   - Listening speaks a word in grades 5–6 and a sentence in grades 7–8.
-  - Ask a Question picks the question that asks for the given answer; for "How many …", it explains "asks about a number".
+  - Ask a Question (v10.4.0) picked the question that asks for the given answer. v10.4.1 replaced it with its own short list (above).
 - **Taboo:** 1–4 forbidden Turkish words, the translation first.
   - Example: neck → boyun, vücut, baş.
   - Most cards forbid two or more words.

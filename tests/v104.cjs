@@ -9,11 +9,12 @@
    Browser checks: board-v104.cjs. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {makeGas}=require('./roster-gas-harness.cjs');
-const C=require('../public/island-runner/expand-content.js'),L=require('../public/challenge-deck.js');
+const C=require('../public/island-runner/expand-content.js'),L=require('../public/challenge-deck.js'),A=require('../public/ask-questions.js');
 let checks=0;const test=async(name,fn)=>{await fn();checks++;console.log('PASS '+name);};
 const pub=f=>fs.readFileSync(path.join(__dirname,'../public',f),'utf8');
 const seeded=seed=>()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
-const ctx=(g,i,banks=C.grades[g].map(u=>u.bank))=>({grade:g,theme:C.grades[g][i].theme,current:banks[i],earlier:banks.slice(0,i),gradeBanks:banks});
+const ctx=(g,i,banks=C.grades[g].map(u=>u.bank))=>({grade:g,theme:C.grades[g][i].theme,current:banks[i],earlier:banks.slice(0,i),gradeBanks:banks,
+ asks:{current:A.grades[g][i],earlier:A.grades[g].slice(0,i)}});
 (async()=>{
 await test('Every card type is dealt for every island of grades 5–8 (9 types × 40 islands × 5 deals); choice cards have three different options and one right answer',()=>{
  let dealt=0;
@@ -39,11 +40,22 @@ await test('Sentence Repair marks one wrong word that is among the options; List
  const young=L.deal('Listening',ctx(5,2),seeded(3)),old=L.deal('Listening',ctx(8,2),seeded(3));
  assert(!/\s/.test(young.speak.trim())||young.speak.split(' ').length<=3,'a word');assert(old.speak.split(' ').length>=4,'a sentence');assert.equal(old.options[old.answer],old.speak);
 });
-await test('Ask a Question: the answer is shown and the right question asks for it; “How many” asks for a number',()=>{
- const bank=[{kind:'question',prompt:'The event needs four helpers. Three students volunteer. How many more are needed?',choices:['One.','Two.','Four.'],answer:0}];
- const c=L.deal('Ask a Question',{grade:5,current:bank},seeded(5));
- assert.equal(c.prompt,'One.');assert.equal(c.context,'The event needs four helpers. Three students volunteer.');assert.equal(c.options[c.answer],'How many more are needed?');
- assert.match(c.explain,/“How many” asks about a number\./);
+await test('v10.4.1 Ask a Question: its own short cards, six for every island of grades 5–8 (240); each a short answer and three proper questions of up to eight words',()=>{
+ let rows=0;
+ for(const g of [5,6,7,8]){assert.equal(A.grades[g].length,10);
+  A.grades[g].forEach((island,i)=>{assert.equal(island.length,6,`grade ${g} island ${i+1}`);
+   for(const r of island){rows++;assert.equal(r.length,4);assert.match(r[0],/[.!?]$/);const qs=r.slice(1);
+    assert(qs.every(q=>q.endsWith('?')&&q.split(/\s+/).length<=8),JSON.stringify(r));assert.equal(new Set(qs.map(q=>q.toLowerCase())).size,3);}});}
+ assert.equal(rows,240);
+ // Cards come from the island's own list: the right question is the row's, and the two others are its written wrong questions.
+ const island=A.grades[5][0];
+ for(let s=1;s<=20;s++){const c=L.deal('Ask a Question',ctx(5,0),seeded(s));const row=island.find(r=>r[0]===c.prompt);assert(row,c.prompt);
+  assert.equal(c.options[c.answer],row[1]);assert.deepEqual([...c.options].sort(),row.slice(1).sort());assert.equal(c.context,undefined,'no reading text: short and easy');}
+ const one=r=>L.deal('Ask a Question',{grade:6,current:[],asks:{current:[r]}},seeded(2)).explain;
+ assert.equal(one(['At eight o\'clock.','What time does school start?','Where does school start?','Who starts school?']),'“What time does school start?” — “What time” asks about a time.');
+ assert.equal(one(['Speaking.','Can I speak to Mert, please?','Where is Mert?','Who is Mert?']),'“Can I speak to Mert, please?” is a yes/no question.');
+ assert.match(one(['It\'s Selin.','Who\'s calling, please?','Where are you calling from?','Why are you calling?']),/“Who” asks about a person\./);
+ assert.equal(L.deal('Ask a Question',{grade:5,current:C.grades[5][0].bank},seeded(1)),null,'Island Run reading questions are no longer turned into cards');
 });
 await test('Taboo: the English word with 1–4 forbidden Turkish words (the translation first, then Turkish words of its meaning)',()=>{
  const counts=new Map();
@@ -108,7 +120,8 @@ await test('Board wiring: the go-back point, the stakes, wrong/right/skip, the r
  assert.match(game,/challengeLog:challengeLog\.filter\(row=>row\.className===selectedClass\)\.slice\(-200\),/);
  assert.match(game,/if\(cards\.length\)payload\.challengeLog=cards\.filter\(row=>row\?\.className===classInput\)\.slice\(-200\);/);
  assert.match(game,/if \(globalThis\.RunnerContent\?\.version === 3\) return;/,'the compiled content (24 pairs with meanings) is loaded before cards are dealt');
- assert(html.indexOf('challenge-deck.js?v=10.4.0')>0&&html.indexOf('challenge-deck.js')<html.indexOf('game.js?v='));assert(html.includes('challenge-deck.css?v=10.4.0'));
+ assert(html.indexOf('challenge-deck.js?v=')>0&&html.indexOf('ask-questions.js?v=')>0&&html.indexOf('ask-questions.js')<html.indexOf('game.js?v=')&&html.indexOf('challenge-deck.js')<html.indexOf('game.js?v='));
+ assert.match(game,/asks:\{ current:ask\[island - 1\] \|\| \[\], earlier:ask\.slice\(0, island - 1\) \}/,'Ask a Question uses the team’s island first');assert(html.includes('challenge-deck.css?v='));
  assert(html.indexOf('id="mobile-challenge"')<html.indexOf('id="mobile-wheel-close-btn"'));
  assert.doesNotMatch(pub('challenge-deck.css'),/color-mix|backdrop-filter/,'plain colours, no blur: old smart boards');
  assert.match(pub('challenge-deck.css'),/#wheel-modal\.under-challenge\{visibility:hidden!important\}/,'the wheel and its blurred backdrop are not drawn under the card');

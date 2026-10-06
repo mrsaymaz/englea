@@ -2,6 +2,9 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.4.1
+**Short Ask a Question cards**: each island of grades 5–8 has six of its own on the island's theme (240 in all). Each card has a short answer, the right question and two proper questions that ask for something else; questions have eight words or fewer. The explanation names the question word ("What time" asks about a time). Island Run's questions are unchanged. No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
+
 ## 10.4.0
 **The Challenge Deck** on the English wheel (Level 5 and Level 10):
 - The wheel deals a real card from the class's island content: the island the team plays next, then the islands before it, with the teacher's Studio edits. Nine cards: Vocabulary, Translation, Grammar, Sentence Repair, Listening, Ask a Question (three options), and Taboo Description, Pronunciation, Speaking (the teacher judges ✓ / ✗).

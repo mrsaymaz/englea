@@ -1,4 +1,6 @@
-# v10.4.0 — The Challenge Deck
+# v10.4.1 — The Challenge Deck
+
+**New in v10.4.1:** Ask a Question cards are short and easy. Each island of grades 5–8 now has six of its own, on the island's theme (240 in all). A card shows a short answer, such as “At eight o'clock.”, and three short questions: the right one and two proper questions that ask for something else (“Where does school start?”). Island Run's own questions are unchanged.
 
 When a team reaches **Level 5** or **Level 10** and the wheel is set to **English Only**, the wheel no longer just names a skill. It deals a real card from the class's own island words, and the team's new level depends on the answer.
 
@@ -23,7 +25,7 @@ When a team reaches **Level 5** or **Level 10** and the wheel is set to **Englis
 | **Grammar**: a sentence with a gap | three words |
 | **Sentence Repair**: one wrong word, marked in red | three fixes |
 | **Listening**: the board speaks a word (grades 5–6) or a sentence (grades 7–8); 🔊 plays it again | three options |
-| **Ask a Question**: an answer, with its short reading | three questions; the student picks the one that asks for it |
+| **Ask a Question**: a short answer, such as “At eight o'clock.” | three short questions; the student picks the one that asks for it |
 | **Taboo Description**: only your phone shows the English word and up to four forbidden **Turkish** words. Show your phone to the student. They describe the word in Turkish without those words, and the whole team guesses the English word. No timer. | you tap ✓ or ✗ |
 | **Pronunciation**: the student reads a word aloud | you tap ✓ or ✗; afterwards 🔊 plays it |
 | **Speaking**: the student says one sentence with the word | you tap ✓ or ✗ |
@@ -47,7 +49,7 @@ Every card is saved in a new **Challenge_Log** tab when you save the session fro
    - **Deploy → Manage deployments → Edit → New version → Deploy**.
    - Until you do this, the phone keeps the cards and tells you to update when you save.
 2. Deploy the complete extracted project to your existing Netlify site with your usual method. Include **public**, **netlify/functions** and **netlify.toml**.
-3. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.4.0**.
+3. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.4.1**.
 
 ## Quick classroom check
 

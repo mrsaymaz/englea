@@ -4,7 +4,7 @@ Run `npm run test:v104` for the full dependency-free suite (all v10.3 checks plu
 
 - every Challenge Deck card for every island of grades 5–8 (1,800 deals; three different options, one right);
 - cards from the team's current island first;
-- Sentence Repair's marked word; Listening by grade; Ask a Question's wh-words;
+- Sentence Repair's marked word; Listening by grade; the 240 short Ask a Question cards (v10.4.1);
 - Taboo's forbidden Turkish words;
 - cards from the teacher's pasted Studio word pairs;
 - the Apps Script Challenge_Log (day-first dates, no duplicates, invalid rows refused);

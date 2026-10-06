@@ -5577,7 +5577,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const next = id => LeagueAdventure.nextIsland(progress, selectedClass, id);
                 const island = Math.min(10, team ? next(team.id) : Math.max(...teamsData.map(t => next(t.id))));
                 const banks = units.map((unit, i) => LeagueTeaching.unit(`${grade}-${i + 1}`)?.content?.bank || unit.bank);
-                return { grade, island, theme:units[island - 1]?.theme || '', current:banks[island - 1], earlier:banks.slice(0, island - 1), gradeBanks:banks };
+                const ask = globalThis.LeagueAskBank?.grades?.[grade] || [];
+                return { grade, island, theme:units[island - 1]?.theme || '', current:banks[island - 1], earlier:banks.slice(0, island - 1), gradeBanks:banks,
+                    asks:{ current:ask[island - 1] || [], earlier:ask.slice(0, island - 1) } };
             }
             function loadChallengeContent() {
                 if (globalThis.RunnerContent?.version === 3) return; // compiled: all 24 word pairs, meanings, gaps and questions
@@ -5811,7 +5813,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.4.0';
+        const REMOTE_BUILD = '10.4.1';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
