@@ -40,22 +40,29 @@ await test('Sentence Repair marks one wrong word that is among the options; List
  const young=L.deal('Listening',ctx(5,2),seeded(3)),old=L.deal('Listening',ctx(8,2),seeded(3));
  assert(!/\s/.test(young.speak.trim())||young.speak.split(' ').length<=3,'a word');assert(old.speak.split(' ').length>=4,'a sentence');assert.equal(old.options[old.answer],old.speak);
 });
-await test('v10.4.1 Ask a Question: its own short cards, six for every island of grades 5–8 (240); each a short answer and three proper questions of up to eight words',()=>{
+await test('v10.4.1 Ask a Question: its own short cards (six per island, 240) plus Island Run reading questions with proper wrong questions',()=>{
  let rows=0;
  for(const g of [5,6,7,8]){assert.equal(A.grades[g].length,10);
   A.grades[g].forEach((island,i)=>{assert.equal(island.length,6,`grade ${g} island ${i+1}`);
    for(const r of island){rows++;assert.equal(r.length,4);assert.match(r[0],/[.!?]$/);const qs=r.slice(1);
     assert(qs.every(q=>q.endsWith('?')&&q.split(/\s+/).length<=8),JSON.stringify(r));assert.equal(new Set(qs.map(q=>q.toLowerCase())).size,3);}});}
  assert.equal(rows,240);
- // Cards come from the island's own list: the right question is the row's, and the two others are its written wrong questions.
- const island=A.grades[5][0];
- for(let s=1;s<=20;s++){const c=L.deal('Ask a Question',ctx(5,0),seeded(s));const row=island.find(r=>r[0]===c.prompt);assert(row,c.prompt);
-  assert.equal(c.options[c.answer],row[1]);assert.deepEqual([...c.options].sort(),row.slice(1).sort());assert.equal(c.context,undefined,'no reading text: short and easy');}
+ // Two sources: the island's own short cards (their own written wrong questions), and Island Run reading questions
+ // that start with a question word, whose wrong options are the island's standalone questions with another question word.
+ const island=A.grades[5][0],standalone=new Set(island.flatMap(r=>r.slice(1))),group=q=>{const w=q.toLowerCase().split(' ')[0];return w==='which'?'what':w;};
+ let own=0,reading=0;
+ for(let s=1;s<=60;s++){const c=L.deal('Ask a Question',ctx(5,0),seeded(s));const row=island.find(r=>r[0]===c.prompt&&r[1]===c.options[c.answer]);
+  if(row){own++;assert.deepEqual([...c.options].sort(),row.slice(1).sort());assert.equal(c.context,undefined);continue;}
+  reading++;const right=c.options[c.answer],wrong=c.options.filter((o,i)=>i!==c.answer);
+  assert(/^(What|Where|When|Who|Whose|Which|Why|How)\b/.test(right)&&right.split(' ').length<=10,right);
+  assert.doesNotMatch(right,/\b(word|sentence|description|statement|reply|fits?)\b/i,'exercise questions are left out');
+  for(const w of wrong){assert(standalone.has(w),w);assert.notEqual(group(w),group(right));}}
+ assert(own>0&&reading>0,`both sources are used (${own} own, ${reading} from Island Run)`);
  const one=r=>L.deal('Ask a Question',{grade:6,current:[],asks:{current:[r]}},seeded(2)).explain;
  assert.equal(one(['At eight o\'clock.','What time does school start?','Where does school start?','Who starts school?']),'“What time does school start?” — “What time” asks about a time.');
  assert.equal(one(['Speaking.','Can I speak to Mert, please?','Where is Mert?','Who is Mert?']),'“Can I speak to Mert, please?” is a yes/no question.');
  assert.match(one(['It\'s Selin.','Who\'s calling, please?','Where are you calling from?','Why are you calling?']),/“Who” asks about a person\./);
- assert.equal(L.deal('Ask a Question',{grade:5,current:C.grades[5][0].bank},seeded(1)),null,'Island Run reading questions are no longer turned into cards');
+ assert.equal(L.deal('Ask a Question',{grade:5,current:C.grades[5][0].bank},seeded(1)),null,'without the island’s own cards there are no clean wrong options: no card');
 });
 await test('Taboo: the English word with 1–4 forbidden Turkish words (the translation first, then Turkish words of its meaning)',()=>{
  const counts=new Map();

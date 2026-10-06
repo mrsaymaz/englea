@@ -19,6 +19,10 @@
   what:'a thing or an idea',where:'a place',when:'a time',who:'a person',whose:'who something belongs to',which:'one choice from a group',why:'a reason',
   how:'the way something is or happens'};
  const YES_NO=/^(can|could|is|are|was|were|do|does|did|have|has|will|would)\b/i;
+ const QWORD=/^(what|where|when|who|whose|which|why|how)\b/i;
+ const EXERCISE=/\b(word|words|sentence|sentences|description|question|statement|reply|response|phrase|fits?|means?|meaning|correct|choose|option|best|true|false|grammar|form)\b/i;
+ // "What" and "Which" can ask for the same thing, so a wrong option never shares the group of the right question.
+ const firstWord=q=>{const w=q.toLowerCase().replace(/['’]s\b/,'').split(/\s+/)[0];return w==='which'?'what':w;};
  function asks(question){
   if(YES_NO.test(question))return `“${question}” is a yes/no question.`;
   const two=question.toLowerCase().replace(/['’]s\b/g,'').split(/\s+/).slice(0,2).join(' ').replace(/[^a-z ]/g,''),one=two.split(' ')[0];
@@ -85,10 +89,22 @@
     explain:`You heard “${target.en}”${target.tr?` (${target.tr})`:''}.`};},
   // v10.4.1: short cards from the island's own Ask a Question list (ask-questions.js): a short answer, the question
   // that asks for it, and two proper questions that ask for something else.
+  // v10.4.1: two sources. The island's own short cards (ask-questions.js: answer, question, two written wrong questions),
+  // and the island's Island Run reading questions that start with a question word (short context, question, answer).
+  // Exercise questions ("Which word fits?", "Which sentence…?") are left out. A reading card's wrong options are
+  // questions from the island's own short cards that start with a different question word: proper English that
+  // makes sense on its own and asks for something else.
   'Ask a Question'(m,ctx,random){
-   const a=pick((m.asks||[]).filter(r=>Array.isArray(r)&&r.length===4&&r.every(Boolean)),random);if(!a)return null;
-   const [answer,question,...wrong]=a.map(clean);
-   return {prompt:answer,instruction:'Here is the answer. Choose the question that asks for it.',...options(question,wrong,random),word:question.split(' ')[0],explain:asks(question)};},
+   const own=(m.asks||[]).filter(r=>Array.isArray(r)&&r.length===4&&r.every(Boolean)).map(r=>{const [answer,question,...wrong]=r.map(clean);return {answer,question,wrong};});
+   const reading=m.questions.map(q=>{const parts=q.prompt.match(/^(.*?)([^.!?]*\?)\s*$/);if(!parts)return null;const question=parts[2].trim();
+    return QWORD.test(question)&&!EXERCISE.test(question)&&question.split(/\s+/).length<=10&&q.right.split(/\s+/).length<=6?{answer:q.right,question,context:parts[1].trim()}:null;}).filter(Boolean);
+   const standalone=[...new Set(own.flatMap(r=>[r.question,...r.wrong]))].filter(q=>QWORD.test(q));
+   const usable=reading.map(r=>{const word=firstWord(r.question);
+    const wrong=others(standalone.filter(q=>firstWord(q)!==word),r.question,2,random);
+    return wrong.length===2?{...r,wrong}:null;}).filter(Boolean);
+   const a=pick([...own,...usable],random);if(!a)return null;
+   return {prompt:a.answer,...(a.context?{context:a.context}:{}),instruction:'Here is the answer. Choose the question that asks for it.',...options(a.question,a.wrong,random),
+    word:a.question.split(' ')[0],explain:asks(a.question)};},
   'Taboo Description'(m,ctx,random){const target=pick(m.pairs.filter(p=>p.tr&&p.def),random)||pick(m.pairs.filter(p=>p.tr),random);if(!target)return null;
    // Forbidden: the Turkish translation, and the Turkish of other words from this grade that appear in its meaning.
    const inMeaning=target.def?ctx.gradePool.filter(p=>p.tr&&p.en.toLowerCase()!==target.en.toLowerCase()&&new RegExp(`\\b${p.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i').test(target.def)).map(p=>p.tr):[];
