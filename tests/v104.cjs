@@ -24,11 +24,19 @@ await test('Every card type is dealt for every island of grades 5–8 (9 types �
   if(card.choice){
    assert.equal(card.options.length,3);assert.equal(new Set(card.options.map(o=>o.toLowerCase())).size,3,JSON.stringify(card.options));
    assert([0,1,2].includes(card.answer));assert(card.explain&&card.instruction&&card.prompt);
-   if(['Vocabulary','Translation'].includes(type))assert.equal(card.options[card.answer],card.word);
+   if(type==='Translation'||type==='Vocabulary'&&!card.turkish)assert.equal(card.options[card.answer],card.word);
    if(type==='Grammar'||type==='Sentence Repair')assert(card.explain.includes(card.options[card.answer]));
   }else assert(card.judged&&card.word&&card.prompt);
  }
  assert.equal(dealt,1800);
+});
+await test('v10.4.1 Vocabulary mixes in Turkish: about one card in three shows an English word with three Turkish meanings',()=>{
+ let turkish=0,n=0;
+ for(const g of [5,6,7,8])for(let i=0;i<10;i++)for(let s=1;s<=15;s++){const c=L.deal('Vocabulary',ctx(g,i),seeded(s*131+i+g));n++;if(!c.turkish){assert.match(c.prompt,/^Which word means “/);continue;}
+  turkish++;const pair=L.material(C.grades[g].flatMap(u=>u.bank)).pairs.find(p=>p.en===c.prompt);
+  assert(pair,c.prompt);assert.equal(c.options[c.answer],pair.tr);assert.equal(c.instruction,'What does this word mean in Turkish?');
+  assert.equal(new Set(c.options.map(o=>o.toLocaleLowerCase('tr'))).size,3);assert.match(c.explain,new RegExp(`^“${c.prompt}” means “`));}
+ assert(turkish/n>.2&&turkish/n<.45,`${turkish} of ${n}`);
 });
 await test('Cards come from the team’s current island first (words of island 4 on island 4)',()=>{
  const own=new Set(L.material(C.grades[6][3].bank).pairs.map(p=>p.en));
@@ -76,11 +84,12 @@ await test('Taboo: the English word with 1–4 forbidden Turkish words (the tran
  assert.deepEqual(neck.forbidden,['boyun','vücut','baş']);
  assert((counts.get(2)||0)+(counts.get(3)||0)+(counts.get(4)||0)>(counts.get(1)||0),'most cards forbid two or more words: '+JSON.stringify([...counts]));
 });
-await test('The teacher’s Studio word pairs are enough: Translation, Taboo, Pronunciation and Speaking from pasted pairs only',()=>{
+await test('The teacher’s Studio word pairs are enough: Translation, Vocabulary (Turkish meaning), Taboo, Pronunciation and Speaking from pasted pairs only',()=>{
  const M=require('../public/teaching-model.js');
  const bank=M.bulk('library|kütüphane\nnotebook|defter\neraser|silgi\nruler|cetvel','5-3');
  for(const type of ['Translation','Taboo Description','Pronunciation','Speaking']){const c=L.deal(type,{grade:5,current:bank,earlier:[],gradeBanks:[bank]},seeded(4));assert(c,type);assert(['library','notebook','eraser','ruler'].includes(c.word));}
- assert.equal(L.deal('Vocabulary',{grade:5,current:bank},seeded(4)),null,'no meanings pasted: the wheel shows the label only');
+ const v=L.deal('Vocabulary',{grade:5,current:bank,earlier:[],gradeBanks:[bank]},seeded(4));
+ assert(v.turkish&&['kütüphane','defter','silgi','cetvel'].includes(v.options[v.answer]),'no English meanings pasted: Vocabulary asks for the Turkish meaning');
 });
 await test('Apps Script v10.4.0: Challenge_Log rows (day-first dates), no duplicates on a retried save, invalid rows refused, Load islands reports the version',()=>{
  const gas=makeGas(),pin='2595',at=Date.now();

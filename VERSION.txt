@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.4.1
+English League · Island Run Edition · v10.4.2
+
+v10.4.2: about one Vocabulary card in three asks for the Turkish meaning of an English word. Apps Script unchanged (v10.4.0).
 
 v10.4.1: Ask a Question cards are short and easy: six of their own for every island of grades 5–8. Apps Script unchanged (v10.4.0).
 
@@ -22,4 +24,4 @@ Elemental student cards: the award card takes on the student's team element (fir
 School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
 
 Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v10.4.1.md.
+No new Netlify or Cloudflare variables. Read START-HERE-v10.4.2.md.

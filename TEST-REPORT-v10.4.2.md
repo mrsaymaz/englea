@@ -1,3 +1,14 @@
+# v10.4.2 verification
+
+## v10.4.2: Vocabulary in Turkish too
+
+`tests/v104.cjs` deals 600 Vocabulary cards across grades 5–8:
+- 20–45% show an English word with three Turkish meanings;
+- the right meaning is the word's own Turkish;
+- the three meanings are always different.
+
+A bank of pasted Studio word pairs, which has no English meanings, now makes Turkish Vocabulary cards.
+
 # v10.4.1 verification
 
 ## v10.4.1: short Ask a Question cards

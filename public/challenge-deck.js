@@ -70,7 +70,18 @@
 
  // ---- The nine cards ----
  const builders={
-  'Vocabulary'(m,ctx,random){const target=pick(m.pairs.filter(p=>p.def),random);if(!target)return null;const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;
+  // Two kinds: an English meaning → the English word (two in three cards), and v10.4.1: an English word → its Turkish
+  // meaning (one in three; always when the island has no English meanings, as with pasted Studio word pairs).
+  'Vocabulary'(m,ctx,random){
+   const english=m.pairs.filter(p=>p.def),turkish=m.pairs.filter(p=>p.tr);
+   if(turkish.length&&(!english.length||random()<1/3)){
+    const target=pick(turkish,random),tr=s=>s.toLocaleLowerCase('tr');
+    const wrong=others(ctx.wordPool.filter(p=>p.tr&&tr(p.tr)!==tr(target.tr)),target,2,random,p=>p.en).map(p=>p.tr).filter((w,i,a)=>a.findIndex(x=>tr(x)===tr(w))===i);
+    if(wrong.length===2)return {prompt:target.en,instruction:'What does this word mean in Turkish?',...options(target.tr,wrong,random),word:target.en,turkish:true,
+     explain:`“${target.en}” means “${target.tr}”${target.def?`: ${target.def}`:''}.`};
+    if(!english.length)return null;
+   }
+   const target=pick(english,random);const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;
    return {prompt:`Which word means “${target.def}”?`,instruction:'Read the meaning. Choose the English word.',...options(target.en,wrong,random),word:target.en,
     explain:`“${target.en}” means ${target.def}${target.tr?` (in Turkish: ${target.tr})`:''}.`};},
   'Translation'(m,ctx,random){const target=pick(m.pairs.filter(p=>p.tr),random);if(!target)return null;const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;

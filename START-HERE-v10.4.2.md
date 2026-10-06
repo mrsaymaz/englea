@@ -1,6 +1,8 @@
-# v10.4.1 — The Challenge Deck
+# v10.4.2 — The Challenge Deck
 
-**New in v10.4.1:** Ask a Question cards are short and easy. Each island of grades 5–8 now has six of its own, on the island's theme (240 in all). A card shows a short answer, such as “At eight o'clock.”, and three short questions: the right one and two proper questions that ask for something else (“Where does school start?”).
+**New in v10.4.2:** about one Vocabulary card in three shows an English word (“shy”) and three Turkish meanings (“utangaç” is right). The other cards still show an English meaning and three English words.
+
+**Also in v10.4.1:** Ask a Question cards are short and easy. Each island of grades 5–8 now has six of its own, on the island's theme (240 in all). A card shows a short answer, such as “At eight o'clock.”, and three short questions: the right one and two proper questions that ask for something else (“Where does school start?”).
 
 Ask a Question also uses the island's **Island Run reading questions** that start with a question word. Their wrong options come from the island's short questions, so they are proper English too. Exercise-style questions such as “Which word fits?” are left out.
 
@@ -24,7 +26,7 @@ When a team reaches **Level 5** or **Level 10** and the wheel is set to **Englis
 
 | Card | How it is answered |
 | --- | --- |
-| **Vocabulary**: an English meaning | three words; the student picks one |
+| **Vocabulary**: an English meaning, or an English word (one card in three) | three English words, or three Turkish meanings |
 | **Translation**: a Turkish word | three English words |
 | **Grammar**: a sentence with a gap | three words |
 | **Sentence Repair**: one wrong word, marked in red | three fixes |
@@ -53,7 +55,7 @@ Every card is saved in a new **Challenge_Log** tab when you save the session fro
    - **Deploy → Manage deployments → Edit → New version → Deploy**.
    - Until you do this, the phone keeps the cards and tells you to update when you save.
 2. Deploy the complete extracted project to your existing Netlify site with your usual method. Include **public**, **netlify/functions** and **netlify.toml**.
-3. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.4.1**.
+3. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.4.2**.
 
 ## Quick classroom check
 

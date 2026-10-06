@@ -2,6 +2,9 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.4.2
+**Vocabulary mixes in Turkish**: about one card in three shows an English word and three Turkish meanings; the rest show an English meaning and three English words. Studio word pairs without English meanings now make Vocabulary cards too. No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
+
 ## 10.4.1
 - **Short Ask a Question cards:** each island of grades 5–8 has six of its own on the island's theme (240 in all).
   - Each card has a short answer, the right question and two proper questions that ask for something else.
