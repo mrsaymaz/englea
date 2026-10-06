@@ -3,7 +3,19 @@
 Newest first. Full notes for earlier versions are in `archive/`.
 
 ## 10.4.1
-**Short Ask a Question cards**: each island of grades 5–8 has six of its own on the island's theme (240 in all). Each card has a short answer, the right question and two proper questions that ask for something else; questions have eight words or fewer. The explanation names the question word ("What time" asks about a time). Island Run's questions are unchanged. No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
+- **Short Ask a Question cards:** each island of grades 5–8 has six of its own on the island's theme (240 in all).
+  - Each card has a short answer, the right question and two proper questions that ask for something else.
+  - Questions have eight words or fewer.
+  - The explanation names the question word ("What time" asks about a time).
+- **More Ask a Question cards:** the island's Island Run reading questions that start with a question word are used too.
+  - Their wrong options are the island's short questions that start with a different question word ("What" and "Which" count as the same word, and so do "When" and "What time").
+  - Exercise questions are left out.
+- **Shorter, easier Island Run questions** in all grades:
+  - reading tasks: 10 words or fewer;
+  - answer choices: 5 words or fewer;
+  - meanings: 8 words or fewer;
+  - gap sentences: 12 words or fewer.
+  The topic, vocabulary, correct answer and position of every question are kept, so saved progress and answer logs still match. `tests/island-short.cjs` checks this. No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
 
 ## 10.4.0
 **The Challenge Deck** on the English wheel (Level 5 and Level 10):

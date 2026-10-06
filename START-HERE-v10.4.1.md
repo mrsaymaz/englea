@@ -1,6 +1,10 @@
 # v10.4.1 — The Challenge Deck
 
-**New in v10.4.1:** Ask a Question cards are short and easy. Each island of grades 5–8 now has six of its own, on the island's theme (240 in all). A card shows a short answer, such as “At eight o'clock.”, and three short questions: the right one and two proper questions that ask for something else (“Where does school start?”). Island Run's own questions are unchanged.
+**New in v10.4.1:** Ask a Question cards are short and easy. Each island of grades 5–8 now has six of its own, on the island's theme (240 in all). A card shows a short answer, such as “At eight o'clock.”, and three short questions: the right one and two proper questions that ask for something else (“Where does school start?”).
+
+Ask a Question also uses the island's **Island Run reading questions** that start with a question word. Their wrong options come from the island's short questions, so they are proper English too. Exercise-style questions such as “Which word fits?” are left out.
+
+**Island Run questions are shorter and easier** for every grade. Reading tasks have at most 10 words and answers at most 5. Word meanings have at most 8 words and gap sentences at most 12. Each question keeps its topic, its vocabulary and its correct answer, and saved island progress is unaffected.
 
 When a team reaches **Level 5** or **Level 10** and the wheel is set to **English Only**, the wheel no longer just names a skill. It deals a real card from the class's own island words, and the team's new level depends on the answer.
 

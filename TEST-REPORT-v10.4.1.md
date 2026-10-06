@@ -7,7 +7,22 @@
 - every question ends with "?" and has eight words or fewer, and the three questions on a card are different;
 - a card shows its own right question and its two written wrong questions, with no reading text;
 - the explanation names the question word ("What time" asks about a time; "Who's" asks about a person; "Can I…?" is a yes/no question);
-- Island Run's reading questions are no longer turned into cards.
+- Island Run reading questions that start with a question word are also used:
+  - exercise questions are left out;
+  - the two wrong options are the island's own short questions, starting with a different question word ("What" and "Which" count as one, and so do "When" and "What time").
+
+**Island Run rewrite.** All four grades were rewritten.
+- `island-run-integration.cjs` and the engine test still pass: 240 simulated full runs, 4,240 question variants.
+- 800 sampled Ask a Question cards: about two thirds now come from Island Run reading questions, and none puts "When" against "What time".
+- `board-v104.cjs` passes with the new content.
+
+`tests/island-short.cjs` checks Island Run content for all four grades:
+- reading tasks: 10 words or fewer;
+- answer choices: 5 words or fewer;
+- meanings: 8 words or fewer, without the word itself;
+- gaps: 12 words or fewer, with one ___;
+- three different choices;
+- the same number and order of islands, words, gaps and tasks, and every word's English and Turkish unchanged.
 
 Every card was written so that the wrong questions are proper English but ask for something else, so only one question fits the answer.
 

@@ -49,7 +49,7 @@ await test('v10.4.1 Ask a Question: its own short cards (six per island, 240) pl
  assert.equal(rows,240);
  // Two sources: the island's own short cards (their own written wrong questions), and Island Run reading questions
  // that start with a question word, whose wrong options are the island's standalone questions with another question word.
- const island=A.grades[5][0],standalone=new Set(island.flatMap(r=>r.slice(1))),group=q=>{const w=q.toLowerCase().split(' ')[0];return w==='which'?'what':w;};
+ const island=A.grades[5][0],standalone=new Set(island.flatMap(r=>r.slice(1))),group=q=>{const t=q.toLowerCase(),w=t.split(' ')[0];return /^what time\b/.test(t)?'when':w==='which'?'what':w;};
  let own=0,reading=0;
  for(let s=1;s<=60;s++){const c=L.deal('Ask a Question',ctx(5,0),seeded(s));const row=island.find(r=>r[0]===c.prompt&&r[1]===c.options[c.answer]);
   if(row){own++;assert.deepEqual([...c.options].sort(),row.slice(1).sort());assert.equal(c.context,undefined);continue;}

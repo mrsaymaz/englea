@@ -26,7 +26,7 @@
     "test:v1012": "npm run test:v101 && node v1012.cjs",
     "test:v102": "npm run test:v1012 && node v102.cjs",
     "test:v103": "npm run test:v102 && node v103.cjs",
-    "test:v104": "npm run test:v103 && node v104.cjs"
+    "test:v104": "npm run test:v103 && node v104.cjs && node island-short.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

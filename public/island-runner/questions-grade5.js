@@ -4,88 +4,88 @@ const pack=(words,gaps,questions)=>({words,gaps,questions});
 root.RunnerExpansion=root.RunnerExpansion||{};
 root.RunnerExpansion[5]=[
 pack(`playground|oyun alanı|an outdoor place where children play
-laboratory|laboratuvar|a room with equipment for science experiments
-headteacher|okul müdürü|the person in charge of a school
-secretary|sekreter|a person who organises office messages and records
+laboratory|laboratuvar|a room for science experiments
+headteacher|okul müdürü|the leader of a school
+secretary|sekreter|a person who works in the school office
 coach|antrenör|a person who trains a sports team
-gate|kapı|an entrance in a fence or wall
-noticeboard|duyuru panosu|a board used to display announcements
+gate|kapı|a door in a fence or wall
+noticeboard|duyuru panosu|a board for school news and notes
 chess|satranç|a board game with kings and queens
 drama|tiyatro|acting in plays
-country|ülke|a nation with its own government
-nationality|milliyet|the status of belonging to a particular nation
-celebration|kutlama|a special event for a happy occasion
-flag|bayrak|a piece of cloth representing a country
-noise|gürültü|a loud or unpleasant sound
+country|ülke|a land like Türkiye or Spain
+nationality|milliyet|where you are from, like Turkish or Italian
+celebration|kutlama|a happy party for a special day
+flag|bayrak|a cloth with a country’s colours
+noise|gürültü|a loud, bad sound
 join|katılmak|to become a member of a group
-rule|kural|an instruction about what is allowed`,
+rule|kural|something you must or mustn’t do`,
 `I ___ from Türkiye.|am|is|are
 Efe and Ada ___ in the chess club.|are|is|am
 ___ is your English teacher? Ms Kaya.|Who|Where|When
 We ___ shout in the school library.|mustn’t|are|have
 Please ___ quietly in the corridor.|walk|walks|walking
 Deniz likes ___ chess.|playing|play|plays
-She is ___ assistant at our school.|an|a|theirs
+Mr Demir is ___ English teacher.|an|a|they
 This is my friend. ___ is from Spain.|He|They|We
 Our club meets ___ Mondays.|on|at|under
 ___ your brother like the drama club?|Does|Do|Is
 The science club ___ after school.|meets|meet|meeting
 The children ___ from Italy.|are|is|am`,
-`Where do you do science experiments at school?|In the laboratory.|At the school gate.|In the canteen.
-Which club is best for acting in plays?|The drama club.|The chess club.|The sports club.
+`Where do you do science experiments?|In the laboratory.|At the school gate.|In the canteen.
+Which club is for acting?|The drama club.|The chess club.|The sports club.
 Where are you from?|I’m from Türkiye.|I’m eleven.|I’m in the garden.
 What is your nationality?|I’m Turkish.|I’m at school.|I’m in Class 5-A.
-You need to enter a quiet room. What do you ask?|May I come in?|How many goals?|Where are your shoes?
-What should you read to learn the school rules?|The noticeboard.|The lunch menu.|The weather forecast.`),
-pack(`desk|sıra|a piece of furniture you sit at to write
-pencil case|kalem kutusu|a small container for pens and pencils
-eraser|silgi|an object used to remove pencil marks
-marker|tahta kalemi|a pen used to write on a whiteboard
-bookshelf|kitaplık|furniture with shelves for books
-science|fen bilimleri|the school subject about the natural world
-music|müzik|the school subject about songs and instruments
-art|görsel sanatlar|the school subject involving painting and drawing
+You want to enter a classroom. What do you say?|May I come in?|How many goals?|Where are your shoes?
+Where can you read the school rules?|On the noticeboard.|On the lunch menu.|On the weather map.`),
+pack(`desk|sıra|a table for students in class
+pencil case|kalem kutusu|a small bag or box for pens
+eraser|silgi|it takes away pencil marks
+marker|tahta kalemi|a pen for writing on the board
+bookshelf|kitaplık|shelves for keeping books
+science|fen bilimleri|the lesson about plants, animals and experiments
+music|müzik|the lesson with songs and instruments
+art|görsel sanatlar|the lesson with painting and drawing
 weekday|hafta içi günü|a day from Monday to Friday
 weekend|hafta sonu|Saturday and Sunday together
 noon|öğle|twelve o’clock in the daytime
 quarter|çeyrek|one of four equal parts
-borrow|ödünç almak|to use something and return it later
-lend|ödünç vermek|to let someone use something temporarily
-raise|kaldırmak|to move something upwards
-carefully|dikkatlice|in a way that avoids mistakes or harm`,
+borrow|ödünç almak|to take something for a short time
+lend|ödünç vermek|to give something for a short time
+raise|kaldırmak|to move something up
+carefully|dikkatlice|with attention, so nothing goes wrong`,
 `There ___ one dictionary on my desk.|is|are|am
 There are four ___ in my pencil case.|erasers|eraser|erasing
 Please give ___ the marker. I need it.|me|I|my
 Ayşe needs her book. Give it to ___.|her|she|hers
-It is quarter ___ nine: 9:15.|past|to|at
-It is quarter ___ ten: 9:45.|to|past|on
+9:15 is quarter ___ nine.|past|to|at
+9:45 is quarter ___ ten.|to|past|on
 Our maths lesson is ___ Tuesday.|on|in|at
 We ___ got two English lessons today.|have|has|are
 Ece ___ got a new notebook.|has|have|is
 Please ___ your hand before speaking.|raise|raises|raising
 Do not ___ in class. Speak quietly.|shout|shouts|shouting
-The plural of “box” is ___.|boxes|boxs|boxies`,
+One box, two ___.|boxes|boxs|boxies`,
 `What day comes after Wednesday?|Thursday.|Tuesday.|Friday.
 What time is 11:45?|Quarter to twelve.|Quarter past eleven.|Half past twelve.
 Which two days are the weekend?|Saturday and Sunday.|Monday and Tuesday.|Thursday and Friday.
 Can I borrow your eraser?|Yes, here you are.|It is Thursday.|They are at home.
-What do you do before answering in class?|Raise your hand.|Shout at everyone.|Run to the door.
+You want to answer in class. What do you do?|Raise my hand.|Shout at everyone.|Run to the door.
 What time is 7:00?|Seven o’clock.|Half past seven.|Quarter to seven.`),
 pack(`neck|boyun|the body part between your head and shoulders
-finger|el parmağı|one of the five parts at the end of a hand
-knee|diz|the joint in the middle of a leg
-teeth|dişler|the hard white parts used for biting food
-straight|düz|not curved or curly
-wavy|dalgalı|shaped in gentle curves
-scarf|atkı|a piece of clothing worn around the neck
-belt|kemer|a band worn around the waist
-boots|çizme|footwear that covers the feet and ankles or more
-trousers|pantolon|clothing covering each leg separately
-sunglasses|güneş gözlüğü|dark glasses that protect the eyes from sunlight
-comfortable|rahat|making you feel physically relaxed
-usually|genellikle|on most occasions
-always|her zaman|on every occasion
-never|asla|not on any occasion
+finger|el parmağı|you have five on each hand
+knee|diz|the middle part of your leg; it bends
+teeth|dişler|the white parts in your mouth for biting
+straight|düz|not curly or wavy
+wavy|dalgalı|a little curly, like sea waves
+scarf|atkı|you wear it around your neck in winter
+belt|kemer|it holds your trousers up
+boots|çizme|tall shoes for rain or snow
+trousers|pantolon|clothes that cover your two legs
+sunglasses|güneş gözlüğü|dark glasses for sunny days
+comfortable|rahat|it feels nice to wear or sit in
+usually|genellikle|most of the time
+always|her zaman|all the time, every day
+never|asla|zero times; not one time
 get dressed|giyinmek|to put your clothes on`,
 `He ___ his teeth every morning.|brushes|brush|brushing
 I ___ my homework after school.|do|does|doing
@@ -99,26 +99,26 @@ They walk to school, ___ they?|don’t|doesn’t|isn’t
 I ___ wear gloves in summer. It is too hot.|never|always|every
 My brother ___ up at half past six.|gets|get|getting
 You ___ your coat in cold weather.|wear|wears|wearing`,
-`Which description is about hair?|It is long and wavy.|It is a blue scarf.|It is a silver watch.
+`Which sentence is about hair?|It is long and wavy.|It is a blue scarf.|It is a silver watch.
 What do you wear when it rains?|A raincoat.|Sunglasses only.|A swimming costume.
-When do you brush your teeth?|In the morning and at night.|On my feet.|In my schoolbag.
+When do you brush your teeth?|Every morning and night.|Only on Sundays.|Once a year.
 Does your brother wear a cap?|Yes, he does.|Yes, he is.|Yes, I am.
-Which word means “every time”?|Always.|Never.|Rarely.
+Which word means “every time”?|Always.|Never.|Sometimes.
 Where do you wear a belt?|Around your waist.|On your fingers.|Around your ankles.`),
 pack(`aunt|teyze veya hala|your mother’s or father’s sister
 uncle|dayı veya amca|your mother’s or father’s brother
 cousin|kuzen|the child of your aunt or uncle
-grandparents|büyükanne ve büyükbaba|your parents’ parents
-picnic|piknik|a meal eaten outdoors
-barbecue|mangal|an outdoor meal with food cooked on a grill
-tent|çadır|a portable shelter used when camping
-guitar|gitar|a musical instrument with strings and a long neck
-camera|fotoğraf makinesi|a device used to take photographs
-board game|masa oyunu|a game played by moving pieces on a board
-pet care|evcil hayvan bakımı|looking after an animal kept at home
-tidy up|toparlamak|to put things in their proper places
-relax|dinlenmek|to rest and become less worried
-swimming|yüzme|moving through water using your body
+grandparents|büyükanne ve büyükbaba|your mum and dad’s parents
+picnic|piknik|a meal on a blanket in a park
+barbecue|mangal|cooking meat on a fire outside
+tent|çadır|a small cloth house for camping
+guitar|gitar|a music instrument with six strings
+camera|fotoğraf makinesi|a machine for taking photos
+board game|masa oyunu|a game like chess or Ludo
+pet care|evcil hayvan bakımı|looking after your cat or dog
+tidy up|toparlamak|to put things back in their places
+relax|dinlenmek|to rest and feel calm
+swimming|yüzme|moving your arms and legs in water
 dancing|dans etme|moving your body to music
 take a photograph|fotoğraf çekmek|to make a picture using a camera`,
 `Mum ___ watering the flowers now.|is|are|am
@@ -133,28 +133,28 @@ They are taking photos, ___ they?|aren’t|isn’t|don’t
 She is reading, ___ she?|isn’t|aren’t|doesn’t
 My dad ___ the dog every evening.|feeds|feed|feeding
 This camera belongs to me. It is ___.|mine|my|me`,
-`Your aunt’s son is your ___.|Cousin.|Uncle.|Grandfather.
-What do you sleep in when you go camping?|A tent.|A camera.|A guitar.
-What is Mum doing in the garden?|She is watering the plants.|She waters them daily.|She has green eyes.
+`Who is your aunt’s son?|Your cousin.|Your uncle.|Your grandfather.
+What do you sleep in at a camp?|A tent.|A camera.|A guitar.
+Mum is in the garden. What is she doing?|She is watering the flowers.|She has green eyes.|She is a teacher.
 Are the children dancing now?|No, they are singing.|No, they don’t.|No, she isn’t.
-Which sentence describes a routine?|We visit Grandma on Sundays.|We are visiting her now.|Look! They are visiting.
-What can you use to take a family photo?|A camera.|A tent.|A board game.`),
-pack(`neighbour|komşu|a person who lives next to or near you
-street|sokak|a road with buildings beside it
-hospital|hastane|a place where ill people receive medical care
+Which sentence is about a routine?|We visit Grandma on Sundays.|We are visiting her now.|Look! They are visiting.
+What do you take photos with?|A camera.|A tent.|A board game.`),
+pack(`neighbour|komşu|a person who lives next to you
+street|sokak|a road with houses on both sides
+hospital|hastane|a place where doctors help sick people
 pharmacy|eczane|a place where you buy medicine
-supermarket|süpermarket|a large shop selling food and household goods
-cinema|sinema|a place where people watch films on a large screen
+supermarket|süpermarket|a big shop for food and drinks
+cinema|sinema|a place where you watch films
 bus stop|otobüs durağı|a place where people wait for a bus
-post office|postane|a place where you can send letters and parcels
-opposite|karşısında|on the other side and facing something
-between|arasında|in the space separating two things
+post office|postane|you send letters and parcels there
+opposite|karşısında|across the road, facing something
+between|arasında|in the middle of two things
 behind|arkasında|at the back of something
 near|yakınında|not far away from something
-corner|köşe|the place where two streets or sides meet
-square|meydan|an open public space in a town
-traffic lights|trafik ışıkları|coloured road signals for vehicles and people
-apartment|daire|a set of rooms to live in within a larger building`,
+corner|köşe|where two streets meet
+square|meydan|an open place in the town centre
+traffic lights|trafik ışıkları|red, yellow and green lights on roads
+apartment|daire|a home in a big building`,
 `The pharmacy is ___ the bakery and the bank.|between|under|inside
 There ___ two bus stops on this road.|are|is|am
 ___ there a hospital near your home?|Is|Are|Do
@@ -162,66 +162,66 @@ There isn’t ___ cinema in our village.|a|an|some
 The plural of “city” is ___.|cities|citys|cityes
 This is Deniz___ house.|’s|s’|s
 We ___ to the park on Saturdays.|walk|walks|walking
-The bus stop is ___ the school: just two steps away.|near|far from|above
+The bus stop is ___ the school. It is two steps away.|near|far from|above
 My neighbours ___ very friendly.|are|is|am
 There is ___ old museum in our town.|an|a|some
 The bank is opposite the ___.|hospital|quiet|crowded
 Two ___ live in that house.|families|familys|family`,
 `Where can you buy medicine?|At the pharmacy.|At the cinema.|At the bus stop.
 Where do people wait for a bus?|At a bus stop.|In a museum.|In a pharmacy.
-How many parks are there?|There are two.|It is green.|It is next to the bank.
+How many parks are there?|There are two.|It is green.|Next to the bank.
 Where can you send a parcel?|At the post office.|At the cinema.|At the hospital.
-What does “opposite the school” mean?|Facing it across the road.|Inside the classroom.|On the school roof.
-Is your house near the park?|Yes, it is a short walk.|Yes, there are three.|Yes, I like apples.`),
-pack(`narrow|dar|having a small distance from one side to the other
-tall|uzun|having a greater than usual height
-short|kısa|having little height or length
-busy|işlek|full of activity or people doing things
+What does “opposite the school” mean?|Across the road from it.|Inside the classroom.|On the school roof.
+Is your house near the park?|Yes, it is very close.|Yes, there are three.|Yes, I like apples.`),
+pack(`narrow|dar|not wide
+tall|uzun|very high, like a giraffe
+short|kısa|not tall or long
+busy|işlek|full of people and cars
 clean|temiz|without dirt
 dirty|kirli|covered with dirt
-modern|modern|designed in a recent style
-old|eski|having existed for a long time
+modern|modern|new and in today’s style
+old|eski|not new; from long ago
 expensive|pahalı|costing a lot of money
-cheap|ucuz|costing little money
-beautiful|güzel|pleasant or attractive to look at
-noisy|gürültülü|making a lot of sound
-village|köy|a small settlement in the countryside
+cheap|ucuz|not costing much money
+beautiful|güzel|very nice to look at
+noisy|gürültülü|full of loud sounds
+village|köy|a very small town in the country
 skyscraper|gökdelen|a very tall city building with many floors
-gallery|galeri|a place where paintings are displayed
+gallery|galeri|a place where you can see paintings
 pavement|kaldırım|a path beside a road for people walking`,
 `A skyscraper is ___ than a small house.|taller|tall|tallest
 This road is ___ than that narrow path.|wider|wide|widest
 Our village is ___ than the busy city.|quieter|quiet|quietest
 This shop is ___ than the old one.|bigger|big|biggest
-The blue bike is ___ than the red one: 50 TL, not 80 TL.|cheaper|cheap|cheapest
+A 50 TL bike is ___ than an 80 TL bike.|cheaper|cheap|cheapest
 This park is ___ beautiful than that car park.|more|most|many
-The bus is ___ than walking when the road is clear.|faster|fast|fastest
+The bus is ___ than walking.|faster|fast|fastest
 My new bag is ___ than my old one.|better|good|best
-The market is ___ crowded than the empty square.|more|most|much
+The market is ___ crowded than the empty square.|more|most|very
 There ___ many tall buildings in the city.|are|is|am
 Selin___ bicycle is outside the gallery.|’s|s’|s
 We ___ the museum every summer.|visit|visits|visiting`,
 `Which word compares two things?|Bigger.|Big.|Biggest.
-One street has many cars; the other has none. Which is busier?|The street with many cars.|The empty street.|Both are equally busy.
-A ticket costs 20 TL here and 40 TL there. Which is cheaper?|The 20 TL ticket.|The 40 TL ticket.|They cost the same.
+A: 50 cars. B: 2 cars. Which street is busier?|Street A.|Street B.|They are the same.
+Which ticket is cheaper: 20 TL or 40 TL?|The 20 TL ticket.|The 40 TL ticket.|They cost the same.
 Where can you look at paintings?|In an art gallery.|At a bus stop.|On a football pitch.
-Which sentence describes a quiet place?|There is very little noise.|People are shouting everywhere.|Many horns are sounding.
-What should people walk on beside a road?|The pavement.|The traffic lights.|The roof.`),
+Which sentence is about a quiet place?|There is no noise.|People are shouting.|Cars are very loud.
+Where do people walk next to a road?|On the pavement.|On the traffic lights.|On the roof.`),
 pack(`dairy|süt ürünleri|foods made from milk
 beef|dana eti|meat from a cow
-beans|fasulye|small seeds often cooked and eaten as food
-jam|reçel|a sweet spread made from fruit and sugar
-salt|tuz|a white substance used to make food salty
-pepper|karabiber|a spice often paired with salt
-garlic|sarımsak|a strong-smelling bulb used to flavour food
-slice|dilimlemek|to cut food into thin flat pieces
-boil|kaynatmak|to heat a liquid until it bubbles strongly
-recipe|yemek tarifi|instructions for preparing a dish
-menu|menü|a list of food and drinks at a restaurant
+beans|fasulye|small seeds we cook and eat
+jam|reçel|sweet fruit you put on bread
+salt|tuz|a white powder; sea water has it
+pepper|karabiber|a black powder, often used with salt
+garlic|sarımsak|a small white plant with a strong smell
+slice|dilimlemek|to cut food into thin pieces
+boil|kaynatmak|to make water very hot, until it bubbles
+recipe|yemek tarifi|steps that tell you how to cook something
+menu|menü|a list of food in a restaurant
 waiter|garson|a person who serves food at tables
-bill|hesap|a statement of how much you must pay
-starter|başlangıç yemeği|a small dish served before the main course
-main course|ana yemek|the main dish of a meal
+bill|hesap|a paper that shows how much to pay
+starter|başlangıç yemeği|a small dish before the main meal
+main course|ana yemek|the biggest dish of a meal
 thirsty|susamış|needing a drink`,
 `How ___ water do you need?|much|many|a
 How ___ apples are on the plate?|many|much|an
@@ -236,27 +236,27 @@ Milk ___ a drink.|is|are|am
 Can we pay ___ cash?|in|on|at
 The soup is hot. Taste it ___.|carefully|careful|care`,
 `Which food is a dairy product?|Cheese.|Bread.|Rice.
-You are thirsty. What would you order?|A glass of water.|A slice of bread.|A bowl of rice.
+You are thirsty. What do you order?|A glass of water.|A slice of bread.|A bowl of rice.
 How much sugar do you need?|Two spoons.|Two apples.|Two plates.
-What do you read to choose a dish?|The menu.|The bus timetable.|The school rules.
-What do you say to order politely?|Can I have some pasta, please?|Bring it now!|Why is school closed?
-Which one is uncountable in “a glass of ___”?|Water.|Apple.|Plate.`),
-pack(`lion|aslan|a large wild cat whose male has a mane
-wolf|kurt|a wild dog that often lives in a pack
-fox|tilki|a wild animal with a pointed nose and a bushy tail
-bear|ayı|a large strong mammal with thick fur
-camel|deve|a desert animal with one or two humps
-dolphin|yunus|a sea mammal known for its curved mouth and fin
-whale|balina|a very large sea mammal
-penguin|penguen|a flightless bird that swims very well
-turtle|kaplumbağa|an animal with a hard shell on its back
-snake|yılan|a long reptile without legs
-monkey|maymun|a primate that often climbs trees
+What do you read to choose your food?|The menu.|The bus timetable.|The school rules.
+How do you order politely?|Can I have pasta, please?|Bring it now!|Why is school closed?
+Which word fits “a glass of ___”?|Water.|Apple.|Plate.`),
+pack(`lion|aslan|a big wild cat; the king of animals
+wolf|kurt|a wild dog that lives in groups
+fox|tilki|an orange wild animal with a big tail
+bear|ayı|a big strong animal with thick fur
+camel|deve|a big desert animal you can ride
+dolphin|yunus|a clever, friendly sea animal
+whale|balina|the biggest animal in the sea
+penguin|penguen|a black and white bird that can’t fly
+turtle|kaplumbağa|an animal with a hard shell
+snake|yılan|a long animal with no legs
+monkey|maymun|a funny animal that climbs trees
 giraffe|zürafa|a very tall animal with a long neck
-wing|kanat|a body part birds use for flying
-tail|kuyruk|the long part at the back of many animals
-fur|kürk|the thick hair covering some animals
-climb|tırmanmak|to move upwards using hands or feet`,
+wing|kanat|a body part birds use to fly
+tail|kuyruk|a dog moves it when it is happy
+fur|kürk|the soft hair on animals like cats
+climb|tırmanmak|to go up using hands and feet`,
 `A giraffe ___ got a long neck.|has|have|is
 Birds have got two ___.|wings|wing|winges
 A penguin ___ fly, but it can swim.|can’t|can|does
@@ -272,25 +272,25 @@ There ___ many animals in this forest.|are|is|am`,
 `Which animal has a very long neck?|A giraffe.|A fox.|A penguin.
 Which animal has a hard shell?|A turtle.|A wolf.|A dolphin.
 Can penguins swim?|Yes, they can.|Yes, they are.|Yes, it is.
-Which animal is a reptile?|A snake.|A bear.|A whale.
+Which animal has no legs?|A snake.|A bear.|A monkey.
 What keeps a bear warm?|Its fur.|Its feathers.|Its scales.
-Where should wild animals live?|In suitable natural habitats.|In tiny boxes.|In school desks.`),
-pack(`continent|kıta|one of the Earth’s very large land areas
-lake|göl|a large area of water surrounded by land
-mountain|dağ|a very high natural rise in the land
+Where do wild animals live?|In forests and jungles.|In tiny boxes.|In school desks.`),
+pack(`continent|kıta|a very big area of land, like Asia
+lake|göl|a lot of water with land all around
+mountain|dağ|very high land, often with snow on top
 waterfall|şelale|water dropping from a high place
-canyon|kanyon|a deep valley with steep rocky sides
-coral reef|mercan resifi|a sea structure formed by tiny coral animals
+canyon|kanyon|a deep valley with high rock walls
+coral reef|mercan resifi|a colourful home for fish under the sea
 sand dune|kum tepesi|a hill of sand made by wind
-rock|kaya|a large piece of natural stone
-season|mevsim|one of the four main parts of the year
-climate|iklim|the usual weather of an area over many years
+rock|kaya|a big, hard stone
+season|mevsim|one of four parts of the year
+climate|iklim|the usual weather in a place
 temperature|sıcaklık|how hot or cold something is
 spring|ilkbahar|the season between winter and summer
 autumn|sonbahar|the season between summer and winter
-sky|gökyüzü|the space above the Earth seen from the ground
-peaceful|huzurlu|calm and free from disturbance
-explore|keşfetmek|to travel around a place to learn about it`,
+sky|gökyüzü|the blue space above us
+peaceful|huzurlu|calm and quiet
+explore|keşfetmek|to go around a new place to learn`,
 `The river ___ through the valley.|flows|flow|flowing
 We are going to ___ a waterfall.|see|sees|seeing
 There ___ a beautiful lake near the mountain.|is|are|am
@@ -303,28 +303,28 @@ This mountain is higher ___ that hill.|than|then|that
 There are many ___ on the beach.|rocks|rock|rockes
 A lake is surrounded by ___.|land|stars|clouds
 We ___ need warm coats in cold weather.|usually|never|not`,
-`What is a waterfall?|Water falling from a high place.|A hill made of sand.|A large dry plain.
+`What is a waterfall?|Water falling from high rocks.|A hill made of sand.|A large dry plain.
 Which season comes before summer?|Spring.|Autumn.|Winter.
-Where would you see a coral reef?|In the sea.|In a snowy mountain.|In a classroom.
+Where can you see a coral reef?|In the sea.|On a snowy mountain.|In a classroom.
 What tells us how hot or cold the air is?|Temperature.|Nationality.|Height.
 A place is calm and quiet. Which word describes it?|Peaceful.|Noisy.|Crowded.
-What is the difference between an island and a lake?|An island is land; a lake is water.|Both are types of mountains.|Both are types of buildings.`),
-pack(`pack|bavul hazırlamak|to put things into a bag for a trip
-ticket|bilet|a document that lets you travel or enter a place
-hotel|otel|a building where travellers pay to stay
-tour|tur|a planned visit around interesting places
+Which one is water: an island or a lake?|A lake.|An island.|Both of them.`),
+pack(`pack|bavul hazırlamak|to fill your bag before a trip
+ticket|bilet|a paper you buy to travel
+hotel|otel|a building where you pay to sleep
+tour|tur|a trip with a group to see places
 guide|rehber|a person who shows visitors around a place
-destination|gidilecek yer|the place someone is travelling to
-souvenir|hatıra eşyası|an object kept to remember a visit
-beach|plaj|an area of sand or stones beside the sea
+destination|gidilecek yer|the place you are travelling to
+souvenir|hatıra eşyası|a gift you buy to remember a trip
+beach|plaj|the sandy place next to the sea
 sandcastle|kumdan kale|a model castle made from wet sand
-seashell|deniz kabuğu|the hard outer covering of some sea animals
+seashell|deniz kabuğu|a pretty hard shell from the sea
 amusement park|eğlence parkı|a place with rides and games
-historical|tarihî|connected with events or places from the past
+historical|tarihî|from the past; very old and important
 famous|ünlü|known by many people
-invite|davet etmek|to ask someone to come to an event
-book|rezervasyon yapmak|to reserve a seat or room in advance
-sightseeing|turistik yerleri gezme|visiting interesting places as a tourist`,
+invite|davet etmek|to ask someone to come to a party
+book|rezervasyon yapmak|to save a room or seat early
+sightseeing|turistik yerleri gezme|looking at famous places on holiday`,
 `She ___ going to visit her grandparents.|is|are|am
 We are ___ to travel by train.|going|go|goes
 Are you going to ___ a hotel room?|book|books|booking
@@ -340,7 +340,7 @@ We ___ going to make a sandcastle.|are|is|am`,
 `How are you going to get there?|By train.|At a hotel.|For a week.
 When are you going to leave?|Next Monday.|By bus.|To Antalya.
 What do you buy before taking a train?|A ticket.|A menu.|A recipe.
-What are you going to do at the beach?|Build a sandcastle.|Climb a bookshelf.|Borrow a classroom.
+What are you going to do at the beach?|Build a sandcastle.|Do a maths test.|Clean the classroom.
 Would you like to join our trip?|Yes, I’d love to.|It is my notebook.|There are two doors.
 Why do people buy souvenirs?|To remember their trip.|To make the train faster.|To change the weather.`)
 ];

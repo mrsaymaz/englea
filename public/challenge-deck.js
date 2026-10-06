@@ -21,8 +21,9 @@
  const YES_NO=/^(can|could|is|are|was|were|do|does|did|have|has|will|would)\b/i;
  const QWORD=/^(what|where|when|who|whose|which|why|how)\b/i;
  const EXERCISE=/\b(word|words|sentence|sentences|description|question|statement|reply|response|phrase|fits?|means?|meaning|correct|choose|option|best|true|false|grammar|form)\b/i;
- // "What" and "Which" can ask for the same thing, so a wrong option never shares the group of the right question.
- const firstWord=q=>{const w=q.toLowerCase().replace(/['’]s\b/,'').split(/\s+/)[0];return w==='which'?'what':w;};
+ // "What"/"Which" and "When"/"What time" can ask for the same thing, so a wrong option never shares the group of the
+ // right question.
+ const firstWord=q=>{const t=q.toLowerCase().replace(/['’]s\b/,''),w=t.split(/\s+/)[0];return /^what time\b/.test(t)?'when':w==='which'?'what':w;};
  function asks(question){
   if(YES_NO.test(question))return `“${question}” is a yes/no question.`;
   const two=question.toLowerCase().replace(/['’]s\b/g,'').split(/\s+/).slice(0,2).join(' ').replace(/[^a-z ]/g,''),one=two.split(' ')[0];
