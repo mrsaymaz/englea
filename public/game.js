@@ -61,6 +61,9 @@
             let pendingAnimatedWheels = [];
             const deferredAnimatedEvolutions = new Set();
             let activeAnimatedWheel = null;
+            // v10.4.0 Challenge Deck: each team's state when it reached each level (the wheel's "go back" point),
+            // the student who gave each team its last point, and the cards played this session (saved to Sheets).
+            let levelStarts = new Map(), lastAwardStudent = new Map(), challengeLog = [];
             let pendingAnimatedFinish = false;
             let presentationScheduled = false;
             let wheelSpinTimer = null;
@@ -984,6 +987,7 @@
                 team.evolutionProgress = 0;
                 team.pendingEvolution = null;
                 team.cachedSVG = '';
+                noteLevelStart(team);
                 const relic = teamRelics[team.id];
                 if (!team.hasRelic && team.level >= relic.unlockLevel) {
                     team.hasRelic = true;
@@ -1008,8 +1012,15 @@
                 if (pendingAnimatedWheels.some(item => item.teamId === teamId && item.stage === stage)) return;
                 team.wheelMilestonesReached.push(stage);
                 scheduleCheckpoint();
-                pendingAnimatedWheels.push({teamId,stage});
+                const student = lastAwardStudent.get(teamId) || null;
+                pendingAnimatedWheels.push({teamId,stage,restore:levelStarts.get(`${teamId}:${stage - 1}`) || null,student});
                 pumpPresentation();
+            }
+
+            // The team as it was when it reached this level: a wrong Challenge Deck answer at the next wheel level
+            // takes the team back here (points, level, traits, relic, milestones).
+            function noteLevelStart(team) {
+                levelStarts.set(`${team.id}:${team.level}`, cleanTeam(team));
             }
 
             function presentationBlocked() {
@@ -1083,6 +1094,7 @@
                 wheelAdvanceTimer = null;
                 wheelSpinEpoch++;
                 wheelVisualAnimation?.cancel();wheelVisualAnimation=null;LeagueScenes.leave('wheel');
+                LeagueChallenge.dismiss();
                 activeWheelSpin = null;
                 activeAnimatedWheel = null;
                 document.getElementById('spin-btn').disabled = false;
@@ -1169,6 +1181,7 @@
                         team.level++;
                         team.evolutionProgress = 0;
                         team.pendingEvolution = null;
+                        noteLevelStart(team);
                         pointSliderValues = pointSliderValues.map(value => value * 2);
                         handlePointChange();
                         if (SUBJECT_WHEEL_LEVELS.includes(team.level)) queueSubjectWheel(team.id,team.level);
@@ -1229,6 +1242,7 @@
                     team.level++;
                     team.evolutionProgress = 0;
                     team.pendingEvolution = null;
+                    noteLevelStart(team);
                         pointSliderValues = pointSliderValues.map(value => value * 2);
                         handlePointChange();
                         if (SUBJECT_WHEEL_LEVELS.includes(team.level)) queueSubjectWheel(team.id,team.level);
@@ -2087,6 +2101,7 @@
                         const team = teamsData.find(t => t.id === teamId); if (!team) return;
                         const person = LeagueStudents.student(selectedClass,teamId,studentId);
                         if (selectedClass && !person) return;
+                        if (person) lastAwardStudent.set(team.id, {id:person.id, name:person.name});
                         const previousLevel = team.level;
                         const rankingBefore = captureRankingSnapshot();
                         saveState();
@@ -2882,6 +2897,7 @@
                     }
 
                     refreshPendingEvolutionAfterUnity(team, teamPlan.pendingTraitId === trait.id);
+                    noteLevelStart(team);
 
                     // Let updateTeamDOM compare the newly generated form against the previous
                     // cached form. Pre-writing cachedSVG here would make the comparison appear
@@ -3178,6 +3194,7 @@
                 sessionEpoch++;
                 LeagueStudents.useRoster(LeagueRoster.current()?.students || LeagueStudents.defaults());
                 selectedClass=null;studentContributions={};pendingRemoteClassSelection=null;haloTeams=[];haloLocked=false;
+                levelStarts=new Map();lastAwardStudent=new Map();challengeLog=[];
                 secretAgents=LeagueAgent.fresh();LeagueAgent.close();
                 LeagueStudentUI.close(true);LeagueStudentUI.clearCelebrations();updateStudentSessionUI();
                 abandonScenes();
@@ -5355,6 +5372,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const halo = pts > 0 && haloTeams.includes(t.id);
                 if (halo) pts *= 2;
                 if (pts > 0) lockHalo();
+                if (pts > 0 && person) lastAwardStudent.set(t.id, {id:person.id, name:person.name});
                 const previousPoints = t.points; t.points += pts;
                 addHistoryLog(`Awarded ${pts.toLocaleString()} to ${t.name}${halo ? ' (Halo ×2)' : ''}${person ? ` · ${person.name} (${selectedClass})` : ''}`,t.color);
                 checkMilestones(t);
@@ -5414,6 +5432,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function setWheelMode(mode) {
                 if (!wheelSets[mode]) return;
                 activeWheelMode = mode;
+                if (mode === 'english') loadChallengeContent();
                 wheelModeButtons.forEach(button => {
                     const active = button.dataset.wheelMode === activeWheelMode;
                     button.classList.toggle('active', active);
@@ -5519,12 +5538,18 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     updateGameState({ teamId:rcTeam.id, updateVisuals:false, updateAvatar:false });
                 }
 
+                // v10.4.0: the English wheel deals a Challenge Deck card; the wheel waits for its result.
+                if (startChallenge(sub, index, activeAnimatedWheel, { delay:advanceImmediately ? 0 : undefined })) {
+                    if (window.syncStateToController) window.syncStateToController();
+                    return;
+                }
                 const delay = advanceImmediately ? 0 : WHEEL_RESULT_HOLD_MS;
                 wheelAdvanceTimer = wheelClock.after(advanceQueuedWheel,delay);
                 if (window.syncStateToController) window.syncStateToController();
             }
 
             function requestWheelClose() {
+                if (LeagueChallenge.active) { LeagueChallenge.command({op:LeagueChallenge.answered ? 'continue' : 'skip'}); return; }
                 if (wheelSpinTimer && activeWheelSpin) {
                     finishWheelSpin(activeWheelSpin.epoch,{advanceImmediately:true});
                     return;
@@ -5540,6 +5565,83 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 }
                 hideWheelModal();
             }
+
+            // ---- v10.4.0 Challenge Deck ----
+            // The cards come from the class's island content: the island the team plays next (its current island),
+            // then the islands before it. The teacher's Studio edits replace an island's questions.
+            function challengeContext(team) {
+                const grade = Number(selectedClass?.[0]);
+                const units = globalThis.RunnerContent?.grades?.[grade];
+                if (!units?.length) return null;
+                const progress = LeagueIslandProgress.snapshot(selectedClass);
+                const next = id => LeagueAdventure.nextIsland(progress, selectedClass, id);
+                const island = Math.min(10, team ? next(team.id) : Math.max(...teamsData.map(t => next(t.id))));
+                const banks = units.map((unit, i) => LeagueTeaching.unit(`${grade}-${i + 1}`)?.content?.bank || unit.bank);
+                return { grade, island, theme:units[island - 1]?.theme || '', current:banks[island - 1], earlier:banks.slice(0, island - 1), gradeBanks:banks };
+            }
+            function loadChallengeContent() {
+                if (globalThis.RunnerContent?.version === 3) return; // compiled: all 24 word pairs, meanings, gaps and questions
+                LeagueTeaching.loadContent().catch(error => console.warn('Challenge Deck content could not load.', error));
+            }
+            function startChallenge(type, index, wheel, { delay } = {}) {
+                if (activeWheelMode !== 'english' || !selectedClass) return false;
+                const team = wheel ? teamsData.find(t => t.id === wheel.teamId) : null;
+                loadChallengeContent();
+                const ctx = challengeContext(team);
+                if (!ctx) return false;
+                const card = LeagueChallenge.deal(type, ctx);
+                if (!card) return false;
+                return LeagueChallenge.open(card, {
+                    team:team?.name || '', teamColor:team?.color, student:wheel?.student?.name || '', delay,
+                    stakes:team ? `✓ Right: keep Level ${team.level} · ✗ Wrong: back to Level ${wheel.restore?.level ?? wheel.stage - 1}` : '',
+                    color:subjectColors[index % subjectColors.length],
+                    onResolve:ok => resolveChallenge(ok, card, wheel, ctx.island),
+                    onClose:advanceQueuedWheel
+                });
+            }
+            // Right keeps everything the team has earned. Wrong takes the team back to the moment it reached the level
+            // before this wheel. Skipped changes nothing. Each card is logged for Google Sheets.
+            function resolveChallenge(ok, card, wheel, island) {
+                const team = wheel ? teamsData.find(t => t.id === wheel.teamId) : null;
+                const result = ok === null ? 'skipped' : ok ? 'right' : 'wrong';
+                challengeLog.push({ id:`${sessionId}-c${challengeLog.length + 1}`, at:Date.now(), className:selectedClass || '', team:team?.name || 'Practice',
+                    studentId:wheel?.student?.id || '', student:wheel?.student?.name || '', level:wheel?.stage || 0, type:card.type, word:card.word || '', island, result });
+                if (challengeLog.length > 200) challengeLog.shift();
+                scheduleCheckpoint();
+                const who = team ? `${wheel.student?.name ? wheel.student.name + ' · ' : ''}${team.name}` : 'Practice card';
+                addHistoryLog(`🃏 ${card.type}: ${result === 'right' ? '✓ Right' : result === 'wrong' ? '✗ Wrong' : 'Skipped'} (${who})`, team?.color || '#a78bfa');
+                if (ok === null) return '';
+                playSound(ok ? 'evolve' : 'timer');
+                if (!team) return 'Practice card · no points change.';
+                if (ok) return `${team.name} keeps Level ${team.level} and ${team.points.toLocaleString()} points!`;
+                return restoreTeamBeforeWheel(team, wheel);
+            }
+            function restoreTeamBeforeWheel(team, wheel) {
+                const back = wheel.restore || { ...cleanTeam(team), level:wheel.stage - 1, traits:team.traits.slice(0, wheel.stage - 1), evolutionProgress:0, pendingEvolution:null };
+                saveState(); // Undo puts the team back if a judgement was tapped by mistake.
+                const previousPoints = team.points;
+                cancelTeamScoreAnimation(team.id, { settle:false });
+                AnimatedMode.cancelTeam(team.id);
+                deferredAnimatedEvolutions.delete(team.id);
+                team.points = back.points;
+                team.level = back.level;
+                team.evolutionProgress = back.evolutionProgress || 0;
+                team.milestonesReached = [...(back.milestonesReached || [])];
+                team.traits = (back.traits || []).filter(id => teamTraits[team.id].some(t => t.id === id));
+                team.hasRelic = Boolean(back.hasRelic);
+                team.pendingEvolution = back.pendingEvolution ? { ...back.pendingEvolution } : null;
+                // The wheel waits at this level again; later wheels of this team are gone with the levels.
+                team.wheelMilestonesReached = team.wheelMilestonesReached.filter(stage => stage <= team.level);
+                pendingAnimatedWheels = pendingAnimatedWheels.filter(item => item.teamId !== team.id || item.stage <= team.level);
+                team.cachedSVG = '';
+                normalizeTeamRuntimeState(team);
+                animateTeamScore(team.id, { fromValue:previousPoints, targetValue:team.points, delta:team.points - previousPoints, modifiers:[{ icon:'🃏', label:'Challenge missed' }] });
+                updateTeamDOM(team, true, true);
+                updateGameState({ teamId:team.id, updateVisuals:true, updateAvatar:true });
+                addHistoryLog(`🃏 ${team.name} goes back to Level ${team.level} (${team.points.toLocaleString()} points).`, team.color);
+                return `${team.name} goes back to Level ${team.level} and ${team.points.toLocaleString()} points.`;
+            }
+            LeagueChallenge.configure({ changed:() => { if (window.syncStateToController) window.syncStateToController(); } });
 
             document.getElementById('spin-btn').addEventListener('click', () => {
                 if (wheelSpinTimer || wheelAdvanceTimer || activeWheelSpin) return;
@@ -5709,7 +5811,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.3.0';
+        const REMOTE_BUILD = '10.4.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -6562,6 +6664,11 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                             : 'The Wheel of Subjects is currently displayed on the Smartboard.';
                         document.getElementById('mobile-wheel-close-btn').textContent = hasResult ? 'Continue' : 'Close Wheel';
                         document.getElementById('mobile-wheel-icon').classList.toggle('is-spinning', Boolean(data.wheelSpinning));
+                        // v10.4.0: the open Challenge Deck card, with the teacher's buttons.
+                        const challenge = data.wheelVisible && data.challenge || null;
+                        overlay.classList.toggle('has-challenge', Boolean(challenge));
+                        if (challenge) document.getElementById('mobile-wheel-title').textContent = 'ENGLISH CHALLENGE';
+                        globalThis.LeagueChallenge?.renderRemote(document.getElementById('mobile-challenge'), challenge, op => remoteCommands.enqueue('CHALLENGE', null, op));
                     }
                     connection._stateReady=true;stopRemoteStateSync(connection);
                     if(remoteConnectionState!=='connected')setRemoteConnectionStatus('connected');
@@ -6648,7 +6755,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     classMission: classMissionState,
                     wheelVisible: isWheelVisible,
                     wheelResult: wheelResultVisible ? document.getElementById('wheel-result').textContent : null,
-                    wheelSpinning: Boolean(activeWheelSpin && !activeWheelSpin.settled)
+                    wheelSpinning: Boolean(activeWheelSpin && !activeWheelSpin.settled),
+                    challenge: globalThis.LeagueChallenge?.remoteView() || null
                 });
             }
         };
@@ -6772,6 +6880,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     className:selectedClass,
                     islandProgress:LeagueIslandProgress.snapshot(selectedClass),
                     studentContributions:LeagueStudents.summary(selectedClass,studentContributions),
+                    challengeLog:challengeLog.filter(row=>row.className===selectedClass).slice(-200),
                     standings: standings.map(t => ({
                         id: t.id,
                         name: t.name,
@@ -6888,6 +6997,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 // v9.3.0: this session's Island Run answers travel with the session record (deduplicated by row ID).
                 const answerRows=globalThis.LeagueQuestionLog?.rows(classInput,{sessionId:payload.sessionId||''}).slice(-200)||[];
                 if(answerRows.length)payload.questionLog=answerRows;
+                // v10.4.0: the Challenge Deck cards of this session (the later summary has every card).
+                const cards=[lbRecord.challengeLog,btRecord.challengeLog].filter(Array.isArray).sort((a,b)=>b.length-a.length)[0]||[];
+                if(cards.length)payload.challengeLog=cards.filter(row=>row?.className===classInput).slice(-200);
                 const recordId=`${latestRemoteSessionId||lbRecord.sessionId||lbRecord.summaryId}:${recordType}:${classInput.toLowerCase()}`;
                 let entry=LeagueOutbox.find(recordId);
                 entry=LeagueOutbox.add(recordId,payload,{refresh:true});
@@ -6924,12 +7036,14 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             milestonesReached:[...team.milestonesReached],wheelMilestonesReached:[...team.wheelMilestonesReached],powerups:{...team.powerups},traits:[...team.traits],hasRelic:team.hasRelic,pendingEvolution:team.pendingEvolution?{...team.pendingEvolution}:null};}
         function checkpointNow(){
             if(!recoveryReady||recoveryRestoring||remoteRole!=='host')return false;
-            const active=activeAnimatedWheel&&!activeWheelSpin?.settled?{...activeAnimatedWheel,...(activeWheelSpin?{rotation:currentWheelRotation}: {})}:null;
+            // A wheel whose card is still unanswered is saved as not yet spun: after a reload it spins again and deals a new card.
+            const active=activeAnimatedWheel&&(!activeWheelSpin?.settled||LeagueChallenge.active&&!LeagueChallenge.answered)?{...activeAnimatedWheel,...(activeWheelSpin?{rotation:currentWheelRotation}: {})}:null;
             const snapshot={sessionId,roomCode:activeRoomCode,teams:teamsData.map(cleanTeam),pointSliderValues:[...pointSliderValues],selectedPointTierIndex,progressionMode,performanceMode,
                 selectedClass,studentContributions,secretAgents,rosterSnapshot:LeagueStudents.snapshot(),
                 classMission:{...classMission},lastTeamClicked,comboCount,historyLog:historyLog.slice(0,120),historyStack:historyStack.slice(-20),
                 wheels:[...(active?[active]:[]),...pendingAnimatedWheels],wheelMode:activeWheelMode,pendingFinish:pendingAnimatedFinish,
                 deferredEvolutions:[...deferredAnimatedEvolutions],commandLedger,boardSummaries,vixarDefeatedThisSession,lastVortexTime,sessionNavigator,haloTeams,haloLocked,
+                levelStarts:[...levelStarts],lastAwardStudent:[...lastAwardStudent],challengeLog,
                 unity:unityAscensionState?{wave:unityAscensionState.wave,totalGranted:unityAscensionState.totalGranted,teamPlans:[...unityAscensionState.teamPlans]}:null,
                 scene:LeagueScenes.active,arenaResult:battleState&&!battleState.running?battleState.fighters.map(f=>({id:f.id,hp:f.hp,maxHP:f.maxHP,alive:f.alive,damageDealt:f.damageDealt,points:f.points,traits:f.traits,level:f.level})):null};
             const saved=LeagueRecovery.save(snapshot);
@@ -6964,6 +7078,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 vixarDefeatedThisSession=Boolean(s.vixarDefeatedThisSession);lastVortexTime=s.lastVortexTime||0;
                 sessionNavigator=s.sessionNavigator&&s.sessionNavigator.sessionId===s.sessionId&&typeof s.sessionNavigator.id==='string'&&typeof s.sessionNavigator.name==='string'?{...s.sessionNavigator}:null;
                 haloTeams=Array.isArray(s.haloTeams)?teamsData.map(t=>t.id).filter(id=>s.haloTeams.includes(id)):[];haloLocked=Boolean(s.haloLocked);
+                levelStarts=new Map(Array.isArray(s.levelStarts)?s.levelStarts.filter(e=>Array.isArray(e)&&typeof e[0]==='string'&&e[1]&&typeof e[1]==='object'):[]);
+                lastAwardStudent=new Map(Array.isArray(s.lastAwardStudent)?s.lastAwardStudent.filter(e=>Array.isArray(e)&&teamsData.some(t=>t.id===e[0])&&typeof e[1]?.name==='string'):[]);
+                challengeLog=Array.isArray(s.challengeLog)?s.challengeLog.slice(-200):[];
                 pendingAnimatedFinish=Boolean(s.pendingFinish);const restoredVisualMode=normalizeVisualMode(s.performanceMode);setPerformanceMode(VISUAL_MODES.includes(restoredVisualMode)?restoredVisualMode:'light',{persist:true});
                 if(s.unity&&Array.isArray(s.unity.teamPlans)&&!classMission.rewardGranted)resumeUnityPlan={...s.unity,teamPlans:new Map(s.unity.teamPlans)};
                 setWheelMode(s.wheelMode==='english'?'english':'all');
@@ -6991,7 +7108,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             stopSceneSound();clearBattleTasks();battleState=null;clearVixarRaidTasks();vixarRaidState=null;
             cancelUnityEvent({preserveCompletion:true,immediate:true});clearTimeout(unityEventQueueTimer);unityEventQueueTimer=null;
             clearEvolutionChestTimers();AnimatedMode.cancelAll();eventClock.clear();clearInterval(timerInterval);
-            wheelClock.clear();wheelVisualAnimation?.cancel();wheelVisualAnimation=null;
+            wheelClock.clear();wheelVisualAnimation?.cancel();wheelVisualAnimation=null;LeagueChallenge.dismiss();
             clearAllAvatarReactions();cancelAllScoreAnimations({settle:true});stopParticles();
             for(const name of ['arena','raid','unity','wheel','chest','evolution','results','agent'])LeagueScenes.leave(name);
             document.getElementById('vortex-overlay').style.display='none';document.getElementById('event-banner').classList.remove('visible');
@@ -7052,6 +7169,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             if(data.action==='SCENE_SKIP'){LeagueScenes.skip();return {ok:Boolean(scene)};}
             if(data.action==='SCENE_EXIT'){LeagueScenes.cancel();return {ok:Boolean(scene)};}
             if(data.action==='SET_VISUAL_MODE'){const mode=normalizeVisualMode(data.mode);if(!VISUAL_MODES.includes(mode))return {ok:false,message:'Unknown visual mode'};window.selectPerformanceMode(mode);return;}
+            if(data.action==='CHALLENGE'){if(!LeagueChallenge.active)return {ok:false,message:'No challenge card is open'};return LeagueChallenge.command(data);}
             if(data.action==='CLOSE_WHEEL'){if(scene!=='wheel')return {ok:false,message:'No wheel is open'};requestWheelClose();return;}
             if(['arena','raid','results','agent'].includes(scene))return {ok:false,message:'Return to the scoreboard to change points'};
             if(data.action==='SET_CLASS')return setSessionClass(data.className);

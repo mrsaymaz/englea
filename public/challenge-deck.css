@@ -1,0 +1,91 @@
+/* v10.4.0 Challenge Deck: the card dealt by the English wheel (board) and the teacher's panel (phone).
+   Large type for the back of the classroom; no blur or filters, so old smart boards draw it in one go. */
+.challenge-overlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vh,32px) 16px;
+ background:radial-gradient(circle at 50% 40%,rgba(30,27,75,.86),rgba(2,6,23,.95) 70%);overflow:auto}
+.challenge-overlay[hidden]{display:none}
+.challenge-card{--challenge-color:#4f46e5;--team-color:#94a3b8;position:relative;width:min(860px,100%);max-height:100%;overflow:auto;border-radius:26px;
+ padding:clamp(18px,3.2vh,34px) clamp(18px,3vw,40px) clamp(16px,2.8vh,28px);color:#f8fafc;text-align:center;
+ background:linear-gradient(180deg,rgba(15,23,42,.62) 0,#0f172a 34%,#0b1222 100%),var(--challenge-color);
+ border:3px solid var(--team-color);box-shadow:0 0 0 6px rgba(15,23,42,.9),0 0 46px var(--challenge-color),0 24px 60px rgba(0,0,0,.55)}
+.challenge-card::before{content:"";position:absolute;inset:10px;border-radius:18px;border:1px dashed rgba(255,255,255,.14);pointer-events:none}
+.challenge-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.35rem .8rem;margin-bottom:clamp(8px,1.8vh,18px)}
+.challenge-icon{display:grid;place-items:center;width:clamp(46px,7vh,64px);height:clamp(46px,7vh,64px);border-radius:16px;font-size:clamp(26px,4.4vh,38px);
+ background:var(--challenge-color);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25),0 6px 18px rgba(0,0,0,.35)}
+.challenge-head h2{margin:0;font-size:clamp(26px,4.6vh,44px);font-weight:900;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+.challenge-who{flex-basis:100%;margin:0;font-size:clamp(15px,2.3vh,20px);font-weight:800;color:#e2e8f0;letter-spacing:.03em}
+.challenge-big{margin:.4em 0 .2em;font-size:clamp(34px,6.6vh,64px);font-weight:900;line-height:1.1}
+.challenge-context{margin:0 auto .5em;max-width:40em;padding:.55em .9em;border-radius:12px;background:rgba(148,163,184,.12);font-size:clamp(17px,2.6vh,24px);font-weight:700;color:#e2e8f0}
+.challenge-prompt{margin:.2em auto .25em;max-width:24em;font-size:clamp(26px,5vh,48px);font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+.challenge-mistake{padding:0 .18em;border-radius:8px;background:#fecaca;color:#7f1d1d;text-decoration:line-through wavy #dc2626 2px}
+.challenge-instruction{margin:.2em auto .8em;max-width:40em;font-size:clamp(16px,2.5vh,22px);font-weight:700;color:#cbd5e1}
+.challenge-listen,.challenge-skip,.challenge-continue{font:inherit;cursor:pointer;border-radius:999px;font-weight:900;letter-spacing:.04em}
+.challenge-listen{margin:0 auto .8em;padding:.5em 1.4em;font-size:clamp(18px,2.8vh,24px);border:2px solid #67e8f9;background:#164e63;color:#ecfeff}
+.challenge-options{display:grid;gap:clamp(8px,1.5vh,14px);margin:.2em auto .4em;max-width:720px}
+.challenge-option{display:flex;align-items:center;gap:.8em;width:100%;padding:clamp(10px,1.8vh,16px) clamp(14px,2vw,22px);border-radius:16px;cursor:pointer;
+ font:inherit;font-size:clamp(20px,3.5vh,32px);font-weight:800;text-align:left;color:#f8fafc;background:#1e293b;border:3px solid #334155;
+ box-shadow:inset 0 -4px 0 rgba(0,0,0,.3);transition:transform .12s ease,border-color .12s ease,background-color .12s ease}
+.challenge-option b{display:grid;place-items:center;flex:none;width:1.7em;height:1.7em;border-radius:10px;background:var(--challenge-color);font-size:.85em}
+.challenge-option span{overflow-wrap:anywhere}
+.challenge-option:not(:disabled):hover,.challenge-option:not(:disabled):focus-visible{border-color:#fde047;transform:translateY(-2px);outline:none}
+.challenge-option:disabled{cursor:default;opacity:.55}
+.challenge-option.right{opacity:1;background:#14532d;border-color:#4ade80}
+.challenge-option.right b{background:#22c55e}
+.challenge-option.wrong{opacity:1;background:#7f1d1d;border-color:#f87171}
+.challenge-option.wrong b{background:#ef4444}
+.challenge-judge-note{margin:.6em 0;font-size:clamp(18px,2.8vh,24px);font-weight:800;color:#fde68a}
+.challenge-skip{margin-top:.6em;padding:.35em 1.2em;font-size:15px;color:#94a3b8;background:transparent;border:1px solid #475569}
+.challenge-result{margin:clamp(8px,1.6vh,14px) auto 0;max-width:720px;padding:clamp(10px,1.8vh,16px) clamp(14px,2vw,22px);border-radius:18px;border:3px solid}
+.challenge-result strong{display:block;font-size:clamp(30px,5.6vh,52px);font-weight:900;line-height:1.1}
+.challenge-result.right{background:rgba(20,83,45,.6);border-color:#4ade80}
+.challenge-result.right strong{color:#86efac}
+.challenge-result.wrong{background:rgba(127,29,29,.55);border-color:#f87171}
+.challenge-result.wrong strong{color:#fca5a5}
+.challenge-correct{margin:.35em 0 0;font-size:clamp(20px,3.3vh,30px);font-weight:900;color:#bbf7d0}
+.challenge-explain{margin:.35em 0 0;font-size:clamp(16px,2.6vh,23px);font-weight:700;color:#e2e8f0}
+.challenge-consequence{margin:.5em 0 0;padding-top:.45em;border-top:1px solid rgba(255,255,255,.18);font-size:clamp(17px,2.8vh,25px);font-weight:900;color:#fde047}
+.challenge-continue{margin-top:.75em;padding:.5em 2.2em;font-size:clamp(18px,2.8vh,24px);border:0;color:#0f172a;background:#fde047;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+@media (max-height:620px){.challenge-card{border-radius:18px}.challenge-card::before{display:none}}
+
+/* Phone: the open card in the wheel overlay, with the teacher's buttons. */
+#mobile-wheel-overlay.has-challenge{justify-content:flex-start;overflow-y:auto;padding-top:1.25rem}
+#mobile-wheel-overlay.has-challenge #mobile-wheel-icon,#mobile-wheel-overlay.has-challenge #mobile-wheel-result,
+#mobile-wheel-overlay.has-challenge #mobile-wheel-message,#mobile-wheel-overlay.has-challenge #mobile-wheel-close-btn{display:none}
+.mobile-challenge{display:flex;flex-direction:column;gap:.6rem;width:100%;max-width:24rem;margin-top:.5rem;text-align:center}
+.mobile-challenge[hidden]{display:none}
+.mobile-challenge-type{margin:0;font-size:1.35rem;font-weight:900;color:#f8fafc}
+.mobile-challenge-who{margin:0;font-weight:800;color:#a5b4fc}
+.mobile-challenge-word{margin:.4rem 0 0;font-size:2.4rem;font-weight:900;line-height:1.1;color:#fde047;overflow-wrap:anywhere}
+.mobile-challenge-def{margin:0;font-size:1.05rem;font-weight:700;color:#e2e8f0}
+.mobile-challenge-forbidden{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;padding:.75rem;border-radius:14px;background:#450a0a;border:2px solid #f87171}
+.mobile-challenge-forbidden span{flex-basis:100%;font-size:.8rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#fecaca}
+.mobile-challenge-forbidden b{padding:.3rem .65rem;border-radius:999px;background:#7f1d1d;color:#fff;font-size:1.05rem;text-decoration:line-through}
+.mobile-challenge-note{margin:0;font-size:.95rem;font-weight:700;color:#94a3b8}
+.mobile-challenge-prompt{margin:0;font-size:1.3rem;font-weight:900;color:#f8fafc;overflow-wrap:anywhere}
+.mobile-challenge-btn{width:100%;padding:.9rem 1rem;border-radius:14px;font-weight:900;font-size:1.05rem;border:2px solid #334155;background:#1e293b;color:#f8fafc;text-align:left}
+.mobile-challenge-btn:active{transform:scale(.98)}
+.mobile-challenge-btn.yes{text-align:center;background:#15803d;border-color:#4ade80;font-size:1.25rem}
+.mobile-challenge-btn.no{text-align:center;background:#b91c1c;border-color:#f87171;font-size:1.25rem}
+.mobile-challenge-btn.ghost{text-align:center;background:transparent;color:#cbd5e1}
+.mobile-challenge-btn.primary{text-align:center;background:#fde047;border-color:#fde047;color:#0f172a}
+.mobile-challenge-btn.right{background:#14532d;border-color:#4ade80}
+.mobile-challenge-btn.wrong{background:#7f1d1d;border-color:#f87171}
+.mobile-challenge-btn:disabled{opacity:.6}
+.mobile-challenge-btn.right:disabled,.mobile-challenge-btn.wrong:disabled{opacity:1}
+.mobile-challenge-result{margin:.3rem 0 0;font-size:1.8rem;font-weight:900}
+.mobile-challenge-result.right{color:#86efac}
+.mobile-challenge-result.wrong{color:#fca5a5}
+.challenge-stakes{flex-basis:100%;margin:.15rem 0 0;font-size:clamp(14px,2.1vh,18px);font-weight:800;color:#fde68a;letter-spacing:.02em}
+/* After the answer, the card tightens so the result and Continue fit a 768-pixel-high board. */
+.challenge-card[data-state="done"]{padding-top:clamp(12px,2vh,22px)}
+.challenge-card[data-state="done"] .challenge-head{margin-bottom:6px}
+.challenge-card[data-state="done"] .challenge-icon{width:44px;height:44px;font-size:24px}
+.challenge-card[data-state="done"] .challenge-head h2{font-size:clamp(22px,3.6vh,34px)}
+.challenge-card[data-state="done"] .challenge-prompt{font-size:clamp(20px,3.6vh,34px)}
+.challenge-card[data-state="done"] .challenge-instruction,.challenge-card[data-state="done"] .challenge-context{display:none}
+.challenge-card[data-state="done"] .challenge-options{gap:6px}
+.challenge-card[data-state="done"] .challenge-option{padding:6px 16px;font-size:clamp(17px,2.8vh,24px)}
+.challenge-card[data-state="done"] .challenge-option:not(.right):not(.wrong){display:none}
+.challenge-card[data-state="done"] .challenge-result{padding:8px 18px}
+.challenge-card[data-state="done"] .challenge-result strong{font-size:clamp(26px,4.6vh,42px)}
+/* The wheel stays visible for its result, then is not drawn under the card (its blurred backdrop is costly). */
+#wheel-modal.under-challenge{visibility:hidden!important}

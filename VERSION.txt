@@ -1,4 +1,6 @@
-English League · Island Run Edition · v10.3.0
+English League · Island Run Edition · v10.4.0
+
+v10.4.0: the Challenge Deck. At Level 5 and 10 the English wheel deals a real card from the class's islands (nine kinds). Right keeps the level; wrong takes the team back to where it reached the previous level. Taboo shows forbidden Turkish words on the teacher's phone. Cards are saved to Challenge_Log. Apps Script update: GOOGLE-APPS-SCRIPT-v10.4.0.gs.
 
 v10.3.0: smoother Island Run, awards and Battle Arena on slow smart boards; each board remembers its speed. Apps Script unchanged (v10.2.0).
 
@@ -18,4 +20,4 @@ Elemental student cards: the award card takes on the student's team element (fir
 School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
 
 Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v10.3.0.md.
+No new Netlify or Cloudflare variables. Read START-HERE-v10.4.0.md.

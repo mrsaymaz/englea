@@ -1,3 +1,22 @@
+# v10.4.0 checks
+
+Run `npm run test:v104` for the full dependency-free suite (all v10.3 checks plus `v104.cjs`). `v104.cjs` covers:
+
+- every Challenge Deck card for every island of grades 5–8 (1,800 deals; three different options, one right);
+- cards from the team's current island first;
+- Sentence Repair's marked word; Listening by grade; Ask a Question's wh-words;
+- Taboo's forbidden Turkish words;
+- cards from the teacher's pasted Studio word pairs;
+- the Apps Script Challenge_Log (day-first dates, no duplicates, invalid rows refused);
+- the Netlify check for an older script;
+- the board and phone wiring.
+
+`npm run test:board` now also runs `board-v104.cjs` (board + phone in Chromium):
+- five awards → Level 5 → the English wheel → a card for the student who gave the last point;
+- wrong takes the team back to Level 4; Level 5 again → right keeps everything;
+- Taboo on the phone only; Sentence Repair; Skip; the recovery snapshot; practice cards;
+- the cards in the Sheets summary.
+
 # v10.3.0 checks
 
 Run `npm run test:v103` for the full dependency-free suite (all v10.2 checks plus `v103.cjs`). `v103.cjs` covers:
@@ -8,7 +27,7 @@ Run `npm run test:v103` for the full dependency-free suite (all v10.2 checks plu
 - the remembered effects level;
 - the Arena not drawing the board behind it.
 
-`npm run test:board` now also runs `board-v103.cjs`, which counts layout reads during real awards, times the recovery save, and checks the remembered Island Run step and effects level. Frame-rate comparisons are in ../TEST-REPORT-v10.3.0.md.
+`npm run test:board` now also runs `board-v103.cjs`, which counts layout reads during real awards, times the recovery save, and checks the remembered Island Run step and effects level. Frame-rate comparisons are in ../archive/TEST-REPORT-v10.3.0.md.
 
 # v10.2.0 checks
 

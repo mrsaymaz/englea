@@ -1,6 +1,10 @@
-# English League with Mr. Saymaz — v10.3.0
+# English League with Mr. Saymaz — v10.4.0
 
-Start with **START-HERE-v10.3.0.md**: Island Run, awards and the Battle Arena run more smoothly on slow smart boards, and each board remembers its speed. No Apps Script change.
+Start with **START-HERE-v10.4.0.md**: the **Challenge Deck**. At Level 5 and 10 the English wheel deals a real card from the class's islands to the student who gave the last point. Right keeps the level; wrong takes the team back to the previous level. Taboo puts forbidden Turkish words on your phone. Every card is saved to a new Challenge_Log tab. Apps Script update: **GOOGLE-APPS-SCRIPT-v10.4.0.gs**.
+
+## v10.3.0 (retained)
+
+Guide: `archive/START-HERE-v10.3.0.md`. Island Run, awards and the Battle Arena run more smoothly on slow smart boards, and each board remembers its speed.
 
 ## v10.2.0 (retained)
 
@@ -18,7 +22,7 @@ Guide: `archive/START-HERE-v10.1.0.md`. Type your Teacher PIN under the room cod
 
 Guide: `archive/START-HERE-v10.0.0.md`. A student's award card now takes on their team's element as they collect Island Run navigator seals (fire, nature, water, air), growing stronger with every seal until, at all ten, it wears a crown and a title: **Flamebearer**, **Earthshaker**, **Tidecaller** or **Stormrider**. The whole school now plays one **League Season**: a Season Wins panel on the Champions screen ranks the four teams by League titles and Final Arena wins across every class, counting every session already in the Sheet.
 
-**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v10.2.0.gs** (deploy a New version of the existing web app; it includes v10.1.2, v10.0.0, v9.7.0 and v9.6.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v10.3.0** (v10.3.0 smooths class moments on slow boards; v10.2.0 adds the Comeback Halo; v10.1.2 writes Google Sheets dates day first; v10.1.1 shows one student card at a time and keeps it clear of the team cards' ranking slide; v10.0.1 keeps the "★ First time" tag above the elemental card effects; v10.0.2 brings the school season from the phone to the board).
+**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v10.4.0.gs** (deploy a New version of the existing web app; it includes v10.2.0, v10.1.2, v10.0.0, v9.7.0 and v9.6.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v10.4.0** (v10.4.0 adds the Challenge Deck; v10.3.0 smooths class moments on slow boards; v10.2.0 adds the Comeback Halo; v10.1.2 writes Google Sheets dates day first; v10.1.1 shows one student card at a time and keeps it clear of the team cards' ranking slide; v10.0.1 keeps the "★ First time" tag above the elemental card effects; v10.0.2 brings the school season from the phone to the board).
 
 ## v9.7.0 (retained)
 
@@ -40,7 +44,7 @@ v9.4.0 gave Island Run a single header while running, a daylight scene for each 
 
 v9.3.0 turned Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named (since v9.7.0, one navigator leads the whole session). The teacher remote fits an iPhone 14 Pro in Safari without scrolling.
 
-Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v10.3.0.md**.
+Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v10.4.0.md**.
 
 ## Retained features and earlier fixes
 
@@ -55,7 +59,7 @@ Version 9 adds the four selected features:
 - Teacher Studio: use **Manage** on the phone or board to edit questions and learning objectives, preview choices, paste vocabulary pairs, maintain rosters and view class progression. Teaching material saves online by grade and island.
 - A compact expedition recap below the existing champion and contributor sections, with team progress, this lesson's new completions and a next-island teaser.
 
-For this release, use **START-HERE-v10.3.0.md** and keep **GOOGLE-APPS-SCRIPT-v10.2.0.gs**. The startup badge should read **Island Run Edition · v10.3.0** on both devices. No new environment variables are required.
+For this release, use **START-HERE-v10.4.0.md** and deploy **GOOGLE-APPS-SCRIPT-v10.4.0.gs**. The startup badge should read **Island Run Edition · v10.4.0** on both devices. No new environment variables are required.
 
 Remote startup synchronization, Retry sync, class/team cloud progress and session-save deduplication from v8.9.1 remain included. Existing artwork, grade curricula, 4,240 question variants, scoring, coin targets and Soft/Hard rules are retained.
 
@@ -108,7 +112,7 @@ Student totals survive team resets and participate in Undo, session recovery and
 - `tests/arena-techniques.cjs`: all 24 moves, contact timing, visual isolation, limits and cleanup.
 - `archive/RELEASE-NOTES-v8.1.0.md`: previous all-team recognition and compact Level badge changes.
 - `archive/TEST-REPORT-v8.1.0.md`: previous release verification and limits.
-- `GOOGLE-APPS-SCRIPT-v10.2.0.gs`: current complete backend (each class's last session for the Comeback Halo; dates written day first, plus `formatOldDates` for earlier rows) with results, roster, teaching material, island progress, passport details, the Island Run answer log, every student's contribution count, navigator seals and the School League Season. Older scripts in `archive/` are historical; do not deploy them.
+- `GOOGLE-APPS-SCRIPT-v10.4.0.gs`: current complete backend (the Challenge_Log of Challenge Deck cards; each class's last session for the Comeback Halo; dates written day first, plus `formatOldDates` for earlier rows) with results, roster, teaching material, island progress, passport details, the Island Run answer log, every student's contribution count, navigator seals and the School League Season. Older scripts in `archive/` are historical; do not deploy them.
 - `public/student-rosters.js`: the class and team rosters.
 - `tests/`: optional developer checks; not required to run the site.
 

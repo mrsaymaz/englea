@@ -37,6 +37,11 @@ window.__qa={
  record(){window.broadcastMatchSummaryToController('LEADERBOARD_FINAL');},
  finish:finishFinalBattle,
  settleScene(){LeagueScenes.skip();},
+ wheelMode:setWheelMode,
+ // v10.4.0: queue an English wheel that lands on a chosen card type.
+ challengeWheel(teamId,stage,type){const i=wheelSets.english.items.indexOf(type);const t=teamsData.find(x=>x.id===teamId);t.wheelMilestonesReached.push(stage);
+  pendingAnimatedWheels.push({teamId,stage,restore:levelStarts.get(teamId+':'+(stage-1))||null,student:lastAwardStudent.get(teamId)||null,rotation:3600+((270-(i*40+20))%360+360)%360});pumpPresentation();},
+ challengeLog:()=>challengeLog,team:id=>cleanTeam(teamsData.find(t=>t.id===id)),wheels:()=>({active:activeAnimatedWheel,pending:pendingAnimatedWheels}),
  hidden(value){Object.defineProperty(document,'hidden',{configurable:true,value});document.dispatchEvent(new Event('visibilitychange'));}
 };`;
 async function setup({autoUnlock=true,time=null,rosterHandler=null}={}){

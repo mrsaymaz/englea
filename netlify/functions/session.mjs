@@ -14,11 +14,13 @@ export async function handleSession(request,fetcher=fetch){
    if(capability.status==='unauthorized')return reply(capability);
    if(!check.ok||capability.status!=='success'||!capability.islandProgress)return reply({status:'error',message:'Load islands first. Update Apps Script to v9.0.0 and deploy a New version of the existing web app if needed.'});
    const passport=Object.values(data.islandProgress||{}).some(levels=>Object.values(levels||{}).some(v=>v?.coinPercent!==undefined||v?.hardClear!==undefined));
-   if(data.questionLog!==undefined&&capability.questionLogVersion!==1)return reply({status:'error',message:'Island Run answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.2.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(data.questionLog!==undefined&&capability.questionLogVersion!==1)return reply({status:'error',message:'Island Run answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
    // v9.6.0: every student's contribution count needs the v9.6.0 script; an older script would keep only the top three.
-   if(data.studentContributions?.everyone!==undefined&&capability.contributionsVersion!==1)return reply({status:'error',message:'Student contributions are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.2.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(data.studentContributions?.everyone!==undefined&&capability.contributionsVersion!==1)return reply({status:'error',message:'Student contributions are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
    // v9.7.0: navigator seals need the v9.7.0 script; an older one would silently drop them.
-   if(Array.isArray(data.navigatorSeals)&&data.navigatorSeals.length&&capability.navigatorSealsVersion!==1)return reply({status:'error',message:'Navigator seals are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.2.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(Array.isArray(data.navigatorSeals)&&data.navigatorSeals.length&&capability.navigatorSealsVersion!==1)return reply({status:'error',message:'Navigator seals are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
+   // v10.4.0: Challenge Deck cards need the v10.4.0 script; an older one would silently drop them.
+   if(Array.isArray(data.challengeLog)&&data.challengeLog.length&&capability.challengeLogVersion!==1)return reply({status:'error',message:'Challenge cards are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
    if(passport&&capability.passportVersion!==1)return reply({status:'error',message:'Your passport is kept locally. Update Apps Script using GOOGLE-APPS-SCRIPT-v9.1.0.gs, then deploy a New version of the existing web app and retry this save.'});
   }
   const upstream=await fetcher(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),redirect:'follow',signal:abort.signal});

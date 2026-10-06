@@ -2,6 +2,20 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.4.0
+**The Challenge Deck** on the English wheel (Level 5 and Level 10):
+- The wheel deals a real card from the class's island content: the island the team plays next, then the islands before it, with the teacher's Studio edits. Nine cards: Vocabulary, Translation, Grammar, Sentence Repair, Listening, Ask a Question (three options), and Taboo Description, Pronunciation, Speaking (the teacher judges ✓ / ✗).
+- The card names the student who gave the team its last point and shows the stakes.
+- Right keeps everything. Wrong takes the team back to where it stood when it reached the previous level (points, level, evolutions, relic, milestones). The wheel waits at that level again; Undo reverses a mistaken judgement. Skip changes nothing.
+- Three-option cards are answered on the board or from the phone. The board shows Right or Wrong, the correct answer and a short explanation.
+- Taboo: the phone alone shows the English word and up to four forbidden Turkish words (the translation, then Turkish words from its meaning). No timer.
+- The phone shows the card with ✓ / ✗, the options, Skip card and Continue. Each button names its card, so a late tap never answers the next card.
+- The manual English wheel deals practice cards (no points change). The All Subjects wheel is unchanged.
+- Every card is saved to a new **Challenge_Log** tab with the session (day-first dates, no duplicate rows).
+- An open, unanswered card's wheel is kept in the recovery snapshot and spins again after a reload.
+
+Apps Script: `GOOGLE-APPS-SCRIPT-v10.4.0.gs` (includes v10.2.0 and v10.1.2).
+
 ## 10.3.0
 **Smoother class moments on slow smart boards** (nothing looks or plays differently):
 - **Island Run:** resolution steps (100%, 75%, 55%) chosen by the run's own speed and remembered by each board. On a quarter-speed CPU, later runs reach 53 fps instead of 26.
