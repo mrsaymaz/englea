@@ -810,6 +810,7 @@
             }
 
             function playAvatarReaction(teamId, type, options = {}) {
+                globalThis.CreaturePoses?.board(teamId,type);
                 if (isLeanMode()) return false;
                 const definition = avatarReactionDefinitions[type];
                 const card = document.getElementById(`team-${teamId}`);
@@ -843,7 +844,12 @@
             }
 
             function scheduleRankingReactions(before) {
-                if (!before || isLeanMode()) return;
+                if (!before) return;
+                if (performanceMode === 'animated') {
+                    const next=captureRankingSnapshot();
+                    if(next.soleLeader && next.soleLeader!==before.soleLeader) globalThis.CreaturePoses?.boardLater(next.soleLeader,'leader',830);
+                }
+                if (isLeanMode()) return;
                 const after = captureRankingSnapshot();
                 after.order.forEach((teamId,index) => {
                     const previousIndex = before.order.indexOf(teamId);
@@ -3421,6 +3427,7 @@
                 const energy = document.getElementById(`battle-energy-${f.id}`);
                 if (!hpFill || !hpNumber) return;
                 const percentage = Math.max(0, Math.min(100, (f.hp / f.maxHP) * 100));
+                globalThis.CreaturePoses?.healthChanged('arena',f.id,f.hp,f.maxHP);
                 hpFill.style.width = `${percentage}%`;
                 const loss=document.getElementById(`battle-hp-loss-${f.id}`);if(loss)loss.style.width=`${percentage}%`;
                 hpFill.style.background = percentage > 55 ? 'linear-gradient(90deg,#22c55e,#a3e635)' : percentage > 25 ? 'linear-gradient(90deg,#f59e0b,#facc15)' : 'linear-gradient(90deg,#dc2626,#fb7185)';
@@ -3574,6 +3581,7 @@
 
             function knockOutFighter(target,attacker) {
                 if (!target.alive) return;
+                globalThis.CreaturePoses?.arena(target.id,'knockout');
                 target.alive=false; target.knockedOutAt=SceneRuntime.now(); target.hp=0; updateBattleHUD(target);
                 const fighter=fighterElement(target.id); const shell=shellElement(target.id);
                 fighter?.classList.add('is-ko'); shell?.classList.add('is-knocked-out');
@@ -3903,6 +3911,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     document.getElementById('winner-card').scrollTop=0;
                     document.getElementById('battle-result-details').innerHTML='';
                     LeagueScenes.enter('results','complete');
+                    globalThis.CreaturePoses?.results(teamsData.map(t=>({id:t.id,points:t.points})),arenaWinner.id,leagueWinners.map(t=>t.id));
                     LeagueIslandRun.refresh();
                     document.body.classList.add('winner-active');
                     winnerOverlay.classList.add('visible'); winnerOverlay.setAttribute('aria-hidden','false');
@@ -4261,6 +4270,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const teamEl = document.getElementById(`vixar-team-${fighter.id}`);
                 if (!fill || !number || !teamEl) return;
                 const percentage = Math.max(0, Math.min(100, fighter.hp / fighter.maxHP * 100));
+                globalThis.CreaturePoses?.healthChanged('raid',fighter.id,fighter.hp,fighter.maxHP);
                 fill.style.width = `${percentage}%`;
                 fill.style.background = percentage > 55 ? 'linear-gradient(90deg,#22c55e,#a3e635)' : percentage > 25 ? 'linear-gradient(90deg,#f59e0b,#facc15)' : 'linear-gradient(90deg,#dc2626,#fb7185)';
                 number.textContent = `${Math.ceil(fighter.hp)} / ${fighter.maxHP}`;
@@ -4969,10 +4979,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 overlay.classList.toggle('phase-two', nextPhase >= 2);
                 overlay.classList.toggle('phase-three', nextPhase >= 3);
                 if (nextPhase === 2) {
+                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'proud',{id:'vixar',duration:1500,priority:40});
                     vixarAnnounce('VIXAR reveals six astral arms', '#c4b5fd');
                     playSound('battleStart');
                 } else if (nextPhase === 3) {
                     document.getElementById('vixar-chest-armor')?.setAttribute('opacity', '.28');
+                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'exposed',{id:'vixar',duration:2000,priority:40});
                     vixarAnnounce('The true void core is exposed', '#f0abfc');
                     vixarScreenFlash('rgba(217,70,239,.26)');
                     playSound('signature');
@@ -5233,6 +5245,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const now = SceneRuntime.now();
                 vixarRaidState.fighters.forEach(fighter => fighter.nextActionAt = now + 3200 + Math.random() * 520);
                 vixarRaidState.boss.nextActionAt = vixarRaidState.combatBeginsAt + 420;
+                globalThis.CreaturePoses?.preload('vixar');
                 renderVixarRaidFighters();
                 renderVixarSealStrip();
                 prepareVixarGuardian();
@@ -5813,7 +5826,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.4.3';
+        const REMOTE_BUILD = '10.5.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -7118,7 +7131,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         function holdPresentation(){presentationHeld=true;pendingAnimatedFinish=false;clearTimeout(unityEventQueueTimer);unityEventQueueTimer=null;stopSceneSound();updateSceneControls();}
         function exitArena(){holdPresentation();clearBattleTasks();battleState=null;currentEvent=null;LeagueScenes.leave('arena');updateGameState(true);}
         function finishChest(){SceneRuntime.fastForward('chest',()=>!isEvolving,6500);clearEvolutionChestTimers();LeagueScenes.leave('chest');}
-        function exitResults(){if(LeagueIslandRun.isOpen){LeagueIslandRun.close();return;}LeagueIslandRun.dispose();holdPresentation();LeagueScenes.leave('results');document.getElementById('winner-svg-container').replaceChildren();document.getElementById('league-winner-avatars').replaceChildren();document.getElementById('all-team-recognition-grid').replaceChildren();}
+        function exitResults(){globalThis.CreaturePoses?.stopResults();if(LeagueIslandRun.isOpen){LeagueIslandRun.close();return;}LeagueIslandRun.dispose();holdPresentation();LeagueScenes.leave('results');document.getElementById('winner-svg-container').replaceChildren();document.getElementById('league-winner-avatars').replaceChildren();document.getElementById('all-team-recognition-grid').replaceChildren();}
         LeagueScenes.register('wheel',{skip:requestWheelClose,cancel:()=>{holdPresentation();requestWheelClose();}});
         LeagueScenes.register('chest',{skip:finishChest,cancel:()=>{holdPresentation();finishChest();}});
         LeagueScenes.register('evolution',{skip:()=>{AnimatedMode.cancelAll();pumpPresentation();},cancel:()=>{holdPresentation();AnimatedMode.cancelAll();}});

@@ -25,7 +25,7 @@
         motion.effect(layer(),el,[{opacity:0,transform:`rotate(${angle}deg) scaleX(.4)`},{opacity:.9,offset:.15},{opacity:.9,transform:`translate(${dx}px,${dy}px) rotate(${angle}deg)`}],duration);
     }
     function face(id,direction){const el=shell(id)?.querySelector('.battle-avatar-face');if(el)el.style.transform=`scaleX(${direction})`;}
-    function reaction(id,kind='hit',color='#fff'){if(!active())return;const variant=kind==='guard'?next(id,'guard'):0;const spec=kind==='guard'&&ArenaTechniques.presets[id]?ArenaTechniques.defense(id,variant):LeagueMotion.pose(id,kind);motion.play(pose(id),`pose-${id}`,spec.frames,{duration:spec.duration});if(kind==='guard')effect(id,'guard',color,false,id,variant);}
+    function reaction(id,kind='hit',color='#fff'){root.CreaturePoses?.arena(id,kind);if(!active())return;const variant=kind==='guard'?next(id,'guard'):0;const spec=kind==='guard'&&ArenaTechniques.presets[id]?ArenaTechniques.defense(id,variant):LeagueMotion.pose(id,kind);motion.play(pose(id),`pose-${id}`,spec.frames,{duration:spec.duration});if(kind==='guard')effect(id,'guard',color,false,id,variant);}
     const shots=new Map();
     function launch(attacker,target,variant,duration,large){
         if(!active()||!attacker.alive||!target.alive)return;
@@ -35,11 +35,13 @@
     }
     function resolve(targetId,sourceId,outcome){
         const key=sourceId+':'+targetId,shot=shots.get(key);if(shot){CombatProjectiles.resolve(shot,outcome,(el,frames,ms)=>motion.effect(layer(),el,frames,ms));shots.delete(key);}
-        if(outcome==='evaded'){const p=pose(targetId);motion.play(p,`pose-${targetId}`,[{transform:'none'},{transform:'translate(35px,-15px) rotate(8deg)',offset:.4},{transform:'none'}],{duration:420});}
+        if(outcome==='evaded'){root.CreaturePoses?.arena(targetId,'jump');const p=pose(targetId);motion.play(p,`pose-${targetId}`,[{transform:'none'},{transform:'translate(35px,-15px) rotate(8deg)',offset:.4},{transform:'none'}],{duration:420});}
     }
     function extraTarget(attacker,target,impact){const variant=((turns.attack[attacker.id]||0)+2)%3;clock.after(()=>launch(attacker,target,variant,impact-120,true),120);}
     function attack(attacker,target,{impact=420,signature=false}={}){
-        if(!active()||!attacker?.alive||!target?.alive)return;
+        if(!attacker?.alive||!target?.alive)return;
+        root.CreaturePoses?.arena(attacker.id,'attack',impact);
+        if(!active())return;
         const a=shell(attacker.id),b=shell(target.id),start=point(a),end=point(b);if(!a||!b||!start||!end)return;
         const variant=next(attacker.id,'attack'),dx=end.x-start.x,dy=end.y-start.y,length=Math.hypot(dx,dy)||1;
         const spec=ArenaTechniques.approach(attacker.id,variant,dx/length*20,dy/length*20,impact,'translateX(-50%)');
@@ -50,7 +52,7 @@
         clock.after(()=>{targetCard.classList.remove('is-targeted');delete a.dataset.arenaTarget;},impact+160);
     }
     function impact(target,color,options={}){if(!target)return;if(options.attackerId)resolve(target.id,options.attackerId,options.blocked?'blocked':options.defended?'partial':'hit');const kind=options.blocked||options.defended?'guard':options.heal?'charge':'hit';reaction(target.id,kind,kind==='guard'?target.color:color);if(kind!=='guard')effect(target.id,options.heal?'heal':'impact',color,options.critical);}
-    function stop(){shots.clear();clock.clear();motion.clear();locked.clear();centerBusy=false;geometry=null;document.querySelectorAll('.battle-avatar-shell').forEach(el=>{delete el.dataset.arenaTarget;const face=el.querySelector('.battle-avatar-face');if(face)face.style.transform='';el.closest('.battle-fighter').style.zIndex='';el.closest('.battle-fighter').classList.remove('is-targeted');});layer()?.replaceChildren();}
+    function stop(){root.CreaturePoses?.clear(document.getElementById('battle-overlay'));shots.clear();clock.clear();motion.clear();locked.clear();centerBusy=false;geometry=null;document.querySelectorAll('.battle-avatar-shell').forEach(el=>{delete el.dataset.arenaTarget;const face=el.querySelector('.battle-avatar-face');if(face)face.style.transform='';el.closest('.battle-fighter').style.zIndex='';el.closest('.battle-fighter').classList.remove('is-targeted');});layer()?.replaceChildren();}
     addEventListener('resize',()=>{if(document.body.classList.contains('battle-active')){stop();cache();}});
     document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change',e=>{if(e.matches)stop();});
     root.ArenaMotion={attack,extraTarget,resolve,impact,reaction,effect,stop,cache,diagnostics:()=>({...motion.diagnostics(),timers:clock.tasks.size,centerBusy})};

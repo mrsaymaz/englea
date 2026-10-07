@@ -1,0 +1,1025 @@
+{
+  "version": "10.5.0",
+  "method": "Built-in image generation; original per-level identity reference",
+  "anchor": [
+    0.5,
+    0.95
+  ],
+  "packs": {
+    "astrax": {
+      "file": "astrax.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 259218,
+      "sha256": "767c73698d50aaee7140e58f969140c591f083d09cde2ac4504b441af5ae95c4"
+    },
+    "ferron": {
+      "file": "ferron.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 195994,
+      "sha256": "1171d33a26959adfeb42eded125ca9e5116b2330d7a30ef55068303356606c09"
+    },
+    "gryffindor-0": {
+      "file": "gryffindor-0.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 195128,
+      "sha256": "8ad0cf9999faf136861e2313ee14ce107a130d54eb906dc625e853a2344ade31"
+    },
+    "gryffindor-1": {
+      "file": "gryffindor-1.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 213460,
+      "sha256": "c9b68ce0e287c598b7b23b71f5cc273b21ec20619e1d8ba781dd238837d215f9"
+    },
+    "gryffindor-10": {
+      "file": "gryffindor-10.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 249214,
+      "sha256": "ab1bc58678731b6c79f6fede05522c22dd491f871cd5d0b9b91a01a0f62daf1d"
+    },
+    "gryffindor-2": {
+      "file": "gryffindor-2.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 216378,
+      "sha256": "2e620de1e72bea39a3742d93beadfd98e4949d4802e9bb6ca90f263820eb31a6"
+    },
+    "gryffindor-3": {
+      "file": "gryffindor-3.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 193072,
+      "sha256": "8c74c8fbae6878735e509decad481305a1a1fd28694c6521cfe8670ca6b89592"
+    },
+    "gryffindor-4": {
+      "file": "gryffindor-4.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 208350,
+      "sha256": "29bf8411f784ae99233c89f25e6f01a6f9b2142aeaa15500421a00db0de6ddd9"
+    },
+    "gryffindor-5": {
+      "file": "gryffindor-5.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 187704,
+      "sha256": "da1a9551b286e56b5efbfc12222c62246c1e835f81a065738b940e81a59bc460"
+    },
+    "gryffindor-6": {
+      "file": "gryffindor-6.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 256920,
+      "sha256": "0fd18e09ea3977ee8eeb3f735fb910ce6ca9d3661e73ca845a8fab906e5a416f"
+    },
+    "gryffindor-7": {
+      "file": "gryffindor-7.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 257558,
+      "sha256": "c33f0e787f2591acea7bff8b2f3ccebded77a4c2c3b7eac62950bc9f99f2c950"
+    },
+    "gryffindor-8": {
+      "file": "gryffindor-8.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 223696,
+      "sha256": "09d3a701d6dfc068870077065c8f0145b9ce5b43409d604022f0c8a46d6dfb27"
+    },
+    "gryffindor-9": {
+      "file": "gryffindor-9.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 248400,
+      "sha256": "294b77fe17e9a2c164744f94270a45550b3042ec790aabef332071e6d9b57d0d"
+    },
+    "hufflepuff-0": {
+      "file": "hufflepuff-0.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 146246,
+      "sha256": "22d4a05675b84696631dede5aa0a4230bf3392247a11970e0f6d7c91ec6e3b4b"
+    },
+    "hufflepuff-1": {
+      "file": "hufflepuff-1.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 160480,
+      "sha256": "978a48a06ac5bbd85853f77b9fb23cc625668d99063ecb15b674fca6dbd6dc62"
+    },
+    "hufflepuff-10": {
+      "file": "hufflepuff-10.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 242782,
+      "sha256": "6d71a57d50d29a84cf082a75527dae8c20ef24bac13a598dcd2ab48673a9c4cf"
+    },
+    "hufflepuff-2": {
+      "file": "hufflepuff-2.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 173708,
+      "sha256": "14348b2310dd1c1782689580c5e91cd8b28f4844c79a09e939fda3c8ed9d16d8"
+    },
+    "hufflepuff-3": {
+      "file": "hufflepuff-3.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 175268,
+      "sha256": "417f75463a5d7019037e3dcfb328b72c0759b99c78762991af20828a5d551126"
+    },
+    "hufflepuff-4": {
+      "file": "hufflepuff-4.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 171760,
+      "sha256": "3644a264ed78bbaac2a901910a912f61979c9a56faa84f4c15e52b76134e068b"
+    },
+    "hufflepuff-5": {
+      "file": "hufflepuff-5.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 186578,
+      "sha256": "b3df15d93ae3c85a814e90fa7abedf7b0f659d1aa789fe7262d6e37b3c809ac1"
+    },
+    "hufflepuff-6": {
+      "file": "hufflepuff-6.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 213048,
+      "sha256": "ee1ef42ec4d8c2955c48f2466a8d9d1b4d568b35c5f8483abcab33db1bae2099"
+    },
+    "hufflepuff-7": {
+      "file": "hufflepuff-7.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 238156,
+      "sha256": "d9e7f02daccf97c4806243a3c28e72b6c0e2ef3539fb6187156959f43274bd1b"
+    },
+    "hufflepuff-8": {
+      "file": "hufflepuff-8.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 254784,
+      "sha256": "50c6799f33684d573c5977013fc4442a151fa5904fae2b1481c0d7f6081890d6"
+    },
+    "hufflepuff-9": {
+      "file": "hufflepuff-9.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 267738,
+      "sha256": "02407c71e5a46ab2c9c91fdd7917d45c6c7aad70bee0af2504e74c891136bc47"
+    },
+    "kaelis": {
+      "file": "kaelis.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 235618,
+      "sha256": "44dd27dcf4554f3b693647cf3bcf46b300a35331f674d672dd0521e41499de32"
+    },
+    "mirrath": {
+      "file": "mirrath.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 194838,
+      "sha256": "0d83cf80306d8a36f5259f69ad66324c40fed350616b79d9115ce157f177dc09"
+    },
+    "morrow": {
+      "file": "morrow.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 182406,
+      "sha256": "32a2b5eb0cde981961ea4c7781a8f12f1352cb67199485eea42cf6adc0d2371a"
+    },
+    "noctryn": {
+      "file": "noctryn.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 198752,
+      "sha256": "77c57eed95fa1c212ab4384d61e63330140aae77bc705736731d32b55450fc8d"
+    },
+    "ravenclaw-0": {
+      "file": "ravenclaw-0.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 195498,
+      "sha256": "f12cdfa1f70f9389ab5ea26b9eff530079bccdbd7a80683a911f09865a9ef14f"
+    },
+    "ravenclaw-1": {
+      "file": "ravenclaw-1.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 208278,
+      "sha256": "ed201778dd01608b778ac47d2121ce3d9faea986f49b7061b6e672919455736b"
+    },
+    "ravenclaw-10": {
+      "file": "ravenclaw-10.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 290284,
+      "sha256": "0ef0adc2d0c9a354faf482ab44829eacdd11f544bb0e100b787b7d691448763c"
+    },
+    "ravenclaw-2": {
+      "file": "ravenclaw-2.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 233730,
+      "sha256": "35a52c930ca1674e7f30a451ce7654bd352ce15ae538f0fd15172dbe3a2f1cca"
+    },
+    "ravenclaw-3": {
+      "file": "ravenclaw-3.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 233668,
+      "sha256": "c84df524ef049ff943274c6cf46195546a3443cc1abfe3646c9a2f4f474fbf78"
+    },
+    "ravenclaw-4": {
+      "file": "ravenclaw-4.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 252512,
+      "sha256": "67582f80682080a34512983e147f1c6623b994bc2b4e049eaa5a2e5f40b45089"
+    },
+    "ravenclaw-5": {
+      "file": "ravenclaw-5.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 234230,
+      "sha256": "ac5ef38140b0cf541a3ddbd692c505ba2b7396632b327b58756d7d086b649d99"
+    },
+    "ravenclaw-6": {
+      "file": "ravenclaw-6.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 265578,
+      "sha256": "bacb979555ec3ecd046f9f227e2b92be4f2908aba561d4596bbddb9fc235d3cd"
+    },
+    "ravenclaw-7": {
+      "file": "ravenclaw-7.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 259498,
+      "sha256": "5407dcafa9651b0809ceb822f763161a418a824287d9ef7c552a7b4253ac4405"
+    },
+    "ravenclaw-8": {
+      "file": "ravenclaw-8.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 265988,
+      "sha256": "0fc1d6b1249d855e40baeb17c2d39065c2794236380c97897d187aafcda9ae19"
+    },
+    "ravenclaw-9": {
+      "file": "ravenclaw-9.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 267446,
+      "sha256": "6e7ca1a0be1df0ebc63a317160c8580a64a5d4e5e1491344715f9c1d1e9cce4a"
+    },
+    "rootmaw": {
+      "file": "rootmaw.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 246604,
+      "sha256": "f15545660f368f14ba487d5327f3be7a3f7e99f86f13843a57a6ecaa77e421f8"
+    },
+    "slytherin-0": {
+      "file": "slytherin-0.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 150686,
+      "sha256": "b715b9d2e3d9a6f223af770c55bdeae540869ea72780fb1755fa1085ddc81ddd"
+    },
+    "slytherin-1": {
+      "file": "slytherin-1.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 139278,
+      "sha256": "76c3a64a53f43e3f4ae4b9941df14c450e3cd277f67b20df82bdff3ca1381b9f"
+    },
+    "slytherin-10": {
+      "file": "slytherin-10.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 244124,
+      "sha256": "54d3a4e0df695604f9448baebafd7be4f137d0fe167d89104505785589371682"
+    },
+    "slytherin-2": {
+      "file": "slytherin-2.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 171936,
+      "sha256": "9c38fde08aaf32d29eb13015bfff188e61742ace28ef4f3ed5ee762a76aeced7"
+    },
+    "slytherin-3": {
+      "file": "slytherin-3.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 185712,
+      "sha256": "6db4739fc553afa75775747246105fd49729a9ac9b36381986550199aaad2f08"
+    },
+    "slytherin-4": {
+      "file": "slytherin-4.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 161358,
+      "sha256": "5c01df8a281f16343e74c02537cb648afa832e1d4d5ac58e9491d0c61fdbcbb8"
+    },
+    "slytherin-5": {
+      "file": "slytherin-5.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 201816,
+      "sha256": "7537c9d558a97df921ddbeb5e7d39ab58d2d4da2d63d3bd9caeadaa4f9a861b5"
+    },
+    "slytherin-6": {
+      "file": "slytherin-6.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 198872,
+      "sha256": "932792631fe1cf163aa69524ff885b29f5f78dfc04553998142d44cc19e3d07e"
+    },
+    "slytherin-7": {
+      "file": "slytherin-7.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 198634,
+      "sha256": "6918dcea1cb7372e9364f929fa7160b63b3d43f23eaaca8dbc482b6727cd814f"
+    },
+    "slytherin-8": {
+      "file": "slytherin-8.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 205574,
+      "sha256": "44068773e3fb73619465e3cd2d5101fa6bfe967df9e5d5312bff4e04a715669d"
+    },
+    "slytherin-9": {
+      "file": "slytherin-9.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 232572,
+      "sha256": "49036727bb55b31fa764d953a2ac728c1a3a655000c0ba55f891b56b028d9958"
+    },
+    "tickthorn": {
+      "file": "tickthorn.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 223316,
+      "sha256": "86176fda04836a359fa4b36e342fcce7305cf3abbb5a440ab1be48c116eaf211"
+    },
+    "veyr": {
+      "file": "veyr.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 187930,
+      "sha256": "9e4f7c05023d1c9f9cc37b067323807fc1ce2d9c000584a58e8732076ac1316c"
+    },
+    "vixar": {
+      "file": "vixar.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 448,
+      "states": [
+        "ready",
+        "charge",
+        "cast",
+        "guard",
+        "exposed",
+        "hit",
+        "ultimate",
+        "defeat",
+        "proud"
+      ],
+      "bytes": 525526,
+      "sha256": "a4cbe74a08df003992df2479072c835104b8b4a1fab6288e70df60f8ed56adf0"
+    },
+    "vox": {
+      "file": "vox.webp",
+      "cols": 3,
+      "rows": 2,
+      "cell": 384,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "exposed",
+        "defeat"
+      ],
+      "bytes": 171288,
+      "sha256": "a3f0161fc82e58cbc083b5c701cfa3cd5c9db91a6eb298085be2368294aeb349"
+    }
+  }
+}

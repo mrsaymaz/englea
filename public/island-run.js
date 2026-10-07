@@ -77,10 +77,11 @@
     $('island-run-loading').hidden=false;$('island-run-loading-text').textContent='Opening the islands…';$('island-run-retry').hidden=true;
     frame=document.createElement('iframe');frame.id='island-run-frame';frame.title=`Island Run · ${c.className} · ${c.name}`;
     frame.setAttribute('allow','fullscreen');frame.setAttribute('allowfullscreen','');
-    frame.src='./island-runner/index.html?v=10.4.3';frame.addEventListener('error',fail);
+    frame.src='./island-runner/index.html?v=10.5.0';frame.addEventListener('error',fail);
     $('island-run-stage').append(frame);loadTimer=setTimeout(fail,15000);changed();return true;
   }
   function open(){
+    root.CreaturePoses?.stopResults();
     if(!permitted())return {ok:false,message:'Finish the Battle Arena first.'};
     const c=bridge.context();if(!c||!houses.includes(c.house))return {ok:false,message:'No Battle Arena champion is available.'};
     focusBefore=document.activeElement;visible=true;

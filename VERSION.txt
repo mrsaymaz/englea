@@ -1,29 +1,8 @@
-English League · Island Run Edition · v10.4.3
+English League · Island Run Edition · v10.5.0
 
-v10.4.3: 400 Turkish → English sentence and question translations (ten per island), on the English wheel and in Island Run. Apps Script unchanged (v10.4.0).
-
-v10.4.2: about one Vocabulary card in three asks for the Turkish meaning of an English word. Apps Script unchanged (v10.4.0).
-
-v10.4.1: Ask a Question cards are short and easy: six of their own for every island of grades 5–8. Apps Script unchanged (v10.4.0).
-
-v10.4.0: the Challenge Deck. At Level 5 and 10 the English wheel deals a real card from the class's islands (nine kinds). Right keeps the level; wrong takes the team back to where it reached the previous level. Taboo shows forbidden Turkish words on the teacher's phone. Cards are saved to Challenge_Log. Apps Script update: GOOGLE-APPS-SCRIPT-v10.4.0.gs.
-
-v10.3.0: smoother Island Run, awards and Battle Arena on slow smart boards; each board remembers its speed. Apps Script unchanged (v10.2.0).
-
-v10.2.0: Comeback Halo. Teams that won neither title in a class's last session earn ×2 next session, shown as a halo with ×2 on the avatar's head. Apps Script update: GOOGLE-APPS-SCRIPT-v10.2.0.gs.
-
-v10.1.2: Google Sheets dates are day first (DD/MM/YYYY). Apps Script update required: GOOGLE-APPS-SCRIPT-v10.1.2.gs. Run formatOldDates once to convert earlier rows (optional).
-
-v10.1.1: one student card at a time on the board, no card while the team cards slide, and a shorter freeze at each award. Apps Script unchanged (v10.0.0).
-
-v10.1.0: one-step Teacher sign-in. Type the Teacher PIN under the room code when connecting the phone; after Allow the phone loads names, islands, seals and the season, and Save Record, Manage and Studio reuse the PIN. Apps Script unchanged (v10.0.0).
-
-v10.0.2: the School League Season reaches the board when the PIN is typed on the phone. Apps Script unchanged (v10.0.0).
-
-v10.0.1: the "★ First time" tag sits above the elemental card effects. Apps Script unchanged (v10.0.0).
-
-Elemental student cards: the award card takes on the student's team element (fire, nature, water, air) and grows with each navigator seal; at ten seals a crown and a title: Flamebearer, Earthshaker, Tidecaller, Stormrider.
-School League Season: every class in one season; League title and Final Arena each win once (shared titles once per tied team, Grand Champion twice); older sessions count. Season Wins panel on the Champions screen.
-
-Apps Script update required: GOOGLE-APPS-SCRIPT-v10.0.0.gs (deploy a New version of the existing web app).
-No new Netlify or Cloudflare variables. Read START-HERE-v10.4.3.md.
+465 new creature action poses: 44 team forms, ten island bosses and Vixar.
+Shared pose controller and results interactions; local Creature Studio included.
+Presentation only; gameplay, remote protocol and stored data formats retained.
+No Apps Script update from v10.4.3. Keep GOOGLE-APPS-SCRIPT-v10.4.0.gs.
+No new Netlify or Cloudflare environment variables.
+Read START-HERE-v10.5.0.md and TEST-REPORT-v10.5.0.md.

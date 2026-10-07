@@ -12,6 +12,7 @@
         return shell?.querySelector('.raid-travel')||shell?.querySelector('.animated-avatar')||shell?.querySelector('svg');
     }
     function stop(){
+        scope.CreaturePoses?.clear(document.getElementById('vixar-raid-overlay'));
         shots.clear();
         for(const {animation,el} of actors.values()){
             animation.cancel();delete el.dataset.raidMotion;delete el.dataset.raidTarget;
@@ -23,6 +24,7 @@
         document.querySelectorAll('.raid-targeted').forEach(el=>el.classList.remove('raid-targeted'));
     }
     function move(id,kind,target=null,options={}){
+        scope.CreaturePoses?.raid(id,kind,options.impact);
         if(!allowed())return;
         const travel=node(id),pose=['guard','hit','cast'].includes(kind)&&travel?.querySelector('.raid-pose');
         const el=pose||travel;if(!el?.animate)return;const key=pose?`${id}-pose`:id;

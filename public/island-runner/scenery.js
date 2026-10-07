@@ -246,7 +246,11 @@
       if(this.canvas.width!==cw||this.canvas.height!==ch){this.canvas.width=cw;this.canvas.height=ch;}
       this.dpr=dpr;this.ctx.setTransform(dpr,0,0,dpr,0,0);
     }
-    setup(house,image,realm,reduced,bossImage,bossInfo,light=false){this.bossImage=bossImage;this.bossInfo=bossInfo;this.house=house;this.image=image;this.realm=realm;this.reduced=reduced;this.quality.reset(light);this.particles.forEach(p=>p.life=0);this.lastJump=-1;this.landing=0;this.answerGlow=0;this.impact=0;this.impactFinal=false;
+    setup(house,image,realm,reduced,bossImage,bossInfo,light=false,level=0){
+      this.creatureLevel=level;this.creaturePack=null;this.bossPack=null;this.creatureToken=(this.creatureToken||0)+1;const token=this.creatureToken;
+      root.CreaturePoses?.load(house.id,level).then(p=>{if(token===this.creatureToken)this.creaturePack=p;});
+      root.CreaturePoses?.load(bossInfo?.id).then(p=>{if(token===this.creatureToken)this.bossPack=p;});
+      this.bossImage=bossImage;this.bossInfo=bossInfo;this.house=house;this.image=image;this.realm=realm;this.reduced=reduced;this.quality.reset(light);this.particles.forEach(p=>p.life=0);this.lastJump=-1;this.landing=0;this.answerGlow=0;this.impact=0;this.impactFinal=false;
       // Scene colour returns with correct answers; already-restored islands start brighter.
       this.vivid=this.vividStart=0.46;this.vividCache=new Map();this.dustClock=0;this.gradients=new Map();this.layerKey='';
       let seed=(realm||'').length*97+7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
@@ -418,9 +422,11 @@
       this.stamp('bshadow|'+Math.round(size),size*.9,size*.2,size*.45,size*.1,(g,cx,cy)=>shadowVector(g,cx,cy,size*.4,size*.07,.7),x,y+size*.35,1-gone);
       this.stamp('aura|'+color+'|'+Math.round(size),size*1.1,size*1.1,size*.55,size*.55,(g,cx,cy)=>glowVector(g,cx,cy,size*.55,size*.55,color,.4),x,y,(1-gone)*(.55+(this.reduced?0:.15*Math.sin(run.time*2))));
       this.bossPoint={x,y,size};
-      if(this.bossImage&&this.bossImage.complete&&this.bossImage.naturalWidth){c.globalAlpha=1-gone;c.drawImage(this.bossImage,x-size*.5,y-size*.5+gone*22,size,size);
+      const bossPose=root.CreaturePoses?.bossState(b,this.bossFlash>0);
+      const drawBossArt=()=>root.CreaturePoses?.draw(c,this.bossPack,bossPose,x-size*.5,y-size*.5+gone*22,size,size)||c.drawImage(this.bossImage,x-size*.5,y-size*.5+gone*22,size,size);
+      if(this.bossImage&&this.bossImage.complete&&this.bossImage.naturalWidth){c.globalAlpha=1-gone;drawBossArt();
         // A struck guardian flashes once; additive, bounded and skipped with reduced motion.
-        if(this.bossFlash>0&&!this.reduced){c.save();c.globalCompositeOperation='lighter';c.globalAlpha=(1-gone)*Math.min(1,this.bossFlash/.16)*.55;c.drawImage(this.bossImage,x-size*.5,y-size*.5+gone*22,size,size);c.restore();}}
+        if(this.bossFlash>0&&!this.reduced){c.save();c.globalCompositeOperation='lighter';c.globalAlpha=(1-gone)*Math.min(1,this.bossFlash/.16)*.55;drawBossArt();c.restore();}}
       else{c.fillStyle=color;c.beginPath();c.arc(x,y,size*.3,0,TAU);c.fill();}
       // Weak point: a rotating gold reticle while the firing window is open.
       if(b.state==='expose'){const r0=size*.075,spin=this.reduced?0:run.time*2.4;c.globalAlpha=1-gone;
@@ -565,7 +571,9 @@
       // Landing squash: a short, bounded settle after each jump.
       if(this.landing>0&&!this.reduced){const k=Math.sin(this.landing/.3*Math.PI)*.11;c.scale(1+k,1-k);}
       if(run.invincible>0)c.globalAlpha=.8;
-      if(this.image&&this.image.complete&&this.image.naturalWidth){if(motion)motion.draw(c,this.image,size,pose,this.house.id,this.quality.limits.strips);else c.drawImage(this.image,-size*.5,-size*.8,size,size);}
+      const artPose=root.CreaturePoses?.runnerState(run,run.invincible>0&&!run.focusShield,this.landing,this.reduced);
+      if(root.CreaturePoses?.draw(c,this.creaturePack,artPose,-size*.5,-size*.8,size,size)){}
+      else if(this.image&&this.image.complete&&this.image.naturalWidth){if(motion)motion.draw(c,this.image,size,pose,this.house.id,this.quality.limits.strips);else c.drawImage(this.image,-size*.5,-size*.8,size,size);}
       else{c.fillStyle=this.house.color;c.beginPath();c.arc(0,-size*.25,size*.25,0,TAU);c.fill();}
       c.restore();
       if(run.boss)this.drawBoss(run);

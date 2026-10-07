@@ -15,10 +15,12 @@
     function markup(id,level){
         if(!valid(id))return '';
         level=clamp(level);
+        scope.CreaturePoses?.preload(id,level);
         return `<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}" role="img" aria-label="${id}, level ${level}"><img class="animated-sprite" src="${source(id,level)}" width="384" height="384" alt="" decoding="async" draggable="false"></span>`;
     }
     function preload(id,level){
         if(!enabled||!valid(id))return Promise.resolve();
+        scope.CreaturePoses?.preload(id,level);
         const url=source(id,level);
         if(images.has(url)){const entry=images.get(url);images.delete(url);images.set(url,entry);return entry.promise;}
         const img=new Image();
@@ -53,6 +55,7 @@
         const container=document.getElementById(`mascot-${job.id}`);
         const old=container?.querySelector('.animated-avatar')?.cloneNode(true);
         held.set(job.id,job.to);render(job.id);
+        scope.CreaturePoses?.board(job.id,'evolution');
         if(!container||reduced()||!old)return;
         const next=container.querySelector('.animated-avatar');
         old.classList.add('animated-previous');old.setAttribute('aria-hidden','true');container.appendChild(old);job.ghost=old;
@@ -142,6 +145,7 @@
         render(id);pump();
     }
     function cancelAll(){
+        scope.CreaturePoses?.clear();
         generation++;queue.clear();held.clear();
         for(const job of active.values()){job.cancelled=true;dispose(job);}
         active.clear();clock.clear();LeagueScenes.leave('evolution');ids.forEach(render);

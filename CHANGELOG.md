@@ -2,6 +2,16 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.5.0
+- 465 transparent action poses: all four team avatars at levels 0–10, ten island bosses and Vixar, derived from their original visual identities.
+- Event-driven score, evolution, attack, guard, hit, knockout and recovery poses. Low HP prompts a single bracing response; it does not repeatedly animate every HUD update.
+- Current-level Island Run avatars stride, glide/slither, jump, land and strike. Question gates slow the pose cadence. Boss poses follow their warning, strike, exposed, counter and defeat states.
+- Vixar charge, cast, shield, phase reveal, final blast and Guardian-claw responses use the existing event timings.
+- Champions celebrate first; ties acknowledge one another; a teammate encourages the lowest-scoring creatures. Social exchanges stay inside the four recognition avatars.
+- Lazy-loaded WebP atlases, six-entry image cache, safe original-art fallback, stable anchors, cancellable scene work and pause/visibility cleanup.
+- Local `public/creature-studio.html` previews every creature, level and pose without deploying.
+- No gameplay balance, educational content, roster, save schema, remote protocol, Apps Script or environment-variable changes. Board and phone build strings advance to 10.5.0.
+
 ## 10.4.3
 **400 new translation cards** (ten per island, grades 5–8, on each island's theme): a short Turkish sentence or question with the right English and two English options that change one detail.
 - **English wheel:** half the Translation cards are now sentences or questions.
