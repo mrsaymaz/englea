@@ -5813,7 +5813,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.4.2';
+        const REMOTE_BUILD = '10.4.3';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;

@@ -38,9 +38,19 @@ await test('v10.4.1 Vocabulary mixes in Turkish: about one card in three shows a
   assert.equal(new Set(c.options.map(o=>o.toLocaleLowerCase('tr'))).size,3);assert.match(c.explain,new RegExp(`^“${c.prompt}” means “`));}
  assert(turkish/n>.2&&turkish/n<.45,`${turkish} of ${n}`);
 });
+await test('v10.4.2 Translation: half the cards translate a Turkish sentence or question from the island’s ten (also in Island Run)',()=>{
+ let sentences=0,n=0;
+ for(const g of [5,6,7,8])for(let i=0;i<10;i++){
+  const own=C.grades[g][i].bank.filter(q=>/-ztranslate-\d+$/.test(q.id));assert.equal(own.length,10,`grade ${g} island ${i+1}: ten translations in Island Run`);
+  assert(own.every(q=>q.kind==='question'&&q.instruction==='Translate into English'&&q.answer===0));
+  for(let s=1;s<=10;s++){const c=L.deal('Translation',ctx(g,i),seeded(s*97+i+g));n++;if(!c.sentence)continue;sentences++;
+   const row=own.find(q=>q.prompt===c.prompt);assert(row,c.prompt);assert.equal(c.options[c.answer],row.choices[0]);
+   assert.equal(c.instruction,c.prompt.endsWith('?')?'Choose the English question.':'Choose the English sentence.');}}
+ assert(sentences/n>.35&&sentences/n<.65,`${sentences} of ${n}`);
+});
 await test('Cards come from the team’s current island first (words of island 4 on island 4)',()=>{
  const own=new Set(L.material(C.grades[6][3].bank).pairs.map(p=>p.en));
- for(let s=1;s<=30;s++){const card=L.deal('Translation',ctx(6,3),seeded(s));assert(own.has(card.word),card.word);}
+ for(let s=1;s<=30;s++){const card=L.deal('Translation',ctx(6,3),seeded(s));if(card.sentence)continue;assert(own.has(card.word),card.word);} // word cards; sentence cards are tested below
 });
 await test('Sentence Repair marks one wrong word that is among the options; Listening: grades 5–6 hear a word, grades 7–8 a sentence',()=>{
  for(let s=1;s<=20;s++){const c=L.deal('Sentence Repair',ctx(5,s%10),seeded(s));assert.equal(c.prompt,c.mistake.before+c.mistake.word+c.mistake.after);

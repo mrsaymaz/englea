@@ -2,6 +2,14 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.4.3
+**400 new translation cards** (ten per island, grades 5–8, on each island's theme): a short Turkish sentence or question with the right English and two English options that change one detail.
+- **English wheel:** half the Translation cards are now sentences or questions.
+- **Island Run:** they are "Translate into English" questions, so each island has 116 questions (4,640 in all). Saved progress, answer logs and Google Sheets are unchanged. Islands edited in Studio keep the teacher's bank; importing an older backup adds the new questions once.
+- The board now loads the Island Run content with the build number, so a new release is always fetched.
+
+No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
+
 ## 10.4.2
 **Vocabulary mixes in Turkish**: about one card in three shows an English word and three Turkish meanings; the rest show an English meaning and three English words. Studio word pairs without English meanings now make Vocabulary cards too. No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
 

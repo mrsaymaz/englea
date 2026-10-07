@@ -1,3 +1,29 @@
+# v10.4.3 verification
+
+## v10.4.3: sentence and question translations
+
+All 400 rows (`public/island-runner/translate-grade5–8.js`) were read through and pass `tests/island-short.cjs`:
+- ten per island;
+- at least 3 questions and 3 statements per island;
+- short Turkish and English;
+- every option ends like the Turkish;
+- three different options.
+
+One wrong option that was also true was replaced ("A bird has a beak and wings" → "Birds have teeth and wings").
+
+**Island Run:**
+- 40 banks of 116 (4,640 questions); all valid, with unique IDs.
+- 240 simulated full runs still complete.
+- Importing an older teacher backup adds the new questions once (the engine test's expected counts moved from 105/104 to 115/114).
+- `island-run-integration.cjs` and `teacher-studio.cjs` pass.
+
+**English wheel (`v104.cjs`):**
+- every island has its ten translations, as Island Run "question" items with the instruction "Translate into English";
+- 35–65% of Translation cards are sentences;
+- the right choice is the row's English.
+
+`board-v104.cjs` passes.
+
 # v10.4.2 verification
 
 ## v10.4.2: Vocabulary in Turkish too

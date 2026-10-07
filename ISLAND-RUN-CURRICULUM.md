@@ -59,7 +59,7 @@ Soft and Hard change motor demands and available guards; they do not label learn
 
 ## Version 3 question expansion
 
-There are 106 original variations per island, 1,060 per grade and 4,240 across the game. Each bank contains 24 bilingual vocabulary pairs (48 translations), 20 English definitions, 22 sentence gaps and 16 applied questions. This release adds 1,120 variations to version 2. These practise a smaller set of learning targets; they are not 4,240 separate curriculum outcomes.
+v10.4.3 adds ten Turkish → English sentence and question translations per island, so there are 116 variations per island, 1,160 per grade and 4,640 across the game. Before v10.4.3 there were 106 original variations per island, 1,060 per grade and 4,240 across the game. Each bank contains 24 bilingual vocabulary pairs (48 translations), 20 English definitions, 22 sentence gaps and 16 applied questions. This release adds 1,120 variations to version 2. These practise a smaller set of learning targets; they are not 4,240 separate curriculum outcomes.
 
 The additional contextual items include notices, timetables, short dialogues, comparisons, sequences, responsibilities and basic reading inference. Gaps vary ownership, singular/plural forms, verb forms, quantities, comparison, past events, plans, predictions and functional language according to the existing theme map. Some words and definitions are extension practice; use Teacher → Edit questions to match prerequisites, textbook language and class pacing. The runner does not claim complete coverage of every curriculum objective.
 

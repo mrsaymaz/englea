@@ -1,6 +1,10 @@
-# v10.4.2 — The Challenge Deck
+# v10.4.3 — The Challenge Deck
 
-**New in v10.4.2:** about one Vocabulary card in three shows an English word (“shy”) and three Turkish meanings (“utangaç” is right). The other cards still show an English meaning and three English words.
+**New in v10.4.3:** 400 new translation cards, ten for each island of grades 5–8, on the island's theme and with its words. Each one is a short Turkish sentence or question (“Fen dersi saat onda başlar.”) with three English choices: the right translation and two that change one detail (“Science starts at two.”, “Science started at ten.”).
+- **On the English wheel:** half the Translation cards are now sentences or questions; the other half are single words.
+- **In Island Run:** they appear as “Translate into English” questions, ten more per island (116 instead of 106). Islands you edited in Studio keep exactly the questions you saved.
+
+**Also in v10.4.2:** about one Vocabulary card in three shows an English word (“shy”) and three Turkish meanings (“utangaç” is right). The other cards still show an English meaning and three English words.
 
 **Also in v10.4.1:** Ask a Question cards are short and easy. Each island of grades 5–8 now has six of its own, on the island's theme (240 in all). A card shows a short answer, such as “At eight o'clock.”, and three short questions: the right one and two proper questions that ask for something else (“Where does school start?”).
 
@@ -27,7 +31,7 @@ When a team reaches **Level 5** or **Level 10** and the wheel is set to **Englis
 | Card | How it is answered |
 | --- | --- |
 | **Vocabulary**: an English meaning, or an English word (one card in three) | three English words, or three Turkish meanings |
-| **Translation**: a Turkish word | three English words |
+| **Translation**: a Turkish word, or (half the cards) a Turkish sentence or question | three English words, or three English sentences |
 | **Grammar**: a sentence with a gap | three words |
 | **Sentence Repair**: one wrong word, marked in red | three fixes |
 | **Listening**: the board speaks a word (grades 5–6) or a sentence (grades 7–8); 🔊 plays it again | three options |
@@ -55,7 +59,7 @@ Every card is saved in a new **Challenge_Log** tab when you save the session fro
    - **Deploy → Manage deployments → Edit → New version → Deploy**.
    - Until you do this, the phone keeps the cards and tells you to update when you save.
 2. Deploy the complete extracted project to your existing Netlify site with your usual method. Include **public**, **netlify/functions** and **netlify.toml**.
-3. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.4.2**.
+3. Refresh the board and the phone. Both opening screens must show **Island Run Edition · v10.4.3**.
 
 ## Quick classroom check
 

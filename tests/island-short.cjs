@@ -34,5 +34,27 @@ for(const g of grades)for(const kind of ['questions','variety']){
     if(r.some(x=>/[`|]/.test(x)))say(i,`task ${n+1} contains | or a backtick`);}});
  });
 }
+// v10.4.2: translate-grade5–8.js: ten Turkish → English rows per island (Turkish|correct English|wrong|wrong).
+// Short (Turkish ≤ 10 words, English ≤ 10 words, ≤ 65 characters), at least 3 questions and 3 statements per island,
+// every option ends like the Turkish (? or .), three different options.
+for(const g of grades){
+ const file=`translate-grade${g}.js`,full=path.join(dir,file);
+ if(!fs.existsSync(full)){problems.push(`${file}: missing`);continue;}
+ const c={};c.globalThis=c;vm.createContext(c);vm.runInContext(fs.readFileSync(full,'utf8'),c,{filename:file});
+ const islands=c.RunnerTranslate?.[g];const say=(i,m)=>problems.push(`${file} island ${i+1}: ${m}`);
+ if(!Array.isArray(islands)||islands.length!==10){problems.push(`${file}: needs 10 islands`);continue;}
+ islands.forEach((text,i)=>{const r=rows(text);if(r.length!==10)say(i,`needs 10 rows (has ${r.length})`);
+  let q=0,st=0;const seen=new Set();
+  r.forEach((x,n)=>{if(x.length!==4||x.some(v=>!v)){say(i,`row ${n+1} needs turkish|english|wrong|wrong`);return;}
+   if(seen.has(x[0]))say(i,`row ${n+1} repeats a Turkish sentence`);seen.add(x[0]);
+   const end=x[0].slice(-1);if(end==='?')q++;else st++;
+   if(!/[.?!]$/.test(x[0]))say(i,`row ${n+1}: end the Turkish with . ? or !`);
+   if(wc(x[0])>10)say(i,`row ${n+1}: Turkish has ${wc(x[0])} words`);
+   x.slice(1).forEach(e=>{if(wc(e)>10||e.length>65)say(i,`row ${n+1}: English too long: ${e}`);if((e.slice(-1)==='?')!==(end==='?'))say(i,`row ${n+1}: “${e}” should end like the Turkish`);});
+   if(new Set(x.slice(1).map(e=>e.toLowerCase())).size!==3)say(i,`row ${n+1}: options repeat`);
+   if(x.some(v=>/[`|]/.test(v)))say(i,`row ${n+1} contains | or a backtick`);});
+  if(q<3||st<3)say(i,`needs at least 3 questions and 3 statements (has ${q} and ${st})`);
+ });
+}
 if(problems.length){console.log(problems.join('\n'));console.log(`\n${problems.length} problems`);process.exitCode=1;}
-else console.log(`PASS Island Run content for grade${grades.length>1?'s 5–8':' '+grades[0]} is short: tasks ≤ ${LIMIT.question} words, choices ≤ ${LIMIT.choice}, meanings ≤ ${LIMIT.meaning}, gaps ≤ ${LIMIT.gap}; structure, words and correct answers kept`);
+else console.log(`PASS Island Run content for grade${grades.length>1?'s 5–8':' '+grades[0]} is short: tasks ≤ ${LIMIT.question} words, choices ≤ ${LIMIT.choice}, meanings ≤ ${LIMIT.meaning}, gaps ≤ ${LIMIT.gap}; structure, words and correct answers kept; ten short translations per island`);

@@ -6,8 +6,8 @@ function test(name,fn){fn();checks++;console.log('PASS',name);}
 const options={bank:C.grades[5][0].bank,seed:42};
 const advance=(r,seconds)=>{for(let t=0;t<seconds;t+=1/60)r.step(1/60);};
 const {drive,simulate}=require('../runner-driver.cjs');
-test('40 banks contain 4,240 valid variations with stable unique IDs and all three types',()=>{
- let total=0;for(const units of Object.values(C.grades)){assert.equal(units.length,10);for(const u of units){assert.equal(u.bank.length,106);assert(u.bank.every(E.validateQuestion));assert.equal(new Set(u.bank.map(q=>q.id)).size,106);assert.deepEqual(new Set(u.bank.map(q=>q.kind)),new Set(['word','gap','question']));total+=u.bank.length;}}assert.equal(total,4240);assert.equal(B.bosses.length,10);
+test('40 banks contain 4,640 valid variations (v10.4.2: ten translations each) with stable unique IDs and all three types',()=>{
+ let total=0;for(const units of Object.values(C.grades)){assert.equal(units.length,10);for(const u of units){assert.equal(u.bank.length,116);assert(u.bank.every(E.validateQuestion));assert.equal(new Set(u.bank.map(q=>q.id)).size,116);assert.deepEqual(new Set(u.bank.map(q=>q.kind)),new Set(['word','gap','question']));total+=u.bank.length;}}assert.equal(total,4640);assert.equal(B.bosses.length,10);
 });
 test('Question types, question IDs and answer lanes shuffle without corrupting the answer',()=>{
  const lanes=new Set(),orders=new Set(),first=new Set();for(let seed=0;seed<90;seed++){
@@ -60,8 +60,8 @@ test('Boss appears before the finish; unfinished or knocked-out runs never unloc
 test('Version 1 migration preserves progress, teacher edits and deletions while adding new items once',()=>{
  const old={...E.fresh(),version:1};delete old.contentRevision;delete old.seen;
  old.overrides['5-1']=C.grades[5][0].bank.filter(q=>C.grades[5][0].legacyIds.includes(q.id)).slice(1).map(E.cleanQuestion);old.overrides['5-1'][0].prompt='Teacher’s updated prompt';old.progress['5-A|gryffindor']={1:{score:500,stars:2}};
- const next=E.validateSave(old,C);assert.equal(next.version,3);assert.equal(next.overrides['5-1'].length,105);assert(!next.overrides['5-1'].some(q=>q.id===options.bank[0].id));assert.equal(next.overrides['5-1'][0].prompt,'Teacher’s updated prompt');assert.deepEqual(next.progress,old.progress);assert.deepEqual(E.validateSave(next,C),next);
- next.overrides['5-1'].pop();assert.equal(E.validateSave(next,C).overrides['5-1'].length,104);
+ const next=E.validateSave(old,C);assert.equal(next.version,3);assert.equal(next.overrides['5-1'].length,115);assert(!next.overrides['5-1'].some(q=>q.id===options.bank[0].id));assert.equal(next.overrides['5-1'][0].prompt,'Teacher’s updated prompt');assert.deepEqual(next.progress,old.progress);assert.deepEqual(E.validateSave(next,C),next);
+ next.overrides['5-1'].pop();assert.equal(E.validateSave(next,C).overrides['5-1'].length,114);
 });
 test('Backups preserve Turkish text and history and reject malformed question banks',()=>{
  const s=E.fresh();s.overrides['5-1']=options.bank.map(E.cleanQuestion);s.seen['5-A|5-1']={word:[options.bank[0].id]};const migrated=E.validateSave(JSON.parse(JSON.stringify(s)),C);assert.deepEqual(migrated.overrides,s.overrides);assert(migrated.seen['5-A|5-1'].word.includes(options.bank[0].id));assert.deepEqual(E.validateSave(migrated,C),migrated);
@@ -114,7 +114,7 @@ test('Forward jump collects at the actual runner position, once, before the came
 test('Version 2 migration preserves teacher changes and deletions, updates untouched definitions and adds new items once',()=>{
  const u=C.grades[5][0],old={...E.fresh(),version:2,contentRevision:2};old.overrides['5-1']=u.revision2Bank.slice(1).map(E.cleanQuestion);old.overrides['5-1'][0].prompt='Teacher custom wording';
  const definition=u.revision2Bank.find(q=>q.id.endsWith('-meaning'));old.seen['5-A|5-1']={question:[definition.id]};
- const next=E.validateSave(old,C);assert.equal(next.overrides['5-1'].length,105);assert.equal(next.overrides['5-1'][0].prompt,'Teacher custom wording');assert(!next.overrides['5-1'].some(q=>q.id===u.revision2Bank[0].id));assert.equal(next.overrides['5-1'].find(q=>q.id===definition.id).kind,'word');assert(next.seen['5-A|5-1'].word.includes(definition.id));assert.deepEqual(E.validateSave(next,C),next);
+ const next=E.validateSave(old,C);assert.equal(next.overrides['5-1'].length,115);assert.equal(next.overrides['5-1'][0].prompt,'Teacher custom wording');assert(!next.overrides['5-1'].some(q=>q.id===u.revision2Bank[0].id));assert.equal(next.overrides['5-1'].find(q=>q.id===definition.id).kind,'word');assert(next.seen['5-A|5-1'].word.includes(definition.id));assert.deepEqual(E.validateSave(next,C),next);
  const edited=JSON.parse(JSON.stringify(old));edited.overrides['5-1'].find(q=>q.id===definition.id).prompt='A teacher-authored definition';assert.equal(E.validateSave(edited,C).overrides['5-1'].find(q=>q.id===definition.id).kind,'question');
 });
 let simulated=0,minTime=Infinity,maxTime=0,minCoins=Infinity,maxCoins=0,failures=[];
@@ -126,5 +126,5 @@ test('240 full runs: every grade/island/mode/reading pace can complete all six q
  minTime=Math.min(minTime,r.time);maxTime=Math.max(maxTime,r.time);minCoins=Math.min(minCoins,r.coins);maxCoins=Math.max(maxCoins,r.coins);simulated++;
  }assert.deepEqual(failures,[]);
 });
-console.log(JSON.stringify({checks,simulatedRuns:simulated,questionVariants:4240,runSeconds:[Math.round(minTime),Math.round(maxTime)],collectedCoins:[minCoins,maxCoins]}));
+console.log(JSON.stringify({checks,simulatedRuns:simulated,questionVariants:4640,runSeconds:[Math.round(minTime),Math.round(maxTime)],collectedCoins:[minCoins,maxCoins]}));
 module.exports={drive,simulate};

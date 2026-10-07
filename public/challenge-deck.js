@@ -48,10 +48,12 @@
 
  // ---- Content: everything a card needs, read from an island's question bank ----
  function material(bank){
-  const pairs=new Map(),defs=new Map(),gaps=[],questions=[];
+  const pairs=new Map(),defs=new Map(),gaps=[],questions=[],sentences=[];
   for(const q of Array.isArray(bank)?bank:[]){
    if(!q||!Array.isArray(q.choices)||q.choices.length<3)continue;
    const right=clean(q.choices[q.answer??0]);
+   // v10.4.2: the island's Turkish → English sentence and question translations.
+   if(/-ztranslate-\d+$/.test(q.id||'')){sentences.push({tr:clean(q.prompt),right,wrong:q.choices.filter((c,i)=>i!==(q.answer??0)).map(clean)});continue;}
    const pair=/^(.+?) = (.+)$/.exec(clean(q.explanation));
    if(q.kind==='word'&&pair&&!pairs.has(pair[1].toLowerCase()))pairs.set(pair[1].toLowerCase(),{en:pair[1],tr:pair[2]});
    const def=/^Which word means “(.+)”\?$/.exec(clean(q.prompt));
@@ -60,7 +62,7 @@
    else if(q.kind==='question'&&!pair)questions.push({prompt:clean(q.prompt),right,wrong:q.choices.filter((c,i)=>i!==(q.answer??0)).map(clean)});
   }
   for(const [k,d] of defs){const p=pairs.get(k);if(p)p.def=d.def;else pairs.set(k,{en:d.en,tr:'',def:d.def});}
-  return {pairs:[...pairs.values()],gaps,questions};
+  return {pairs:[...pairs.values()],gaps,questions,sentences};
  }
  // Seeded randomness keeps tests repeatable; the board passes Math.random.
  function pick(list,random){return list.length?list[Math.floor(random()*list.length)]:null;}
@@ -84,7 +86,12 @@
    const target=pick(english,random);const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;
    return {prompt:`Which word means “${target.def}”?`,instruction:'Read the meaning. Choose the English word.',...options(target.en,wrong,random),word:target.en,
     explain:`“${target.en}” means ${target.def}${target.tr?` (in Turkish: ${target.tr})`:''}.`};},
-  'Translation'(m,ctx,random){const target=pick(m.pairs.filter(p=>p.tr),random);if(!target)return null;const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;
+  // Half the cards translate a Turkish sentence or question (v10.4.2), half a single word.
+  'Translation'(m,ctx,random){
+   const sentence=(m.sentences||[]).length&&(!m.pairs.some(p=>p.tr)||random()<.5)?pick(m.sentences.filter(x=>x.wrong.length>=2&&unique([x.right,...x.wrong])),random):null;
+   if(sentence)return {prompt:sentence.tr,instruction:sentence.tr.endsWith('?')?'Choose the English question.':'Choose the English sentence.',...options(sentence.right,sentence.wrong.slice(0,2),random),
+    word:sentence.right,sentence:true,explain:`“${sentence.tr}” in English is “${sentence.right}”`};
+   const target=pick(m.pairs.filter(p=>p.tr),random);if(!target)return null;const wrong=others(ctx.wordPool,target,2,random,p=>p.en).map(p=>p.en);if(wrong.length<2)return null;
    return {prompt:target.tr,instruction:'What is this word in English?',...options(target.en,wrong,random),word:target.en,explain:`“${target.tr}” in English is “${target.en}”.`};},
   'Grammar'(m,ctx,random){const g=pick(m.gaps.filter(g=>g.wrong.length>=2&&unique([g.right,...g.wrong])),random);if(!g)return null;
    return {prompt:g.text,instruction:'Choose the word that completes the sentence.',...options(g.right,g.wrong.slice(0,2),random),word:g.right,explain:`The full sentence is: “${g.text.replace('___',g.right)}”`};},

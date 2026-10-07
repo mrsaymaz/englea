@@ -50,7 +50,7 @@ const child=environment(read('island-runner/index.html'),'https://tally.invalid/
 const storage=new Map(),C=require('../public/island-runner/expand-content.js'),E=require('../public/island-runner/engine.js');
 const saved=E.fresh();Object.assign(saved.settings,{grade:5,className:'5-C',house:'gryffindor'});saved.progress['7-A|ravenclaw']={1:{score:900,stars:3}};saved.progress['5-C|gryffindor']={1:{score:300,stars:1}};
 storage.set(E.storageKey,JSON.stringify(saved));child.w.localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
-for(const file of ['host-bridge.js','content.js',...Array.from({length:4},(_,i)=>`questions-grade${i+5}.js`),...Array.from({length:4},(_,i)=>`variety-grade${i+5}.js`),'expand-content.js','islands.js','engine.js','pictures.js','formats.js','bosses.js'])child.eval('island-runner/'+file);
+for(const file of ['host-bridge.js','content.js',...Array.from({length:4},(_,i)=>`questions-grade${i+5}.js`),...Array.from({length:4},(_,i)=>`variety-grade${i+5}.js`),...Array.from({length:4},(_,i)=>`translate-grade${i+5}.js`),'expand-content.js','islands.js','engine.js','pictures.js','formats.js','bosses.js'])child.eval('island-runner/'+file);
 child.w.RunnerScenery={islandSVG:()=>'<svg></svg>',Renderer:class{constructor(){child.renderer=this;}resize(){}setup(...args){this.args=args;}burst(){}render(run){this.lastRun=run;}}};
 new Node('span',child.document).append(child.document.getElementById('coinCount'));
 const gates=child.document.getElementById('answerGates');for(let i=0;i<3;i++)gates.append(new Node('div',child.document));

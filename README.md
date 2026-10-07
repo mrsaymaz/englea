@@ -1,6 +1,6 @@
-# English League with Mr. Saymaz — v10.4.2
+# English League with Mr. Saymaz — v10.4.3
 
-Start with **START-HERE-v10.4.2.md**: the **Challenge Deck** (v10.4.2 adds Turkish Vocabulary cards; v10.4.1 makes Ask a Question cards and Island Run questions short and easy). At Level 5 and 10 the English wheel deals a real card from the class's islands to the student who gave the last point. Right keeps the level; wrong takes the team back to the previous level. Taboo puts forbidden Turkish words on your phone. Every card is saved to a new Challenge_Log tab. Apps Script update: **GOOGLE-APPS-SCRIPT-v10.4.0.gs**.
+Start with **START-HERE-v10.4.3.md**: the **Challenge Deck** (v10.4.3 adds 400 sentence and question translations to the wheel and Island Run; v10.4.2 adds Turkish Vocabulary cards; v10.4.1 makes Ask a Question cards and Island Run questions short and easy). At Level 5 and 10 the English wheel deals a real card from the class's islands to the student who gave the last point. Right keeps the level; wrong takes the team back to the previous level. Taboo puts forbidden Turkish words on your phone. Every card is saved to a new Challenge_Log tab. Apps Script update: **GOOGLE-APPS-SCRIPT-v10.4.0.gs**.
 
 ## v10.3.0 (retained)
 
@@ -22,7 +22,7 @@ Guide: `archive/START-HERE-v10.1.0.md`. Type your Teacher PIN under the room cod
 
 Guide: `archive/START-HERE-v10.0.0.md`. A student's award card now takes on their team's element as they collect Island Run navigator seals (fire, nature, water, air), growing stronger with every seal until, at all ten, it wears a crown and a title: **Flamebearer**, **Earthshaker**, **Tidecaller** or **Stormrider**. The whole school now plays one **League Season**: a Season Wins panel on the Champions screen ranks the four teams by League titles and Final Arena wins across every class, counting every session already in the Sheet.
 
-**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v10.4.0.gs** (deploy a New version of the existing web app; it includes v10.2.0, v10.1.2, v10.0.0, v9.7.0 and v9.6.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v10.4.2** (v10.4.2 adds Turkish Vocabulary cards; v10.4.1 shortens Ask a Question cards; v10.4.0 adds the Challenge Deck; v10.3.0 smooths class moments on slow boards; v10.2.0 adds the Comeback Halo; v10.1.2 writes Google Sheets dates day first; v10.1.1 shows one student card at a time and keeps it clear of the team cards' ranking slide; v10.0.1 keeps the "★ First time" tag above the elemental card effects; v10.0.2 brings the school season from the phone to the board).
+**Apps Script update required**: **GOOGLE-APPS-SCRIPT-v10.4.0.gs** (deploy a New version of the existing web app; it includes v10.2.0, v10.1.2, v10.0.0, v9.7.0 and v9.6.0). No new Netlify or Cloudflare variables. Both opening screens should show **Island Run Edition · v10.4.3** (v10.4.3 adds sentence translations; v10.4.2 adds Turkish Vocabulary cards; v10.4.1 shortens Ask a Question cards; v10.4.0 adds the Challenge Deck; v10.3.0 smooths class moments on slow boards; v10.2.0 adds the Comeback Halo; v10.1.2 writes Google Sheets dates day first; v10.1.1 shows one student card at a time and keeps it clear of the team cards' ranking slide; v10.0.1 keeps the "★ First time" tag above the elemental card effects; v10.0.2 brings the school season from the phone to the board).
 
 ## v9.7.0 (retained)
 
@@ -44,7 +44,7 @@ v9.4.0 gave Island Run a single header while running, a daylight scene for each 
 
 v9.3.0 turned Island Run into a learning loop: team answers are saved to Google Sheets, missed concepts come back in later runs, one missed question gets a second chance, and new listening gates, picture gates and a Word Trail (with a 15% Word Strike) join the run. A navigator from the champion team is named (since v9.7.0, one navigator leads the whole session). The teacher remote fits an iPhone 14 Pro in Safari without scrolling.
 
-Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v10.4.2.md**.
+Older guides, reports and scripts are in `archive/`; `CHANGELOG.md` lists every version. Tests and limits: **TEST-REPORT-v10.4.3.md**.
 
 ## Retained features and earlier fixes
 
@@ -59,9 +59,9 @@ Version 9 adds the four selected features:
 - Teacher Studio: use **Manage** on the phone or board to edit questions and learning objectives, preview choices, paste vocabulary pairs, maintain rosters and view class progression. Teaching material saves online by grade and island.
 - A compact expedition recap below the existing champion and contributor sections, with team progress, this lesson's new completions and a next-island teaser.
 
-For this release, use **START-HERE-v10.4.2.md** and deploy **GOOGLE-APPS-SCRIPT-v10.4.0.gs**. The startup badge should read **Island Run Edition · v10.4.2** on both devices. No new environment variables are required.
+For this release, use **START-HERE-v10.4.3.md** and deploy **GOOGLE-APPS-SCRIPT-v10.4.0.gs**. The startup badge should read **Island Run Edition · v10.4.3** on both devices. No new environment variables are required.
 
-Remote startup synchronization, Retry sync, class/team cloud progress and session-save deduplication from v8.9.1 remain included. Existing artwork, grade curricula, 4,240 question variants, scoring, coin targets and Soft/Hard rules are retained.
+Remote startup synchronization, Retry sync, class/team cloud progress and session-save deduplication from v8.9.1 remain included. Existing artwork, grade curricula, 4,640 question variants (4,240 before v10.4.3), scoring, coin targets and Soft/Hard rules are retained.
 
 The script automatically creates `Teaching_Content` for published questions and objectives. No manual question or student rows are needed. Edits apply to every class of that grade; rosters and island progression remain class-specific. Running games finish with their existing question set; new runs receive published edits. Load islands or reload the unit in Studio to retrieve another device's online changes.
 
