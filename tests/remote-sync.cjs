@@ -17,7 +17,7 @@ function environment(role){
  classMission:{target:15,progress:0},unityEventRunning:false,unityEventQueued:false,currentPointValue:10,performanceMode:'light',deferredPerformanceMode:null,activeWheelSpin:null,
  LeagueScenes:{active:null,paused:false},LeagueIslandRun:{state:{}},LeagueStudents:{snapshot:()=>students},LeagueRoster:{current:()=>catalog},LeagueIslandProgress:{snapshot:()=>({}),merge(){},valid:()=>false},
  LeagueAgent:{close(){}},LeagueStudentUI:{close(){}},shownAgentRequest:null,pendingRemoteClassSelection:null,cachedLeaderboardRecord:null,cachedBattleRecord:null,pendingRemoteFinish:false,
- closeParticipationSummary(){},updateMobileRecordAvailability(){},updateRemoteSceneControls(){},syncStudentState(){return true;},syncRemoteAgents(){},visualModeNames:{light:'Light'},updateMobileClassMissionUI(){},
+ closeParticipationSummary(){},updateMobileRecordAvailability(){},levelCap:()=>10,sagaRemoteState:()=>null,updateRemoteSceneControls(){},syncStudentState(){return true;},syncRemoteAgents(){},visualModeNames:{light:'Light'},updateMobileClassMissionUI(){},
  remoteCommands:{sync(){c.commandReady=true;},acknowledge(){}},lastMatchSummaryPayload:null,lastMatchSummaryAcknowledged:false,summaryRetryTimer:null,summaryRetryAttempts:0,turnRelayConfigured:true,
  setRemoteConnectionStatus(state,detail){c.remoteConnectionState=state;c.detail=detail;},setSummaryDeliveryStatus(){},sendMatchSummaryWithRetry(){},persistMobileRecords(){},remoteFinishTimeout:null,
  handleDataConnectionEnded(conn){conn._endHandled=true;c.ended=true;},createControllerPeer(){},connectControllerToHost(){},location:{reload(){}},

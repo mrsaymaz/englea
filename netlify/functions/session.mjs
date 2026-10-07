@@ -5,7 +5,7 @@ export async function handleSession(request,fetcher=fetch){
  if(!request.headers.get('content-type')?.includes('application/json'))return reply({status:'error',message:'JSON required.'},415);
  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return reply({status:'error',message:'Origin not allowed.'},403);
  let data;try{const raw=await request.text();if(raw.length>900000)return reply({status:'error',message:'Record too large.'},413);data=JSON.parse(raw);}catch{return reply({status:'error',message:'Invalid JSON.'},400);}
- if(!['TEACHING_GET','TEACHING_SAVE','ISLAND_GET','FULL_SESSION','LEADERBOARD_FINAL','BATTLE_OUTCOME'].includes(data?.type)||typeof data.pin!=='string'||!data.pin.trim()||data.pin.length>100)return reply({status:'error',message:'Enter your Teacher PIN.'},400);
+ if(!['TEACHING_GET','TEACHING_SAVE','ISLAND_GET','FULL_SESSION','LEADERBOARD_FINAL','BATTLE_OUTCOME','SAGA_SAVE','SAGA_SET','SAGA_LINES_SAVE'].includes(data?.type)||typeof data.pin!=='string'||!data.pin.trim()||data.pin.length>100)return reply({status:'error',message:'Enter your Teacher PIN.'},400);
  const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),20000);
  try{
   if(data.type!=='ISLAND_GET'&&(data.islandProgress!==undefined||data.questionLog!==undefined)){
@@ -14,13 +14,15 @@ export async function handleSession(request,fetcher=fetch){
    if(capability.status==='unauthorized')return reply(capability);
    if(!check.ok||capability.status!=='success'||!capability.islandProgress)return reply({status:'error',message:'Load islands first. Update Apps Script to v9.0.0 and deploy a New version of the existing web app if needed.'});
    const passport=Object.values(data.islandProgress||{}).some(levels=>Object.values(levels||{}).some(v=>v?.coinPercent!==undefined||v?.hardClear!==undefined));
-   if(data.questionLog!==undefined&&capability.questionLogVersion!==1)return reply({status:'error',message:'Island Run answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(data.questionLog!==undefined&&capability.questionLogVersion!==1)return reply({status:'error',message:'Island Run answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
    // v9.6.0: every student's contribution count needs the v9.6.0 script; an older script would keep only the top three.
-   if(data.studentContributions?.everyone!==undefined&&capability.contributionsVersion!==1)return reply({status:'error',message:'Student contributions are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(data.studentContributions?.everyone!==undefined&&capability.contributionsVersion!==1)return reply({status:'error',message:'Student contributions are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
    // v9.7.0: navigator seals need the v9.7.0 script; an older one would silently drop them.
-   if(Array.isArray(data.navigatorSeals)&&data.navigatorSeals.length&&capability.navigatorSealsVersion!==1)return reply({status:'error',message:'Navigator seals are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(Array.isArray(data.navigatorSeals)&&data.navigatorSeals.length&&capability.navigatorSealsVersion!==1)return reply({status:'error',message:'Navigator seals are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
    // v10.4.0: Challenge Deck cards need the v10.4.0 script; an older one would silently drop them.
-   if(Array.isArray(data.challengeLog)&&data.challengeLog.length&&capability.challengeLogVersion!==1)return reply({status:'error',message:'Challenge cards are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v10.4.0.gs, deploy a New version of the existing web app, then save again.'});
+   if(Array.isArray(data.challengeLog)&&data.challengeLog.length&&capability.challengeLogVersion!==1)return reply({status:'error',message:'Challenge cards are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
+   // v11.0.0: Merge Spell answers need the v11.0.0 script; an older one would refuse the whole save.
+   if(Array.isArray(data.challengeLog)&&data.challengeLog.some(row=>row?.merge===true||String(row?.type||'').startsWith('Merge'))&&capability.sagaVersion!==1)return reply({status:'error',message:'Merge Spell answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
    if(passport&&capability.passportVersion!==1)return reply({status:'error',message:'Your passport is kept locally. Update Apps Script using GOOGLE-APPS-SCRIPT-v9.1.0.gs, then deploy a New version of the existing web app and retry this save.'});
   }
   const upstream=await fetcher(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),redirect:'follow',signal:abort.signal});
@@ -28,7 +30,9 @@ export async function handleSession(request,fetcher=fetch){
   if(!upstream.ok||!['success','unauthorized','conflict','error'].includes(result?.status))throw Error('Invalid response');
   if(result.status==='success'&&(data.type==='ISLAND_GET'||data.islandProgress!==undefined)&&(!result.islandProgress||typeof result.islandProgress!=='object'))return reply({status:'error',message:'Update Apps Script to v9.0.0 and deploy a New version of the existing web app.'});
   if(result.status==='success'&&data.type.startsWith('TEACHING_')&&(!result.content||!result.revision))return reply({status:'error',message:'Update Apps Script to v9.0.0.'});
-  if(result.message==='Unknown record type')result.message='Update Apps Script to v9.0.0 and deploy a New version of the existing web app.';
+  // v11.0.0: an older script does not know the Vixar Saga and writes nothing; the stage stays queued on the phone.
+  if(result.message==='Unknown record type'&&data.type.startsWith('SAGA_'))result.message='The Vixar Saga is kept on this board and phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then it is saved.';
+  else if(result.message==='Unknown record type')result.message='Update Apps Script to v9.0.0 and deploy a New version of the existing web app.';
   return reply(result);
  }catch{return reply({status:'error',message:'Could not confirm the save. Check your connection and retry; records with a session ID will not duplicate.',uncertain:true},502);}
  finally{clearTimeout(timer);}

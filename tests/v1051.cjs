@@ -30,11 +30,13 @@ await test('The pose layer is square and fitted by CSS; the script measures only
  assert.match(js,/if\(!squareByCSS\)\{const side=Math\.min\(el\.clientWidth,el\.clientHeight\);/);
  assert.equal((js.match(/clientWidth|clientHeight|getBoundingClientRect|offsetWidth/g)||[]).length,8,'no measuring added: the old-browser fallback and the Champions seating of v10.5.0 only');
 });
-await test('Wiring: version 10.5.1 on the page, the phone check and Island Run; the pose pictures keep their 10.5.0 cache tag',()=>{
- const html=pub('index.html'),run=pub('island-runner/index.html');
- assert(html.includes('creature-poses.js?v=10.5.1')&&run.includes('../creature-poses.js?v=10.5.1'));
- assert.match(pub('game.js'),/const REMOTE_BUILD = '10\.5\.1';/);assert.match(pub('teaching.js'),/file\+'\?v=10\.5\.1'/);
- assert.match(pub('creature-poses.js'),/url:base\+p\.key\+'\.webp\?v=10\.5\.0'/,'the art is unchanged, so boards do not download it again');
+await test('Wiring: the current build on the page, the phone check and Island Run; the v10.5.0 pose pictures keep their 10.5.0 cache tag',()=>{
+ const html=pub('index.html'),run=pub('island-runner/index.html'),build=(pub('game.js').match(/const REMOTE_BUILD = '(\d+\.\d+\.\d+)';/)||[])[1];
+ assert(build,'REMOTE_BUILD');assert(html.includes('creature-poses.js?v='+build)&&run.includes('../creature-poses.js?v='+build));
+ assert(pub('teaching.js').includes("file+'?v="+build+"'"));
+ // v11.0.0: the original sheets are unchanged, so boards do not download them again; only the new sheets have a new tag.
+ const js=pub('creature-poses.js');assert.match(js,/url:base\+p\.key\+'\.webp\?v='\+tag\(p\.key\)/);
+ assert.match(js,/const tag=key=>\/-1\[12\]\$\|\^vixar-\|\^slyffindor\$\|\^huffleclaw\$\/\.test\(key\)\?'11\.0\.0':'10\.5\.0';/);
 });
 console.log(JSON.stringify({checks}));
 })().catch(error=>{console.error(error);process.exit(1);});

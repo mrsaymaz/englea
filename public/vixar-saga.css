@@ -1,0 +1,266 @@
+/* v11.0.0 · The Vixar Saga. Static colours, transforms and opacity only: nothing here animates a filter or a shadow. */
+
+/* ---- Team cards: Mythic (Level 11) and Celestial (Level 12); a Freed class keeps a faint gold edge ---- */
+.team-level-display[data-tier="mythic"] { border-color:#c4b5fd; }
+.team-level-display[data-tier="celestial"] { border-color:#fda4af; }
+.team-level-display[data-tier="mythic"] .team-level-badge span { color:#ddd6fe; font-size:.6rem; letter-spacing:.1em; }
+.team-level-display[data-tier="celestial"] .team-level-badge span { color:#fecdd3; font-size:.6rem; letter-spacing:.1em; }
+.team-container.mythic { border-color:#a78bfa; }
+.team-container.celestial { border-color:#fb7185; }
+.team-container.saga-freed-edge { outline:2px solid rgba(253,224,71,.42); outline-offset:-4px; }
+
+/* ---- Epilogue: Mr. Saymaz, as an ally, where the raid sigil was ---- */
+#vixar-raid-btn.saga-ally { width:46px; height:46px; border-color:rgba(253,224,71,.8); background:radial-gradient(circle at 50% 40%,#fff7d6,#fbbf24 70%,#92400e); }
+#vixar-raid-btn.saga-ally::before,#vixar-raid-btn.saga-ally::after { display:none; }
+#vixar-raid-btn.saga-ally.visible { animation:none; }
+.saga-ally-portrait { position:absolute; inset:2px; border-radius:50%; overflow:hidden; display:block; }
+.saga-ally-portrait img,.saga-ally-portrait svg { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* ---- The raid, per act ---- */
+#vixar-raid-overlay.saga-form-art #vixar-boss-svg { visibility:hidden; }
+#vixar-raid-overlay.saga-form-art #vixar-animated-actor { display:block; }
+#vixar-raid-overlay[data-act="scarlet"] .vixar-title { color:#fecdd3; text-shadow:0 0 22px rgba(244,63,94,.6); }
+#vixar-raid-overlay[data-act="gilded"] .vixar-title { color:#fef3c7; text-shadow:0 0 22px rgba(251,191,36,.6); }
+#vixar-raid-overlay[data-act="scarlet"] .vixar-arena-eclipse { background:radial-gradient(circle at 50% 42%,rgba(244,63,94,.28),rgba(76,5,25,.55) 40%,transparent 70%); }
+#vixar-raid-overlay[data-act="gilded"] .vixar-arena-eclipse { background:radial-gradient(circle at 50% 42%,rgba(251,191,36,.26),rgba(66,32,6,.5) 40%,transparent 70%); }
+#vixar-raid-overlay[data-act="scarlet"] #vixar-boss-hp-fill { background:linear-gradient(90deg,#4c0519,#e11d48 50%,#fda4af)!important; }
+#vixar-raid-overlay[data-act="gilded"] #vixar-boss-hp-fill { background:linear-gradient(90deg,#78350f,#f59e0b 50%,#fef3c7)!important; }
+.vixar-team-fighter[data-slot="m0"] { left:3%; top:24%; width:clamp(240px,26vw,360px); height:clamp(250px,42vh,380px); }
+.vixar-team-fighter[data-slot="m1"] { right:3%; top:24%; width:clamp(240px,26vw,360px); height:clamp(250px,42vh,380px); }
+.vixar-team-fighter[data-slot="m0"] .vixar-team-panel,.vixar-team-fighter[data-slot="m1"] .vixar-team-panel { top:0; }
+.vixar-team-fighter[data-slot="m1"] .vixar-team-panel { box-shadow:inset -3px 0 0 var(--team-color-b,var(--team-color)),0 10px 26px rgba(0,0,0,.34); }
+#vixar-raid-overlay.fused-fight .vixar-team-fighter:not(.is-merged)[data-slot="0"],#vixar-raid-overlay.fused-fight .vixar-team-fighter:not(.is-merged)[data-slot="1"] { top:58%; }
+#vixar-raid-overlay.fused-fight .vixar-team-fighter:not(.is-merged)[data-slot="2"],#vixar-raid-overlay.fused-fight .vixar-team-fighter:not(.is-merged)[data-slot="3"] { bottom:1%; }
+.vixar-team-fighter.is-merged .vixar-team-panel { border-image:linear-gradient(90deg,var(--team-color),var(--team-color-b)) 1; }
+.merged-name span { display:inline; }
+/* A fused pair: its own picture once added, otherwise both Level 12 creatures standing together. */
+.merged-fighter-art { position:relative; width:100%; height:100%; }
+.merged-member { position:absolute; top:6%; width:74%; height:74%; }
+.merged-member > * { width:100%; height:100%; }
+.merged-member-0 { left:-6%; z-index:1; }
+.merged-member-1 { right:-6%; top:18%; z-index:2; }
+.merged-fighter-art::before { content:""; position:absolute; inset:14% 6% 4%; border-radius:50%; background:radial-gradient(circle,color-mix(in srgb,var(--team-color) 30%,transparent),color-mix(in srgb,var(--team-color-b,#fff) 22%,transparent) 55%,transparent 72%); z-index:0; }
+.merged-art { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:3; opacity:0; }
+.merged-fighter-art.has-art .merged-art { opacity:1; }
+.merged-fighter-art.has-art .merged-member { display:none; }
+/* Scarlet Brand: a large mark over the branded team, readable from the back row. */
+.saga-brand-mark { position:absolute; left:50%; top:-6%; width:58px; height:58px; transform:translate(-50%,0) scale(.4); opacity:0; pointer-events:none; z-index:6;
+  background:radial-gradient(circle,#fff1f2 0 14%,#f43f5e 15% 48%,transparent 50%),conic-gradient(from 45deg,#e11d48 0 25%,transparent 0 50%,#e11d48 0 75%,transparent 0);
+  border-radius:50%; transition:transform .25s ease,opacity .25s ease; }
+.vixar-team-fighter.is-branded .saga-brand-mark { opacity:1; transform:translate(-50%,0) scale(1); }
+.vixar-team-fighter.is-branded .vixar-team-panel { border-color:#f43f5e; }
+.vixar-team-fighter.is-branded .vixar-team-name::after { content:" · BRANDED"; color:#fb7185; font-size:.62em; }
+#vixar-raid-overlay.edict-cast .vixar-team-fighter { opacity:.55; }
+
+/* ---- Act intros ---- */
+.saga-intro-art { position:absolute; left:50%; top:52%; width:min(520px,70vw); height:min(380px,48vh); transform:translate(-50%,-50%); pointer-events:none; }
+.saga-intro-art .saga-intro-form { position:absolute; left:50%; bottom:0; width:72%; transform:translate(-50%,30%) scale(.6); opacity:0; animation:sagaFormStep 1.6s 1.3s cubic-bezier(.2,.8,.2,1) forwards; }
+.saga-tear { position:absolute; left:50%; top:0; width:70%; transform:translateX(-50%) scaleY(.05); animation:sagaTearOpen .6s .2s ease-out forwards; }
+.saga-tear path,.saga-escape-tear path { fill:#14010a; stroke:#fb7185; stroke-width:4; }
+.saga-intro-eye { position:absolute; left:50%; top:4%; width:24%; transform:translateX(-50%) scaleY(.05); animation:sagaEyeOpen .8s .7s ease-out forwards; }
+.saga-gold-crack { position:absolute; left:50%; top:0; height:100%; transform:translateX(-50%); }
+.saga-gold-crack path,.saga-escape-crack path,.finale-cracks path { fill:none; stroke:#fde68a; stroke-width:6; stroke-linecap:round; stroke-dasharray:100; stroke-dashoffset:100; }
+.saga-gold-crack path { animation:sagaDraw .9s .2s ease-out forwards; }
+@keyframes sagaFormStep { to { transform:translate(-50%,0) scale(1); opacity:1; } }
+@keyframes sagaTearOpen { to { transform:translateX(-50%) scaleY(1); } }
+@keyframes sagaEyeOpen { to { transform:translateX(-50%) scaleY(1); } }
+@keyframes sagaDraw { to { stroke-dashoffset:0; } }
+
+/* ---- The escape (Acts I and II) ---- */
+.saga-fx-layer { position:absolute; inset:0; z-index:80; pointer-events:none; overflow:hidden; }
+.saga-confetti { position:absolute; top:0; width:9px; height:14px; border-radius:2px; }
+#vixar-raid-overlay.saga-escape #vixar-result-panel { visibility:hidden; }
+#vixar-raid-overlay.saga-shattered #vixar-boss-stage { opacity:0; transition:opacity .35s ease; }
+.saga-darkness { position:absolute; inset:0; background:#020006; opacity:0; transition:opacity .5s ease; }
+#vixar-raid-overlay.saga-cut .saga-darkness { opacity:.38; transition:none; }
+#vixar-raid-overlay.saga-dark .saga-darkness { opacity:.93; transition:opacity .5s ease; }
+.saga-shard { position:absolute; width:18px; height:30px; margin:-15px 0 0 -9px; clip-path:polygon(50% 0,100% 40%,60% 100%,0 55%); }
+.saga-shard-crystal { background:linear-gradient(160deg,#f5d0fe,#a855f7 55%,#4c1d95); }
+.saga-shard-ember { background:radial-gradient(circle at 40% 35%,#fff1f2,#fb7185 40%,#be123c 75%); clip-path:polygon(50% 0,85% 45%,50% 100%,15% 45%); width:14px; height:22px; }
+.saga-shard-metal { background:linear-gradient(160deg,#fef3c7,#f59e0b 55%,#78350f); }
+.still-frame .saga-shard { transition:none; }
+.saga-escape-tear { position:absolute; width:min(420px,46vw); transform:translate(-50%,-50%); }
+.saga-escape-eye { position:absolute; width:min(300px,30vw); transform:translate(-50%,0); opacity:0; }
+.saga-escape-eye img { position:absolute; left:50%; top:-40%; width:200%; transform:translateX(-50%); opacity:.22; }
+.saga-escape-eye svg { position:relative; width:100%; transform-origin:50% 50%; }
+.saga-escape-crack { position:absolute; left:4%; right:4%; top:46%; height:120px; }
+.saga-escape-crack svg { width:100%; height:100%; }
+
+/* ---- The Merge Spell ---- */
+.merge-spell { position:absolute; inset:0; z-index:60; display:grid; grid-template-rows:auto 1fr auto auto; gap:.4rem; padding:.6rem 1rem 1rem; background:rgba(12,6,2,.86); color:#fff; }
+.merge-head { text-align:center; }
+.merge-head small { color:#fcd34d; font-weight:900; letter-spacing:.2em; text-transform:uppercase; font-size:.7rem; }
+.merge-head h2 { margin:.1rem 0; font-size:clamp(1.4rem,3vw,2.4rem); font-weight:1000; letter-spacing:.14em; text-transform:uppercase; color:#fef3c7; }
+.merge-head p { color:#e2e8f0; font-weight:700; font-size:.85rem; }
+.merge-stage { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:1rem; min-height:0; }
+.merge-pair { --merge-progress:0; position:relative; display:flex; flex-direction:column; align-items:center; gap:.35rem; padding:.5rem; border-radius:1rem; border:2px solid rgba(255,255,255,.12); }
+.merge-pair.active { border-color:#fde68a; }
+.merge-creatures { position:relative; width:min(34vw,380px); height:min(30vh,260px); }
+.merge-creature { position:absolute; top:0; width:56%; height:100%; transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .4s ease; }
+.merge-creature > * { width:100%; height:100%; }
+.merge-creature-0 { left:0; transform:translateX(calc(var(--merge-progress) * 9%)); }
+.merge-creature-1 { right:0; transform:translateX(calc(var(--merge-progress) * -9%)) scaleX(-1); }
+.merge-orbit { position:absolute; left:50%; top:50%; width:calc(80% - var(--merge-progress) * 15%); height:calc(80% - var(--merge-progress) * 15%); transform:translate(-50%,-50%); transition:width .6s ease,height .6s ease; animation:mergeOrbit 3s linear infinite; }
+.merge-orb { position:absolute; width:16px; height:16px; border-radius:50%; }
+.merge-orb-a { left:0; top:50%; background:var(--merge-a); }
+.merge-orb-b { right:0; top:50%; background:var(--merge-b); }
+@keyframes mergeOrbit { to { transform:translate(-50%,-50%) rotate(360deg); } }
+.merge-meter { display:flex; gap:6px; }
+.merge-step { width:min(6vw,58px); height:12px; border-radius:6px; background:rgba(255,255,255,.14); }
+.merge-step.on { background:linear-gradient(90deg,var(--merge-a),var(--merge-b)); }
+.merge-name { font-weight:900; letter-spacing:.06em; font-size:.85rem; }
+.merge-house-0 { color:var(--merge-a); } .merge-house-1 { color:var(--merge-b); }
+.merge-fused-name { display:none; font-size:clamp(1.4rem,2.6vw,2.2rem); font-weight:1000; letter-spacing:.1em; text-transform:uppercase; }
+.merge-fused-a { color:var(--merge-a); } .merge-fused-b { color:var(--merge-b); }
+.merge-pair.fused .merge-fused-name { display:block; }
+.merge-pair.fused .merge-name { display:none; }
+.merge-pair.fused .merge-creature-0 { transform:translateX(30%); opacity:.9; }
+.merge-pair.fused .merge-creature-1 { transform:translateX(-30%) scaleX(-1); opacity:.9; }
+.merge-pair.fused .merge-orbit { display:none; }
+.merge-pair.fusing::after { content:""; position:absolute; inset:0; border-radius:1rem; background:radial-gradient(circle,#fff 0,rgba(255,255,255,.6) 30%,transparent 70%); animation:mergeFlash .7s ease-out forwards; pointer-events:none; }
+@keyframes mergeFlash { from { opacity:1; transform:scale(.6); } to { opacity:0; transform:scale(1.25); } }
+.merge-circle { position:relative; width:min(18vw,170px); aspect-ratio:1; }
+.merge-circle svg { width:100%; height:100%; transform:rotate(-90deg); }
+.merge-circle-track { fill:none; stroke:rgba(253,224,71,.16); stroke-width:9; }
+.merge-circle-ring { fill:none; stroke:#fbbf24; stroke-width:9; stroke-linecap:round; stroke-dasharray:100; }
+.merge-circle.second .merge-circle-ring { stroke:#f97316; }
+.merge-circle-rune { fill:none; stroke:rgba(254,243,199,.65); stroke-width:2; transform-origin:60px 60px; transform:rotate(90deg); }
+.merge-circle-note { position:absolute; left:0; right:0; bottom:-1.4rem; text-align:center; color:#fde68a; font-size:.72rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+.merge-circle.shatter { animation:mergeShatter .5s ease-out; }
+@keyframes mergeShatter { 30% { transform:scale(1.15) rotate(6deg); opacity:.4; } 100% { transform:none; opacity:1; } }
+.merge-turn { text-align:center; }
+.merge-turn small { display:block; color:#fcd34d; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+.merge-turn strong { font-size:clamp(1.2rem,2.4vw,1.9rem); font-weight:1000; }
+.merge-card { justify-self:center; width:min(880px,94%); padding:.8rem 1rem; border-radius:1rem; background:#fffbeb; color:#1c1917; }
+.merge-card-type { font-weight:900; color:#92400e; font-size:.8rem; text-transform:uppercase; letter-spacing:.1em; }
+.merge-card-prompt { font-size:clamp(1.15rem,2.3vw,1.7rem); font-weight:900; margin:.25rem 0; }
+.merge-card-context,.merge-card-instruction { color:#57534e; font-weight:700; font-size:.85rem; }
+.merge-card-options { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-top:.5rem; }
+.merge-option { display:flex; gap:.5rem; align-items:center; padding:.6rem .7rem; border-radius:.7rem; border:2px solid #e7e5e4; background:#fff; font-size:clamp(.95rem,1.7vw,1.25rem); font-weight:800; text-align:left; cursor:pointer; }
+.merge-option b { display:inline-grid; place-items:center; width:1.7em; height:1.7em; border-radius:50%; background:#1c1917; color:#fff; flex:0 0 auto; }
+.merge-option.right { border-color:#16a34a; background:#dcfce7; }
+.merge-option.wrong { border-color:#dc2626; background:#fee2e2; }
+.merge-card-result { margin-top:.4rem; font-weight:1000; font-size:1.05rem; }
+.merge-card-result.right { color:#15803d; } .merge-card-result.wrong { color:#b91c1c; }
+
+/* ---- The Finale ---- */
+#saga-finale { position:fixed; inset:0; z-index:12000; display:none; color:#fff; background:#05030a; overflow:hidden; }
+#saga-finale.visible { display:block; }
+.finale-light { position:absolute; inset:0; background:radial-gradient(circle at 50% 42%,#fff7d6 0,#fde68a 25%,#b45309 55%,#1c0d02 85%); opacity:0; transition:opacity 1.6s ease; }
+#saga-finale:not([data-step="crack"]) .finale-light { opacity:1; }
+.finale-stage { position:absolute; inset:0 0 18%; }
+.finale-boss { position:absolute; left:50%; top:4%; width:min(70vw,780px); aspect-ratio:1100/890; transform:translateX(-50%); transition:opacity 1.2s ease; }
+.finale-boss img,.finale-cracks { position:absolute; inset:0; width:100%; height:100%; }
+.finale-cracks path { stroke:#fffbea; stroke-width:4; }
+#saga-finale[data-beat="2"] .finale-cracks path { stroke-width:8; }
+#saga-finale[data-beat="3"] .finale-cracks path { stroke-width:13; }
+#saga-finale:not([data-step="crack"]) .finale-boss { opacity:0; }
+.finale-teacher { position:absolute; left:50%; bottom:2%; width:min(26vw,300px); height:72%; transform:translateX(-50%); opacity:0; transition:opacity 1s ease; }
+#saga-finale[data-step="reveal"] .finale-teacher,#saga-finale[data-step="speech"] .finale-teacher,#saga-finale[data-step="names"] .finale-teacher,#saga-finale[data-step="closing"] .finale-teacher { opacity:1; }
+.saga-teacher-art,.saga-teacher-art img,.saga-teacher-art svg { width:100%; height:100%; object-fit:contain; display:block; }
+.finale-creatures { position:absolute; inset:auto 2% 2%; height:46%; display:flex; justify-content:space-between; pointer-events:none; opacity:0; transition:opacity .8s ease; }
+#saga-finale:not([data-step="crack"]):not([data-step="hug"]) .finale-creatures { opacity:1; }
+.finale-creature { width:min(17vw,210px); height:100%; }
+.finale-creature > * { width:100%; height:100%; }
+.finale-creature:nth-child(2) { margin-right:auto; }
+.finale-creature:nth-child(3) { margin-left:auto; }
+.finale-creature:nth-child(n+3) .animated-avatar,.finale-creature:nth-child(n+3) > svg { transform:scaleX(-1); }
+.finale-flakes { position:absolute; inset:0; pointer-events:none; }
+.finale-flake { position:absolute; width:12px; height:8px; background:linear-gradient(135deg,#fef3c7,#f59e0b); clip-path:polygon(0 30%,60% 0,100% 70%,30% 100%); }
+.finale-bubble { position:absolute; left:50%; top:6%; width:min(780px,88vw); transform:translateX(-50%); padding:1rem 1.4rem; border-radius:1.2rem; background:#fffbeb; color:#1c1917; text-align:center; }
+.finale-bubble::after { content:""; position:absolute; left:50%; bottom:-14px; border:14px solid transparent; border-top-color:#fffbeb; border-bottom:0; transform:translateX(-50%); }
+.finale-bubble p { font-size:clamp(1.5rem,3.4vw,2.8rem); font-weight:900; line-height:1.2; }
+.finale-bubble small { color:#a16207; font-weight:900; }
+.finale-names { position:absolute; left:50%; top:4%; width:min(1100px,94vw); transform:translateX(-50%); padding:1rem; border-radius:1.2rem; background:rgba(28,13,2,.86); text-align:center; }
+.finale-names h2 { font-size:clamp(1.4rem,3vw,2.4rem); font-weight:1000; color:#fde68a; letter-spacing:.08em; }
+.finale-name-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-top:.6rem; }
+.finale-house { padding:.6rem; border-radius:.9rem; border-top:5px solid var(--team-color); background:rgba(255,255,255,.08); }
+.finale-house h3 { color:var(--team-color); font-weight:1000; text-transform:uppercase; letter-spacing:.1em; }
+.finale-person { margin-top:.45rem; }
+.finale-person strong { display:block; font-size:clamp(1.05rem,1.9vw,1.5rem); }
+.finale-person small,.finale-house-all { color:#fde68a; font-weight:700; font-size:.78rem; }
+.finale-hug { position:absolute; inset:4% 4% 16%; margin:0; display:grid; place-items:center; }
+.finale-hug img { max-width:100%; max-height:100%; object-fit:contain; border-radius:1rem; }
+.finale-hug-placeholder { position:relative; width:min(900px,90vw); height:100%; }
+.finale-hug-placeholder .saga-teacher-art { position:absolute; left:50%; bottom:0; width:32%; height:90%; transform:translateX(-50%); }
+.finale-hug-creature { position:absolute; bottom:0; width:24%; height:52%; }
+.finale-hug-creature > * { width:100%; height:100%; }
+.finale-hug-0 { left:12%; } .finale-hug-1 { left:24%; bottom:8%; } .finale-hug-2 { right:24%; bottom:8%; } .finale-hug-3 { right:12%; }
+.finale-hug-2 .animated-avatar,.finale-hug-3 .animated-avatar { transform:scaleX(-1); }
+.finale-closing { position:absolute; left:50%; top:30%; width:min(880px,90vw); transform:translateX(-50%); padding:1.6rem; border-radius:1.4rem; background:rgba(28,13,2,.9); border:2px solid #fde68a; text-align:center; }
+.finale-closing-kicker { color:#fcd34d; font-weight:900; letter-spacing:.28em; text-transform:uppercase; font-size:.8rem; }
+.finale-closing-line { margin-top:.5rem; font-size:clamp(1.8rem,4vw,3.4rem); font-weight:1000; color:#fff7d6; line-height:1.15; }
+.finale-date { margin-top:.6rem; color:#fde68a; font-weight:800; }
+.finale-controls { position:absolute; right:1rem; bottom:1rem; display:flex; gap:.8rem; align-items:center; }
+.finale-step { padding:.35rem .7rem; border-radius:999px; background:rgba(0,0,0,.45); color:#fde68a; font-weight:900; font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; }
+.finale-continue { padding:.7rem 1.2rem; border-radius:.8rem; border:2px solid #fde68a; background:#92400e; color:#fff; font-weight:1000; letter-spacing:.06em; cursor:pointer; }
+#saga-finale.still *,#saga-finale.still { transition:none!important; animation:none!important; }
+
+/* ---- The reward preview on the result panel ---- */
+.vixar-result-preview { margin-top:.8rem; }
+.vixar-result-preview small { color:#e9d5ff; font-weight:900; letter-spacing:.14em; text-transform:uppercase; font-size:.62rem; }
+.vixar-result-preview > div { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-top:.35rem; }
+.vixar-result-preview figure { margin:0; height:96px; border-radius:.7rem; border:1px solid color-mix(in srgb,var(--team-color) 60%,#475569); background:rgba(2,6,23,.6); position:relative; }
+.vixar-result-preview figure > :first-child { position:absolute; inset:4px 4px 18px; width:auto; height:auto; }
+.vixar-result-preview figcaption { position:absolute; left:0; right:0; bottom:2px; font-size:.56rem; font-weight:900; text-transform:uppercase; color:var(--team-color); }
+
+/* ---- Fight feel (fight-fx.js) ---- */
+.fx-number { position:absolute; z-index:5; font:1000 clamp(1rem,1.6vw,1.45rem)/1 system-ui,-apple-system,"Segoe UI",sans-serif; letter-spacing:.02em; white-space:nowrap; transform:translate(-50%,0); pointer-events:none; -webkit-text-stroke:3px rgba(2,6,23,.85); paint-order:stroke fill; }
+.fx-critical { font-size:clamp(1.4rem,2.3vw,2.1rem); color:#fff7c2!important; }
+.fx-heal { color:#fb7185; }
+.fx-word { font-size:clamp(.8rem,1.2vw,1.05rem); letter-spacing:.1em; }
+.fx-spark { position:absolute; width:64px; height:64px; pointer-events:none; }
+.fx-spark.big { width:92px; height:92px; }
+.fx-spark svg { width:100%; height:100%; fill:currentColor; }
+.fx-telegraph { position:absolute; height:26px; border:3px solid currentColor; border-radius:50%; pointer-events:none; }
+.fx-shard { position:absolute; width:12px; height:16px; background:currentColor; clip-path:polygon(50% 0,100% 60%,40% 100%,0 40%); pointer-events:none; }
+body[data-effects-budget="2"] .fx-spark,body[data-effects-budget="2"] .fx-telegraph,body[data-effects-budget="2"] .fx-shard { display:none; }
+
+/* ---- Phone: the Vixar Saga panel and live controls ---- */
+.saga-remote-panel h3 { margin:0 0 .3rem; }
+.saga-stage-line { margin:.1rem 0; font-size:.95rem; }
+.saga-stage-line[data-stage="Violet"] strong { color:#c4b5fd; }
+.saga-stage-line[data-stage="Scarlet"] strong { color:#fda4af; }
+.saga-stage-line[data-stage="Gilded"] strong { color:#fde68a; }
+.saga-stage-line[data-stage="Freed"] strong { color:#fef3c7; }
+.saga-remote-note { margin:.15rem 0; color:#94a3b8; font-size:.74rem; font-weight:700; }
+.saga-readiness { margin:.25rem 0; padding:.35rem .5rem; border-radius:.6rem; background:rgba(148,163,184,.12); font-weight:900; font-size:.82rem; }
+.saga-readiness.complete { background:rgba(34,197,94,.18); color:#bbf7d0; }
+.saga-remote-actions { display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; margin-top:.35rem; }
+.saga-remote-btn { position:relative; overflow:hidden; padding:.6rem .8rem; border-radius:.7rem; border:1px solid rgba(196,181,253,.5); background:#4c1d95; color:#fff; font-weight:900; font-size:.85rem; }
+.saga-remote-btn.ghost { background:transparent; }
+.saga-remote-btn.small { font-size:.72rem; padding:.4rem .6rem; }
+.saga-remote-btn.primary { background:#b45309; border-color:#fde68a; width:100%; }
+.saga-remote-btn.option { display:block; width:100%; text-align:left; margin-top:.3rem; background:#1e293b; }
+.saga-remote-btn.option.selected { border-color:#fde68a; }
+.saga-remote-btn.right { background:#14532d; } .saga-remote-btn.wrong { background:#7f1d1d; }
+.saga-hold { width:100%; touch-action:none; user-select:none; -webkit-user-select:none; }
+.saga-hold-fill { position:absolute; inset:0; background:linear-gradient(90deg,#a855f7,#f43f5e); transform:scaleX(0); transform-origin:left; }
+.saga-hold.holding .saga-hold-fill { transform:scaleX(1); transition:transform 1.5s linear; }
+.saga-hold-label { position:relative; }
+.saga-rift-state { margin:0; font-weight:900; color:#f0abfc; font-size:.82rem; }
+.saga-tip { display:flex; gap:.4rem; align-items:center; font-size:.72rem; color:#fde68a; }
+.saga-set-form { display:grid; grid-template-columns:1fr 1fr; gap:.35rem; margin-top:.4rem; }
+.saga-set-form select,.saga-set-form input { width:100%; padding:.45rem; border-radius:.5rem; background:#0f172a; color:#fff; border:1px solid #334155; }
+.saga-set-form .saga-remote-note { grid-column:1 / -1; }
+.saga-remote-live { margin:.4rem .6rem; padding:.6rem .7rem; border-radius:.9rem; border:1px solid rgba(253,224,71,.45); background:rgba(28,13,2,.92); color:#fff; }
+.saga-remote-kicker { margin:0; color:#fcd34d; font-weight:900; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; }
+.saga-remote-turn { margin:.2rem 0; font-weight:1000; }
+.saga-remote-meters { display:flex; gap:.4rem; }
+.saga-remote-meter { flex:1; display:flex; justify-content:space-between; padding:.25rem .45rem; border-radius:.5rem; background:rgba(255,255,255,.08); font-size:.78rem; font-weight:800; }
+.saga-remote-meter.fused { background:rgba(34,197,94,.2); }
+.saga-remote-circle { height:6px; margin:.35rem 0; border-radius:3px; background:rgba(253,224,71,.16); overflow:hidden; }
+.saga-remote-circle i { display:block; height:100%; background:#fbbf24; }
+.saga-remote-student { display:flex; justify-content:space-between; align-items:center; gap:.4rem; }
+.saga-remote-card { margin:.4rem 0 0; color:#fcd34d; font-weight:900; font-size:.75rem; }
+.saga-remote-prompt { margin:.15rem 0; font-weight:900; font-size:1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .merge-orbit { animation:none; }
+  .merge-creature,.merge-orbit,.finale-light,.finale-boss,.finale-teacher,.finale-creatures { transition:none; }
+  .saga-intro-art *,.merge-pair.fusing::after,.merge-circle.shatter { animation:none!important; }
+  .saga-intro-art .saga-intro-form,.saga-tear,.saga-intro-eye { opacity:1; transform:translateX(-50%); }
+  .saga-gold-crack path { stroke-dashoffset:0; }
+}
+body.performance-light .merge-orbit { animation:none; }
+body.performance-light .merge-creature { transition:none; }

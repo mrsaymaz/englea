@@ -1,0 +1,189 @@
+{
+  "fightsPerScenario": 20,
+  "results": [
+    {
+      "scenario": "Act I · Violet · Level 10 · mission",
+      "fights": 20,
+      "wins": 20,
+      "rate": 1,
+      "target": {
+        "min": 0.8
+      },
+      "fused": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": "Act II · Scarlet · Level 11 · mission",
+      "fights": 20,
+      "wins": 20,
+      "rate": 1,
+      "target": {
+        "min": 0.8
+      },
+      "fused": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": "Act III · Gilded · Level 12 · mission · both pairs fused",
+      "fights": 20,
+      "wins": 20,
+      "rate": 1,
+      "target": {
+        "min": 0.8
+      },
+      "fused": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": "Act III · Gilded · Level 12 · mission · one pair fused",
+      "fights": 20,
+      "wins": 13,
+      "rate": 0.65,
+      "target": null,
+      "fused": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "scenario": "Act III · Gilded · Level 12 · mission · Merge Spell failed",
+      "fights": 20,
+      "wins": 2,
+      "rate": 0.1,
+      "target": {
+        "max": 0.3
+      },
+      "fused": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": "Act II · Scarlet · Level 11 · no mission",
+      "fights": 20,
+      "wins": 0,
+      "rate": 0,
+      "target": {
+        "max": 0
+      },
+      "fused": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

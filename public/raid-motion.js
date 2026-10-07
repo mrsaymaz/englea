@@ -3,6 +3,10 @@
     'use strict';
     const actors=new Map(),effects=new Set(),turns={attack:{},guard:{}},variants={},shots=new Map();
     const next=(id,kind)=>{const v=turns[kind][id]||0;turns[kind][id]=(v+1)%3;return v;};
+    // v11.0.0: a fused pair (Merge Spell) strikes with its two houses' techniques in turn.
+    const FUSED={slyffindor:['gryffindor','slytherin'],huffleclaw:['hufflepuff','ravenclaw']},techOf={};
+    const tech=id=>FUSED[id]?(techOf[id]||FUSED[id][0]):id;
+    const nextTech=id=>{if(!FUSED[id])return id;techOf[id]=FUSED[id][(FUSED[id].indexOf(techOf[id])+1)%2]||FUSED[id][0];return techOf[id];};
     const preference=matchMedia('(prefers-reduced-motion: reduce)');
     const allowed=()=>!preference.matches&&!document.hidden&&!SceneRuntime.paused&&!SceneRuntime.fastForwarding&&document.body.classList.contains('vixar-raid-active');
     function node(id){
@@ -43,12 +47,12 @@
         const tilt=id==='slytherin'?Math.sign(dx)*8:id==='gryffindor'?Math.sign(dx)*-5:0;
         let frames,duration;
         if(kind==='attack'){
-            const v=ArenaTechniques.presets[id]?next(id,'attack'):0;variants[id]=v;
-            const spec=ArenaTechniques.presets[id]?ArenaTechniques.approach(id,v,dx*.15,dy*.15,options.impact||520):LeagueMotion.approach(id,dx,dy,options.impact||520);duration=spec.duration;frames=spec.frames;
+            const t=nextTech(id),v=ArenaTechniques.presets[t]?next(id,'attack'):0;variants[id]=v;
+            const spec=ArenaTechniques.presets[t]?ArenaTechniques.approach(t,v,dx*.15,dy*.15,options.impact||520):LeagueMotion.approach(id,dx,dy,options.impact||520);duration=spec.duration;frames=spec.frames;
         }else if(kind==='guard'){
-            const v=ArenaTechniques.presets[id]?next(id,'guard'):0;
-            const spec=ArenaTechniques.presets[id]?ArenaTechniques.defense(id,v):LeagueMotion.pose(id,'guard',-Math.sign(dx||1));
-            if(ArenaTechniques.presets[id]){const markNode=mark(origin,'raid-element-guard',ArenaTechniques.presets[id].color);markNode.innerHTML=ArenaTechniques.mark(id,'guard',v);markNode.dataset.technique=ArenaTechniques.presets[id].defenses[v];effect(markNode,[{opacity:0,transform:'translate(-50%,-50%) scale(.7)'},{opacity:1,offset:.3},{opacity:0,transform:'translate(-50%,-50%) scale(1.2)'}],460);}duration=spec.duration;frames=spec.frames;
+            const t=tech(id),v=ArenaTechniques.presets[t]?next(id,'guard'):0;
+            const spec=ArenaTechniques.presets[t]?ArenaTechniques.defense(t,v):LeagueMotion.pose(id,'guard',-Math.sign(dx||1));
+            if(ArenaTechniques.presets[t]){const markNode=mark(origin,'raid-element-guard',ArenaTechniques.presets[t].color);markNode.innerHTML=ArenaTechniques.mark(t,'guard',v);markNode.dataset.technique=ArenaTechniques.presets[t].defenses[v];effect(markNode,[{opacity:0,transform:'translate(-50%,-50%) scale(.7)'},{opacity:1,offset:.3},{opacity:0,transform:'translate(-50%,-50%) scale(1.2)'}],460);}duration=spec.duration;frames=spec.frames;
         }else if(kind==='hit'){
             const spec=LeagueMotion.pose(id,'hit',-Math.sign(dx||1));duration=spec.duration;frames=spec.frames;
         }else if(kind==='knockout'){
@@ -98,8 +102,8 @@
     }
     function bolt(from,to,color='#c4b5fd',duration=430){
         if(!allowed()||!from||!to)return;
-        const team=from.closest('[data-team]')?.dataset.team;
-        if(ArenaTechniques.presets[team]){const shot=CombatProjectiles.flight({from,to,bounds:document.getElementById('vixar-raid-arena'),team,variant:variants[team]||0,duration,emit:effect});const key=team+':'+to.id;shots.set(key,shot);shot.animation?.finished.catch(()=>{}).then(()=>{if(shots.get(key)===shot)shots.delete(key);});return shot;}
+        const owner=from.closest('[data-team]')?.dataset.team,team=tech(owner);
+        if(ArenaTechniques.presets[team]){const shot=CombatProjectiles.flight({from,to,bounds:document.getElementById('vixar-raid-arena'),team,variant:variants[owner]||0,duration,emit:effect});const key=owner+':'+to.id;shots.set(key,shot);shot.animation?.finished.catch(()=>{}).then(()=>{if(shots.get(key)===shot)shots.delete(key);});return shot;}
         const a=center(from),b=center(to),el=mark(from,'raid-bolt',color);
         const angle=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
         el.dataset.target=to.id;
@@ -148,8 +152,8 @@
         const el=mark(target,'raid-wave',color),large=Math.min(4,innerWidth/170);
         effect(el,[{opacity:inward?0:.9,transform:`translate(-50%,-50%) scale(${inward?large:.2})`},{opacity:.8,offset:.25},{opacity:0,transform:`translate(-50%,-50%) scale(${inward?.25:large})`}],duration);
     }
-    function strike(target,color,team){
-        if(!allowed()||!target)return;
+    function strike(target,color,owner){
+        if(!allowed()||!target)return;const team=tech(owner);
         const count=team==='gryffindor'||team==='guardian'?2:1;
         for(let i=0;i<count;i++){
             const kind=team==='hufflepuff'?'air':team==='ravenclaw'?'water':team==='slytherin'?'nature':'claw';

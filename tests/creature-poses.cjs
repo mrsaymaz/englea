@@ -33,10 +33,10 @@ function harness(){
  return {P,c,actor,advance,ready,settle,images,tasks,nodes,fire,Element};
 }
 (async()=>{
-await test('All 44 levels, ten bosses and Vixar resolve to the expected states; invalid IDs cannot form URLs',()=>{
- const {P}=harness();for(const id of ['gryffindor','slytherin','hufflepuff','ravenclaw'])for(let n=0;n<=10;n++){assert.equal(P.pack(id,n).states.length,9);assert.equal(P.pack(id,n).key,id+'-'+n);}
+await test('All 52 levels (v11.0.0: 0–12), ten bosses and the three Vixar forms resolve to the expected states; invalid IDs cannot form URLs',()=>{
+ const {P}=harness();for(const id of ['gryffindor','slytherin','hufflepuff','ravenclaw'])for(let n=0;n<=12;n++){assert.equal(P.pack(id,n).states.length,9);assert.equal(P.pack(id,n).key,id+'-'+n);}
  for(const id of ['veyr','tickthorn','mirrath','rootmaw','vox','kaelis','morrow','noctryn','ferron','astrax'])assert.equal(P.pack(id).states.length,6);
- assert.equal(P.pack('vixar').states.length,9);assert.equal(P.pack('../x'),null);assert.equal(P.pack('gryffindor',999).key,'gryffindor-10');
+ for(const id of ['vixar','vixar-scarlet','vixar-gilded'])assert.equal(P.pack(id).states.length,9);assert.equal(P.pack('../x'),null);assert.equal(P.pack('gryffindor',999).key,'gryffindor-12');
 });
 await test('Original art remains until decoding succeeds; a square pose fits a rectangular avatar box',async()=>{
  const h=harness(),{el}=h.actor('mascot-gryffindor');h.P.show(el,'attack');assert.equal(el.children.length,0);assert.equal(el.dataset.creaturePose,undefined);await h.ready();

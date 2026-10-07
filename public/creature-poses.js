@@ -6,7 +6,10 @@
  const teamStates=['ready','attack','guard','hit','proud','support','runA','runB','jump'];
  const bossStates=['ready','attack','guard','hit','exposed','defeat'];
  const vixarStates=['ready','charge','cast','guard','exposed','hit','ultimate','defeat','proud'];
- const level=n=>Math.max(0,Math.min(10,Math.floor(Number(n)||0)));
+ const level=n=>Math.max(0,Math.min(12,Math.floor(Number(n)||0)));
+ // v11.0.0: Scarlet and Gilded Vixar use the Vixar states. Slyffindor and Huffleclaw (the Merge Spell's fused teams)
+ // use the team states once their sheets are added; until then the two Level 12 creatures act together.
+ const vixarForms=['vixar','vixar-scarlet','vixar-gilded'],merged=['slyffindor','huffleclaw'];
  const base=root.document?new URL('./assets/poses/',document.currentScript?.src||document.baseURI).href:'./assets/poses/';
  // Ten pose sheets stay decoded: four teams at their current and next level (8), plus an island boss and Vixar.
  const MAX_SHEETS=10;
@@ -18,13 +21,19 @@
  function pack(id,n=0){
   if(teams.includes(id))return {key:id+'-'+level(n),cols:3,rows:3,states:teamStates};
   if(bosses.includes(id))return {key:id,cols:3,rows:2,states:bossStates};
-  return id==='vixar'?{key:id,cols:3,rows:3,states:vixarStates}:null;
+  if(merged.includes(id))return {key:id,cols:3,rows:3,states:teamStates};
+  return vixarForms.includes(id)?{key:id,cols:3,rows:3,states:vixarStates}:null;
  }
+ // The tag of each picture: the v10.5.0 sheets keep theirs, so boards that already have them do not download them again.
+ const tag=key=>/-1[12]$|^vixar-|^slyffindor$|^huffleclaw$/.test(key)?'11.0.0':'10.5.0';
  function load(id,n){
   const p=pack(id,n);if(!p||typeof root.Image!=='function')return Promise.resolve(null);
   let e=cache.get(p.key);if(e){cache.delete(p.key);cache.set(p.key,e);return e.promise;}
-  const img=new root.Image();e={...p,img,url:base+p.key+'.webp?v=10.5.0',ready:false,promise:null};
-  e.promise=new Promise(resolve=>{img.onload=()=>{(img.decode?.()||Promise.resolve()).catch(()=>{}).then(()=>{e.ready=true;resolve(e);});};img.onerror=()=>resolve(null);});
+  const img=new root.Image();e={...p,img,url:base+p.key+'.webp?v='+tag(p.key),ready:false,promise:null};
+  // A Level 11 or 12 sheet that fails to load falls back to the Level 10 sheet; the original avatar stays visible meanwhile.
+  const fallback=teams.includes(id)&&level(n)>10;
+  e.promise=new Promise(resolve=>{img.onload=()=>{(img.decode?.()||Promise.resolve()).catch(()=>{}).then(()=>{e.ready=true;resolve(e);});};
+   img.onerror=()=>{if(cache.get(p.key)===e)cache.delete(p.key);if(fallback){e.fallback=10;load(id,10).then(resolve);}else resolve(null);};});
   cache.set(p.key,e);img.src=e.url;while(cache.size>MAX_SHEETS)cache.delete(cache.keys().next().value);return e.promise;
  }
  function loaded(id,n){const p=pack(id,n),e=p&&cache.get(p.key);return e?.ready?e:null;}
@@ -72,7 +81,7 @@
   if(id==='boss'){
    const el=document.getElementById('vixar-animated-actor');if(!document.body.classList.contains('performance-animated'))return;
    const state=kind==='attack'?'cast':kind==='cast'?'charge':kind==='arrive'?'ready':kind;
-   show(el,state,{id:'vixar',duration:kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?1100:650});
+   show(el,state,{id:el.dataset.poseId||'vixar',duration:kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?1100:650});
   }else{const host=document.getElementById('vixar-avatar-shell-'+id);if(kind==='revive')clear(host);if(kind==='attack')exchange(host,impact||520);else act(host,kind,{duration:kind==='knockout'?60000:kind==='revive'?1100:650});}
  }
  function bossState(b,hit=false){return b?.defeated||b?.state==='defeated'?'defeat':hit?'hit':({arrive:'ready',warn:'ready',strike:'attack',expose:'exposed',counter:'guard',knockout:'attack'})[b?.state]||'ready';}

@@ -1,0 +1,17 @@
+{
+  "version": "11.0.0",
+  "howTo": "Put each picture in this folder (public/assets/saga/) and write its file name below, then reload the board. A slot left as null keeps the built-in placeholder, and nothing is downloaded for it.",
+  "mrSaymaz": {
+    "portrait": null,
+    "ready": null,
+    "proud": null,
+    "support": null,
+    "wave": null,
+    "bow": null
+  },
+  "hug": null,
+  "merged": {
+    "slyffindor": null,
+    "huffleclaw": null
+  }
+}

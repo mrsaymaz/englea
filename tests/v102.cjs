@@ -68,7 +68,7 @@ test('Apps Script v10.2.0: Load islands returns each class’s last saved sessio
 test('The halo sits on the head: an anchor for each of the 44 Animated avatars and each Light avatar trait that raises the head',()=>{
  const {H}=haloModule(),game=pub('game.js');
  for(const team of ['gryffindor','slytherin','hufflepuff','ravenclaw']){
-  assert.equal(H.anchors[team].length,11,team+': levels 0–10');
+  assert.equal(H.anchors[team].length,13,team+': levels 0–12 (v11.0.0 adds Levels 11 and 12)');
   for(const [x,y,w] of H.anchors[team]){assert(x>=25&&x<=80&&y>=3&&y<=25&&w>=20&&w<=40,`${team}: ${x},${y},${w}`);}
   for(const trait of Object.keys(H.light[team].traits))assert(game.includes(`hasTrait('${trait}')`),`${team}: the Light avatar has the trait ${trait}`);
  }

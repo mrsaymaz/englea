@@ -46,7 +46,7 @@
             for(const task of scope.tasks){task.remaining=Math.max(0,task.due-end);scope.arm(task);}
         }
     }
-    const views={agent:{id:'agent-reveal-overlay',visible:'visible'},arena:{id:'battle-overlay',visible:'visible',body:'battle-active'},raid:{id:'vixar-raid-overlay',visible:'visible',body:'vixar-raid-active'},unity:{id:'unity-event-overlay',visible:'active',body:'unity-event-active'},wheel:{id:'wheel-modal',visible:'visible'},chest:{id:'evolution-modal',visible:'visible'},evolution:{},results:{id:'winner-overlay',visible:'visible',body:'winner-active'}};
+    const views={agent:{id:'agent-reveal-overlay',visible:'visible'},arena:{id:'battle-overlay',visible:'visible',body:'battle-active'},raid:{id:'vixar-raid-overlay',visible:'visible',body:'vixar-raid-active'},unity:{id:'unity-event-overlay',visible:'active',body:'unity-event-active'},wheel:{id:'wheel-modal',visible:'visible'},chest:{id:'evolution-modal',visible:'visible'},evolution:{},results:{id:'winner-overlay',visible:'visible',body:'winner-active'},finale:{id:'saga-finale',visible:'visible',body:'saga-finale-active'}};
     const hooks=new Map();let active=null;
     const scenes={
         register(name,callbacks){hooks.set(name,callbacks);},

@@ -266,6 +266,74 @@
       "level": 10,
       "file": "ravenclaw-10.webp",
       "bytes": 72084
+    },
+    {
+      "team": "gryffindor",
+      "level": 11,
+      "file": "gryffindor-11.webp",
+      "bytes": 53454
+    },
+    {
+      "team": "gryffindor",
+      "level": 12,
+      "file": "gryffindor-12.webp",
+      "bytes": 64774
+    },
+    {
+      "team": "slytherin",
+      "level": 11,
+      "file": "slytherin-11.webp",
+      "bytes": 52608
+    },
+    {
+      "team": "slytherin",
+      "level": 12,
+      "file": "slytherin-12.webp",
+      "bytes": 64030
+    },
+    {
+      "team": "hufflepuff",
+      "level": 11,
+      "file": "hufflepuff-11.webp",
+      "bytes": 50606
+    },
+    {
+      "team": "hufflepuff",
+      "level": 12,
+      "file": "hufflepuff-12.webp",
+      "bytes": 61284
+    },
+    {
+      "team": "ravenclaw",
+      "level": 11,
+      "file": "ravenclaw-11.webp",
+      "bytes": 59222
+    },
+    {
+      "team": "ravenclaw",
+      "level": 12,
+      "file": "ravenclaw-12.webp",
+      "bytes": 71854
+    }
+  ],
+  "bosses": [
+    {
+      "file": "vixar-scarlet.webp",
+      "width": 1100,
+      "height": 890,
+      "bytes": 205100
+    },
+    {
+      "file": "vixar-gilded.webp",
+      "width": 1100,
+      "height": 890,
+      "bytes": 238616
+    },
+    {
+      "file": "vixar-gilded-cracking.webp",
+      "width": 1100,
+      "height": 890,
+      "bytes": 239350
     }
   ]
 }

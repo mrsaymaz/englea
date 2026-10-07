@@ -136,6 +136,29 @@
                     { id: 'talons_crystal', name: 'Frost Talons', icon: '❄️' }, { id: 'flames_blue', name: 'Phoenix Fire', icon: '🔥' }
                 ]
             };
+            // v11.0.0 Vixar Saga: Level 11 (Mythic) wears violet crystal from Violet Vixar's shattered crown; Level 12
+            // (Celestial) adds scarlet embers from Scarlet Vixar. Each belongs to its own stage, so the first ten levels
+            // keep their evolutionary tree exactly.
+            const SAGA_TRAITS = {
+                gryffindor: [{ id:'crystal_violet', name:'Violet Crystal Mane', icon:'🔮', stage:11 }, { id:'ember_scarlet', name:'Scarlet Ember Heart', icon:'🔥', stage:12 }],
+                slytherin: [{ id:'crystal_violet', name:'Violet Crystal Scales', icon:'🔮', stage:11 }, { id:'ember_scarlet', name:'Scarlet Ember Coils', icon:'🔥', stage:12 }],
+                hufflepuff: [{ id:'crystal_violet', name:'Violet Crystal Plates', icon:'🔮', stage:11 }, { id:'ember_scarlet', name:'Scarlet Ember Hide', icon:'🔥', stage:12 }],
+                ravenclaw: [{ id:'crystal_violet', name:'Violet Crystal Plumes', icon:'🔮', stage:11 }, { id:'ember_scarlet', name:'Scarlet Ember Wings', icon:'🔥', stage:12 }]
+            };
+            for (const id of Object.keys(teamTraits)) teamTraits[id].push(...SAGA_TRAITS[id]);
+            // The traits a chest can hold for a stage: Levels 1–10 draw from the ten original traits, 11 and 12 from their own.
+            function traitsForStage(teamId, stage, owned = []) {
+                return teamTraits[teamId].filter(trait => (stage > 10 ? trait.stage === stage : !trait.stage) && !owned.includes(trait.id));
+            }
+            // The class's level cap comes from its Vixar Saga stage: 10 at Violet, 11 at Scarlet, 12 at Gilded and Freed.
+            // A stage won today raises the cap from the next session, so today keeps the stage the class had before the win.
+            let sagaSessionWin = null; // {className, sessionId, from, to}
+            function sagaStage(className = selectedClass) {
+                if (!globalThis.LeagueSaga?.validClass(className)) return 'Violet';
+                if (sagaSessionWin?.className === className && sagaSessionWin.sessionId === sessionId) return sagaSessionWin.from;
+                return LeagueSaga.stageOf(className);
+            }
+            function levelCap() { return globalThis.LeagueSaga ? LeagueSaga.cap(sagaStage()) : 10; }
 
 
 
@@ -160,6 +183,8 @@
                     crown_stars:'arcane', tail_peacock:'speed', armor_silver:'armor', talons_crystal:'power', flames_blue:'power'
                 }
             };
+            // v11.0.0: the saga trophies add armour (violet crystal) and power (scarlet embers) to every team alike.
+            for (const map of Object.values(battleTraitCategories)) Object.assign(map, { crystal_violet:'armor', ember_scarlet:'power' });
 
             const battleProfiles = {
                 gryffindor: { element:'fire', elementColor:'#f97316', signature:'Inferno Assault', relic:'Solar Aegis', basic:'Flame Pounce', color:'#e11d48' },
@@ -188,8 +213,10 @@
                 hufflepuff: [0.9469,0.9713,0.9975,1.0388,1.0844,0.9397,0.922,0.9507,0.9869,1.0086,1.0105],
                 ravenclaw: [0.9649,0.965,0.9718,0.9686,0.9649,1.0632,1.0425,1.0268,1.0354,1.0436,1.0582]
             };
+            // v11.0.0: Levels 11 and 12 keep the Level 10 calibration; their extra HP and damage come from level and traits.
+            for (const table of [arenaDamageBalance, arenaDamageBalanceLowHP]) for (const row of Object.values(table)) row.push(row[10], row[10]);
             function arenaOutputMultiplier(fighter){
-                const level=Math.max(0,Math.min(10,Math.round(fighter.level)||0));
+                const level=Math.max(0,Math.min(12,Math.round(fighter.level)||0));
                 const lowWeight=Math.max(0,Math.min(1,(250-(battleState?.startingMeanHP??250))/50));
                 const high=arenaDamageBalance[fighter.id]?.[level]??1;
                 const low=arenaDamageBalanceLowHP[fighter.id]?.[level]??high;
@@ -378,6 +405,8 @@
                         <linearGradient id="stoneGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d6d3d1"/><stop offset="50%" stop-color="#78716c"/><stop offset="100%" stop-color="#292524"/></linearGradient>
                         <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
                         <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.6"/></filter>
+                        <linearGradient id="violetCrystalGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d0fe"/><stop offset="55%" stop-color="#a855f7"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient>
+                        <radialGradient id="scarletEmberGlow" cx="50%" cy="55%" r="50%"><stop offset="0%" stop-color="#fb7185" stop-opacity=".75"/><stop offset="60%" stop-color="#e11d48" stop-opacity=".32"/><stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/></radialGradient>
                     </defs>
                 `;
 
@@ -438,7 +467,11 @@
                     if (hasTrait('eyes_third')) c += `<polygon points="100,55 95,70 100,65 105,70" fill="#ef4444" filter="url(#neonGlow)"/>`;
                     if (hasTrait('talons_crystal')) c += `<polygon points="80,140 70,180 85,160" fill="url(#iceGrad)"/><polygon points="90,150 85,190 95,170" fill="url(#iceGrad)"/><polygon points="120,140 130,180 115,160" fill="url(#iceGrad)"/><polygon points="110,150 115,190 105,170" fill="url(#iceGrad)"/>`;
                 }
-                
+                // v11.0.0 saga trophies (Light mode): a scarlet glow under the creature (Level 12) and violet crystal
+                // plates on the shoulders and brow (Level 11). Plain shapes, no new filters.
+                if (hasTrait('ember_scarlet')) c = `<circle cx="100" cy="108" r="92" fill="url(#scarletEmberGlow)"/>` + c;
+                if (hasTrait('crystal_violet')) c += `<polygon points="100,12 108,30 100,40 92,30" fill="url(#violetCrystalGrad)" stroke="#f5d0fe" stroke-width="1.5"/><polygon points="52,92 40,70 58,78 64,96" fill="url(#violetCrystalGrad)" stroke="#f5d0fe" stroke-width="1.5"/><polygon points="148,92 160,70 142,78 136,96" fill="url(#violetCrystalGrad)" stroke="#f5d0fe" stroke-width="1.5"/>`;
+
                 return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">${defs}${c}</svg>`;
             }
 
@@ -504,7 +537,7 @@
                 window.LeaguePassportSeals?.render();
             }
 
-            const cardLevelCoverage = [0, 10, 18, 27, 37, 48, 59, 70, 80, 90, 100];
+            const cardLevelCoverage = [0, 10, 18, 27, 37, 48, 59, 70, 80, 90, 100, 100, 100];
 
             function parseHexColor(hex) {
                 const normalized = String(hex || '#64748b').replace('#', '');
@@ -537,7 +570,7 @@
             function applyTeamCardEvolutionTheme(team) {
                 const el = document.getElementById(`team-${team.id}`);
                 if (!el) return;
-                const level = Math.max(0, Math.min(10, Number(team.level) || 0));
+                const level = Math.max(0, Math.min(12, Number(team.level) || 0));
                 const coverage = cardLevelCoverage[level];
                 const element = parseHexColor(team.color);
                 const darkText = level < 6;
@@ -549,6 +582,9 @@
                 const textureOpacity = Math.max(0, (coverage - 18) / 82) * 0.24;
 
                 el.dataset.cardStage = stage;
+                // v11.0.0: Mythic (11) and Celestial (12) frames; a Freed class keeps a faint gold edge at Level 12.
+                el.dataset.sagaTier = level >= 12 ? 'celestial' : level >= 11 ? 'mythic' : '';
+                el.classList.toggle('saga-freed-edge', level >= 12 && sagaStage() === 'Freed');
                 el.style.setProperty('--element-rgb', `${element.r}, ${element.g}, ${element.b}`);
                 el.style.setProperty('--infusion-coverage', `${coverage}%`);
                 el.style.setProperty('--infusion-alpha', infusionAlpha.toFixed(3));
@@ -890,7 +926,7 @@
 
             function awardEvolutionProgress(team) {
                 normalizeTeamRuntimeState(team);
-                if (team.level >= 10 || team.pendingEvolution) return false;
+                if (team.level >= levelCap() || team.pendingEvolution) return false;
                 // Soft mode completes the same three-step internal bar in one scoring action.
                 // Hard mode preserves the original one-step-per-scoring-action behavior.
                 team.evolutionProgress = progressionMode === 'soft'
@@ -909,7 +945,7 @@
                 if (progressionMode === 'soft' && convertExisting) {
                     teamsData.forEach(team => {
                         normalizeTeamRuntimeState(team);
-                        if (team.level < 10 && !team.pendingEvolution && team.evolutionProgress > 0) {
+                        if (team.level < levelCap() && !team.pendingEvolution && team.evolutionProgress > 0) {
                             team.evolutionProgress = 3;
                             if (prepareEvolutionChest(team, { announce:false })) newlyReadyTeams.push(team.id);
                         }
@@ -945,8 +981,8 @@
 
             function prepareEvolutionChest(team, { announce = true, autoApply = false } = {}) {
                 normalizeTeamRuntimeState(team);
-                if (team.level >= 10 || team.evolutionProgress < 3 || team.pendingEvolution) return false;
-                let available = teamTraits[team.id].filter(trait => !team.traits.includes(trait.id));
+                if (team.level >= levelCap() || team.evolutionProgress < 3 || team.pendingEvolution) return false;
+                let available = traitsForStage(team.id, team.level + 1, team.traits);
                 if (autoApply && unityEventRunning && unityAscensionState) {
                     // Reserve Unity's planned traits so an incoming phone award cannot
                     // consume a later reward wave. At the level cap no extra level is due.
@@ -986,7 +1022,7 @@
             function applyAnimatedEvolution(team) {
                 deferredAnimatedEvolutions.delete(team.id);
                 const trait = teamTraits[team.id].find(item => item.id === team.pendingEvolution?.selectedTraitId);
-                if (!trait || team.level >= 10 || team.traits.includes(trait.id)) return false;
+                if (!trait || team.level >= levelCap() || team.traits.includes(trait.id)) return false;
                 const previousLevel = team.level;
                 team.traits.push(trait.id);
                 team.level++;
@@ -1124,7 +1160,9 @@
             }
 
             function traitRevealRank(stage) {
-                if (stage >= 10) return 'Final Ascension';
+                if (stage >= 12) return 'Celestial Ascension';
+                if (stage >= 11) return 'Mythic Ascension';
+                if (stage >= 10) return 'Legendary Ascension';
                 if (stage >= 7) return 'Elite Evolution';
                 if (stage >= 4) return 'Advanced Evolution';
                 return 'Evolved Trait';
@@ -1313,6 +1351,8 @@
                 el.classList.toggle('powerup-x2-active', team.powerups.doubleUp);
                 el.classList.toggle('powerup-50-active', team.powerups.halfDown);
                 el.classList.toggle('legendary', team.level >= 10);
+                el.classList.toggle('mythic', team.level >= 11);
+                el.classList.toggle('celestial', team.level >= 12);
                 
                 // Update Powerup Buttons
                 el.querySelectorAll('.powerup-btn').forEach(btn => {
@@ -1340,7 +1380,7 @@
 
                 const chestButton = document.getElementById(`evolution-chest-${team.id}`);
                 if (chestButton) {
-                    const ready = Boolean(team.pendingEvolution) && team.level < 10;
+                    const ready = Boolean(team.pendingEvolution) && team.level < levelCap();
                     chestButton.classList.toggle('visible', ready);
                     chestButton.disabled = !ready || isEvolving || unityEventRunning || Boolean(battleState?.running) || Boolean(vixarRaidState?.running);
                     chestButton.setAttribute('aria-hidden', ready ? 'false' : 'true');
@@ -1354,14 +1394,17 @@
                     if (levelNumber) levelNumber.textContent = String(team.level);
                     if (levelDisplay) {
                         levelDisplay.dataset.level = String(team.level);
-                        levelDisplay.setAttribute('aria-label', `${team.name} Level ${team.level}`);
+                        levelDisplay.setAttribute('aria-label', `${team.name} Level ${team.level}${team.level >= 10 ? ` · ${LeagueSaga.tierName(team.level)}` : ''}`);
+                        levelDisplay.dataset.tier = team.level >= 10 ? LeagueSaga.tierName(team.level).toLowerCase() : '';
+                        const badgeWord = levelDisplay.querySelector('.team-level-badge span');
+                        if (badgeWord) badgeWord.textContent = team.level >= 11 ? LeagueSaga.tierName(team.level) : 'Level';
                         if (team.level > previousDisplayedLevel && !recoveryRestoring) {
                             restartClass(levelDisplay, 'level-up');
                             setTimeout(() => levelDisplay.classList.remove('level-up'), 900);
                         }
                     }
                     let fills = [0, 0, 0];
-                    if (team.level < 10) {
+                    if (team.level < levelCap()) {
                         if (team.evolutionProgress >= 1) fills[0] = 100;
                         if (team.evolutionProgress >= 2) fills[1] = 100;
                         if (team.evolutionProgress >= 3 || team.pendingEvolution) fills[2] = 100;
@@ -1707,11 +1750,13 @@
                 }, Math.max(300, Math.round((totalDuration - clampedOffset + 0.25) * 1000)));
             }
 
-            async function playSound(name) {
+            async function playSound(name, detail = 0) {
                 if(SceneRuntime.fastForwarding||SceneRuntime.paused)return;
                 if (isMuted) return;
                 const ctx = await unlockAudio();
                 if (!ctx || ctx.state !== 'running') return;
+                // v11.0.0 saga sounds keep their character in Light mode too (they carry the story), at low cost.
+                if (playSagaSound(ctx, name, detail)) return;
 
                 if (isLeanMode()) {
                     const lightCue = {
@@ -1831,6 +1876,73 @@
                         scheduleTone(ctx, { start: 0.10, frequency: 783.99, duration: 0.2, type: 'sine', volume: 0.04 });
                         break;
                 }
+            }
+
+            // v11.0.0 Vixar Saga sounds, synthesised like the rest of the palette (no audio files).
+            function playSagaSound(ctx, name, detail) {
+                switch (name) {
+                    case 'heartbeat':
+                        // Two low thumps: lub-dub.
+                        [0, .24].forEach((start, i) => {
+                            scheduleTone(ctx, { start, frequency:i ? 58 : 66, endFrequency:38, duration:.22, type:'sine', volume:i ? .09 : .12, release:.14 });
+                            scheduleNoise(ctx, { start, duration:.05, volume:.012, highpass:120 });
+                        });
+                        return true;
+                    case 'shatterCrystal':
+                        [2093, 2637, 3136, 2349, 2794].forEach((frequency, i) => scheduleTone(ctx, { start:i * .045, frequency, endFrequency:frequency * .82, duration:.32, type:'triangle', volume:.03 }));
+                        scheduleNoise(ctx, { duration:.4, volume:.03, highpass:3200 });
+                        return true;
+                    case 'shatterEmber':
+                        scheduleNoise(ctx, { duration:.9, volume:.04, highpass:600 });
+                        scheduleTone(ctx, { frequency:220, endFrequency:70, duration:.8, type:'sawtooth', volume:.03, release:.3 });
+                        [0, .12, .26, .41].forEach(start => scheduleNoise(ctx, { start, duration:.06, volume:.03, highpass:2400 }));
+                        return true;
+                    case 'shatterMetal':
+                        [523.25, 739.99, 1046.5].forEach((frequency, i) => scheduleTone(ctx, { start:i * .03, frequency, endFrequency:frequency * .97, duration:1.1, type:'triangle', volume:.035, release:.6 }));
+                        scheduleNoise(ctx, { duration:.3, volume:.035, highpass:1800 });
+                        return true;
+                    case 'goldCrack':
+                        scheduleTone(ctx, { frequency:1567.98, endFrequency:1174.66, duration:.9, type:'sine', volume:.03, release:.5 });
+                        scheduleNoise(ctx, { duration:.18, volume:.025, highpass:4000 });
+                        return true;
+                    case 'mergeOpen':
+                        scheduleTone(ctx, { frequency:130.81, endFrequency:196, duration:1.2, type:'triangle', volume:.04, release:.4 });
+                        scheduleTone(ctx, { start:.3, frequency:261.63, duration:.9, type:'sine', volume:.03 });
+                        return true;
+                    case 'mergeStep': {
+                        // The merge chord rises one step with each correct answer of the pair.
+                        const steps = [261.63, 329.63, 392, 493.88, 523.25];
+                        const root = steps[Math.max(0, Math.min(4, Number(detail) || 0))];
+                        [root, root * 1.5].forEach((frequency, i) => scheduleTone(ctx, { start:i * .06, frequency, duration:.55, type:i ? 'sine' : 'triangle', volume:.04 }));
+                        return true;
+                    }
+                    case 'mergeResolve':
+                        [523.25, 659.25, 783.99, 1046.5].forEach((frequency, i) => scheduleTone(ctx, { start:i * .07, frequency, duration:1.1, type:i < 2 ? 'triangle' : 'sine', volume:.04, release:.5 }));
+                        scheduleNoise(ctx, { start:.2, duration:.5, volume:.015, highpass:2000 });
+                        return true;
+                    case 'curseBreak':
+                        scheduleNoise(ctx, { duration:1.4, volume:.03, highpass:900 });
+                        [196, 293.66, 392, 587.33].forEach((frequency, i) => scheduleTone(ctx, { start:.2 + i * .12, frequency, duration:1.6, type:'sine', volume:.035, release:.8 }));
+                        return true;
+                    case 'finaleTheme': {
+                        // A warm major-key motif under the thank-you: C E G E | F A C' A | G…
+                        const notes = [[261.63,0],[329.63,.42],[392,.84],[329.63,1.26],[349.23,1.68],[440,2.1],[523.25,2.52],[440,2.94],[392,3.36]];
+                        notes.forEach(([frequency, start]) => scheduleTone(ctx, { start, frequency, duration:.7, type:'triangle', volume:.03, release:.35 }));
+                        [[130.81,0],[174.61,1.68],[196,3.36]].forEach(([frequency, start]) => scheduleTone(ctx, { start, frequency, duration:1.6, type:'sine', volume:.03, release:.8 }));
+                        return true;
+                    }
+                    default: return false;
+                }
+            }
+            // The cut: a sudden stop of all sound at the false victory (music, scene sounds and anything already scheduled).
+            function cutAllSound() {
+                stopSceneSound();
+                const ctx = audioContext;
+                if (!ctx || !audioMasterGain) return;
+                const now = ctx.currentTime;
+                audioMasterGain.gain.cancelScheduledValues(now);
+                audioMasterGain.gain.setValueAtTime(0, now);
+                audioMasterGain.gain.setValueAtTime(isMuted ? 0 : 1, now + .9);
             }
 
             // Prime the audio context at the first genuine interaction. The actual effects are
@@ -2013,6 +2125,8 @@
                 const classChanged = selectedClass !== className;
                 selectedClass = className;
                 if (classChanged) { handlePointChange(CLASS_STARTING_POINT_TIERS[className]); haloLocked = false; refreshHalo(); }
+                // v11.0.0: the Rift belongs to the class it was opened for; a new class shows its own level cap.
+                if (classChanged) { riftOpen = false; updateGameState(true); }
                 updateStudentSessionUI(); scheduleCheckpoint();
                 window.syncStateToController?.();
                 return {ok:true};
@@ -2023,7 +2137,7 @@
                     document.getElementById('mobile-command-status').textContent = remoteStudentTracking ? 'Wait for the board connection' : 'Update the board and phone to v8.5.1';
                     return;
                 }
-                if (['arena','raid','results','agent'].includes(remote ? remoteScene : LeagueScenes.active)) return;
+                if (['arena','raid','results','agent','finale'].includes(remote ? remoteScene : LeagueScenes.active)) return;
                 const current = remote ? remoteStudentClass : selectedClass;
                 LeagueStudentUI.chooseClass({selected:current,locked:LeagueStudents.hasCredits(remote ? remoteStudentContributions : studentContributions)||Object.keys((remote?remoteAgents:secretAgents).assignments).length>0,
                     onCancel:() => {pendingRemoteClassSelection = null;},
@@ -2041,7 +2155,7 @@
                 const className = remote ? remoteStudentClass : selectedClass;
                 const sid = remote ? latestRemoteSessionId : sessionId;
                 const scene = remote ? remoteScene : LeagueScenes.active;
-                if (['arena','raid','results','agent'].includes(scene)) return false;
+                if (['arena','raid','results','agent','finale'].includes(scene)) return false;
                 if (remote && (remoteConnectionState !== 'connected' || !remoteStudentTracking)) {
                     document.getElementById('mobile-command-status').textContent = remoteStudentTracking ? 'Wait for the board connection' : 'Update the board and phone to v8.5.1';
                     return false;
@@ -2054,7 +2168,7 @@
                     onSelect:person => {
                         if (sid !== (remote ? latestRemoteSessionId : sessionId) || className !== (remote ? remoteStudentClass : selectedClass)) return;
                         if (remote) remoteCommands.enqueue('ADD',teamId,{className,studentId:person.id,studentTrackingVersion:1});
-                        else if (!['arena','raid','results','agent'].includes(LeagueScenes.active)) {
+                        else if (!['arena','raid','results','agent','finale'].includes(LeagueScenes.active)) {
                             if (options.customPoints !== undefined) applyCustomPoints(team,options.customPoints,person);
                             else applyTeamAward(teamId,{...options,studentId:person.id});
                         }
@@ -2272,7 +2386,7 @@
                     : { updateVisuals:Boolean(options), updateAvatar:Boolean(options), teamId:null, cardMotion:'rank' };
                 teamsData.forEach(team => {
                     normalizeTeamRuntimeState(team);
-                    if (team.evolutionProgress >= 3 && team.level < 10 && !team.pendingEvolution) prepareEvolutionChest(team,{announce:false});
+                    if (team.evolutionProgress >= 3 && team.level < levelCap() && !team.pendingEvolution) prepareEvolutionChest(team,{announce:false});
                     if (!normalizedOptions.teamId || normalizedOptions.teamId === team.id) {
                         updateTeamDOM(team, normalizedOptions.updateVisuals, normalizedOptions.updateAvatar);
                     }
@@ -2803,15 +2917,23 @@
                 const plan = { wave: 0, totalGranted: 0, teamPlans: new Map() };
                 teamsData.forEach(team => {
                     normalizeTeamRuntimeState(team);
-                    const remainingLevels = Math.max(0, 10 - team.level);
+                    const remainingLevels = Math.max(0, levelCap() - team.level);
                     const grantCount = Math.min(3, remainingLevels);
                     const pendingTraitId = team.pendingEvolution?.selectedTraitId || null;
-                    const unowned = teamTraits[team.id].filter(trait => !team.traits.includes(trait.id));
+                    // Levels up to 10 draw from the original traits (the chest's stored trait last, as before); Levels 11
+                    // and 12 take their own saga trophy.
+                    const baseCount = Math.max(0, Math.min(grantCount, 10 - team.level));
+                    const unowned = traitsForStage(team.id, Math.min(10, team.level + 1), team.traits);
                     const nonReserved = shuffleTraits(unowned.filter(trait => trait.id !== pendingTraitId));
                     const reserved = pendingTraitId ? unowned.find(trait => trait.id === pendingTraitId) : null;
                     const ordered = reserved ? [...nonReserved, reserved] : nonReserved;
+                    const sagaIds = [];
+                    for (let stage = Math.max(11, team.level + 1); stage <= team.level + grantCount; stage++) {
+                        const trophy = traitsForStage(team.id, stage, team.traits)[0];
+                        if (trophy) sagaIds.push(trophy.id);
+                    }
                     plan.teamPlans.set(team.id, {
-                        traitIds: ordered.slice(0, grantCount).map(trait => trait.id),
+                        traitIds: [...ordered.slice(0, baseCount).map(trait => trait.id), ...sagaIds],
                         applied: 0,
                         originalProgress: team.evolutionProgress,
                         pendingTraitId,
@@ -2837,7 +2959,7 @@
             }
 
             function refreshPendingEvolutionAfterUnity(team, consumedPendingTrait) {
-                if (team.level >= 10) {
+                if (team.level >= levelCap()) {
                     team.pendingEvolution = null;
                     team.evolutionProgress = 0;
                     return;
@@ -2849,7 +2971,16 @@
                     return;
                 }
                 const selectedTraitId = team.pendingEvolution.selectedTraitId;
-                const availableOther = shuffleTraits(teamTraits[team.id].filter(trait => !team.traits.includes(trait.id) && trait.id !== selectedTraitId))[0];
+                // A stored trait that no longer belongs to the next stage (Level 10 → 11) is replaced by that stage's own.
+                if (!traitsForStage(team.id, team.level + 1, team.traits).some(trait => trait.id === selectedTraitId)) {
+                    const fresh = traitsForStage(team.id, team.level + 1, team.traits);
+                    if (!fresh.length) { team.pendingEvolution = null; team.evolutionProgress = 0; return; }
+                    const candidates = shuffleTraits(fresh).slice(0, 2);
+                    team.pendingEvolution = { ...team.pendingEvolution, stage:team.level + 1, candidateIds:candidates.map(trait => trait.id), selectedTraitId:candidates[0].id };
+                    team.evolutionProgress = 3;
+                    return;
+                }
+                const availableOther = shuffleTraits(traitsForStage(team.id, team.level + 1, team.traits).filter(trait => trait.id !== selectedTraitId))[0];
                 team.pendingEvolution = {
                     ...team.pendingEvolution,
                     stage: team.level + 1,
@@ -2876,11 +3007,11 @@
                     const traitId = teamPlan?.traitIds[waveIndex];
                     const badge = document.getElementById(`unity-ascension-badge-${team.id}`);
                     const spirit = document.getElementById(`unity-spirit-${team.id}`);
-                    if (!traitId || team.level >= 10) {
-                        if (animate && badge && waveIndex === 0 && team.level >= 10) {
+                    if (!traitId || team.level >= levelCap()) {
+                        if (animate && badge && waveIndex === 0 && team.level >= levelCap()) {
                             badge.querySelector('.unity-ascension-step').textContent = 'Unity Reward';
                             badge.querySelector('.unity-ascension-trait').textContent = 'Maximum Ascension';
-                            badge.querySelector('.unity-ascension-level').textContent = 'Level 10';
+                            badge.querySelector('.unity-ascension-level').textContent = `Level ${levelCap()}`;
                             badge.classList.add('maxed','show');
                         }
                         return;
@@ -2890,7 +3021,7 @@
                     if (!trait || team.traits.includes(trait.id)) return;
                     const previousLevel = team.level;
                     team.traits.push(trait.id);
-                    team.level = Math.min(10, team.level + 1);
+                    team.level = Math.min(levelCap(), team.level + 1);
                     teamPlan.applied += 1;
                     teamPlan.grantedNames.push(trait.name);
                     unityAscensionState.totalGranted += 1;
@@ -3201,6 +3332,8 @@
                 LeagueStudents.useRoster(LeagueRoster.current()?.students || LeagueStudents.defaults());
                 selectedClass=null;studentContributions={};pendingRemoteClassSelection=null;haloTeams=[];haloLocked=false;
                 levelStarts=new Map();lastAwardStudent=new Map();challengeLog=[];
+                // v11.0.0: a new session starts with the Rift closed; a stage won earlier now raises the level cap.
+                riftOpen=false;sagaSessionWin=null;
                 secretAgents=LeagueAgent.fresh();LeagueAgent.close();
                 LeagueStudentUI.close(true);LeagueStudentUI.clearCelebrations();updateStudentSessionUI();
                 abandonScenes();
@@ -3327,6 +3460,8 @@
             function scheduleBattleLoop(){if(battleState?.running)battleRaf=arenaClock.after(()=>updateFinalBattle(SceneRuntime.now()),100);}
 
             function battleFormName(level) {
+                if (level >= 12) return 'Celestial';
+                if (level >= 11) return 'Mythic';
                 if (level >= 10) return 'Legendary';
                 if (level >= 8) return 'Ascendant';
                 if (level >= 5) return 'Relic Form';
@@ -3382,9 +3517,9 @@
             // Light Arena scaling is intentionally local to these temporary battle avatars.
             // Mid-level forms remain readable while Level 10 is about 2.8 times the height
             // of Level 0. Scoreboard, Unity, Remote and Ultra avatar sizing are untouched.
-            const lightBattleLevelScales = Object.freeze([.55,.64,.73,.82,.91,1,1.11,1.22,1.33,1.44,1.55]);
+            const lightBattleLevelScales = Object.freeze([.55,.64,.73,.82,.91,1,1.11,1.22,1.33,1.44,1.55,1.6,1.65]);
             function lightBattleScaleForLevel(level) {
-                const index=Math.max(0,Math.min(10,Math.round(Number(level)||0)));
+                const index=Math.max(0,Math.min(12,Math.round(Number(level)||0)));
                 return lightBattleLevelScales[index];
             }
 
@@ -3469,7 +3604,10 @@
             }
 
             function addBattleEffect(){return null;}
-            function createImpact(target,color,damage,options={}){ArenaMotion.impact(target,color,options);window.LeagueArenaFX?.impact(target.id,damage,{...options,color});}
+            function createImpact(target,color,damage,options={}){ArenaMotion.impact(target,color,options);window.LeagueArenaFX?.impact(target.id,damage,{...options,color});
+                // v11.0.0 fight feel: a spark where the blow lands; a critical also holds the attacker for a few frames.
+                if(target&&damage>0&&!options.blocked&&!options.heal){globalThis.LeagueFightFX?.spark(shellElement(target.id)?.querySelector('.battle-avatar-pose'),color,{big:Boolean(options.critical)});
+                    if(options.critical&&options.attackerId)globalThis.LeagueFightFX?.hitStop(shellElement(options.attackerId));}}
             function createProjectile(attacker,target,color,type=''){animateShell(attacker,'action-arc',920);}
             function createFog(target,color){ArenaMotion.effect(target.id,'poison',color);}
             function createElementalBurst(target,element,large=false){if(target){const profile=Object.values(battleProfiles).find(p=>p.element===element);ArenaMotion.effect(target.id,'impact',profile?.elementColor||'#f8fafc',large);}}
@@ -3540,7 +3678,7 @@
                 const base=8+attacker.power*.43;
                 let criticalChance=.075+attacker.arcane*.0012+(attacker.critBuffUntil>now?.20:0);
                 const critical=Math.random()<Math.min(.38,criticalChance);
-                const levelIndex=Math.max(0,Math.min(10,Math.round(attacker.level)||0));
+                const levelIndex=Math.max(0,Math.min(12,Math.round(attacker.level)||0));
                 const balanceFactor=arenaOutputMultiplier(attacker);
                 let damage=base*multiplier*mitigation*random*surge*finalBoost*charge*foresight*(critical?1.4:1)*balanceFactor;
                 attacker.charged=false;
@@ -3566,6 +3704,8 @@
                     defended=true;
                     const absorbed=Math.min(target.shieldHP,damage);
                     target.shieldHP-=absorbed; target.damageBlocked+=absorbed; damage-=absorbed;
+                    // v11.0.0 fight feel: a shield that breaks shatters.
+                    if(target.shieldHP<=0)globalThis.LeagueFightFX?.shieldBreak(shellElement(target.id)?.querySelector('.battle-avatar-pose'),target.color);
                 }
                 damage=damage<=0?0:Math.max(options.minimum??1,Math.round(damage));
                 target.hp=Math.max(0,target.hp-damage);
@@ -3701,7 +3841,7 @@
                         return;
                     }
                     const poisonOwner=battleState.fighters.find(f=>f.id===target.poisonSourceId) || attacker;
-                    const levelIndex=Math.max(0,Math.min(10,Math.round(poisonOwner.level)||0));
+                    const levelIndex=Math.max(0,Math.min(12,Math.round(poisonOwner.level)||0));
                     const balanceFactor=arenaOutputMultiplier(poisonOwner);
                     // Carry fractional output within this poison chain to avoid large
                     // per-tick rounding cliffs while keeping actual HP damage integral.
@@ -4009,17 +4149,39 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             let vixarRaidRaf = null;
             let vixarDefeatedThisSession = false;
             let vixarUnlockAnnounced = false;
-            const raidClock=SceneRuntime.create('raid',{pause:()=>{RaidMotion.stop();stopBattleMusic(0);},resume:delta=>SceneRuntime.shiftClock(vixarRaidState,delta)});
+            const raidClock=SceneRuntime.create('raid',{pause:()=>{RaidMotion.stop();stopBattleMusic(0);},resume:delta=>{SceneRuntime.shiftClock(vixarRaidState,delta);if(vixarRaidState?.merge)LeagueMergeSpell.shift(vixarRaidState.merge,delta);}});
             const vixarRaidTimers=raidClock.tasks;
-            const VIXAR_RAID_DURATION = 85000;
-            const VIXAR_BOSS_MAX_HP = 4200;
+            // v11.0.0 Vixar Saga: each act sets VIXAR's HP, seals, fight length and pace (vixar-saga.js). At 10% HP
+            // Vixar can only be finished by the Unity Guardian's second claw, in every act.
             const VIXAR_EXECUTION_RATIO = 0.10;
-            const VIXAR_EXECUTION_HP = Math.round(VIXAR_BOSS_MAX_HP * VIXAR_EXECUTION_RATIO);
-            const VIXAR_SEAL_MAX_HP = 240;
+            function vixarExecutionHP() { return Math.round((vixarRaidState?.boss.maxHP || LeagueSaga.ACTS.Violet.bossHP) * VIXAR_EXECUTION_RATIO); }
+            // The Rift: Mr. Saymaz opens this session's fight from the phone. Nothing changes on the board when it opens;
+            // the raid sigil appears only when the Rift is open and all four teams have reached the act's level.
+            let riftOpen = false;
+            const sagaClass = () => LeagueSaga.validClass(selectedClass) ? selectedClass : null;
+            // One saga fight per class and session: after a win or a loss the Rift closes until a later session.
+            const sagaFoughtToday = (className = selectedClass) => Boolean(LeagueSaga.validClass(className) && LeagueSaga.get(className).fightSessions.includes(sessionId));
+            function sagaFightAct() { const c = sagaClass(); return c ? LeagueSaga.act(LeagueSaga.stageOf(c)) : null; }
+            function sagaFightReady() { const act = sagaFightAct(); return Boolean(act && riftOpen && !sagaFoughtToday() && allTeamsAtLeastLevel(act.level)); }
+            // Boss art and seal targets: the Violet form keeps the Light mode drawing; Scarlet and Gilded always use their art.
+            const raidUsesArt = () => performanceMode === 'animated' || (vixarRaidState?.act?.act || 1) > 1;
             const VIXAR_LEGENDARY_DAMAGE_MULTIPLIER = 1.38;
             const VIXAR_COORDINATED_ASSAULT_MULTIPLIER = 1.32;
             const VIXAR_LEGENDARY_OVERDRIVE_MULTIPLIER = 1.55;
             const VIXAR_LEGENDARY_RESOLVE_MULTIPLIER = 0.82;
+            // v11.0.0 balance-lab values (tests/saga-balance.cjs; one object so the lab can sweep them).
+            const sagaBalance = {
+                brandHeal: 0.30,       // Scarlet Brand: share of the marked team's damage that heals Vixar
+                fusionDamage: 1.18,    // a fused pair's strike, on top of its combined power
+                fusionPower: 0.62,     // fused power = (both houses' power) × this
+                silenceFused: 0.30,    // Gilded Vixar's Fifth Silence: share of max HP, fused pair
+                silenceApart: 0.20,    // … teams that fight on apart
+                partialOverdrive: 1.0, // Act III Overdrive when only one pair fused (both pairs: 1.55)
+                apartLastStands: 2,    // Act III after a failed Merge Spell: how often each team can endure at 1 HP
+                apartLastStandsPartial: 1 // … for the pair that did not fuse when the other pair did
+            };
+            const VIXAR_BRAND_MS = 6000;
+            const MERGE_CIRCLE_MS = 120000, MERGE_SECOND_MS = 60000;
             const vixarTeamSlots = Object.freeze({ gryffindor:0, slytherin:1, hufflepuff:2, ravenclaw:3 });
 
             function vixarSchedule(fn,delay){return raidClock.after(()=>{if(vixarRaidState&&(vixarRaidState.running||vixarRaidState.finishing))fn();},delay);}
@@ -4037,26 +4199,34 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function updateVixarRaidAccess() {
                 const button = document.getElementById('vixar-raid-btn');
                 if (!button) return;
-                const unlocked = allTeamsAtLeastLevel(8);
-                const legendary = allTeamsAtLeastLevel(10);
+                const c = sagaClass(), stage = c ? LeagueSaga.stageOf(c) : '', act = LeagueSaga.act(stage);
+                // Epilogue: a Freed class sees Mr. Saymaz, as an ally, where the raid sigil was.
+                const freed = stage === 'Freed';
+                const unlocked = sagaFightReady();
                 const unityReady = vixarGuardianIsEligible();
-                button.classList.toggle('visible', unlocked);
+                button.classList.toggle('visible', unlocked || freed);
+                button.classList.toggle('saga-ally', freed);
+                button.dataset.sagaStage = stage;
+                if (freed && !button.querySelector('.saga-ally-portrait')) button.prepend(LeagueSagaScenes.allyPortrait());
+                if (!freed) button.querySelector('.saga-ally-portrait')?.remove();
                 button.classList.toggle('unity-ready', unlocked && unityReady);
                 button.classList.toggle('conquered', vixarDefeatedThisSession);
-                button.disabled = !unlocked || Boolean(battleState?.running) || Boolean(vixarRaidState?.running) || unityEventRunning || unityEventQueued;
-                button.setAttribute('aria-hidden', unlocked ? 'false' : 'true');
-                button.title = !unlocked
-                    ? 'Secret raid locked — every team must be Level 8'
-                    : legendary && unityReady
-                        ? 'VIXAR can now be defeated'
-                        : legendary
-                            ? 'VIXAR discovered — complete the Class Mission to summon the Unity Guardian'
-                            : 'VIXAR discovered — Level 10 is required to break every seal';
+                button.disabled = !(unlocked || freed) || Boolean(battleState?.running) || Boolean(vixarRaidState?.running) || unityEventRunning || unityEventQueued || (freed && Boolean(LeagueScenes.active));
+                button.setAttribute('aria-hidden', unlocked || freed ? 'false' : 'true');
+                button.setAttribute('aria-label', freed ? 'Mr. Saymaz, your ally · Replay the Finale' : `Enter the ${act?.title || 'VIXAR'} raid`);
+                button.title = freed
+                    ? 'Mr. Saymaz · your ally · Replay the Finale'
+                    : !unlocked
+                        ? 'The Rift is closed'
+                        : unityReady
+                            ? `${act.title} can now be fought`
+                            : `${act.title} discovered — complete the Class Mission to summon the Unity Guardian`;
                 if (unlocked && !vixarUnlockAnnounced) {
                     vixarUnlockAnnounced = true;
-                    addHistoryLog('◈ A forbidden raid sigil has appeared: VIXAR stirs beyond the Final Arena.', '#a78bfa');
+                    addHistoryLog(`◈ The Rift is open: ${act.title} stirs beyond the Final Arena.`, act.color);
                 }
                 if (!unlocked) vixarUnlockAnnounced = false;
+                document.querySelectorAll('.team-container').forEach(el => el.classList.toggle('saga-freed-edge', freed && Number(el.querySelector('.team-level-display')?.dataset.level) >= 12));
             }
 
             function cloneExistingUnityGuardianForRaid() {
@@ -4101,6 +4271,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             }
 
             function createVixarRaidState() {
+                const act = sagaFightAct() || LeagueSaga.ACTS.Violet;
                 const highestPoints = Math.max(1, ...teamsData.map(team => Math.max(0, team.points)));
                 const fighters = teamsData.map(team => {
                     const fighter = buildBattleFighter(team, highestPoints);
@@ -4125,15 +4296,18 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 fighters.forEach(fighter => {
                     seals[fighter.id] = {
                         id: fighter.id,
-                        hp: VIXAR_SEAL_MAX_HP,
-                        maxHP: VIXAR_SEAL_MAX_HP,
+                        hp: act.sealHP,
+                        maxHP: act.sealHP,
                         broken: false,
-                        locked: fighter.level < 10,
+                        locked: fighter.level < act.level,
                         lockAnnounced: false
                     };
                 });
                 const guardianEnabled = vixarGuardianIsEligible();
+                const allReady = fighters.every(fighter => fighter.level >= act.level);
                 return {
+                    act, className: selectedClass, stage: act.stage, duration: act.duration,
+                    originalFighters: fighters, merge: null, edictCast: false, mergedPairs: [],
                     running: true,
                     finishing: false,
                     finaleStage: null,
@@ -4145,9 +4319,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     fighters,
                     seals,
                     boss: {
-                        hp: VIXAR_BOSS_MAX_HP,
-                        maxHP: VIXAR_BOSS_MAX_HP,
-                        armor: 108,
+                        hp: act.bossHP,
+                        maxHP: act.bossHP,
+                        armor: act.armor,
                         power: 128,
                         arcane: 148,
                         shieldHP: 0,
@@ -4158,13 +4332,16 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                         inversionUntil: 0,
                         fifthSilenceUsed: false,
                         emptyCrownTriggered: false,
-                        lastAttackerId: null
+                        lastAttackerId: null,
+                        brandTeamId: null,
+                        brandUntil: 0
                     },
                     guardianEnabled,
                     guardianJoined: false,
                     guardianNextActionAt: 0,
-                    allLegendary: allTeamsAtLeastLevel(10),
-                    eligibleVictory: allTeamsAtLeastLevel(10) && guardianEnabled,
+                    // "Legendary" now means every team reached this act's level (10, 11 or 12).
+                    allLegendary: allReady,
+                    eligibleVictory: allReady && guardianEnabled,
                     legendaryOverdrive: false,
                     overtimeGranted: false,
                     lockMessageAt: 0,
@@ -4172,16 +4349,28 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 };
             }
 
+            // v11.0.0: a fused pair (Slyffindor, Huffleclaw) shows its own art once it is added to assets/animated;
+            // until then both Level 12 creatures stand together inside one fighter.
+            function vixarFighterArt(fighter) {
+                if (!fighter.merged) return getAvatarSVG(fighter.id, fighter.traits);
+                const pair = fighter.members.map(id => vixarRaidState.originalFighters.find(f => f.id === id));
+                return `<div class="merged-fighter-art" data-pair="${fighter.id}">${LeagueSagaScenes.mergedArt(fighter.id)}${pair.map((member, i) => `<div class="merged-member merged-member-${i}">${getAvatarSVG(member.id, member.traits)}</div>`).join('')}</div>`;
+            }
+            function vixarFighterName(fighter) {
+                if (!fighter.merged) return `<span class="vixar-team-name" style="color:${fighter.color}">${fighter.name}</span>`;
+                const cut = Math.ceil(fighter.name.length / 2);
+                return `<span class="vixar-team-name merged-name"><span style="color:${fighter.colors[0]}">${fighter.name.slice(0, cut)}</span><span style="color:${fighter.colors[1]}">${fighter.name.slice(cut)}</span></span>`;
+            }
             function renderVixarRaidFighters() {
                 const host = document.getElementById('vixar-team-layer');
                 host.innerHTML = vixarRaidState.fighters.map(fighter => {
                     const rightSide = fighter.arenaSlot === 1 || fighter.arenaSlot === 3;
-                    const relicText = fighter.hasRelic ? `${teamRelics[fighter.id].icon} READY` : 'RELIC LOCKED';
+                    const relicText = fighter.hasRelic ? `${fighter.merged ? '✦' : teamRelics[fighter.id].icon} ${fighter.relicUsed ? 'USED' : 'READY'}` : 'RELIC LOCKED';
                     return `
-                        <section id="vixar-team-${fighter.id}" class="vixar-team-fighter ${rightSide ? 'right-side' : ''}" data-team="${fighter.id}" data-slot="${fighter.arenaSlot}" style="--team-color:${fighter.color}">
+                        <section id="vixar-team-${fighter.id}" class="vixar-team-fighter ${rightSide ? 'right-side' : ''} ${fighter.merged ? 'is-merged' : ''}" data-team="${fighter.id}" data-slot="${fighter.arenaSlot}" style="--team-color:${fighter.color}${fighter.merged ? `;--team-color-b:${fighter.colors[1]}` : ''}">
                             <div class="vixar-team-panel">
                                 <div class="vixar-team-line">
-                                    <span class="vixar-team-name" style="color:${fighter.color}">${fighter.name}</span>
+                                    ${vixarFighterName(fighter)}
                                     <span class="vixar-team-meta">LV.${fighter.level} · ${fighter.form}</span>
                                 </div>
                                 <div class="vixar-team-hp-row">
@@ -4199,7 +4388,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                             </div>
                             <div id="vixar-team-status-${fighter.id}" class="vixar-team-status"></div>
                             <div id="vixar-avatar-shell-${fighter.id}" class="vixar-avatar-shell" style="--team-color:${fighter.color}">
-                                <div class="raid-travel"><div class="raid-pose">${getAvatarSVG(fighter.id, fighter.traits)}</div></div>
+                                <div class="raid-travel"><div class="raid-pose">${vixarFighterArt(fighter)}</div></div>
+                                <div class="saga-brand-mark" aria-hidden="true"></div>
                             </div>
                             <div class="vixar-team-ko">Knocked Out</div>
                         </section>`;
@@ -4254,7 +4444,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const animated = performanceMode === 'animated';
                 const image = document.getElementById('vixar-boss-animated-art');
                 const viewBox = document.getElementById('vixar-boss-svg').viewBox.baseVal;
-                const ratio = animated ? (image.naturalWidth / image.naturalHeight || 1100 / 890) : viewBox.width / viewBox.height;
+                const ratio = animated || raidUsesArt() ? (image.naturalWidth / image.naturalHeight || 1100 / 890) : viewBox.width / viewBox.height;
                 const height = Math.min(stage.height, stage.width / ratio) * .5;
                 const host = document.getElementById('vixar-guardian-host');
                 host.style.setProperty('--raid-guardian-height', `${height}px`);
@@ -4314,13 +4504,16 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     : 'linear-gradient(90deg,#7f1d1d,#be123c 48%,#f0abfc)';
                 document.getElementById('vixar-boss-hp-number').textContent = `${Math.max(0, Math.ceil(boss.hp))} / ${boss.maxHP}`;
                 document.getElementById('vixar-aegis-status').textContent = `Aegis ${Math.ceil(boss.shieldHP)}`;
-                document.getElementById('vixar-phase').textContent = boss.phase === 1
-                    ? 'Phase I · Cosmic Dominion'
+                const phases = vixarRaidState.act.phases;
+                document.getElementById('vixar-phase').textContent = vixarRaidState.merge && !vixarRaidState.merge.done
+                    ? 'The Edict of Separation · Merge Spell'
+                    : boss.phase === 1
+                    ? `Phase I · ${phases[0]}`
                     : boss.phase === 2
-                        ? 'Phase II · Edict of Separation'
+                        ? `Phase II · ${phases[1]}`
                         : percentage <= 10
                         ? 'Execution Threshold · Final 10% Protected'
-                        : 'Phase III · The Fifth Silence';
+                        : `Phase III · ${phases[2]}`;
             }
 
             function vixarAnnounce() {
@@ -4342,17 +4535,17 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
             function vixarTargetSealForFighter(fighter) {
                 const own = vixarRaidState.seals[fighter.id];
-                if (!own.broken) return own;
+                if (own && !own.broken) return own;
                 // Help the remaining seals before anyone targets the boss itself.
                 return Object.values(vixarRaidState.seals).filter(seal => !seal.broken).sort((a,b) => Number(a.locked) - Number(b.locked) || a.hp - b.hp)[0] || null;
             }
 
             function vixarSealElement(id) {
-                return document.getElementById(`${performanceMode === 'animated' ? 'vixar-art-seal-' : 'vixar-svg-seal-'}${id}`);
+                return document.getElementById(`${raidUsesArt() ? 'vixar-art-seal-' : 'vixar-svg-seal-'}${id}`);
             }
 
             function vixarBossTarget() {
-                return performanceMode === 'animated' ? document.getElementById('vixar-animated-core') : document.querySelector('#vixar-boss-svg .vixar-core');
+                return raidUsesArt() ? document.getElementById('vixar-animated-core') : document.querySelector('#vixar-boss-svg .vixar-core');
             }
 
             function vixarTargetElementForFighter(fighter) {
@@ -4361,9 +4554,19 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             }
 
             function createVixarProjectile(from,to,color,{duration=520}={}){RaidMotion.bolt(from,to,color,Math.min(duration,590));}
-            function createVixarImpact(target,color){RaidMotion.ring(target,color);}
+            // v11.0.0 fight feel: every blow shows its number and a spark; criticals are larger. Words (SHATTERED, AEGIS,
+            // SHIELD, IMMUNE, LAST STAND) appear as short callouts.
+            function createVixarImpact(target,color,label='',options={}){
+                RaidMotion.ring(target,color);
+                const fx=globalThis.LeagueFightFX,text=String(label||'');if(!fx||!target||!text)return;
+                if(text==='CRITICAL'){fx.spark(target,'#fff',{big:true});return;}
+                const damage=/^−/.test(text);
+                fx.number(target,text,{color:options.heal?'#fb7185':damage?color:'#f5f3ff',kind:options.heal?'heal':damage&&options.critical?'critical':damage?'damage':'word'});
+                if(damage)fx.spark(target,color,{big:Boolean(options.critical||options.big)});
+            }
             function vixarScreenFlash(){}
-            function shakeVixarArena(){}
+            // Only the heaviest blows (Gravity Collapse, the Fifth Silence) shake the arena, by a few pixels.
+            function shakeVixarArena(ms){if(ms)globalThis.LeagueFightFX?.shake(document.getElementById('vixar-raid-arena'),ms>600?7:5,Math.min(320,ms));}
             function createVixarCastRing(element,color='#e9d5ff'){RaidMotion.ring(element,color,true);}
             function createVixarLineEffect(className,from,to,duration=720){RaidMotion.stream(from,to,className==='vixar-concordance-beam'?'#fff7c2':'#c4b5fd',duration,true);return null;}
             function createVixarImpactWave(element){RaidMotion.wave(element);}
@@ -4384,10 +4587,13 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function vixarBossHpFloor() {
                 if (!vixarAllSealsBroken()) return Math.round(vixarRaidState.boss.maxHP * .34);
                 if (!vixarRaidState.allLegendary) return Math.round(vixarRaidState.boss.maxHP * .18);
+                // v11.0.0 Act III: Gilded Vixar casts the Edict of Separation at 70% HP; it cannot fall further until the
+                // Merge Spell has been cast.
+                if (vixarRaidState.act.merge && !vixarRaidState.edictCast) return Math.round(vixarRaidState.boss.maxHP * .70);
                 // Legendary teams can break every seal and reduce VIXAR to exactly
                 // 10% HP. The protected final tenth belongs exclusively to the
                 // Unity Guardian's divine finishing strike.
-                return VIXAR_EXECUTION_HP;
+                return vixarExecutionHP();
             }
 
             function vixarDamageSeal(fighter, rawDamage, source = 'team', sealId = fighter.id) {
@@ -4403,7 +4609,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if (seal.hp <= 1 && !seal.lockAnnounced) {
                         seal.lockAnnounced = true;
                         setVixarTeamStatus(fighter, 'Legendary Lock', 1300);
-                        vixarAnnounce(`${fighter.name} must reach Level 10`, fighter.color);
+                        vixarAnnounce(`${fighter.name} must reach Level ${vixarRaidState.act.level}`, fighter.color);
                         playSound('shield');
                     }
                 } else {
@@ -4444,6 +4650,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                         createVixarImpact(document.getElementById('vixar-boss-stage'), '#c4b5fd', `AEGIS ${Math.round(absorbed)}`);
                         RaidMotion.move('boss', 'guard');
                         RaidMotion.ring(document.getElementById('vixar-boss-stage'), '#c4b5fd', true);
+                        if (boss.shieldHP <= 0) globalThis.LeagueFightFX?.shieldBreak(vixarBossTarget(), '#c4b5fd');
                     }
                 }
                 if(fighter)RaidMotion.resolve(fighter.id,damage<=0?'blocked':hadShield?'partial':'hit');
@@ -4459,11 +4666,20 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     fighter.raidDamage += dealt;
                     boss.lastAttackerId = fighter.id;
                 }
-                createVixarImpact(document.getElementById('vixar-boss-stage'), fighter?.color || '#f8fafc', dealt > 0 ? `−${Math.round(dealt)}` : 'CROWN LOCK');
+                createVixarImpact(document.getElementById('vixar-boss-stage'), fighter?.color || '#f8fafc', dealt > 0 ? `−${Math.round(dealt)}` : 'CROWN LOCK', { critical:options.critical, big:options.signature });
+                // v11.0.0 Scarlet Brand: damage dealt by the marked team heals Vixar slightly (never past the 10% threshold).
+                if (fighter && dealt > 0 && boss.brandTeamId === fighter.id && boss.brandUntil > now && boss.hp > vixarExecutionHP()) {
+                    const heal = Math.min(boss.maxHP - boss.hp, Math.max(1, Math.round(dealt * sagaBalance.brandHeal)));
+                    if (heal > 0) { boss.hp += heal; createVixarImpact(document.getElementById('vixar-boss-stage'), '#fb7185', `+${heal}`, { heal:true }); }
+                }
                 vixarBossHitAnimation();
                 updateVixarBossHUD();
                 updateVixarPhase();
-                if (boss.hp <= VIXAR_EXECUTION_HP && vixarAllSealsBroken()) {
+                if (vixarRaidState.act.merge && !vixarRaidState.edictCast && boss.hp <= Math.round(boss.maxHP * .70) && vixarAllSealsBroken()) {
+                    beginVixarEdict();
+                    return dealt;
+                }
+                if (boss.hp <= vixarExecutionHP() && vixarAllSealsBroken()) {
                     beginVixarFinalAttack();
                 }
                 return dealt;
@@ -4478,29 +4694,39 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const base = 12 + fighter.power * .53;
                 const signatureMultiplier = signature ? 2.18 : 1;
                 const buff = fighter.damageBuffUntil > now ? 1.24 : 1;
-                const legendaryPower = fighter.level >= 10 ? VIXAR_LEGENDARY_DAMAGE_MULTIPLIER : 1;
+                const legendaryPower = fighter.level >= vixarRaidState.act.level ? VIXAR_LEGENDARY_DAMAGE_MULTIPLIER : 1;
+                // A fused pair strikes with both houses' power (its own power stat already sums them).
+                const fusion = fighter.merged ? sagaBalance.fusionDamage : 1;
                 const coordinatedAssault = vixarRaidState?.allLegendary && vixarAllSealsBroken()
                     ? VIXAR_COORDINATED_ASSAULT_MULTIPLIER
                     : 1;
                 const legendaryOverdrive = vixarRaidState?.legendaryOverdrive
-                    ? VIXAR_LEGENDARY_OVERDRIVE_MULTIPLIER
+                    ? (vixarRaidState.act.merge && vixarRaidState.mergedPairs.length < 2 ? sagaBalance.partialOverdrive : VIXAR_LEGENDARY_OVERDRIVE_MULTIPLIER)
                     : 1;
                 return {
-                    damage:Math.round(base * signatureMultiplier * buff * legendaryPower * coordinatedAssault * legendaryOverdrive * random * (critical ? 1.5 : 1)),
+                    damage:Math.round(base * signatureMultiplier * buff * legendaryPower * fusion * coordinatedAssault * legendaryOverdrive * random * (critical ? 1.5 : 1)),
                     critical
                 };
             }
 
+            const raidProfile = fighter => battleProfiles[fighter.id] || battleProfiles[fighter.members?.[0]] || battleProfiles.gryffindor;
             function maybeUseVixarRelic(fighter, now) {
                 if (!fighter.hasRelic || fighter.relicUsed || vixarRaidState.elapsed < 14500) return false;
                 const ratio = fighter.hp / fighter.maxHP;
                 if (ratio > .62 && Math.random() > .16) return false;
                 fighter.relicUsed = true;
                 const relicEl = document.getElementById(`vixar-team-relic-${fighter.id}`);
-                if (relicEl) relicEl.textContent = `${teamRelics[fighter.id].icon} USED`;
-                setVixarTeamStatus(fighter, battleProfiles[fighter.id].relic, 1400);
+                if (relicEl) relicEl.textContent = `${fighter.merged ? '✦' : teamRelics[fighter.id].icon} USED`;
+                setVixarTeamStatus(fighter, raidProfile(fighter).relic, 1400);
                 playSound('relic');
-                if (fighter.id === 'gryffindor') {
+                if (fighter.merged) {
+                    // A fused pair's relic: both houses' relics as one, a shield and a burst of power.
+                    fighter.shieldHP += Math.round(fighter.maxHP * .12);
+                    fighter.damageBuffUntil = now + 5200;
+                    fighter.energy = 3;
+                    animateVixarTeam(fighter, 'guard', 1200);
+                    updateVixarTeamHUD(fighter);
+                } else if (fighter.id === 'gryffindor') {
                     fighter.invulnerableUntil = now + 2600;
                     fighter.shieldHP += 90;
                     animateVixarTeam(fighter, 'guard', 1200);
@@ -4555,7 +4781,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const target = vixarTargetElementForFighter(fighter);
                 const shell = document.getElementById(`vixar-avatar-shell-${fighter.id}`);
                 const attack = computeVixarTeamDamage(fighter, signature);
-                setVixarTeamStatus(fighter, signature ? battleProfiles[fighter.id].signature : battleProfiles[fighter.id].basic, signature ? 1150 : 720);
+                setVixarTeamStatus(fighter, signature ? raidProfile(fighter).signature : raidProfile(fighter).basic, signature ? 1150 : 720);
                 animateVixarTeam(fighter, 'action', signature ? 1050 : 760, target);
                 // Release after the approach. Damage and the visible impact share a deadline.
                 const impactDelay = signature ? 620 : 520;
@@ -4579,11 +4805,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if (targetSeal){RaidMotion.resolve(fighter.id,'hit');vixarDamageSeal(fighter, attack.damage * (signature ? 1.24 : 1), 'team', targetSeal.id);}
                     else {
                         RaidMotion.strike(target, fighter.color, fighter.id);
-                        vixarApplyBossDamage(fighter, attack.damage, { signature });
+                        vixarApplyBossDamage(fighter, attack.damage, { signature, critical:attack.critical });
                     }
                     if (attack.critical) {
                         fighter.criticals += 1;
-                        createVixarImpact(target, '#fff', 'CRITICAL');
+                        createVixarImpact(target, '#fff', 'CRITICAL', { critical:true });
+                        globalThis.LeagueFightFX?.hitStop(RaidMotion.node(fighter.id));
                     }
                 }, impactDelay);
             }
@@ -4596,6 +4823,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if(!options.presented){
                     RaidMotion.move('boss','attack',document.getElementById(`vixar-avatar-shell-${target.id}`));
                     const travel = 420;
+                    // A red ground mark warns the team just before the blow lands.
+                    globalThis.LeagueFightFX?.telegraph(document.getElementById(`vixar-avatar-shell-${target.id}`), vixarRaidState.act.color === '#a78bfa' ? '#f472b6' : '#f43f5e', travel);
                     RaidMotion.bossShot(vixarBossTarget(),document.getElementById(`vixar-avatar-shell-${target.id}`),label,travel);
                     vixarSchedule(()=>vixarApplyTeamDamage(target,amount,label,{...options,presented:true}),travel);return 0;
                 }
@@ -4606,7 +4835,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 }
 
                 const armorScale = options.trueDamage ? 1 : 100 / (100 + Math.max(0, target.armor) * (options.piercing ? .20 : .42));
-                const legendaryResolve = vixarRaidState.allLegendary && target.level >= 10
+                const legendaryResolve = vixarRaidState.allLegendary && target.level >= vixarRaidState.act.level
                     ? VIXAR_LEGENDARY_RESOLVE_MULTIPLIER
                     : 1;
                 let damage = Math.max(1, Math.round(amount * armorScale * legendaryResolve));
@@ -4617,6 +4846,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if (absorbed > 0) {
                         createVixarImpact(targetEl, target.color, `SHIELD ${Math.round(absorbed)}`);
                         animateVixarTeam(target, 'guard');
+                        if (target.shieldHP <= 0) globalThis.LeagueFightFX?.shieldBreak(document.getElementById(`vixar-avatar-shell-${target.id}`), target.color);
                     }
                 }
                 damage = Math.max(0, Math.round(damage));
@@ -4642,9 +4872,13 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 }
 
                 if (target.hp <= 0) {
+                    // v11.0.0 Act III: after the Edict, only a fused pair can endure at 1 HP; teams that fight on apart can fall.
+                    const apart = vixarRaidState.act.merge && vixarRaidState.edictCast && !target.merged;
                     const legendaryLastStand = vixarRaidState.allLegendary
-                        && vixarRaidState.boss.hp > VIXAR_EXECUTION_HP
-                        && !vixarRaidState.finishing;
+                        && vixarRaidState.boss.hp > vixarExecutionHP()
+                        && !vixarRaidState.finishing
+                        && (!apart || (target.apartStands || 0) < (vixarRaidState.mergedPairs.length ? sagaBalance.apartLastStandsPartial : sagaBalance.apartLastStands));
+                    if (legendaryLastStand && apart) target.apartStands = (target.apartStands || 0) + 1;
                     if (legendaryLastStand) {
                         target.hp = 1;
                         target.alive = true;
@@ -4880,6 +5114,25 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 }
             }
 
+            // v11.0.0 Act II: Scarlet Brand marks one team for 6 seconds. Damage dealt by the marked team heals Vixar
+            // slightly. The mark is large and readable from the back row.
+            function performVixarScarletBrand() {
+                const living = vixarRaidState.fighters.filter(fighter => fighter.alive && !fighter.revivePending);
+                if (!living.length) return;
+                const target = living.find(fighter => fighter.id === vixarRaidState.boss.lastAttackerId) || living.sort((a, b) => b.raidDamage - a.raidDamage)[0];
+                const boss = vixarRaidState.boss, now = SceneRuntime.now();
+                document.querySelectorAll('.vixar-team-fighter.is-branded').forEach(el => el.classList.remove('is-branded'));
+                boss.brandTeamId = target.id;
+                boss.brandUntil = now + VIXAR_BRAND_MS;
+                const el = document.getElementById(`vixar-team-${target.id}`);
+                el?.classList.add('is-branded');
+                RaidMotion.bossShot(vixarBossTarget(), document.getElementById(`vixar-avatar-shell-${target.id}`), 'SCARLET BRAND', 420);
+                globalThis.LeagueFightFX?.telegraph(document.getElementById(`vixar-avatar-shell-${target.id}`), '#fb7185', 420);
+                vixarSchedule(() => { if (boss.brandTeamId === target.id && boss.brandUntil <= SceneRuntime.now() + 20) { boss.brandTeamId = null; el?.classList.remove('is-branded'); } }, VIXAR_BRAND_MS);
+                addHistoryLog(`♦ Scarlet Brand marked ${target.name}: its attacks heal Vixar for six seconds.`, '#fb7185');
+                playSound('debuff');
+            }
+
             function performVixarFifthSilence() {
                 const boss = vixarRaidState.boss;
                 if (boss.fifthSilenceUsed) return false;
@@ -4897,7 +5150,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     overlay.classList.remove('empty-crown');
                     vixarRaidState.fighters.forEach(fighter => {
                         if (!fighter.alive) return;
-                        const extinctionDamage = Math.round(fighter.maxHP * .23) + 42;
+                        // Gilded Vixar's strongest phase: survivable for a fused pair, harsh for teams that fight on apart.
+                        const gilded = vixarRaidState.act.merge;
+                        const extinctionDamage = Math.round(fighter.maxHP * (gilded ? (fighter.merged ? sagaBalance.silenceFused : sagaBalance.silenceApart) : .23)) + 42;
                         vixarApplyTeamDamage(fighter, extinctionDamage, 'FIFTH SILENCE', { trueDamage:true });
                     });
                     vixarScreenFlash('rgba(255,255,255,.48)');
@@ -4918,11 +5173,15 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     boss.actionIndex += 1;
                     return;
                 }
-                const phaseActions = boss.phase === 1
+                const act = vixarRaidState.act;
+                let phaseActions = boss.phase === 1
                     ? [performVixarNullLance, performVixarCrownfall, performVixarGravityCollapse, performVixarAegis]
                     : boss.phase === 2
                         ? [performVixarEdict, performVixarOblivionSweep, performVixarNullLance, performVixarInversion, performVixarCrownfall, performVixarGravityCollapse, performVixarAegis]
                         : [performVixarSoulRend, performVixarOblivionSweep, performVixarGravityCollapse, performVixarNullLance, performVixarCrownfall, performVixarEdict, performVixarInversion, performVixarAegis];
+                // Act II adds Scarlet Brand to every phase. Act III's Edict is the Merge Spell's moment, not a repeated attack.
+                if (act.brand) phaseActions = [...phaseActions.slice(0, 1), performVixarScarletBrand, ...phaseActions.slice(1)];
+                if (act.merge) phaseActions = phaseActions.filter(action => action !== performVixarEdict);
                 const action = phaseActions[boss.actionIndex % phaseActions.length];
                 boss.actionIndex += 1;
                 if (action !== performVixarAegis) RaidMotion.move('boss', 'attack');
@@ -4933,7 +5192,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const phase = vixarRaidState.boss.phase;
                 // VIXAR remains devastating, but the wider attack windows allow a
                 // fully Legendary party enough coordinated turns to reach 10% HP.
-                return (phase === 1 ? 3150 : phase === 2 ? 2520 : 1960) * (.92 + Math.random() * .16);
+                return (phase === 1 ? 3150 : phase === 2 ? 2520 : 1960) * vixarRaidState.act.pace * (.92 + Math.random() * .16);
             }
 
             function performVixarGuardianPulse(now) {
@@ -4942,8 +5201,17 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 return false;
             }
 
+            // Overdrive and the one overtime belong to a class that meets the act's requirements; in Act III, to a class that
+            // fused both pairs in the Merge Spell.
+            function vixarSupportsOvertime() {
+                return Boolean(vixarRaidState?.allLegendary && (!vixarRaidState.act.merge || vixarRaidState.mergedPairs.length === 2));
+            }
+            // The late-fight Overdrive: in Act III, a class that fused at least one pair.
+            function vixarSupportsOverdrive() {
+                return Boolean(vixarRaidState?.allLegendary && (!vixarRaidState.act.merge || vixarRaidState.mergedPairs.length > 0));
+            }
             function activateVixarLegendaryOverdrive(now, overtime = false) {
-                if (!vixarRaidState?.allLegendary || vixarRaidState.finishing) return false;
+                if (!(overtime ? vixarSupportsOvertime() : vixarSupportsOverdrive()) || vixarRaidState.finishing) return false;
                 if (vixarRaidState.legendaryOverdrive && !overtime) return false;
                 vixarRaidState.legendaryOverdrive = true;
                 vixarRaidState.boss.armor = Math.min(vixarRaidState.boss.armor, overtime ? 68 : 78);
@@ -4970,21 +5238,26 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if (!vixarRaidState || vixarRaidState.finishing) return;
                 const boss = vixarRaidState.boss;
                 const ratio = boss.hp / boss.maxHP;
+                const scale = vixarRaidState.duration / 85000;
                 let nextPhase = 1;
-                if (ratio <= .70 || vixarRaidState.elapsed >= 23000) nextPhase = 2;
-                if (ratio <= .35 || vixarRaidState.elapsed >= 47000) nextPhase = 3;
+                if (ratio <= .70 || vixarRaidState.elapsed >= 23000 * scale) nextPhase = 2;
+                if (ratio <= .35 || vixarRaidState.elapsed >= 47000 * scale) nextPhase = 3;
+                // Act III: Phase II is the fused fight, after the Edict and the Merge Spell.
+                if (vixarRaidState.act.merge && !vixarRaidState.edictCast) nextPhase = 1;
+                if (vixarRaidState.act.merge && vixarRaidState.merge && !vixarRaidState.merge.done) return;
                 if (nextPhase === boss.phase) return;
                 boss.phase = nextPhase;
                 const overlay = document.getElementById('vixar-raid-overlay');
                 overlay.classList.toggle('phase-two', nextPhase >= 2);
                 overlay.classList.toggle('phase-three', nextPhase >= 3);
+                const poseId = vixarRaidState.act.art;
                 if (nextPhase === 2) {
-                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'proud',{id:'vixar',duration:1500,priority:40});
+                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'proud',{id:poseId,duration:1500,priority:40});
                     vixarAnnounce('VIXAR reveals six astral arms', '#c4b5fd');
                     playSound('battleStart');
                 } else if (nextPhase === 3) {
                     document.getElementById('vixar-chest-armor')?.setAttribute('opacity', '.28');
-                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'exposed',{id:'vixar',duration:2000,priority:40});
+                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'exposed',{id:poseId,duration:2000,priority:40});
                     vixarAnnounce('The true void core is exposed', '#f0abfc');
                     vixarScreenFlash('rgba(217,70,239,.26)');
                     playSound('signature');
@@ -4999,7 +5272,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
             function beginVixarFinalAttack() {
                 const state = vixarRaidState;
-                if (!state?.running || state.finishing || state.finalAttackUsed || !vixarAllSealsBroken() || state.boss.hp > VIXAR_EXECUTION_HP) return;
+                if (!state?.running || state.finishing || state.finalAttackUsed || !vixarAllSealsBroken() || state.boss.hp > vixarExecutionHP()) return;
                 state.finalAttackUsed = true;
                 state.finishing = true;
                 // Cancel in-flight damage, relic ticks and boss casts before the finale.
@@ -5012,8 +5285,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const overlay = document.getElementById('vixar-raid-overlay');
                 overlay.classList.remove('empty-crown', 'legendary-overdrive');
                 overlay.classList.add('phase-three', 'final-assault');
-                state.boss.hp = VIXAR_EXECUTION_HP;
+                state.boss.hp = vixarExecutionHP();
                 state.boss.shieldHP = 0;
+                state.boss.brandTeamId = null;
+                document.querySelectorAll('.vixar-team-fighter.is-branded').forEach(el => el.classList.remove('is-branded'));
                 updateVixarBossHUD();
                 setVixarFinaleStage('charging');
                 RaidMotion.move('boss', 'ultimate');
@@ -5051,6 +5326,306 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     }
                 }, 1320);
             }
+
+            // =================================================================
+            // v11.0.0 ACT III · THE EDICT OF SEPARATION AND THE MERGE SPELL
+            // At 70% HP Gilded Vixar casts the Edict and the fight freezes. The class answers English questions in turn
+            // until old rivals fuse: Slyffindor (Gryffindor + Slytherin) and Huffleclaw (Hufflepuff + Ravenclaw).
+            // No fight timer runs during the spell; its ritual circle is the only timer. No student is ever named for a miss.
+            // =================================================================
+            const MERGE_TYPES = ['Vocabulary', 'Translation', 'Grammar', 'Sentence Repair', 'Ask a Question'];
+            function beginVixarEdict() {
+                const state = vixarRaidState;
+                if (!state?.running || state.finishing || state.edictCast) return;
+                state.edictCast = true;
+                state.edictAt = SceneRuntime.now();
+                clearVixarRaidTasks();
+                document.getElementById('vixar-fx-layer').replaceChildren();
+                state.boss.shieldHP = 0;
+                state.boss.brandTeamId = null;
+                const overlay = document.getElementById('vixar-raid-overlay');
+                overlay.classList.add('edict-cast');
+                LeagueScenes.phase('raid', 'edict');
+                RaidMotion.move('boss', 'ultimate');
+                state.fighters.forEach(fighter => { if (fighter.alive) createVixarChainToFighter(fighter); });
+                updateVixarBossHUD();
+                addHistoryLog('⛓ Gilded Vixar cast the Edict of Separation. The class answers together with the Merge Spell.', '#fbbf24');
+                playSound('vortex');
+                vixarSchedule(startMergeSpell, 1500);
+            }
+            function mergeHouseOrder(house) {
+                // "Next to invite" order: fewest contributions first, then roster order.
+                return LeagueStudents.members(selectedClass, house)
+                    .map((person, order) => ({ ...person, awards:studentContributions[person.id]?.awards || 0, order }))
+                    .sort((a, b) => a.awards - b.awards || a.order - b.order);
+            }
+            function mergeDeal(house) {
+                const team = teamsData.find(t => t.id === house);
+                const ctx = challengeContext(team);
+                if (!ctx) return null;
+                const types = shuffleTraits(MERGE_TYPES);
+                for (const type of types) {
+                    const card = LeagueChallenge.deal(type, ctx);
+                    if (card?.choice) return { ...card, island:ctx.island };
+                }
+                return null;
+            }
+            function dealMergeTurn() {
+                const state = vixarRaidState, merge = state?.merge;
+                if (!merge || merge.done || !merge.turn) { state.mergeCard = null; return; }
+                const house = merge.turn.house;
+                // The student chosen for this turn (suggested, or changed by Mr. Saymaz while the last card was showing).
+                if (state.mergeStudent?.turn !== merge.turn.n) suggestMergeStudent(state);
+                const card = mergeDeal(house);
+                state.mergeCard = card ? { ...card, id:`merge-${merge.turns}` } : null;
+                state.mergeOutcome = null;
+                if (!card) {
+                    // No island content for this class: the turn passes on so the spell can still finish.
+                    addHistoryLog('No Merge Spell card could be dealt from this class’s islands; the turn passes on.', '#fbbf24');
+                    vixarSchedule(() => { if (vixarRaidState === state && merge.turn) { LeagueMergeSpell.answer(merge, false, { at:Date.now() }); dealMergeTurn(); renderMergeView(); } }, 900);
+                }
+            }
+            function suggestMergeStudent(state) {
+                const merge = state.merge;
+                if (!merge?.turn) { state.mergeStudent = null; return; }
+                const person = LeagueMergeSpell.suggest(merge, mergeHouseOrder(merge.turn.house));
+                state.mergeStudent = person ? { id:person.id, name:person.name, turn:merge.turn.n } : null;
+            }
+            function mergeView() {
+                const state = vixarRaidState, merge = state?.merge;
+                if (!merge) return null;
+                const now = SceneRuntime.now(), card = state.mergeCard, outcome = state.mergeOutcome;
+                return {
+                    casting:merge.casting, remainingMs:LeagueMergeSpell.remaining(merge, now), totalMs:merge.casting === 2 ? merge.secondMs : merge.circleMs,
+                    done:merge.done, success:merge.success, shattered:merge.shattered,
+                    pairs:Object.fromEntries(Object.keys(LeagueMergeSpell.PAIRS).map(id => [id, { meter:LeagueMergeSpell.meter(merge, id), merged:merge.pairs[id].merged }])),
+                    turn:merge.turn ? { house:merge.turn.house, rescue:merge.turn.rescue, n:merge.turn.n, student:state.mergeStudent?.name || '', studentId:state.mergeStudent?.id || '' } : null,
+                    card:card ? { id:card.id, type:card.type, icon:card.icon, prompt:card.prompt, context:card.context || '', instruction:card.instruction || '', options:card.options } : null,
+                    outcome:outcome ? (outcome.ok ? 'right' : 'wrong') : null, chosen:outcome?.chosen ?? null, answer:outcome ? card?.answer : null,
+                    answerText:outcome && !outcome.ok && card ? card.options[card.answer] : '',
+                    message:merge.done ? (merge.success ? 'Both pairs fused!' : LeagueMergeSpell.result(merge).merged.length ? 'One pair fused. The other fights on as two teams.' : 'The teams fight on apart.') : '',
+                    students:merge.turn ? LeagueMergeSpell.choices(merge, mergeHouseOrder(merge.turn.house)) : []
+                };
+            }
+            function renderMergeView() { LeagueMergeSpell.update(mergeView()); window.syncStateToController?.(); }
+            function startMergeSpell() {
+                const state = vixarRaidState;
+                if (!state?.running || state.finishing || state.merge) return;
+                const now = SceneRuntime.now();
+                state.merge = LeagueMergeSpell.create({ now, circleMs:MERGE_CIRCLE_MS, secondMs:MERGE_SECOND_MS });
+                state.mergeStartedAt = now;
+                document.getElementById('vixar-raid-overlay').classList.add('merge-active');
+                LeagueScenes.phase('raid', 'merge');
+                LeagueMergeSpell.mount(document.getElementById('vixar-raid-arena'), {
+                    avatar:house => { const team = teamsData.find(t => t.id === house); return getAvatarSVG(house, team.traits); },
+                    onChoose:(cardId, index) => chooseMergeOption(cardId, index)
+                });
+                LeagueMergeSpell.start(state.merge);
+                dealMergeTurn();
+                scheduleMergeExpiry();
+                updateVixarBossHUD();
+                renderMergeView();
+                playSound('mergeOpen');
+            }
+            function scheduleMergeExpiry() {
+                const state = vixarRaidState, merge = state?.merge;
+                if (!merge || merge.done) return;
+                const casting = merge.casting;
+                vixarSchedule(() => {
+                    // The scene clock already waits while the scene is paused, so its timer is the circle's timer.
+                    if (vixarRaidState !== state || merge.done || merge.casting !== casting) return;
+                    const result = LeagueMergeSpell.expire(merge, SceneRuntime.now());
+                    if (result.second) {
+                        // The circle emptied: Vixar shatters the spell once. A pair that already fused stays fused.
+                        LeagueMergeSpell.shatter();
+                        playSound('shatterMetal');
+                        addHistoryLog('✦ The ritual circle emptied. Gilded Vixar shattered the spell once: a second casting begins.', '#fbbf24');
+                        dealMergeTurn();
+                        scheduleMergeExpiry();
+                        renderMergeView();
+                        return;
+                    }
+                    finishMergeSpell();
+                }, Math.max(0, LeagueMergeSpell.remaining(merge, SceneRuntime.now())));
+            }
+            // A correct Merge answer counts as a contribution for that student, like a point award, with no house points.
+            function creditMergeContribution(person) {
+                if (!person) return;
+                const previous = studentContributions[person.id] || { points:0, awards:0 };
+                studentContributions[person.id] = { points:previous.points, awards:previous.awards + 1 };
+                syncParticipationMission();
+            }
+            function chooseMergeOption(cardId, index) {
+                const state = vixarRaidState, merge = state?.merge, card = state?.mergeCard;
+                if (!merge || merge.done || !card || !merge.turn) return { ok:false, message:'No Merge Spell card is open' };
+                if (cardId !== card.id) return { ok:false, message:'That card has already closed' };
+                if (state.mergeOutcome) return { ok:false, message:'This card is answered' };
+                if (![0, 1, 2].includes(index)) return { ok:false, message:'Choose A, B or C' };
+                const ok = index === card.answer, house = merge.turn.house, student = state.mergeStudent;
+                const person = student ? LeagueStudents.student(selectedClass, house, student.id) : null;
+                state.mergeOutcome = { ok, chosen:index };
+                const name = teamsData.find(t => t.id === house)?.name || house;
+                // Every Merge question goes to the Challenge_Log tab, marked as Merge, with the session and the answer.
+                challengeLog.push({ id:`${sessionId}-m${challengeLog.filter(row => row.merge).length + 1}`, at:Date.now(), className:selectedClass || '', team:name,
+                    studentId:person?.id || '', student:person?.name || '', level:12, type:`Merge · ${card.type}`, merge:true,
+                    word:`${card.word || ''}${card.word ? ' · ' : ''}answered: ${card.options[index]}`.slice(0, 120), island:card.island || 1, result:ok ? 'right' : 'wrong' });
+                if (challengeLog.length > 200) challengeLog.shift();
+                if (ok) creditMergeContribution(person);
+                const result = LeagueMergeSpell.answer(merge, ok, { studentId:person?.id || '', student:person?.name || '', at:Date.now() });
+                // The banner moves on to the next house and its student at once: nobody is named for a miss.
+                suggestMergeStudent(state);
+                if (ok) playSound('mergeStep', LeagueMergeSpell.meter(merge, LeagueMergeSpell.pairOf(house)));
+                else playSound('timer');
+                if (result.fused) {
+                    LeagueMergeSpell.flash(result.fused);
+                    playSound('mergeResolve');
+                    addHistoryLog(`✦ ${LeagueMergeSpell.PAIRS[result.fused].name} fused: ${LeagueMergeSpell.PAIRS[result.fused].houses.map(h => LeagueMergeSpell.NAMES[h]).join(' and ')} are one.`, LeagueMergeSpell.PAIRS[result.fused].colors[0]);
+                }
+                scheduleCheckpoint();
+                renderMergeView();
+                const turn = merge.turn?.n;
+                vixarSchedule(() => {
+                    if (vixarRaidState !== state || state.mergeOutcome?.chosen !== index) return;
+                    if (merge.done) { finishMergeSpell(); return; }
+                    if (merge.turn?.n !== turn) return;
+                    dealMergeTurn();
+                    renderMergeView();
+                }, ok ? 1300 : 1900);
+                return { ok:true, message:ok ? '✓ Right' : `✗ ${result.rescueBy ? LeagueMergeSpell.NAMES[result.rescueBy] + ' can rescue the pair' : 'The turn passes on'}` };
+            }
+            function chooseMergeStudent(studentId, turn) {
+                const merge = vixarRaidState?.merge;
+                if (!merge || merge.done || !merge.turn || (turn !== undefined && turn !== merge.turn.n)) return { ok:false, message:'That turn has ended' };
+                const person = LeagueStudents.student(selectedClass, merge.turn.house, studentId);
+                if (!person) return { ok:false, message:'Choose a student from this house' };
+                vixarRaidState.mergeStudent = { id:person.id, name:person.name, turn:merge.turn.n };
+                renderMergeView();
+                return { ok:true, message:`${person.name} answers` };
+            }
+            function finishMergeSpell() {
+                const state = vixarRaidState, merge = state?.merge;
+                if (!merge || state.mergeFinished) return;
+                state.mergeFinished = true;
+                if (!merge.done) LeagueMergeSpell.expire(merge, SceneRuntime.now());
+                const fused = LeagueMergeSpell.result(merge).merged;
+                const spellMs = SceneRuntime.now() - state.mergeStartedAt;
+                state.mergeCard = null;
+                renderMergeView();
+                addHistoryLog(fused.length === 2 ? '✦ Both pairs fused. Slyffindor and Huffleclaw fight Gilded Vixar.' : fused.length ? `✦ ${LeagueMergeSpell.PAIRS[fused[0]].name} fused; the other pair fights on as two teams.` : 'The four teams fight on apart.', '#fbbf24');
+                vixarSchedule(() => {
+                    if (vixarRaidState !== state) return;
+                    // The fight froze at the Edict: the fight timer and every status carry on from where they stopped.
+                    SceneRuntime.shiftClock(state, SceneRuntime.now() - state.edictAt);
+                    buildMergedFighters(fused);
+                    LeagueMergeSpell.unmount();
+                    const overlay = document.getElementById('vixar-raid-overlay');
+                    overlay.classList.remove('merge-active', 'edict-cast');
+                    overlay.classList.toggle('fused-fight', fused.length > 0);
+                    renderVixarRaidFighters();
+                    state.fighters.forEach(fighter => { if (fighter.merged) RaidMotion.move(fighter.id, 'arrive'); });
+                    state.boss.phase = 1;
+                    updateVixarPhase();
+                    const now = SceneRuntime.now();
+                    state.boss.nextActionAt = now + 1800;
+                    state.fighters.forEach((fighter, index) => { fighter.nextActionAt = now + 500 + index * 160; });
+                    LeagueScenes.phase('raid', 'core');
+                    updateVixarBossHUD();
+                    scheduleVixarRaidLoop();
+                }, 1700);
+                return spellMs;
+            }
+            function buildMergedFighters(pairs) {
+                const state = vixarRaidState, now = SceneRuntime.now();
+                const fusedFighters = pairs.map((pairId, slot) => {
+                    const def = LeagueMergeSpell.PAIRS[pairId];
+                    const [a, b] = def.houses.map(id => state.fighters.find(f => f.id === id));
+                    const maxHP = a.maxHP + b.maxHP;
+                    return { ...a, id:pairId, name:def.name, merged:true, members:[a.id, b.id], colors:[a.color, b.color], color:a.color, traits:[],
+                        level:Math.max(a.level, b.level), form:'Fused', arenaSlot:slot === 0 ? 'm0' : 'm1',
+                        power:Math.round((a.power + b.power) * sagaBalance.fusionPower), armor:Math.round(Math.max(a.armor, b.armor) * 1.12),
+                        speed:Math.round((a.speed + b.speed) / 2) + 8, arcane:Math.round((a.arcane + b.arcane) / 2) + 8,
+                        maxHP, hp:maxHP, alive:true, energy:3, shieldHP:0, silenceUntil:0, slowUntil:0, damageBuffUntil:0, invulnerableUntil:0, busyUntil:0,
+                        nextActionAt:now + 400, hasRelic:a.hasRelic || b.hasRelic, relicUsed:false, revived:false, revivePending:false, lastStandTriggered:false,
+                        raidDamage:0, sealDamage:0, damageTaken:0, signatureUses:0, criticals:0 };
+                });
+                const fusedHouses = fusedFighters.flatMap(f => f.members);
+                state.fighters = [...fusedFighters, ...state.fighters.filter(f => !fusedHouses.includes(f.id))];
+                state.mergedPairs = pairs;
+            }
+
+            // =================================================================
+            // v11.0.0 THE FINALE · a scene, not a fight. Mr. Saymaz advances it from the phone; Replay the Finale
+            // (epilogue) plays it again with no fight and changes nothing.
+            // =================================================================
+            let finaleVoice = false;
+            // A form's traits for the Light avatars: the ten original traits, then the saga trophies up to that level.
+            function sagaFormTraits(teamId, level) {
+                return [...teamTraits[teamId].filter(trait => !trait.stage).slice(0, Math.min(10, level)), ...teamTraits[teamId].filter(trait => trait.stage && trait.stage <= level)].map(trait => trait.id);
+            }
+            function houseId(name) { const n = String(name || '').toLowerCase(); return LeagueStudents.teams.find(id => id === n || teamsData.find(t => t.id === id)?.name.toLowerCase() === n) || null; }
+            // Who is named: up to three students per house, from the class's saga sessions (Google Sheets and today), its
+            // Island Run navigators and its correct Merge Spell answers. Names are shown only for what they gave.
+            function sagaFinaleNames(c) {
+                const extras = LeagueSaga.extras(c);
+                const today = LeagueSaga.get(c).fightSessions.includes(sessionId);
+                const contributions = extras.contributions.filter(row => !today || row.sessionId !== sessionId);
+                if (today) for (const team of LeagueStudents.teams) for (const person of LeagueStudents.members(c, team)) {
+                    const awards = studentContributions[person.id]?.awards || 0;
+                    if (awards) contributions.push({ team, name:person.name, contributions:awards, sessionId });
+                }
+                const navigators = [...extras.navigators, ...(globalThis.LeagueNavigatorSeals?.rows(c) || []).map(row => ({ team:row.team, student:row.student }))];
+                const seen = new Set(), merge = [];
+                for (const row of [...extras.merge, ...challengeLog.filter(r => r.merge && r.className === c)]) {
+                    if (row.id && seen.has(row.id)) continue; if (row.id) seen.add(row.id);
+                    merge.push({ team:houseId(row.team), student:row.student, result:row.result });
+                }
+                return LeagueSaga.finaleNames({ contributions, navigators, merge });
+            }
+            function startSagaFinale({ replay = false } = {}) {
+                const c = sagaClass();
+                if (!c) return false;
+                if (!replay) closeVixarRaid({ silent:true });
+                else if (LeagueScenes.active) return false;
+                currentEvent = null;
+                const row = LeagueSaga.get(c), when = new Date(row.won.Gilded || Date.now());
+                const date = `${String(when.getDate()).padStart(2, '0')}/${String(when.getMonth() + 1).padStart(2, '0')}/${when.getFullYear()}`;
+                const order = ['gryffindor', 'slytherin', 'hufflepuff', 'ravenclaw'];
+                LeagueSagaScenes.finale.start({
+                    className:c, date, replay, voice:finaleVoice, lines:LeagueSaga.lines(Number(c[0])), names:sagaFinaleNames(c),
+                    teams:order.map(id => { const team = teamsData.find(t => t.id === id); return { id, name:team.name, color:team.color, markup:getAvatarSVG(id, sagaFormTraits(id, 12), 12) }; }),
+                    still:isLeanMode() && performanceMode !== 'animated' || window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+                    sound:name => playSound(name),
+                    onChange:() => { window.syncStateToController?.(); updateSceneControls(); },
+                    onEnd:() => { updateVixarRaidAccess(); updateGameState(true); }
+                });
+                addHistoryLog(replay ? `✦ Replay the Finale · ${c}` : `✦ The curse is broken. ${c} freed Mr. Saymaz.`, '#fde68a');
+                return true;
+            }
+            function requestFinaleReplay(fromRemote = false) {
+                const c = sagaClass();
+                if (!c || LeagueSaga.stageOf(c) !== 'Freed') return { ok:false, message:'Replay the Finale opens after the curse is broken.' };
+                if (LeagueScenes.active) return { ok:false, message:'Return to the scoreboard first.' };
+                if (!fromRemote && !window.confirm(`Replay the Finale for ${c}? There is no fight.`)) return { ok:false };
+                return { ok:startSagaFinale({ replay:true }) };
+            }
+            // What the phone's Vixar Saga panel shows: the class's row (also saved to Sheets by the phone), the Rift and
+            // the readiness line, and the live Merge Spell or Finale controls.
+            function sagaRemoteState() {
+                const c = sagaClass();
+                if (!c) return null;
+                const row = LeagueSaga.get(c), act = LeagueSaga.act(row.stage);
+                return {
+                    className:c, stage:row.stage, row, stamp:LeagueSaga.stamp(row), cap:levelCap(), riftOpen, fought:sagaFoughtToday(c),
+                    readiness:LeagueSaga.readiness(row.stage, Object.fromEntries(teamsData.map(t => [t.id, t.level])), classMission.completed),
+                    act:act ? { level:act.level, title:act.title, kicker:act.kicker } : null,
+                    fighting:Boolean(vixarRaidState && !vixarRaidState.completed && vixarRaidState.className === c),
+                    progressionMode, merge:vixarRaidState?.merge && !vixarRaidState.mergeFinished ? mergeView() : null,
+                    finale:LeagueSagaScenes.finale.view(),
+                    mergeLog:challengeLog.filter(r => r.merge && r.className === c).slice(-60),
+                    linesStamp:LeagueSaga.linesStamp(Number(c[0]))
+                };
+            }
+            globalThis.LeagueSagaCap = levelCap;
 
             function beginVixarUnityFinisher() {
                 const state = vixarRaidState;
@@ -5101,6 +5676,14 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     RaidMotion.claw(bossTarget, 1);
                     RaidMotion.move('boss', 'knockout');
                     state.boss.hp = 0;
+                    if (state.act.merge) {
+                        // Act III: there is no escape this time. The gold armour cracks open: the Finale begins.
+                        setVixarFinaleStage('crack');
+                        updateVixarBossHUD();
+                        playSound('heartbeat');
+                        vixarSchedule(() => finishVixarRaid(true, 'The Unity Guardian’s claw cracked the gold armour open.'), 900);
+                        return;
+                    }
                     setVixarFinaleStage('restoring');
                     updateVixarBossHUD();
                     RaidMotion.wave(bossTarget, '#fff7c2', 700);
@@ -5117,17 +5700,19 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function updateVixarRaid(now) {
                 if (!vixarRaidState?.running) return;
                 if(vixarRaidState.finishing)return;
+                // The fight freezes for the Merge Spell; its own ritual circle is the only timer.
+                if(vixarRaidState.merge&&!vixarRaidState.merge.done)return;
                 if(now<vixarRaidState.combatBeginsAt){scheduleVixarRaidLoop();return;}
                 if(!vixarRaidState.combatStarted){vixarRaidState.combatStarted=true;vixarRaidState.startedAt=now;LeagueScenes.phase('raid',vixarAllSealsBroken()?'core':'seals');}
                 vixarRaidState.elapsed = now - vixarRaidState.startedAt;
-                const remaining = Math.max(0, VIXAR_RAID_DURATION - vixarRaidState.elapsed);
+                const remaining = Math.max(0, vixarRaidState.duration - vixarRaidState.elapsed);
                 document.getElementById('vixar-clock').textContent = (remaining / 1000).toFixed(1);
                 updateVixarPhase();
                 if (!vixarRaidState.finishing
-                    && vixarRaidState.allLegendary
+                    && vixarSupportsOverdrive()
                     && vixarAllSealsBroken()
-                    && vixarRaidState.elapsed >= 52000
-                    && vixarRaidState.boss.hp > VIXAR_EXECUTION_HP) {
+                    && vixarRaidState.elapsed >= vixarRaidState.duration * .61
+                    && vixarRaidState.boss.hp > vixarExecutionHP()) {
                     activateVixarLegendaryOverdrive(now, false);
                 }
 
@@ -5150,13 +5735,13 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
                 const activeOrReviving = vixarRaidState.fighters.some(fighter => fighter.alive || fighter.revivePending);
                 if (!activeOrReviving && !vixarRaidState.finishing) {
-                    finishVixarRaid(false, 'All four teams were overwhelmed before the Empty Crown could be broken.');
+                    finishVixarRaid(false, 'Every team fell this time, before the crown could be broken.');
                     return;
                 }
                 if (remaining <= 0 && !vixarRaidState.finishing) {
-                    if (vixarRaidState.allLegendary
+                    if (vixarSupportsOvertime()
                         && vixarAllSealsBroken()
-                        && vixarRaidState.boss.hp > VIXAR_EXECUTION_HP
+                        && vixarRaidState.boss.hp > vixarExecutionHP()
                         && !vixarRaidState.overtimeGranted) {
                         vixarRaidState.overtimeGranted = true;
                         // Grant one focused 20-second extension rather than letting
@@ -5167,51 +5752,101 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                         scheduleVixarRaidLoop();
                         return;
                     }
+                    // No team, house or student is named as the reason for a loss.
                     const missingLegendary = !vixarRaidState.allLegendary;
                     const missingUnity = !vixarRaidState.guardianEnabled;
                     const reason = missingLegendary
-                        ? 'One or more elemental seals remained locked because every team had not reached Level 10.'
+                        ? `One or more elemental seals stayed locked: every team needs Level ${vixarRaidState.act.level}.`
                         : missingUnity
-                            ? 'The Legendary teams ran out of time before reaching VIXAR’s final attack. The Class Mission is still needed for the Guardian rescue.'
-                            : 'VIXAR endured through Legendary Overtime before the 10% execution threshold was reached.';
+                            ? 'Time ran out before VIXAR’s final attack. The Class Mission is still needed for the Guardian rescue.'
+                            : 'VIXAR endured until time ran out. The Rift can open again in a later session.';
                     finishVixarRaid(false, reason);
                     return;
                 }
                 scheduleVixarRaidLoop();
             }
 
-            function finishVixarRaid(victory, reason) {
-                if (!vixarRaidState || vixarRaidState.completed) return;
-                setVixarFinaleStage(victory ? 'victory' : 'defeat');
-                vixarRaidState.completed = true;
-                vixarRaidState.running = false;
-                vixarRaidState.finishing = false;
-                clearVixarRaidTasks();
-                stopBattleMusic(0.2);
-                const overlay = document.getElementById('vixar-raid-overlay');
-                if (victory) {
-                    vixarDefeatedThisSession = true;
-                    overlay.classList.add('raid-victory');
-                    addHistoryLog('✦ VIXAR was defeated — all four Legendary teams and the Unity Guardian prevailed together.', '#fef08a');
-                    playSound('win');
-                } else {
-                    addHistoryLog(`◈ VIXAR raid ended: ${reason}`, '#a78bfa');
-                    playSound('negative');
+            // v11.0.0: a finished fight is recorded once for the class (attempts, or the next stage after a win) and saved
+            // to Google Sheets through the phone. The Rift closes either way. Stage changes are outside Undo.
+            function recordSagaFight(won) {
+                const state = vixarRaidState, c = state?.className;
+                if (!LeagueSaga.validClass(c)) return null;
+                const result = LeagueSaga.recordFight(c, { sessionId, won, stage:state.stage });
+                if (result.ok && result.advanced) {
+                    sagaSessionWin = { className:c, sessionId, from:result.from, to:result.to };
+                    addHistoryLog(`✦ ${c} broke ${LeagueSaga.FORM_NAMES[result.from]}: the class is now at the ${result.to} stage.`, state.act.color);
                 }
-                const totalDamage = Math.round(vixarRaidState.fighters.reduce((sum, fighter) => sum + fighter.raidDamage, 0));
-                const sealsBroken = Object.values(vixarRaidState.seals).filter(seal => seal.broken).length;
-                const survivors = vixarRaidState.fighters.filter(fighter => fighter.alive).length;
-                document.getElementById('vixar-result-title').textContent = victory ? 'VIXAR Defeated' : 'The Empty Crown Endures';
-                document.getElementById('vixar-result-subtitle').textContent = reason;
-                document.getElementById('vixar-result-stats').innerHTML = `
+                riftOpen = false;
+                scheduleCheckpoint();
+                window.syncStateToController?.();
+                return result;
+            }
+            function vixarResultStats(state, victory) {
+                const all = [...state.originalFighters, ...state.fighters.filter(f => f.merged)];
+                const totalDamage = Math.round(all.reduce((sum, fighter) => sum + fighter.raidDamage, 0));
+                const sealsBroken = Object.values(state.seals).filter(seal => seal.broken).length;
+                // The teams are separate again on the result panel: a fused pair standing counts as both of its houses.
+                const survivors = state.fighters.reduce((sum, fighter) => sum + (fighter.alive ? (fighter.merged ? 2 : 1) : 0), 0);
+                return `
                     <div class="vixar-result-stat"><span>Elemental seals</span><strong>${sealsBroken} / 4 broken</strong></div>
                     <div class="vixar-result-stat"><span>Boss damage</span><strong>${totalDamage.toLocaleString()}</strong></div>
                     <div class="vixar-result-stat"><span>Teams standing</span><strong>${survivors} / 4</strong></div>
-                    <div class="vixar-result-stat"><span>Legendary condition</span><strong>${vixarRaidState.allLegendary ? 'Complete' : 'Incomplete'}</strong></div>
-                    <div class="vixar-result-stat"><span>Unity Guardian</span><strong>${vixarRaidState.guardianEnabled ? (victory ? 'Final strike delivered' : 'Finisher ready') : 'Unavailable'}</strong></div>
-                    <div class="vixar-result-stat"><span>Raid result</span><strong>${victory ? 'Endgame Victory' : 'VIXAR Survived'}</strong></div>`;
+                    <div class="vixar-result-stat"><span>Level ${state.act.level} condition</span><strong>${state.allLegendary ? 'Complete' : 'Incomplete'}</strong></div>
+                    <div class="vixar-result-stat"><span>Unity Guardian</span><strong>${state.guardianEnabled ? (victory ? 'Final strike delivered' : 'Finisher ready') : 'Unavailable'}</strong></div>
+                    ${state.act.merge ? `<div class="vixar-result-stat"><span>Merge Spell</span><strong>${state.mergedPairs.length === 2 ? 'Both pairs fused' : state.mergedPairs.length ? 'One pair fused' : state.edictCast ? 'Not fused' : 'Not cast'}</strong></div>`
+                        : `<div class="vixar-result-stat"><span>Raid result</span><strong>${victory ? 'Form broken' : 'VIXAR Survived'}</strong></div>`}`;
+            }
+            function showVixarResult(state, victory, reason) {
+                const act = state.act, c = state.className;
+                document.getElementById('vixar-result-title').textContent = victory ? act.winTitle : act.lossTitle;
+                const nextCap = LeagueSaga.cap(act.next);
+                document.getElementById('vixar-result-subtitle').textContent = victory
+                    ? `${act.winLine}. Level ${nextCap} unlocked for every team in ${c}.`
+                    : `${reason} ${c} keeps its stage and its level cap.`;
+                document.getElementById('vixar-result-stats').innerHTML = vixarResultStats(state, victory);
+                // Each team's next form is shown once, as a preview of the reward.
+                const preview = document.getElementById('vixar-result-preview');
+                if (preview) {
+                    preview.hidden = !victory;
+                    preview.innerHTML = victory ? `<small>Level ${nextCap} · ${LeagueSaga.tierName(nextCap)} forms</small><div>${teamsData.map(team => `<figure style="--team-color:${team.color}">${getAvatarSVG(team.id, [...team.traits.filter(id => !teamTraits[team.id].find(t => t.id === id)?.stage), ...teamTraits[team.id].filter(t => t.stage && t.stage <= nextCap).map(t => t.id)], nextCap)}<figcaption>${team.name}</figcaption></figure>`).join('')}</div>` : '';
+                }
+                document.getElementById('vixar-retry-btn').hidden = true;
                 document.getElementById('vixar-result-panel').classList.add('visible');
                 updateVixarRaidAccess();
+            }
+            function finishVixarRaid(victory, reason) {
+                if (!vixarRaidState || vixarRaidState.completed) return;
+                const state = vixarRaidState, act = state.act;
+                setVixarFinaleStage(victory ? 'victory' : 'defeat');
+                state.completed = true;
+                state.running = false;
+                state.finishing = false;
+                clearVixarRaidTasks();
+                LeagueMergeSpell.unmount();
+                const overlay = document.getElementById('vixar-raid-overlay');
+                overlay.classList.remove('merge-active', 'edict-cast');
+                recordSagaFight(victory);
+                if (victory) {
+                    vixarDefeatedThisSession = true;
+                    addHistoryLog(`✦ ${act.title} was defeated — all four teams and the Unity Guardian prevailed together.`, '#fef08a');
+                    if (act.merge) {
+                        // Act III: no escape this time. The Finale is a scene, not a fight.
+                        stopBattleMusic(0.2);
+                        startSagaFinale({ replay:false });
+                        return;
+                    }
+                    overlay.classList.add('raid-victory');
+                    playSound('win');
+                    // Acts I and II: the false victory, the cut, the escape and the eye, then the reward.
+                    LeagueSagaScenes.escape({ act, overlay, className:state.className, nextCap:LeagueSaga.cap(act.next), reduced:performanceMode === 'light' || window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+                        sound:name => playSound(name), cut:cutAllSound, onDone:() => { if (vixarRaidState === state) showVixarResult(state, true, reason); } });
+                    stopBattleMusic(1.6);
+                    return;
+                }
+                stopBattleMusic(0.2);
+                addHistoryLog(`◈ ${act.title} raid ended: ${reason}`, '#a78bfa');
+                playSound('negative');
+                showVixarResult(state, false, reason);
             }
 
             function setVixarIntroVisible(visible) {
@@ -5221,10 +5856,38 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 curtain.setAttribute('aria-hidden', visible ? 'false' : 'true');
             }
 
+            // v11.0.0: the act on the board (titles, boss art, pose sheet). The Violet form keeps the Light mode drawing.
+            function applyRaidActVisuals(act) {
+                const overlay = document.getElementById('vixar-raid-overlay');
+                overlay.dataset.act = act.form;
+                overlay.classList.toggle('saga-form-art', act.act > 1);
+                const art = document.getElementById('vixar-boss-animated-art');
+                const src = `./assets/animated/${act.art}.webp?v=${act.act > 1 ? '11.0.0' : '6.7'}`;
+                if (!art.getAttribute('src')?.startsWith(`./assets/animated/${act.art}.webp`)) art.src = src;
+                document.getElementById('vixar-animated-actor').dataset.poseId = act.art;
+                globalThis.CreaturePoses?.preload(act.art);
+                overlay.querySelector('.vixar-title').textContent = act.title;
+                overlay.querySelector('.vixar-epithet').textContent = act.epithet;
+                overlay.querySelector('.vixar-raid-kicker').textContent = `${act.kicker} · ${vixarRaidState.className}`;
+                const curtain = overlay.querySelector('.vixar-intro-curtain');
+                curtain.dataset.act = act.form;
+                curtain.querySelector('.vixar-intro-kicker').textContent = act.kicker;
+                curtain.querySelector('.vixar-intro-title').textContent = act.title;
+                curtain.querySelector('.vixar-intro-subtitle').textContent = act.act === 1
+                    ? 'Four Legendary teams · Unity alone can break the Empty Crown'
+                    : act.act === 2 ? 'The scarlet eye opens · four Mythic teams step into the tear' : 'A gold crack opens in the dark · four Celestial teams, one class';
+                LeagueSagaScenes.introArt(curtain, act);
+            }
             function startVixarRaid() {
                 if(LeagueScenes.active&&LeagueScenes.active!=='raid')return;
-                if (!allTeamsAtLeastLevel(8)) {
-                    addHistoryLog('The VIXAR raid remains hidden until every team is beyond Level 7.', '#a78bfa');
+                const c = sagaClass(), stage = c ? LeagueSaga.stageOf(c) : '', sagaAct = LeagueSaga.act(stage);
+                // Epilogue: the raid button of a Freed class offers to replay the Finale, with no fight.
+                if (stage === 'Freed') { requestFinaleReplay(); return; }
+                if (!c || !sagaAct) { addHistoryLog('Choose the class first: each class plays its own Vixar Saga.', '#a78bfa'); return; }
+                if (!riftOpen) { addHistoryLog('The Rift is closed. Mr. Saymaz opens it from the phone.', '#a78bfa'); return; }
+                if (sagaFoughtToday(c)) { addHistoryLog(`${c} has fought today. The Rift can open again in a later session.`, '#a78bfa'); return; }
+                if (!allTeamsAtLeastLevel(sagaAct.level)) {
+                    addHistoryLog(`${sagaAct.title} waits until every team reaches Level ${sagaAct.level}.`, sagaAct.color);
                     return;
                 }
                 if (unityEventRunning || unityEventQueued) {
@@ -5242,10 +5905,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 document.body.classList.add('vixar-raid-active');
                 currentEvent = 'VixarRaid';
                 vixarRaidState=createVixarRaidState();LeagueScenes.enter('raid','intro');
+                if (vixarRaidState.act.merge) loadChallengeContent(); // the Merge Spell's questions come from the class's islands
                 const now = SceneRuntime.now();
                 vixarRaidState.fighters.forEach(fighter => fighter.nextActionAt = now + 3200 + Math.random() * 520);
                 vixarRaidState.boss.nextActionAt = vixarRaidState.combatBeginsAt + 420;
-                globalThis.CreaturePoses?.preload('vixar');
                 renderVixarRaidFighters();
                 renderVixarSealStrip();
                 prepareVixarGuardian();
@@ -5253,6 +5916,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 overlay.className = 'visible';
                 overlay.setAttribute('aria-hidden', 'false');
                 delete overlay.dataset.finaleStage;
+                applyRaidActVisuals(vixarRaidState.act);
                 layoutVixarGuardian();
                 document.getElementById('vixar-result-panel').classList.remove('visible');
                 const showIntro = !isLeanMode() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5265,14 +5929,15 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if(showIntro)vixarSchedule(()=>LeagueScenes.phase('raid','seals'),introDelay);else LeagueScenes.phase('raid','seals');
                 document.getElementById('vixar-boss-stage').style.opacity = '';
                 document.getElementById('vixar-chest-armor')?.setAttribute('opacity', '1');
-                document.getElementById('vixar-clock').textContent = '85.0';
+                document.getElementById('vixar-clock').textContent = (vixarRaidState.duration / 1000).toFixed(1);
+                const act = vixarRaidState.act;
                 document.getElementById('vixar-raid-condition').textContent = vixarRaidState.guardianEnabled
-                    ? 'Reduce VIXAR to 10% HP · the Unity Guardian will descend for the final tenth.'
+                    ? (act.merge ? 'At 70% HP the Edict of Separation falls · answer it together with the Merge Spell.' : 'Reduce VIXAR to 10% HP · the Unity Guardian will descend for the final tenth.')
                     : vixarRaidState.allLegendary
-                        ? 'All four teams are Legendary · complete the Class Mission to break the Empty Crown.'
-                        : 'The raid is discoverable, but Level 10 is required to destroy each team’s elemental seal.';
+                        ? 'Every team is ready · complete the Class Mission to summon the Unity Guardian.'
+                        : `Level ${act.level} is required to destroy each team’s elemental seal.`;
                 updateVixarBossHUD();
-                addHistoryLog('◈ The secret VIXAR raid began. Four teams entered as allies.', '#a78bfa');
+                addHistoryLog(`◈ ${act.kicker} began for ${vixarRaidState.className}. Four teams entered as allies.`, act.color);
                 playSound('battleStart');
                 startPredatorRunBattleTrack(0);
                 scheduleVixarRaidLoop();
@@ -5280,10 +5945,13 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
             function closeVixarRaid({ silent = false } = {}) {
                 if (vixarRaidState?.running && !silent) {
-                    const confirmed = window.confirm('Exit the VIXAR raid and return to the league?');
+                    // An interrupted fight is not an attempt: the Rift stays open.
+                    const confirmed = window.confirm('Exit the fight and return to the league? It will not count as an attempt.');
                     if (!confirmed) return;
                 }
                 clearVixarRaidTasks();
+                LeagueMergeSpell.unmount();
+                LeagueSagaScenes.stopEscape();
                 stopBattleMusic(0.08);
                 if (vixarRaidState) vixarRaidState.running = false;
                 vixarRaidState=null;LeagueScenes.leave('raid');
@@ -5297,6 +5965,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 document.getElementById('vixar-team-layer').innerHTML = '';
                 document.getElementById('vixar-guardian-host').innerHTML = '';
                 document.getElementById('vixar-fx-layer').innerHTML = '';
+                delete overlay.dataset.act;
                 document.body.classList.remove('vixar-raid-active');
                 document.getElementById('golden-snitch').style.display = '';
                 updateDynamicBackground();
@@ -5307,10 +5976,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             document.getElementById('vixar-raid-btn').addEventListener('click', startVixarRaid);
             document.getElementById('vixar-raid-close').addEventListener('click', () => closeVixarRaid());
             document.getElementById('vixar-return-btn').addEventListener('click', () => closeVixarRaid({ silent:true }));
-            document.getElementById('vixar-retry-btn').addEventListener('click', () => {
-                closeVixarRaid({ silent:true });
-                setTimeout(startVixarRaid, 260);
-            });
+            // v11.0.0: one fight per class and session, so there is no immediate retry (kept hidden).
+            document.getElementById('vixar-retry-btn').hidden = true;
             window.addEventListener('keydown', event => {
                 if (event.key === 'Escape' && document.getElementById('vixar-raid-overlay').classList.contains('visible')) closeVixarRaid();
             });
@@ -5318,7 +5985,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
            document.getElementById('finish-btn').addEventListener('click', () => {
     const presentation = AnimatedMode.getDiagnostics();
-    if(['arena','raid','results','agent'].includes(LeagueScenes.active))return;
+    if(['arena','raid','results','agent','finale'].includes(LeagueScenes.active))return;
     if(secretAgents.request){addHistoryLog('Choose or cancel the pending Secret Agent on the remote before finishing.','#fbbf24');return;}
     if (LeagueScenes.active || unityEventQueued || isEvolving || currentEvent || pendingAnimatedWheels.length || activeAnimatedWheel || activeWheelSpin || presentation.active || presentation.queued || wheelSpinTimer || wheelAdvanceTimer || deferredAnimatedEvolutions.size) {
         pendingAnimatedFinish = true;
@@ -5826,7 +6493,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         let turnConfigurationPromise = null;
         let turnExpiresAt=0;
         let turnRelayConfigured = false;
-        const REMOTE_BUILD = '10.5.1';
+        const REMOTE_BUILD = '11.0.0';
         let remoteConnectionState = 'offline';
         let remoteScene = null;
         let remoteScenePaused = false;
@@ -5990,7 +6657,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             if (resultActions) resultActions.classList.toggle('hidden', !ready);
             if (participationButton) participationButton.disabled = !ready;
             if (finishButton) {
-                finishButton.disabled = !connected || pendingRemoteFinish || ['arena','raid','results','agent'].includes(remoteScene);
+                finishButton.disabled = !connected || pendingRemoteFinish || ['arena','raid','results','agent','finale'].includes(remoteScene);
                 finishButton.classList.toggle('hidden', ready);
             }
             if (finishLabel) finishLabel.textContent = pendingRemoteFinish ? 'FINISHING…' : '🏁 Finish Session';
@@ -6514,6 +7181,15 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     else if(globalThis.LeagueSeason?.accept(data.season))window.syncStateToController?.();
                     return;
                 }
+                if(data.type==='SAGA_DATA'&&isHost){
+                    if(data.sessionId!==sessionId||!LeagueSaga.validClass(data.className))return;
+                    let changed=false;
+                    if(data.row)changed=LeagueSaga.accept(data.className,data.row)||changed;
+                    if(data.extras)LeagueSaga.acceptExtras(data.className,data.extras);
+                    if(data.lines)LeagueSaga.acceptLines(data.lines.grade,data.lines.lines,data.lines.at);
+                    if(changed){updateGameState(true);updateVixarRaidAccess();scheduleCheckpoint();}
+                    window.syncStateToController?.();return;
+                }
                 if(data.type==='NAVIGATOR_SEALS'&&isHost){
                     if(data.sessionId===sessionId&&data.className===selectedClass&&Array.isArray(data.rows))globalThis.LeagueNavigatorSeals?.merge(selectedClass,data.rows);return;
                 }
@@ -6648,6 +7324,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                         if(JSON.stringify(progress)!==JSON.stringify(LeagueIslandProgress.clean(data.islandProgress,data.selectedClass)))safeRemoteSend({type:'ISLAND_PROGRESS',sessionId:data.sessionId,className:data.selectedClass,progress});
                     }
                     syncRemoteAgents(data);
+                    globalThis.LeagueSagaRemote?.sync(data.saga||null,{sessionId:data.sessionId,className:data.selectedClass,send:safeRemoteSend,command:(action,extra)=>remoteCommands.enqueue(action,null,extra)});
                     document.querySelectorAll('[data-remote-mode]').forEach(button => {
                         button.setAttribute('aria-pressed', button.dataset.remoteMode === data.visualMode ? 'true' : 'false');
                         button.setAttribute('aria-busy', button.dataset.remoteMode === data.pendingVisualMode ? 'true' : 'false');
@@ -6736,11 +7413,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     ravenclaw: getTeam('ravenclaw').points,
                 };
                 
+                const cap = levelCap();
                 const chestsReady = {
-                    gryffindor: Boolean(getTeam('gryffindor').pendingEvolution) && getTeam('gryffindor').level < 10,
-                    slytherin: Boolean(getTeam('slytherin').pendingEvolution) && getTeam('slytherin').level < 10,
-                    hufflepuff: Boolean(getTeam('hufflepuff').pendingEvolution) && getTeam('hufflepuff').level < 10,
-                    ravenclaw: Boolean(getTeam('ravenclaw').pendingEvolution) && getTeam('ravenclaw').level < 10
+                    gryffindor: Boolean(getTeam('gryffindor').pendingEvolution) && getTeam('gryffindor').level < cap,
+                    slytherin: Boolean(getTeam('slytherin').pendingEvolution) && getTeam('slytherin').level < cap,
+                    hufflepuff: Boolean(getTeam('hufflepuff').pendingEvolution) && getTeam('hufflepuff').level < cap,
+                    ravenclaw: Boolean(getTeam('ravenclaw').pendingEvolution) && getTeam('ravenclaw').level < cap
                 };
                 
                 const isWheelVisible = document.getElementById('wheel-modal').classList.contains('visible');
@@ -6771,7 +7449,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     wheelVisible: isWheelVisible,
                     wheelResult: wheelResultVisible ? document.getElementById('wheel-result').textContent : null,
                     wheelSpinning: Boolean(activeWheelSpin && !activeWheelSpin.settled),
-                    challenge: globalThis.LeagueChallenge?.remoteView() || null
+                    challenge: globalThis.LeagueChallenge?.remoteView() || null,
+                    saga: sagaRemoteState()
                 });
             }
         };
@@ -7058,7 +7737,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 classMission:{...classMission},lastTeamClicked,comboCount,historyLog:historyLog.slice(0,120),historyStack:historyStack.slice(-20),
                 wheels:[...(active?[active]:[]),...pendingAnimatedWheels],wheelMode:activeWheelMode,pendingFinish:pendingAnimatedFinish,
                 deferredEvolutions:[...deferredAnimatedEvolutions],commandLedger,boardSummaries,vixarDefeatedThisSession,lastVortexTime,sessionNavigator,haloTeams,haloLocked,
-                levelStarts:[...levelStarts],lastAwardStudent:[...lastAwardStudent],challengeLog,
+                levelStarts:[...levelStarts],lastAwardStudent:[...lastAwardStudent],challengeLog,riftOpen,sagaSessionWin,
                 unity:unityAscensionState?{wave:unityAscensionState.wave,totalGranted:unityAscensionState.totalGranted,teamPlans:[...unityAscensionState.teamPlans]}:null,
                 scene:LeagueScenes.active,arenaResult:battleState&&!battleState.running?battleState.fighters.map(f=>({id:f.id,hp:f.hp,maxHP:f.maxHP,alive:f.alive,damageDealt:f.damageDealt,points:f.points,traits:f.traits,level:f.level})):null};
             const saved=LeagueRecovery.save(snapshot);
@@ -7096,6 +7775,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 levelStarts=new Map(Array.isArray(s.levelStarts)?s.levelStarts.filter(e=>Array.isArray(e)&&typeof e[0]==='string'&&e[1]&&typeof e[1]==='object'):[]);
                 lastAwardStudent=new Map(Array.isArray(s.lastAwardStudent)?s.lastAwardStudent.filter(e=>Array.isArray(e)&&teamsData.some(t=>t.id===e[0])&&typeof e[1]?.name==='string'):[]);
                 challengeLog=Array.isArray(s.challengeLog)?s.challengeLog.slice(-200):[];
+                // v11.0.0: a reload keeps the Rift as it was; a reload during a fight returns here with the Rift still open.
+                riftOpen=s.riftOpen===true;
+                sagaSessionWin=s.sagaSessionWin&&s.sagaSessionWin.sessionId===s.sessionId&&LeagueSaga.STAGES.includes(s.sagaSessionWin.from)?{...s.sagaSessionWin}:null;
                 pendingAnimatedFinish=Boolean(s.pendingFinish);const restoredVisualMode=normalizeVisualMode(s.performanceMode);setPerformanceMode(VISUAL_MODES.includes(restoredVisualMode)?restoredVisualMode:'light',{persist:true});
                 if(s.unity&&Array.isArray(s.unity.teamPlans)&&!classMission.rewardGranted)resumeUnityPlan={...s.unity,teamPlans:new Map(s.unity.teamPlans)};
                 setWheelMode(s.wheelMode==='english'?'english':'all');
@@ -7121,11 +7803,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             LeagueIslandRun.dispose();
             pendingAnimatedFinish=false;presentationHeld=false;
             stopSceneSound();clearBattleTasks();battleState=null;clearVixarRaidTasks();vixarRaidState=null;
+            LeagueMergeSpell.unmount();LeagueSagaScenes.stopEscape();LeagueSagaScenes.finale.stop(false);
             cancelUnityEvent({preserveCompletion:true,immediate:true});clearTimeout(unityEventQueueTimer);unityEventQueueTimer=null;
             clearEvolutionChestTimers();AnimatedMode.cancelAll();eventClock.clear();clearInterval(timerInterval);
             wheelClock.clear();wheelVisualAnimation?.cancel();wheelVisualAnimation=null;LeagueChallenge.dismiss();
             clearAllAvatarReactions();cancelAllScoreAnimations({settle:true});stopParticles();
-            for(const name of ['arena','raid','unity','wheel','chest','evolution','results','agent'])LeagueScenes.leave(name);
+            for(const name of ['arena','raid','unity','wheel','chest','evolution','results','agent','finale'])LeagueScenes.leave(name);
             document.getElementById('vortex-overlay').style.display='none';document.getElementById('event-banner').classList.remove('visible');
         }
         function holdPresentation(){presentationHeld=true;pendingAnimatedFinish=false;clearTimeout(unityEventQueueTimer);unityEventQueueTimer=null;stopSceneSound();updateSceneControls();}
@@ -7137,7 +7820,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         LeagueScenes.register('evolution',{skip:()=>{AnimatedMode.cancelAll();pumpPresentation();},cancel:()=>{holdPresentation();AnimatedMode.cancelAll();}});
         LeagueScenes.register('unity',{skip:()=>finishUnityEvent({skipped:true,replay:classMission.rewardGranted}),cancel:()=>{holdPresentation();finishUnityEvent({skipped:true,replay:classMission.rewardGranted});clearUnityEventTimers();resetUnityEventVisuals();updateGameState(true);}});
         LeagueScenes.register('arena',{skip:()=>{ArenaMotion.stop();stopSceneSound();SceneRuntime.fastForward('arena',()=>!battleState?.running,35000);},cancel:exitArena});
-        LeagueScenes.register('raid',{skip:()=>{RaidMotion.stop();stopSceneSound();SceneRuntime.fastForward('raid',()=>Boolean(vixarRaidState?.completed),120000);},cancel:()=>{holdPresentation();closeVixarRaid({silent:true});}});
+        LeagueScenes.register('raid',{skip:()=>{if(vixarRaidState?.completed){LeagueSagaScenes.skipEscape();return;}RaidMotion.stop();stopSceneSound();SceneRuntime.fastForward('raid',()=>Boolean(vixarRaidState?.completed),240000);},cancel:()=>{holdPresentation();closeVixarRaid({silent:true});}});
+        LeagueScenes.register('finale',{skip:()=>LeagueSagaScenes.finale.skip(),cancel:()=>LeagueSagaScenes.finale.stop(true)});
         LeagueScenes.register('results',{skip:exitResults,cancel:exitResults});
         LeagueScenes.register('agent',{skip:continueAgentReveal,cancel:continueAgentReveal});
         LeagueAgent.mount(continueAgentReveal,()=>remoteCommands.enqueue('AGENT_CONTINUE'));
@@ -7150,6 +7834,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         }
         function applyRemoteCommand(data){
             const scene=LeagueScenes.active;
+            const saga=applySagaCommand(data);if(saga)return saga;
             if(data.action==='AGENT_CONTINUE')return continueAgentReveal();
             if(scene==='agent')return {ok:false,message:'Continue the Secret Agent reveal first.'};
             if(data.action==='AGENT_BEGIN')return beginAgent(data.team);
@@ -7186,7 +7871,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             if(data.action==='SET_VISUAL_MODE'){const mode=normalizeVisualMode(data.mode);if(!VISUAL_MODES.includes(mode))return {ok:false,message:'Unknown visual mode'};window.selectPerformanceMode(mode);return;}
             if(data.action==='CHALLENGE'){if(!LeagueChallenge.active)return {ok:false,message:'No challenge card is open'};return LeagueChallenge.command(data);}
             if(data.action==='CLOSE_WHEEL'){if(scene!=='wheel')return {ok:false,message:'No wheel is open'};requestWheelClose();return;}
-            if(['arena','raid','results','agent'].includes(scene))return {ok:false,message:'Return to the scoreboard to change points'};
+            if(['arena','raid','results','agent','finale'].includes(scene))return {ok:false,message:'Return to the scoreboard to change points'};
             if(data.action==='SET_CLASS')return setSessionClass(data.className);
             if(data.action==='FINISH_SESSION'){
                 if(secretAgents.request)return {ok:false,message:'Choose or cancel the pending Secret Agent first.'};
@@ -7213,6 +7898,47 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             }
             return {ok:false,message:'Unknown command'};
         }
+        // v11.0.0 Vixar Saga commands from the phone: the Rift, Set stage, the Merge Spell and the Finale.
+        const SAGA_ACTIONS=new Set(['MERGE_CHOOSE','MERGE_STUDENT','FINALE_NEXT','FINALE_VOICE','FINALE_REPLAY','RIFT_OPEN','RIFT_CLOSE','SAGA_SET','SET_PROGRESSION']);
+        function applySagaCommand(data){
+            if(!SAGA_ACTIONS.has(data.action))return null;
+            const scene=LeagueScenes.active,c=sagaClass();
+            if(data.action==='MERGE_CHOOSE')return vixarRaidState?.merge?chooseMergeOption(data.card,Number(data.index)):{ok:false,message:'No Merge Spell is open'};
+            if(data.action==='MERGE_STUDENT')return vixarRaidState?.merge?chooseMergeStudent(data.studentId,data.turn):{ok:false,message:'No Merge Spell is open'};
+            if(data.action==='FINALE_NEXT')return LeagueSagaScenes.finale.next();
+            if(data.action==='FINALE_VOICE'){finaleVoice=data.on===true;return LeagueSagaScenes.finale.active?LeagueSagaScenes.finale.setVoice(finaleVoice):{ok:true,message:finaleVoice?'Voice on':'Voice off'};}
+            if(data.action==='FINALE_REPLAY')return requestFinaleReplay(true);
+            if(data.action==='RIFT_OPEN'){
+                if(!c)return {ok:false,message:'Choose the class first'};
+                const stage=LeagueSaga.stageOf(c);
+                if(stage==='Freed')return {ok:false,message:'The curse is broken: use Replay the Finale'};
+                if(sagaFoughtToday(c))return {ok:false,message:`${c} has fought today · open the Rift in a later session`};
+                if(scene==='raid')return {ok:false,message:'A fight is running'};
+                // Nothing changes on the board when the Rift opens, so the surprise is kept.
+                riftOpen=true;updateVixarRaidAccess();scheduleCheckpoint();
+                return {ok:true,message:'The Rift is open for this session'};
+            }
+            if(data.action==='RIFT_CLOSE'){
+                if(vixarRaidState&&!vixarRaidState.completed)return {ok:false,message:'The fight has started'};
+                riftOpen=false;updateVixarRaidAccess();scheduleCheckpoint();return {ok:true,message:'The Rift is closed'};
+            }
+            if(data.action==='SAGA_SET'){
+                // The phone has logged this correction in Google Sheets with the Teacher PIN.
+                if(!LeagueSaga.validClass(data.className)||!LeagueSaga.STAGES.includes(data.stage))return {ok:false,message:'Unknown stage'};
+                if(scene==='raid'||scene==='finale')return {ok:false,message:'Return to the scoreboard first'};
+                const result=LeagueSaga.setStage(data.className,data.stage,{note:data.note,at:Number(data.at)||Date.now()});
+                if(sagaSessionWin?.className===data.className)sagaSessionWin=null;
+                addHistoryLog(`Vixar Saga: ${data.className} set to ${data.stage} (teacher correction).`,'#94a3b8');
+                updateGameState(true);updateVixarRaidAccess();scheduleCheckpoint();
+                return {ok:result.ok,message:result.ok?`${data.className} is at ${data.stage}`:'Could not set the stage'};
+            }
+            if(data.action==='SET_PROGRESSION'){
+                if(!['soft','hard'].includes(data.mode))return {ok:false,message:'Unknown mode'};
+                if(scene)return {ok:false,message:'Return to the scoreboard first'};
+                saveState();setProgressionMode(data.mode,{announce:true,convertExisting:true});return {ok:true,message:data.mode==='soft'?'Soft mode':'Hard mode'};
+            }
+            return null;
+        }
         const controls=document.createElement('div');controls.id='scene-controls';controls.hidden=true;
         controls.innerHTML='<span class="scene-label"></span><button type="button" data-scene-control="pause">Pause</button><button type="button" data-scene-control="skip">Skip</button><button type="button" data-scene-control="exit">Exit</button>';
         document.body.appendChild(controls);
@@ -7220,7 +7946,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         const continueButton=document.createElement('button');continueButton.id='continue-scenes';continueButton.type='button';continueButton.hidden=true;continueButton.textContent='Continue rewards';document.body.appendChild(continueButton);
         continueButton.addEventListener('click',()=>{presentationHeld=false;continueButton.hidden=true;if(classMission.completed&&!classMission.rewardGranted)requestUnityEvent(false);pumpPresentation();});
         const recoveryStatus=document.createElement('span');recoveryStatus.id='recovery-save-status';recoveryStatus.hidden=true;document.body.appendChild(recoveryStatus);
-        const sceneNames={arena:'Arena',raid:'VIXAR',unity:'Unity',wheel:'Subject Wheel',chest:'Evolution',evolution:'Evolution',results:'Champions',agent:'Secret Agent'};
+        const sceneNames={arena:'Arena',raid:'VIXAR',unity:'Unity',wheel:'Subject Wheel',chest:'Evolution',evolution:'Evolution',results:'Champions',agent:'Secret Agent',finale:'Finale'};
         function updateSceneControls(){
             const scene=LeagueScenes.active;controls.hidden=!scene||scene==='agent'||remoteRole==='controller'||LeagueIslandRun.isOpen;
             controls.querySelector('.scene-label').textContent=sceneNames[scene]||'';
@@ -7241,7 +7967,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             document.getElementById('remote-exit-btn').textContent=remoteIslandRun.open?'Back to Champions':'Exit';
             document.getElementById('remote-skip-btn').hidden=scene==='results';
             const connected=remoteConnectionState==='connected';
-            const combat=['arena','raid','results','agent'].includes(scene);
+            const combat=['arena','raid','results','agent','finale'].includes(scene);
             document.getElementById('mobile-class-btn').disabled=!connected||combat;
             if(combat){LeagueAgent.close();LeagueStudentUI.close(true);pendingRemoteClassSelection=null;}
             document.querySelectorAll('.mobile-score-button').forEach(button=>{button.disabled=!connected||combat;});
@@ -7270,6 +7996,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 else if(!on)chip?.remove();
             }
         }
+        // v11.0.0: a row loaded or saved on this board refreshes the raid sigil, the cap and the phone.
+        document.addEventListener('league-saga-change',()=>{if(remoteRole!=='controller'&&recoveryReady){updateVixarRaidAccess();window.syncStateToController?.();}});
+        document.addEventListener('league-saga-loaded',()=>{if(remoteRole!=='controller'&&recoveryReady)updateGameState(true);});
         document.addEventListener('league-halo-result',event=>{
             const c=event.detail?.className;
             if(remoteRole==='controller'&&c&&c===remoteStudentClass)safeRemoteSend({type:'HALO_RESULT',sessionId:latestRemoteSessionId,className:c,result:LeagueHalo.result(c)});
@@ -7322,7 +8051,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             sealsChanged:()=>{window.syncStateToController?.();scheduleCheckpoint();}
         });
         const pausedAnimations=new Set();
-        document.addEventListener('league-scene-change',()=>{if(['arena','raid','results','agent'].includes(LeagueScenes.active)){LeagueStudentUI.close(true);LeagueStudentUI.clearCelebrations();}updateSceneControls();pumpPresentation();});
+        document.addEventListener('league-scene-change',()=>{if(['arena','raid','results','agent','finale'].includes(LeagueScenes.active)){LeagueStudentUI.close(true);LeagueStudentUI.clearCelebrations();}updateSceneControls();pumpPresentation();});
         document.addEventListener('league-pause-change',event=>{
             if(event.detail.paused){
                 document.getAnimations?.().forEach(animation=>{if(animation.playState==='running'){pausedAnimations.add(animation);animation.pause();}});
@@ -7364,7 +8093,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         function renderOutbox(){
             outboxHost.replaceChildren();
             for(const entry of LeagueOutbox.list().slice().reverse()){
-                const row=document.createElement('div');row.className='outbox-row';const label=document.createElement('span');label.textContent=`${entry.payload.className} · ${LeagueOutbox.labels[entry.state]}`;row.appendChild(label);
+                const row=document.createElement('div');row.className='outbox-row';const label=document.createElement('span');label.textContent=`${entry.payload.className}${entry.payload.type==='SAGA_SAVE'?' · Vixar Saga':''} · ${LeagueOutbox.labels[entry.state]}`;row.appendChild(label);
                 if(entry.state!=='sending'){
                     const button=document.createElement('button');button.type='button';button.textContent=entry.state==='waiting'?'Send':'Retry';
                     button.addEventListener('click',async()=>{

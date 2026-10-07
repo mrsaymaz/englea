@@ -24,7 +24,7 @@
             const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry.payload,pin}),signal:abort.signal});
             const result=await response.json();
             if(!response.ok||result.status!=='success'){entry.state=result.uncertain?'uncertain':'waiting';entry.error=result.message||'Save failed. Check your PIN and retry.';}
-            else {entry.state='sent';entry.confirmed=true;entry.error='';root.LeagueIslandProgress?.rememberPin(pin);if(result.islandProgress)root.LeagueIslandProgress?.acknowledge(entry.payload.className,result.islandProgress);if(Array.isArray(result.navigatorSeals))root.LeagueNavigatorSeals?.merge(entry.payload.className,result.navigatorSeals);if(result.season)root.LeagueSeason?.accept(result.season);}
+            else {entry.state='sent';entry.confirmed=true;entry.error='';root.LeagueIslandProgress?.rememberPin(pin);if(result.islandProgress)root.LeagueIslandProgress?.acknowledge(entry.payload.className,result.islandProgress);if(Array.isArray(result.navigatorSeals))root.LeagueNavigatorSeals?.merge(entry.payload.className,result.navigatorSeals);if(result.season)root.LeagueSeason?.accept(result.season);if(result.saga)document.dispatchEvent(new CustomEvent('league-saga-loaded',{detail:{className:entry.payload.className,saga:result.saga}}));}
         }catch{entry.state='uncertain';}
         finally{clearTimeout(timer);inFlight.delete(entry.id);pins.delete(entry.id);entry.updatedAt=Date.now();persist();}
         return entry;

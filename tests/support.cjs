@@ -17,7 +17,19 @@ window.__qa={
  arenaOutcome(kind){const [a,b]=battleState.fighters;b.hp=b.maxHP;b.alive=true;b.guardUntil=kind==='partial'?SceneRuntime.now()+2000:0;b.invulnerableUntil=kind==='blocked'?SceneRuntime.now()+2000:0;b.shieldHP=0;ArenaMotion.attack(a,b,{impact:420});scheduleBattleTask(()=>kind==='evaded'?performEvade(b,a.id):applyBattleDamage(a,b,20),420);return b.id;},
  raidVisual(id){const target=document.getElementById('vixar-boss-stage');RaidMotion.move(id,'attack',target);RaidMotion.bolt(RaidMotion.node(id),target,'#fff',500);},
 
- raid(mission=true){Object.assign(classMission,{completed:mission,rewardGranted:mission,progress:mission?15:0});updateClassMissionUI();startVixarRaid();},
+ // v11.0.0: every fight belongs to a class's Vixar Saga and opens only with the Rift. saga() puts the class at a stage
+ // (a fresh row) with the Rift open; raid() starts the fight of that stage.
+ saga(stage='Violet',className='5-A'){if(selectedClass!==className)setSessionClass(className);document.querySelectorAll('dialog[open]').forEach(d=>d.close());LeagueSaga.reset();if(stage!=='Violet')LeagueSaga.setStage(className,stage,{note:'test'});sagaSessionWin=null;riftOpen=true;updateGameState(true);},
+ raid(mission=true,stage='Violet'){this.saga(stage,selectedClass||'5-A');Object.assign(classMission,{completed:mission,rewardGranted:mission,progress:mission?15:0});updateClassMissionUI();startVixarRaid();},
+ sagaState(){return {rift:riftOpen,cap:levelCap(),row:LeagueSaga.get(selectedClass),win:sagaSessionWin,fought:sagaFoughtToday(),sigil:document.getElementById('vixar-raid-btn').classList.contains('visible'),
+  merge:vixarRaidState?.merge?{done:vixarRaidState.merge.done,success:vixarRaidState.merge.success,casting:vixarRaidState.merge.casting,turn:vixarRaidState.merge.turn,card:vixarRaidState.mergeCard&&{id:vixarRaidState.mergeCard.id,answer:vixarRaidState.mergeCard.answer},outcome:Boolean(vixarRaidState.mergeOutcome),student:vixarRaidState.mergeStudent,pairs:vixarRaidState.merge.pairs,log:vixarRaidState.merge.log.length}:null,
+  fused:vixarRaidState?.mergedPairs||[],edict:Boolean(vixarRaidState?.edictCast),act:vixarRaidState?.act?.stage||null,finale:LeagueSagaScenes.finale.view(),escaping:LeagueSagaScenes.escaping,
+  result:document.getElementById('vixar-result-panel').classList.contains('visible')?document.getElementById('vixar-result-title').textContent:null};},
+ mergeAnswer(ok){const c=vixarRaidState.mergeCard;return chooseMergeOption(c.id,ok?c.answer:(c.answer+1)%3);},
+ mergeExpire(){const m=vixarRaidState.merge;m.endsAt=SceneRuntime.now();raidClock.clear();scheduleMergeExpiry();},
+ raidHP(ratio){const b=vixarRaidState.boss;Object.values(vixarRaidState.seals).forEach(s=>{s.broken=true;s.hp=0;});b.shieldHP=0;b.hp=Math.round(b.maxHP*ratio)+1;vixarApplyBossDamage(vixarRaidState.fighters[0],1,{ignoreArmor:true});},
+ finaleNext:()=>LeagueSagaScenes.finale.next(),
+ balance(values){return Object.assign(sagaBalance,values||{});},
  unityReward(){Object.assign(classMission,{completed:true,rewardGranted:false,progress:15});startUnityEvent(false);},
  unityReplay(){Object.assign(classMission,{completed:true,rewardGranted:true});startUnityEvent(true);},
  raidHit(breakSeals=false){raidClock.clear();if(breakSeals)Object.values(vixarRaidState.seals).forEach(s=>{s.broken=true;s.hp=0;});vixarRaidState.boss.shieldHP=0;return vixarApplyBossDamage(vixarRaidState.fighters[0],100);},
