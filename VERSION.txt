@@ -1,8 +1,12 @@
-English League · Island Run Edition · v10.5.0
+English League · Island Run Edition · v10.5.1
+
+v10.5.1: lighter creature poses. 10 pose sheets stay decoded (was 6), and poses are sized by CSS with no page measuring. Apps Script unchanged (v10.4.0).
+
+v10.5.0:
 
 465 new creature action poses: 44 team forms, ten island bosses and Vixar.
 Shared pose controller and results interactions; local Creature Studio included.
 Presentation only; gameplay, remote protocol and stored data formats retained.
 No Apps Script update from v10.4.3. Keep GOOGLE-APPS-SCRIPT-v10.4.0.gs.
 No new Netlify or Cloudflare environment variables.
-Read START-HERE-v10.5.0.md and TEST-REPORT-v10.5.0.md.
+Read START-HERE-v10.5.1.md and TEST-REPORT-v10.5.1.md.

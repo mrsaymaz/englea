@@ -60,8 +60,8 @@ await test('Pause, hidden document, scene exit and fast-forward cancel or suppre
   if(event==='visibilitychange')h.c.document.hidden=true;if(event==='league-pause-change')h.c.SceneRuntime.paused=true;h.fire(event);h.advance(1000);assert.equal(el.dataset.creaturePose,undefined,event);assert.equal(h.tasks.size,0,event);}
  const h=harness(),{el}=h.actor('mascot-gryffindor');h.c.SceneRuntime.fastForwarding=true;assert.equal(h.P.show(el,'attack'),false);assert.equal(h.images.length,0);
 });
-await test('Image cache is bounded and only the latest asynchronous request can update an actor',async()=>{
- const h=harness();for(let n=0;n<=10;n++)h.P.load('gryffindor',n);await h.ready();assert.equal(h.P.diagnostics().cached,6);
+await test('Image cache is bounded (v10.5.1: ten sheets) and only the latest asynchronous request can update an actor',async()=>{
+ const h=harness();for(let n=0;n<=10;n++)h.P.load('gryffindor',n);await h.ready();assert.equal(h.P.diagnostics().cached,10);
  const {el}=h.actor('mascot-ravenclaw','ravenclaw',3);h.P.show(el,'attack',{priority:30});h.P.show(el,'guard',{priority:70});await h.ready();assert.equal(el.dataset.creaturePose,'guard');
  h.P.boardLater('ravenclaw','leader',800);h.P.clear();h.advance(1000);assert.equal(el.dataset.creaturePose,undefined);
 });

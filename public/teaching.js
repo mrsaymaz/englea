@@ -19,7 +19,7 @@
  }finally{clearTimeout(timer);}}
  function loadContent(){if(loadPromise)return loadPromise;loadPromise=(async()=>{
   const files=[...(root.RunnerContent?[]:['content.js']),...['5','6','7','8'].map(g=>'questions-grade'+g+'.js'),...['5','6','7','8'].map(g=>'variety-grade'+g+'.js'),...['5','6','7','8'].map(g=>'translate-grade'+g+'.js'),'expand-content.js'];
-  for(const file of files){if(loadedFiles.has(file))continue;await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='./island-runner/'+file+'?v=10.4.3';script.onload=()=>{loadedFiles.add(file);resolve();};script.onerror=()=>reject(Error('Teaching materials could not load. Check your connection.'));document.head.append(script);});}return root.RunnerContent;
+  for(const file of files){if(loadedFiles.has(file))continue;await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='./island-runner/'+file+'?v=10.5.1';script.onload=()=>{loadedFiles.add(file);resolve();};script.onerror=()=>reject(Error('Teaching materials could not load. Check your connection.'));document.head.append(script);});}return root.RunnerContent;
  })().catch(e=>{loadPromise=null;throw e;});return loadPromise;}
  function send(sendMessage,sessionId,grade){const data=JSON.stringify(catalog(grade));if(!Object.keys(catalog(grade).units).length)return;const id=crypto.randomUUID?.()||Date.now()+'-'+Math.random(),size=4000,total=Math.ceil(data.length/size);for(let i=0;i<total;i++)if(!sendMessage({type:'TEACHING_CHUNK',sessionId,id,index:i,total,chunk:data.slice(i*size,(i+1)*size)}))break;}
  function receive(message){

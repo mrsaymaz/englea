@@ -2,6 +2,15 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 10.5.1
+**Lighter creature poses** (nothing looks or plays differently):
+- 10 pose sheets stay decoded instead of 6: four teams at their current and next level, an island boss and Vixar. In a test lesson where every team evolved twice, sheet requests fell from 46 to 31.
+- The pose layer is square and fitted by CSS (`aspect-ratio`), so showing a pose no longer measures the page. Sizes and positions are identical. Browsers without `aspect-ratio` keep the old measurement.
+- Measured and left out: a pre-scaled runner sprite cache for Island Run. The runner's pose drawing already costs about 0.1 ms per frame, so the cache gained nothing.
+- The board loads Island Run content with the build number (10.5.1). The pose pictures keep their 10.5.0 cache tag, so they are not downloaded again.
+
+No Apps Script change: keep `GOOGLE-APPS-SCRIPT-v10.4.0.gs`.
+
 ## 10.5.0
 - 465 transparent action poses: all four team avatars at levels 0–10, ten island bosses and Vixar, derived from their original visual identities.
 - Event-driven score, evolution, attack, guard, hit, knockout and recovery poses. Low HP prompts a single bracing response; it does not repeatedly animate every HUD update.

@@ -8,9 +8,12 @@
  const vixarStates=['ready','charge','cast','guard','exposed','hit','ultimate','defeat','proud'];
  const level=n=>Math.max(0,Math.min(10,Math.floor(Number(n)||0)));
  const base=root.document?new URL('./assets/poses/',document.currentScript?.src||document.baseURI).href:'./assets/poses/';
+ // Ten pose sheets stay decoded: four teams at their current and next level (8), plus an island boss and Vixar.
+ const MAX_SHEETS=10;
  const cache=new Map(),jobs=new WeakMap(),health=new WeakMap(),live=new Set();let serial=0,epoch=0,resultEpoch=0;
  const now=()=>root.SceneRuntime?.now?.()??performance.now();
  const reduced=()=>root.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
+ const squareByCSS=Boolean(root.CSS?.supports?.('aspect-ratio','1 / 1'));
  const clock=root.SceneRuntime?.create('creature-poses',{pause:()=>clear()});
  function pack(id,n=0){
   if(teams.includes(id))return {key:id+'-'+level(n),cols:3,rows:3,states:teamStates};
@@ -22,7 +25,7 @@
   let e=cache.get(p.key);if(e){cache.delete(p.key);cache.set(p.key,e);return e.promise;}
   const img=new root.Image();e={...p,img,url:base+p.key+'.webp?v=10.5.0',ready:false,promise:null};
   e.promise=new Promise(resolve=>{img.onload=()=>{(img.decode?.()||Promise.resolve()).catch(()=>{}).then(()=>{e.ready=true;resolve(e);});};img.onerror=()=>resolve(null);});
-  cache.set(p.key,e);img.src=e.url;while(cache.size>6)cache.delete(cache.keys().next().value);return e.promise;
+  cache.set(p.key,e);img.src=e.url;while(cache.size>MAX_SHEETS)cache.delete(cache.keys().next().value);return e.promise;
  }
  function loaded(id,n){const p=pack(id,n),e=p&&cache.get(p.key);return e?.ready?e:null;}
  function canonical(p,state){if(p.states.includes(state))return state;return ({charge:'ready',cast:'attack',revive:'proud',knockout:p.key==='vixar'||bosses.includes(p.key)?'defeat':'hit',fatigue:'guard',landing:'guard',acknowledge:'support',arrive:'ready',ultimate:'attack'})[state]||'ready';}
@@ -46,8 +49,9 @@
   const apply=e=>{
    if(!e||jobs.get(el)!==j||!el.isConnected||now()>=j.until)return;
    let layer=el.querySelector(':scope > .creature-pose-layer');if(!layer){layer=document.createElement('span');layer.className='creature-pose-layer';layer.setAttribute('aria-hidden','true');el.appendChild(layer);}
-   // Match object-fit:contain without stretching a square atlas in a rectangular awards box.
-   const side=Math.min(el.clientWidth,el.clientHeight);if(side>0){layer.style.width=side+'px';layer.style.height=side+'px';}
+   // The layer is square and fitted inside the avatar box by CSS (aspect-ratio), so showing a pose never measures
+   // the page. Browsers without aspect-ratio (before Chrome 88 / Safari 15) still measure once.
+   if(!squareByCSS){const side=Math.min(el.clientWidth,el.clientHeight);if(side>0){layer.style.width=side+'px';layer.style.height=side+'px';}}
    const i=index(e,state);layer.style.backgroundImage=`url("${e.url}")`;layer.style.backgroundSize=`${e.cols*100}% ${e.rows*100}%`;
    layer.style.backgroundPosition=`${i%e.cols/(e.cols-1)*100}% ${Math.floor(i/e.cols)/(e.rows-1)*100}%`;
    el.dataset.creaturePose=canonical(e,state);if(options.facing)el.dataset.creatureFacing=options.facing;else delete el.dataset.creatureFacing;
@@ -110,6 +114,6 @@
  root.document?.addEventListener('league-pause-change',()=>{if(root.SceneRuntime?.paused){clear();stopResults();}});
  root.addEventListener?.('pagehide',()=>{clear();stopResults();cache.clear();});
  root.addEventListener?.('resize',()=>clear());
- const api={pack,load,preload:load,loaded,frame,draw,show,act,clear,board,boardLater,arena,raid,healthChanged,results,stopResults,bossState,runnerState,resultPlan,diagnostics:()=>({cached:cache.size,active:live.size,results:resultTimers.size})};
+ const api={pack,load,preload:load,loaded,frame,draw,show,act,clear,board,boardLater,arena,raid,healthChanged,results,stopResults,bossState,runnerState,resultPlan,diagnostics:()=>({maxSheets:MAX_SHEETS,cached:cache.size,active:live.size,results:resultTimers.size})};
  if(typeof module==='object'&&module.exports)module.exports=api;else root.CreaturePoses=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

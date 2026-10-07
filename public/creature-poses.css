@@ -1,6 +1,7 @@
 /* Artwork stays inside the existing avatar box; titles, names and level badges keep their positions. */
 .animated-avatar { isolation:isolate; }
-.creature-pose-layer { position:absolute; inset:0; margin:auto; display:block; pointer-events:none; background-repeat:no-repeat; transform-origin:50% 95%; }
+/* Square and as large as fits, centred: like object-fit:contain for one atlas cell, with no measuring in script. */
+.creature-pose-layer { position:absolute; inset:0; margin:auto; display:block; aspect-ratio:1 / 1; width:auto; height:auto; max-width:100%; max-height:100%; pointer-events:none; background-repeat:no-repeat; transform-origin:50% 95%; }
 .animated-avatar[data-creature-pose] > .animated-sprite { opacity:0; }
 [data-creature-facing="left"] > .creature-pose-layer { transform:scaleX(-1); }
 #vixar-animated-actor[data-creature-pose] > #vixar-boss-animated-art { opacity:0; }
