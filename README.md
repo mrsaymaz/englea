@@ -9,11 +9,11 @@ Vixar is no longer one fight. Each class now plays its own three-act saga across
 - **Act III: the Edict and the Merge Spell.** At 70% HP Gilded Vixar casts the Edict of Separation. Old rivals answer English questions in turn to fuse: **Gryffindor + Slytherin = Slyffindor**, **Hufflepuff + Ravenclaw = Huffleclaw**. Without the Merge Spell the class rarely wins.
 - **The Finale.** The gold armour cracks and Mr. Saymaz is freed. He thanks the class (lines editable per grade in Teacher Studio), names the students who carried each house, and the four creatures hug him. A Freed class sees Mr. Saymaz as an ally on the board and can replay the Finale.
 - **Game-feel combat, light on old boards.** Damage numbers, hit sparks, short hit-stops on criticals, a red ground warning before Vixar's blow, shields that shatter and a few pixels of shake on heavy hits. All of it uses transforms and opacity only, counts against the board's effects budget and turns into still numbers in Light mode or with reduced motion.
-- **New art:** Level 11 and Level 12 forms of all four teams (avatars and action poses), Scarlet Vixar, Gilded Vixar and its cracking frame.
+- **New art:** Level 11 and Level 12 forms of all four teams (avatars and action poses), Scarlet Vixar, Gilded Vixar and its cracking frame, Mr. Saymaz (five poses, a portrait and a six-frame reveal) and the fused Slyffindor and Huffleclaw (pictures and action poses).
 
 **Upgrading from v10.5.1:** paste **GOOGLE-APPS-SCRIPT-v11.0.0.gs** into the Apps Script editor and deploy it as a **New version** of the existing web app. It adds two tabs (**Vixar_Saga**, **Vixar_Finale_Lines**) and logs Merge Spell answers in **Challenge_Log**. No new Netlify or Cloudflare environment variables. Then deploy the whole project and reload the board and the phone (both show **v11.0.0**).
 
-**Art still to come:** Mr. Saymaz's pictures, the hug illustration and the merged-team pictures (Slyffindor, Huffleclaw) have slots ready. Until they are added, the game uses built-in placeholders. See **CREATURES-v11.0.0.md** → "Adding the saga art".
+**Art still to come:** only the hug illustration. Until it is added, the hug step shows Mr. Saymaz with the four Level 12 creatures around him. See **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams".
 
 ## Verification
 

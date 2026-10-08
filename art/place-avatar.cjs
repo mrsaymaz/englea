@@ -1,5 +1,6 @@
 /* v11.0.0 · Places one transparent picture the way the game's art expects it (needs Sharp: npm i sharp).
-   node art/place-avatar.cjs avatar <source.png> <out.webp>  → 384 × 384 team avatar (figure fitted inside 344 px, centred)
+   node art/place-avatar.cjs avatar <source.png> <out.webp> [size]  → size × size avatar (default 384, figure fitted
+     inside 344/384 of it and centred, like the team avatars; the fused teams use 512)
    node art/place-avatar.cjs boss <source.png> <out.webp>    → 1100 × 890 boss picture, like vixar.webp
    The figure is trimmed to its alpha edges first, so loose margins in the source do not matter. */
 const sharp=require('sharp'),fs=require('fs');
@@ -12,5 +13,5 @@ async function place(file,out,W,H,boxW,boxH,quality){
  const fitted=await sharp(buf).resize(w,h,{kernel:'lanczos3'}).png().toBuffer();
  await sharp({create:{width:W,height:H,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input:fitted,left:Math.round((W-w)/2),top:Math.round((H-h)/2)}]).webp({quality,alphaQuality:100,effort:6}).toFile(out);
  console.log(out.split('/').pop(),W+'x'+H,fs.statSync(out).size);}
-(async()=>{const [kind,src,out]=process.argv.slice(2);
- if(kind==='avatar')await place(src,out,384,384,344,344,82);else await place(src,out,1100,890,1080,876,84);})();
+(async()=>{const [kind,src,out,size]=process.argv.slice(2);
+ if(kind==='avatar'){const n=Number(size)||384,box=Math.round(n*344/384);await place(src,out,n,n,box,box,82);}else await place(src,out,1100,890,1080,876,84);})();

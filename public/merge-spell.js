@@ -70,7 +70,7 @@
  // ---- Board view: built once per spell, then updated in place. Only transforms, opacity and one ring animate. ----
  const el=(tag,cls,text)=>{const n=root.document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
  let board=null;
- function mount(host,{avatar,onChoose}={}){
+ function mount(host,{avatar,fusedArt,onChoose}={}){
   unmount();if(!host)return null;
   const wrap=el('section','merge-spell');wrap.id='merge-spell';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','The Merge Spell');
   wrap.innerHTML='<header class="merge-head"><small>The Edict of Separation</small><h2>The Merge Spell</h2><p>Answer together. Two right answers from each house fuse the pair.</p></header>';
@@ -80,6 +80,8 @@
    const creatures=el('div','merge-creatures');
    pair.houses.forEach((house,i)=>{const c=el('div',`merge-creature merge-creature-${i}`);c.dataset.house=house;c.innerHTML=avatar?.(house)||'';creatures.append(c);});
    const orbit=el('div','merge-orbit');orbit.append(el('i','merge-orb merge-orb-a'),el('i','merge-orb merge-orb-b'));creatures.append(orbit);
+   const url=fusedArt?.(id);
+   if(url){const img=new root.Image();img.className='merge-fused-art';img.alt=pair.name;img.decoding='async';img.onload=()=>side.classList.add('has-fused-art');img.onerror=()=>img.remove();img.src=url;creatures.append(img);}
    const meterEl=el('div','merge-meter');meterEl.setAttribute('role','meter');meterEl.setAttribute('aria-valuemin','0');meterEl.setAttribute('aria-valuemax','4');meterEl.setAttribute('aria-label',pair.name+' merge meter');
    for(let i=0;i<4;i++)meterEl.append(el('i','merge-step'));
    const label=el('p','merge-name');pair.houses.forEach((h,i)=>{label.append(el('span',`merge-house merge-house-${i}`,NAMES[h]));if(!i)label.append(' + ');});

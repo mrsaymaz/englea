@@ -4354,7 +4354,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function vixarFighterArt(fighter) {
                 if (!fighter.merged) return getAvatarSVG(fighter.id, fighter.traits);
                 const pair = fighter.members.map(id => vixarRaidState.originalFighters.find(f => f.id === id));
-                return `<div class="merged-fighter-art" data-pair="${fighter.id}">${LeagueSagaScenes.mergedArt(fighter.id)}${pair.map((member, i) => `<div class="merged-member merged-member-${i}">${getAvatarSVG(member.id, member.traits)}</div>`).join('')}</div>`;
+                return `<div class="merged-fighter-art" data-pair="${fighter.id}">${LeagueSagaScenes.mergedArt(fighter.id, { poses:performanceMode === 'animated' })}${pair.map((member, i) => `<div class="merged-member merged-member-${i}">${getAvatarSVG(member.id, member.traits)}</div>`).join('')}</div>`;
             }
             function vixarFighterName(fighter) {
                 if (!fighter.merged) return `<span class="vixar-team-name" style="color:${fighter.color}">${fighter.name}</span>`;
@@ -5418,6 +5418,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 LeagueScenes.phase('raid', 'merge');
                 LeagueMergeSpell.mount(document.getElementById('vixar-raid-arena'), {
                     avatar:house => { const team = teamsData.find(t => t.id === house); return getAvatarSVG(house, team.traits); },
+                    fusedArt:pairId => LeagueSagaScenes.mergedUrl(pairId),
                     onChoose:(cardId, index) => chooseMergeOption(cardId, index)
                 });
                 LeagueMergeSpell.start(state.merge);

@@ -114,6 +114,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
    await board.evaluate(()=>{const m=__qa.sagaState().merge;__qa.mergeAnswer(['gryffindor','slytherin'].includes(m.turn.house));});
   }
   s=await saga();assert.equal(s.merge.pairs.slyffindor.merged,true);
+  await board.waitForFunction(()=>document.querySelector('#merge-spell .merge-slyffindor')?.classList.contains('has-fused-art'),null,{timeout:6000});
+  assert.equal(await board.evaluate(()=>document.querySelector('#merge-spell .merge-huffleclaw').classList.contains('fused')),false,'Huffleclaw has not fused');
   await board.evaluate(()=>__qa.mergeExpire());await board.waitForFunction(()=>__qa.sagaState().merge.casting===2);
   assert.equal(await board.evaluate(()=>document.querySelector('#merge-spell .merge-circle').classList.contains('second')),true,'the second casting');
   assert.equal((await saga()).merge.pairs.slyffindor.merged,true,'a fused pair stays fused');
@@ -123,24 +125,31 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert.deepEqual(fighters.sort(),['hufflepuff','ravenclaw','slyffindor'].sort(),'Slyffindor fights; Hufflepuff and Ravenclaw fight on apart');
   const mergeRows=await board.evaluate(()=>__qa.challengeLog().filter(r=>r.merge));
   assert(mergeRows.length>=5&&mergeRows.every(r=>r.type.startsWith('Merge · ')&&r.level===12&&r.className==='5-A'));assert.equal(new Set(mergeRows.map(r=>r.id)).size,mergeRows.length);
+  await board.waitForFunction(()=>document.querySelector('#vixar-team-slyffindor .merged-fighter-art.has-art'),null,{timeout:6000});
+  assert.equal(await board.locator('#vixar-team-slyffindor .merged-member').count(),0,'the stand-in creatures leave once the picture loads');
+  await board.waitForFunction(()=>document.querySelector('#vixar-team-slyffindor .animated-avatar.merged-art[data-avatar-team="slyffindor"]')?.dataset.creaturePose,null,{timeout:12000});
+  const sheetUrl=await board.evaluate(()=>document.querySelector('#vixar-team-slyffindor .merged-art .creature-pose-layer').style.backgroundImage);assert.match(sheetUrl,/assets\/poses\/slyffindor\.webp\?v=11\.0\.0/);
   await board.screenshot({path:'output/v11-fused-fight.png'});
-  console.log(`PASS second casting and a partial merge: Slyffindor fused and fights; ${mergeRows.length} Merge answers logged for Google Sheets (no duplicate IDs)`);
+  console.log(`PASS second casting and a partial merge: Slyffindor fused (its picture in the spell and the fight, posed from its own sheet); ${mergeRows.length} Merge answers logged for Google Sheets (no duplicate IDs)`);
 
   // 6. The Finale from the phone.
   await board.evaluate(()=>__qa.raidThreshold());await board.waitForFunction(()=>__qa.sagaState().finale,null,{timeout:20000});
   await phone.waitForFunction(()=>document.getElementById('mobile-saga-live').dataset.mode==='finale');
   await tap(phone,'#mobile-saga-live button','English voice: off');await board.waitForFunction(()=>__qa.sagaState().finale?.voice===true);
-  const steps=[];for(let i=0;i<20;i++){const v=(await saga()).finale;if(!v)break;steps.push(v.step+(v.line?':'+v.line:''));
+  const steps=[];let revealSeen=null;for(let i=0;i<20;i++){const v=(await saga()).finale;if(!v)break;steps.push(v.step+(v.line?':'+v.line:''));
+   if(v.step==='reveal'){await board.waitForFunction(()=>LeagueSagaScenes.finale.view()?.reveal?.frame>=4,null,{timeout:8000});revealSeen=await board.evaluate(()=>({view:LeagueSagaScenes.finale.view().reveal,frames:[...document.querySelectorAll('.finale-reveal-frame')].map(f=>f.src.replace(/^.*\/|\?.*$/g,'')),loaded:[...document.querySelectorAll('.finale-reveal-frame')].every(f=>f.naturalWidth===640)}));await board.screenshot({path:'output/v11-finale-reveal.png'});}
    await phone.waitForFunction(()=>document.querySelector('#mobile-saga-live button.primary'));await tap(phone,'#mobile-saga-live button.primary','');await wait(250);
    if(v.step==='names'){await board.screenshot({path:'output/v11-finale-names.png'});}}
   assert.deepEqual(steps.filter(x=>!x.startsWith('speech:')),['crack','break','reveal','names','hug','closing']);assert(steps.filter(x=>x.startsWith('speech:')).length>=4,'each speech line is one Continue');
+  assert.equal(revealSeen.frames.length,6);assert.match(revealSeen.frames[0],/bound/);assert.equal(revealSeen.loaded,true,'every reveal frame was ready');assert.equal(revealSeen.view.frames,6);
   s=await saga();assert.equal(s.finale,null);assert.equal(await board.evaluate(()=>LeagueSaga.stageOf('5-A')),'Freed');
+  assert.equal(await board.evaluate(()=>document.querySelector('#vixar-raid-btn .saga-ally-portrait img')?.src.includes('mr-saymaz-portrait.webp')),true,'Mr. Saymaz’s portrait as the ally');
   assert.equal(await board.evaluate(()=>document.getElementById('vixar-raid-btn').classList.contains('saga-ally')),true,'the epilogue ally sits where the sigil was');
   await phone.waitForFunction(()=>document.getElementById('mobile-saga-panel').innerText.includes('Replay the Finale'));
   await tap(phone,'#mobile-saga-panel button','Replay the Finale');await board.waitForFunction(()=>__qa.sagaState().finale?.replay===true);
   await board.evaluate(()=>LeagueScenes.skip());assert.equal((await saga()).finale.step,'closing');await board.evaluate(()=>__qa.finaleNext());
   assert.equal(await board.evaluate(()=>LeagueSaga.stageOf('5-A')),'Freed');assert.equal(await board.evaluate(()=>__qa.state().raid),null,'no fight');
-  console.log(`PASS the Finale from the phone (${steps.length} steps, English voice on), 5-A is Freed, the epilogue ally appears, and Replay the Finale plays it again with no fight`);
+  console.log(`PASS the Finale from the phone (${steps.length} steps, English voice on; the reveal reached frame ${revealSeen.view.frame} of 6 before Continue), 5-A is Freed, Mr. Saymaz’s portrait appears as the ally, and Replay the Finale plays it again with no fight`);
 
   // 7. Recovery: the Rift survives a reload; a reload mid-fight is not an attempt.
   await board.evaluate(()=>{LeagueScenes.cancel();__qa.reset({saveUndo:false,clearUndo:true,message:'Next lesson'});__qa.saga('Scarlet');__qa.seed(11,1000);__qa.setMission(true);__qa.startRaid();});
@@ -162,9 +171,12 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await again.waitForFunction(()=>__qa.sagaState().fused.length===2,null,{timeout:8000});
   await again.evaluate(()=>__qa.raidThreshold());await again.waitForFunction(()=>__qa.sagaState().finale,null,{timeout:20000});
   assert.equal(await again.evaluate(()=>document.getElementById('saga-finale').classList.contains('still')),true,'still frames');
-  const stillSteps=[];for(let i=0;i<20;i++){const v=(await again.evaluate(()=>__qa.sagaState())).finale;if(!v)break;stillSteps.push(v.step);await again.evaluate(()=>__qa.finaleNext());}
+  const stillSteps=[];let stillReveal=null;for(let i=0;i<20;i++){const v=(await again.evaluate(()=>__qa.sagaState())).finale;if(!v)break;stillSteps.push(v.step);
+   if(v.step==='reveal'){const first=v.reveal,src=await again.evaluate(()=>document.querySelector('.finale-reveal-frame')?.src.replace(/^.*\/|\?.*$/g,''));await again.waitForFunction(()=>!document.querySelector('.finale-reveal'),null,{timeout:5000});stillReveal={first,src,after:await again.evaluate(()=>LeagueSagaScenes.finale.view().reveal)};}
+   await again.evaluate(()=>__qa.finaleNext());}
+  assert.deepEqual(stillReveal.first,{frame:1,frames:1});assert.match(stillReveal.src,/identity-revealed/);assert.equal(stillReveal.after,null,'then the standing pose');
   assert.deepEqual([...new Set(stillSteps)],['crack','break','reveal','speech','names','hug','closing']);
-  console.log('PASS Light mode with reduced motion: the escape ends on the same reward, and the Finale keeps every step as still frames');
+  console.log('PASS Light mode with reduced motion: the escape ends on the same reward, and the Finale keeps every step as still frames (the reveal shows the identity frame, then Mr. Saymaz standing)');
 
   // 9. Art fallback and the phone panel's size.
   const p3=await e.page(ctx);await p3.route('**/assets/animated/gryffindor-11.webp*',r=>r.fulfill({status:404,body:''}));

@@ -184,6 +184,22 @@ await test('New art falls back to the Level 10 pictures when a Level 11 or 12 sh
  same(manifest.packs['vixar-gilded'].states,['ready','charge','cast','guard','exposed','hit','ultimate','defeat','proud']);
  const slots=JSON.parse(pub('assets/saga/manifest.json'));assert.equal(slots.hug,null);same(Object.keys(slots.mrSaymaz),['portrait','ready','proud','support','wave','bow']);same(Object.keys(slots.merged),['slyffindor','huffleclaw']);
 });
+await test('Saga art: Mr. Saymaz (portrait, five poses, a six-frame reveal on one canvas) and the fused teams (pictures and nine-pose sheets); the hug slot waits',()=>{
+ // WebP size from the file header (VP8X, VP8L or VP8), so no image library is needed.
+ const size=file=>{const b=fs.readFileSync(file);assert.equal(b.toString('ascii',0,4)+b.toString('ascii',8,12),'RIFFWEBP',file);const kind=b.toString('ascii',12,16);
+  if(kind==='VP8X')return [1+b.readUIntLE(24,3),1+b.readUIntLE(27,3)];if(kind==='VP8L'){const n=b.readUInt32LE(21);return [1+(n&0x3fff),1+((n>>14)&0x3fff)];}return [b.readUInt16LE(26)&0x3fff,b.readUInt16LE(28)&0x3fff];};
+ const slots=JSON.parse(pub('assets/saga/manifest.json')),dir=path.join(__dirname,'../public/assets/saga'),safe=/^[A-Za-z0-9._-]{1,80}\.(webp|png|jpg|jpeg)$/i;
+ for(const [pose,name] of Object.entries(slots.mrSaymaz)){assert.match(name,safe,pose);same(size(path.join(dir,name)),pose==='portrait'?[320,320]:[640,1120],pose);}
+ assert.equal(slots.reveal.length,6,'six reveal frames');for(const name of slots.reveal){assert.match(name,safe);same(size(path.join(dir,name)),[640,1120],name);}
+ assert.match(slots.reveal[0],/bound/);assert.match(slots.reveal[5],/identity-revealed/);
+ for(const [pair,name] of Object.entries(slots.merged)){assert.match(name,safe);same(size(path.join(dir,name)),[512,512],pair);}
+ const poses=JSON.parse(pub('assets/poses/manifest.json')).packs,crypto=require('crypto');
+ for(const pair of ['slyffindor','huffleclaw']){const e=poses[pair],file=path.join(__dirname,'../public/assets/poses',e.file),bytes=fs.readFileSync(file);
+  same([e.cols,e.rows,e.cell],[3,3,320]);same(e.states,poses['gryffindor-12'].states,'team states');same(size(file),[960,960]);
+  assert.equal(bytes.length,e.bytes);assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),e.sha256,pair+' hash');}
+ const scenes=pub('saga-scenes.js');assert.match(scenes,/reveal:Array\.isArray\(m\?\.reveal\)/);assert.match(scenes,/data-avatar-team="\$\{pairId\}"/,'the fused picture is a posable creature in Animated mode');
+ assert.match(pub('game.js'),/mergedArt\(fighter\.id, \{ poses:performanceMode === 'animated' \}\)/,'Light mode keeps the still picture');
+});
 await test('Wiring: the class cap replaces Level 10 in chests, traits, Unity, the badge and the phone; the Rift gates every fight; build 11.0.0',()=>{
  const game=pub('game.js'),html=pub('index.html');
  assert.match(game,/const REMOTE_BUILD = '11\.0\.0';/);for(const f of ['vixar-saga.js','merge-spell.js','fight-fx.js','saga-scenes.js','saga-remote.js','vixar-saga.css'])assert(html.includes(f+'?v=11.0.0'),f);

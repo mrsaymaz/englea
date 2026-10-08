@@ -1210,7 +1210,45 @@
       ],
       "bytes": 171288,
       "sha256": "a3f0161fc82e58cbc083b5c701cfa3cd5c9db91a6eb298085be2368294aeb349"
+    },
+    "slyffindor": {
+      "file": "slyffindor.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 408756,
+      "sha256": "e16fc5a630b4956308344f3edf274b27029beb1fb39924b6c2599d7887f71872"
+    },
+    "huffleclaw": {
+      "file": "huffleclaw.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 342340,
+      "sha256": "1a8bc15454c5bf97034c55e73f11b6cd39bc577ea32d1da1c324993fb8c4a9f4"
     }
   },
-  "saga": "11.0.0: Level 11 (Mythic) and Level 12 (Celestial) team forms; Scarlet and Gilded Vixar."
+  "saga": "11.0.0: Level 11 (Mythic) and Level 12 (Celestial) team forms; Scarlet and Gilded Vixar. Slyffindor and Huffleclaw (the Merge Spell fusions), team states."
 }

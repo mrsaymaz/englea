@@ -50,7 +50,7 @@ The saga row is saved through the phone's outbox, like the other Google Sheets s
 - **Slyffindor** (Gryffindor + Slytherin) and **Huffleclaw** (Hufflepuff + Ravenclaw) fight as one stronger fighter each. A pair that did not fuse fights on as two teams.
 - Answer from the board or the phone. Every answer is logged in **Challenge_Log** (`Merge · …`).
 
-**The Finale** (after Act III): the gold cracks, the armour breaks, Mr. Saymaz appears and thanks the class line by line (one line per Continue), the board names up to three students from each house who carried it (contributions in the saga sessions, Island Run navigators, Merge Spell answers), the four creatures hug him, and a closing card shows the class and the date. Press Continue on the board or the phone. **English voice** reads the lines aloud with the device's English voice, if it has one.
+**The Finale** (after Act III): the gold cracks, the armour breaks, Mr. Saymaz breaks free of the cursed gown (its chains, violet bindings and gold faceplate shatter) and thanks the class line by line (one line per Continue), the board names up to three students from each house who carried it (contributions in the saga sessions, Island Run navigators, Merge Spell answers), the four creatures hug him, and a closing card shows the class and the date. Press Continue on the board or the phone. **English voice** reads the lines aloud with the device's English voice, if it has one.
 
 After the Finale the class is **Freed**: Mr. Saymaz stands where the raid sigil was, as an ally. Tap him to replay the Finale (no fight).
 
@@ -62,6 +62,6 @@ Edit what Mr. Saymaz says in the Finale for each grade: one line per Continue, 1
 
 The new combat effects (damage numbers, sparks, hit-stop, the ground warning, shield shards, a small shake) animate only position and opacity, share the board's effects budget and stop when the scene pauses or the tab is hidden. **Light mode** or **reduced motion** shows the numbers still and plays the escapes and the Finale as still frames with the same results.
 
-## Art to be added
+## The art
 
-Mr. Saymaz's pictures, the hug illustration and the Slyffindor / Huffleclaw pictures have slots in `public/assets/saga/manifest.json`. Until they are added, Mr. Saymaz appears as a placeholder silhouette and each fused pair shows its two Level 12 creatures together. See **CREATURES-v11.0.0.md** → "Adding the saga art". Earlier guides are in `archive/`.
+Mr. Saymaz (portrait, five poses and a six-frame reveal in which he breaks free of the cursed gown) and the two fused creatures, Slyffindor and Huffleclaw (pictures and nine-pose sheets), are in this build. **Only the hug illustration is still to come:** until it is added, the hug step shows Mr. Saymaz with the four Level 12 creatures close around him. To add it, see **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams". Earlier guides are in `archive/`.

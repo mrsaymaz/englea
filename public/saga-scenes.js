@@ -4,8 +4,8 @@
    Light on old smart boards: a scene moves at most a few dozen small elements, with transforms and opacity only (no
    blur, no filters that animate, no per-frame script). Light mode and reduced motion keep the same order and words;
    moving steps become still frames with a short cross-fade.
-   Art slots (assets/saga/manifest.json): Mr. Saymaz (portrait and five poses), the hug illustration and the fused
-   teams. A slot that is not filled in shows a placeholder and downloads nothing. */
+   Art slots (assets/saga/manifest.json): Mr. Saymaz (portrait and five poses), his six-frame liberation reveal, the hug
+   illustration and the fused teams. A slot that is not filled in shows a placeholder and downloads nothing. */
 (function(root){
  'use strict';
  const doc=root.document;
@@ -18,8 +18,8 @@
  const NAMES={gryffindor:'Gryffindor',slytherin:'Slytherin',hufflepuff:'Hufflepuff',ravenclaw:'Ravenclaw'};
 
  // ---- Art slots ----
- let manifest={mrSaymaz:{},hug:null,merged:{}};let manifestLoaded=false;
- const ready=(async()=>{try{const r=await fetch('./assets/saga/manifest.json?v=11.0.0',{cache:'no-cache'});if(r.ok){const m=await r.json();manifest={mrSaymaz:m?.mrSaymaz||{},hug:m?.hug||null,merged:m?.merged||{}};}}catch{}manifestLoaded=true;
+ let manifest={mrSaymaz:{},reveal:[],hug:null,merged:{}};let manifestLoaded=false;
+ const ready=(async()=>{try{const r=await fetch('./assets/saga/manifest.json?v=11.0.0',{cache:'no-cache'});if(r.ok){const m=await r.json();manifest={mrSaymaz:m?.mrSaymaz||{},reveal:Array.isArray(m?.reveal)?m.reveal.slice(0,12):[],hug:m?.hug||null,merged:m?.merged||{}};}}catch{}manifestLoaded=true;
   doc.dispatchEvent(new CustomEvent('league-saga-art'));})();
  const safe=name=>typeof name==='string'&&/^[A-Za-z0-9._-]{1,80}\.(webp|png|jpg|jpeg)$/i.test(name)?name:null;
  const artUrl=name=>safe(name)?`./assets/saga/${safe(name)}?v=11.0.0`:null;
@@ -48,9 +48,18 @@
   return span;
  }
  // The fused team's own picture, once added; until then game.js shows the two Level 12 creatures together.
- function mergedArt(pairId){const url=artUrl(manifest.merged?.[pairId]);return url?`<img class="merged-art" src="${url}" alt="" decoding="async" data-merged-art="${pairId}">`:'';}
- doc?.addEventListener('load',e=>{const t=e.target;if(t?.dataset?.mergedArt)t.closest('.merged-fighter-art')?.classList.add('has-art');},true);
- doc?.addEventListener('error',e=>{const t=e.target;if(t?.dataset?.mergedArt)t.remove();},true);
+ const FUSED_NAMES={slyffindor:'Slyffindor',huffleclaw:'Huffleclaw'};
+ const mergedUrl=pairId=>FUSED_NAMES[pairId]?artUrl(manifest.merged?.[pairId]):null;
+ // In Animated mode the picture is a creature avatar, so the pose controller plays its nine-pose sheet
+ // (assets/poses/slyffindor.webp, huffleclaw.webp) in the fight; in Light mode it stays a still picture.
+ function mergedArt(pairId,{poses=false}={}){
+  const url=mergedUrl(pairId);if(!url)return '';
+  const img=`<img class="${poses?'animated-sprite':'merged-art'}" src="${url}" width="512" height="512" alt="" decoding="async" draggable="false" data-merged-art="${pairId}">`;
+  return poses?`<span class="animated-avatar merged-art" data-avatar-team="${pairId}" data-avatar-level="12" role="img" aria-label="${FUSED_NAMES[pairId]}">${img}</span>`:img;
+ }
+ // Once the fused picture has loaded, the two stand-in creatures leave (so they are not posed or drawn behind it).
+ doc?.addEventListener('load',e=>{const t=e.target;if(!t?.dataset?.mergedArt)return;const art=t.closest('.merged-fighter-art');if(!art)return;art.classList.add('has-art');art.querySelectorAll('.merged-member').forEach(m=>m.remove());},true);
+ doc?.addEventListener('error',e=>{const t=e.target;if(t?.dataset?.mergedArt)(t.closest('.merged-art')||t).remove();},true);
  // When the art list arrives after the board drew the epilogue sigil, redraw it once.
  doc?.addEventListener('league-saga-art',()=>{const old=doc.querySelector('#vixar-raid-btn .saga-ally-portrait');if(old)old.replaceWith(allyPortrait());});
 
@@ -155,6 +164,7 @@
    <figure class="finale-hug" hidden></figure><section class="finale-closing" hidden><p class="finale-closing-kicker">The Vixar Saga</p><p class="finale-closing-line"></p><p class="finale-date"></p></section>
    <footer class="finale-controls"><span class="finale-step"></span><button type="button" class="finale-continue">Continue ›</button></footer>`;
   host.querySelector('.finale-teacher').append(teacherArt('ready'));
+  finale.reveal=preloadReveal(still);
   const creatures=host.querySelector('.finale-creatures');
   for(const t of options.teams||[]){const c=el('div','finale-creature');c.dataset.house=t.id;c.style.setProperty('--team-color',t.color);c.innerHTML=t.markup||'';creatures.append(c);}
   host.querySelector('.finale-continue').onclick=()=>next();
@@ -171,6 +181,7 @@
   const bubble=host.querySelector('.finale-bubble');bubble.hidden=step!=='speech';
   host.querySelector('.finale-names').hidden=step!=='names';host.querySelector('.finale-hug').hidden=step!=='hug';host.querySelector('.finale-closing').hidden=step!=='closing';
   const teacher=host.querySelector('.saga-teacher-art');
+  if(step!=='reveal')endReveal(f);
   if(step==='crack'){
    // Thin lines of light run across the armour, wider with each heartbeat.
    host.querySelectorAll('.finale-cracks path').forEach((p,i)=>{if(f.still)p.style.strokeDashoffset='0';else play(p,[{strokeDashoffset:100},{strokeDashoffset:0}],{duration:2600,delay:i*180,fill:'forwards',easing:'ease-out'});});
@@ -185,6 +196,7 @@
   }else if(step==='reveal'){
    play(host.querySelector('.finale-teacher'),[{opacity:0,transform:'translate(-50%,10px) scale(.94)'},{opacity:1,transform:'translate(-50%,0) scale(1)'}],{duration:1200,fill:'backwards',easing:'ease-out'});
    setTeacherPose(teacher,'ready');
+   playReveal(f);
   }else if(step==='speech'){
    if(!f.themePlayed){f.themePlayed=true;f.sound?.('finaleTheme');}
    showLine();
@@ -209,6 +221,46 @@
   }
   host.querySelector('.finale-continue').textContent=step==='closing'?'Finish ✓':'Continue ›';
   f.onChange?.();
+ }
+ // ---- The reveal: Mr. Saymaz, bound in the cursed gown, breaks free (six frames on one canvas, so they stay registered),
+ // then a soft flash and he stands in his own clothes. Opacity only; every frame is already decoded when the step starts
+ // (they load while the armour cracks). Light mode and reduced motion: the identity frame, then the standing pose.
+ const REVEAL_HOLD=900,REVEAL_FADE=380,REVEAL_SOUNDS={1:'shatterMetal',3:'shatterCrystal',4:'goldCrack'};
+ function preloadReveal(still){
+  const names=(manifest.reveal||[]).map(artUrl);if(names.length<2||names.some(u=>!u))return null;
+  const urls=still?[names[names.length-1]]:names,r={frames:[],failed:false,index:-1,done:false};
+  for(const url of urls){const img=new Image();img.className='finale-reveal-frame';img.alt='';img.decoding='async';img.onerror=()=>{r.failed=true;};img.src=url;img.decode?.().catch(()=>{});r.frames.push(img);}
+  return r;
+ }
+ function revealFrame(f,i){
+  const r=f.reveal,img=r?.frames[i],prev=r?.frames[r.index];if(!img||finale!==f||STEPS[f.step]!=='reveal')return;
+  if(r.failed){endReveal(f,true);return;} // a frame that did not load: straight to his standing pose
+  img.style.opacity='1';play(img,[{opacity:0},{opacity:1}],{duration:REVEAL_FADE,easing:'ease-out'});
+  if(prev&&prev!==img){prev.style.opacity='0';play(prev,[{opacity:1},{opacity:0}],{duration:REVEAL_FADE,easing:'ease-in'});}
+  r.index=i;if(!f.still&&REVEAL_SOUNDS[i])f.sound?.(REVEAL_SOUNDS[i]);f.onChange?.();
+ }
+ function playReveal(f){
+  const r=f.reveal,wrap=f.host.querySelector('.finale-teacher');if(!r||r.failed||!wrap)return;
+  const layer=el('div','finale-reveal');layer.setAttribute('aria-hidden','true');
+  r.frames.forEach(img=>{img.style.opacity='0';layer.append(img);});
+  layer.append(el('div','finale-reveal-flash'));wrap.append(layer);wrap.classList.add('revealing');r.index=-1;r.done=false;
+  revealFrame(f,0);
+  const last=r.frames.length-1;
+  for(let i=1;i<=last;i++)after(()=>revealFrame(f,i),(f.still?0:1500)+(i-1)*REVEAL_HOLD);
+  // The flash covers the change from the gown to his own clothes.
+  after(()=>{
+   if(finale!==f||STEPS[f.step]!=='reveal')return;
+   play(layer.querySelector('.finale-reveal-flash'),[{opacity:0},{opacity:.92,offset:.45},{opacity:0}],{duration:900,easing:'ease-in-out'});
+   after(()=>{if(finale===f&&STEPS[f.step]==='reveal'){f.sound?.('heartbeat');endReveal(f,true);}},f.still?0:380);
+  },f.still?1800:1500+last*REVEAL_HOLD+600);
+ }
+ function endReveal(f,fade=false){
+  const wrap=f?.host.querySelector('.finale-teacher'),layer=wrap?.querySelector('.finale-reveal');
+  if(f?.reveal){f.reveal.done=true;f.reveal.index=-1;}
+  if(!layer){wrap?.classList.remove('revealing');return;}
+  wrap.classList.remove('revealing');
+  if(fade){play(wrap.querySelector('.saga-teacher-art'),[{opacity:0},{opacity:1}],{duration:520,easing:'ease-out'});const a=play(layer,[{opacity:1},{opacity:0}],{duration:520,easing:'ease-out'});if(a){a.finished.catch(()=>{}).then(()=>layer.remove());f.onChange?.();return;}}
+  layer.remove();f.onChange?.();
  }
  function hugPlaceholder(f){
   // Until the finished illustration is added: Mr. Saymaz in the light with the four creatures close around him.
@@ -244,9 +296,10 @@
  function view(){
   const f=finale;if(!f)return null;const step=STEPS[f.step];
   return {step,name:STEP_NAMES[step],index:f.step,total:STEPS.length,line:step==='speech'?f.line+1:0,lines:f.lines?.length||0,
-   text:step==='speech'?(f.lines?.[f.line]||''):'',voice:Boolean(f.voice),replay:Boolean(f.replay),last:step==='closing'};
+   text:step==='speech'?(f.lines?.[f.line]||''):'',voice:Boolean(f.voice),replay:Boolean(f.replay),last:step==='closing',
+   reveal:step==='reveal'&&f.reveal&&!f.reveal.done&&f.reveal.index>=0?{frame:f.reveal.index+1,frames:f.reveal.frames.length}:null};
  }
- root.LeagueSagaScenes=Object.freeze({ready,introArt,escape,stopEscape,skipEscape,allyPortrait,mergedArt,teacherArt,silhouette,
+ root.LeagueSagaScenes=Object.freeze({ready,introArt,escape,stopEscape,skipEscape,allyPortrait,mergedArt,mergedUrl,teacherArt,silhouette,
   finale:Object.freeze({start:startFinale,next,skip,setVoice,stop:stopFinale,view,STEPS,STEP_NAMES,get active(){return Boolean(finale);}}),
   get escaping(){return Boolean(escapeJob);},get manifest(){return JSON.parse(JSON.stringify(manifest));},get artReady(){return manifestLoaded;}});
 })(window);

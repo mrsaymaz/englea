@@ -40,8 +40,8 @@
 .merged-member-0 { left:-6%; z-index:1; }
 .merged-member-1 { right:-6%; top:18%; z-index:2; }
 .merged-fighter-art::before { content:""; position:absolute; inset:14% 6% 4%; border-radius:50%; background:radial-gradient(circle,color-mix(in srgb,var(--team-color) 30%,transparent),color-mix(in srgb,var(--team-color-b,#fff) 22%,transparent) 55%,transparent 72%); z-index:0; }
-.merged-art { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:3; opacity:0; }
-.merged-fighter-art.has-art .merged-art { opacity:1; }
+.merged-fighter-art > .merged-art { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:3; opacity:0; }
+.merged-fighter-art.has-art > .merged-art { opacity:1; }
 .merged-fighter-art.has-art .merged-member { display:none; }
 /* Scarlet Brand: a large mark over the branded team, readable from the back row. */
 .saga-brand-mark { position:absolute; left:50%; top:-6%; width:58px; height:58px; transform:translate(-50%,0) scale(.4); opacity:0; pointer-events:none; z-index:6;
@@ -117,6 +117,9 @@
 .merge-pair.fused .merge-creature-0 { transform:translateX(30%); opacity:.9; }
 .merge-pair.fused .merge-creature-1 { transform:translateX(-30%) scaleX(-1); opacity:.9; }
 .merge-pair.fused .merge-orbit { display:none; }
+.merge-fused-art { position:absolute; left:50%; top:0; width:auto; height:100%; aspect-ratio:1; transform:translateX(-50%) scale(.55); opacity:0; pointer-events:none; transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .5s ease; }
+.merge-pair.fused.has-fused-art .merge-fused-art { transform:translateX(-50%) scale(1); opacity:1; }
+.merge-pair.fused.has-fused-art .merge-creature { opacity:0; }
 .merge-pair.fusing::after { content:""; position:absolute; inset:0; border-radius:1rem; background:radial-gradient(circle,#fff 0,rgba(255,255,255,.6) 30%,transparent 70%); animation:mergeFlash .7s ease-out forwards; pointer-events:none; }
 @keyframes mergeFlash { from { opacity:1; transform:scale(.6); } to { opacity:0; transform:scale(1.25); } }
 .merge-circle { position:relative; width:min(18vw,170px); aspect-ratio:1; }
@@ -158,6 +161,11 @@
 .finale-teacher { position:absolute; left:50%; bottom:2%; width:min(26vw,300px); height:72%; transform:translateX(-50%); opacity:0; transition:opacity 1s ease; }
 #saga-finale[data-step="reveal"] .finale-teacher,#saga-finale[data-step="speech"] .finale-teacher,#saga-finale[data-step="names"] .finale-teacher,#saga-finale[data-step="closing"] .finale-teacher { opacity:1; }
 .saga-teacher-art,.saga-teacher-art img,.saga-teacher-art svg { width:100%; height:100%; object-fit:contain; display:block; }
+.finale-teacher.revealing > .saga-teacher-art { opacity:0; }
+/* The reveal frames share Mr. Saymaz's canvas, so they sit exactly over his standing pose. */
+.finale-reveal { position:absolute; inset:0; pointer-events:none; }
+.finale-reveal-frame { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; opacity:0; }
+.finale-reveal-flash { position:absolute; inset:-8% -40%; background:radial-gradient(ellipse at 50% 42%,#fffbeb 0,rgba(255,247,214,.88) 32%,rgba(253,230,138,0) 68%); opacity:0; }
 .finale-creatures { position:absolute; inset:auto 2% 2%; height:46%; display:flex; justify-content:space-between; pointer-events:none; opacity:0; transition:opacity .8s ease; }
 #saga-finale:not([data-step="crack"]):not([data-step="hug"]) .finale-creatures { opacity:1; }
 .finale-creature { width:min(17vw,210px); height:100%; }
@@ -257,10 +265,10 @@ body[data-effects-budget="2"] .fx-spark,body[data-effects-budget="2"] .fx-telegr
 
 @media (prefers-reduced-motion: reduce) {
   .merge-orbit { animation:none; }
-  .merge-creature,.merge-orbit,.finale-light,.finale-boss,.finale-teacher,.finale-creatures { transition:none; }
+  .merge-creature,.merge-orbit,.merge-fused-art,.finale-light,.finale-boss,.finale-teacher,.finale-creatures { transition:none; }
   .saga-intro-art *,.merge-pair.fusing::after,.merge-circle.shatter { animation:none!important; }
   .saga-intro-art .saga-intro-form,.saga-tear,.saga-intro-eye { opacity:1; transform:translateX(-50%); }
   .saga-gold-crack path { stroke-dashoffset:0; }
 }
 body.performance-light .merge-orbit { animation:none; }
-body.performance-light .merge-creature { transition:none; }
+body.performance-light .merge-creature,body.performance-light .merge-fused-art { transition:none; }

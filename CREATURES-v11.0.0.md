@@ -1,6 +1,6 @@
 # Creature art and behaviour (v11.0.0)
 
-v11.0.0 adds two team levels and two Vixar forms to the v10.5.0 creature system, plus art slots for the pictures still to come. The v10.5.0 guide (pose controller, anchors, fallbacks) is in `archive/CREATURES-v10.5.0.md`; everything it describes still applies.
+v11.0.0 adds two team levels and two Vixar forms to the v10.5.0 creature system, Mr. Saymaz (five poses, a portrait and a six-frame reveal) and the two Merge Spell fusions. The v10.5.0 guide (pose controller, anchors, fallbacks) is in `archive/CREATURES-v10.5.0.md`; everything it describes still applies.
 
 ## Art inventory
 
@@ -9,7 +9,8 @@ v11.0.0 adds two team levels and two Vixar forms to the v10.5.0 creature system,
 | Gryffindor, Hufflepuff, Slytherin, Ravenclaw | 52 (levels 0–12) | 9 | 468 |
 | Island bosses | 10 | 6 | 60 |
 | Vixar (Violet, Scarlet, Gilded) | 3 | 9 | 27 |
-| Total | 65 | | 555 |
+| Slyffindor, Huffleclaw (Merge Spell) | 2 | 9 | 18 |
+| Total | 67 | | 573 |
 
 New in v11.0.0 (about 4.1 MB, loaded only when a class reaches them):
 
@@ -29,33 +30,35 @@ Team and Vixar state orders are unchanged (teams: `ready`, `attack`, `guard`, `h
 - **Cache tags:** the new pictures load with `?v=11.0.0`; the v10.5.0 sheets keep `?v=10.5.0`, so boards that already have them do not download them again.
 - **Fallback:** if a Level 11 or 12 avatar or sheet fails to load, the board shows the Level 10 picture of the same team instead of a gap.
 - Scarlet and Gilded Vixar always use their pictures, in every mode. The Violet form keeps the Light mode drawing as before.
-- `public/creature-studio.html` previews Levels 0–12 and the three Vixar forms.
+- `public/creature-studio.html` previews Levels 0–12, the three Vixar forms and the two fused creatures.
 
 ## Fight effects (`public/fight-fx.js`)
 
 Damage numbers (criticals larger, heals and blocks in their own colour), hit sparks, a ~70 ms hit-stop on criticals, a red ground warning under a team before Vixar's blow, shield shards and a few pixels of shake on heavy blows. Rules: transforms and opacity only (no filters, shadows or per-frame layout reads), every effect is finite and counted against `LeaguePerformance.limit`, hit-stop and shake run only at the top effects level, nothing runs while paused, hidden or fast-forwarding. Light mode and reduced motion keep only the numbers, shown still. Presentation only: no damage, HP or timing is read or changed.
 
-## Adding the saga art
+## Mr. Saymaz and the fused teams (`public/assets/saga/`)
 
-Mr. Saymaz's pictures, the hug illustration and the merged-team pictures are not in this build yet. Each has a slot in **`public/assets/saga/manifest.json`**. A slot left as `null` keeps the built-in placeholder and downloads nothing.
+The saga's own pictures are listed in **`public/assets/saga/manifest.json`**. They load only when the Finale starts or a pair fuses in Act III (about 1.2 MB in all).
 
-| Slot | Where it appears | Suggested picture |
+| Slot | Files | Where it appears |
 |---|---|---|
-| `mrSaymaz.portrait` | the round ally portrait on the board after the Finale (a Freed class) | square, face and shoulders, 512 × 512 |
-| `mrSaymaz.ready` | the Finale reveal | full figure on a transparent background, about 600 × 1000 |
-| `mrSaymaz.proud` | the Finale, while the names are shown | same size as `ready` |
-| `mrSaymaz.support`, `mrSaymaz.wave` | the Finale speech (the poses take turns line by line) | same size as `ready` |
-| `mrSaymaz.bow` | the closing card | same size as `ready` |
-| `hug` | the hug step: the four creatures hug Mr. Saymaz | wide illustration, about 1600 × 900 |
-| `merged.slyffindor` | Act III: Gryffindor + Slytherin fused | square, transparent, 384 × 384 (like the team avatars) |
-| `merged.huffleclaw` | Act III: Hufflepuff + Ravenclaw fused | square, transparent, 384 × 384 |
+| `mrSaymaz.portrait` | `mr-saymaz-portrait.webp`, 320 × 320 | the round ally portrait on the board for a Freed class |
+| `mrSaymaz.ready` | `mr-saymaz-ready.webp`, 640 × 1120 | the Finale, after the reveal |
+| `mrSaymaz.proud` | `mr-saymaz-proud.webp` | while the names are shown, and in the speech |
+| `mrSaymaz.support`, `mrSaymaz.wave` | `mr-saymaz-support.webp`, `mr-saymaz-wave.webp` | the speech (the poses take turns line by line) |
+| `mrSaymaz.bow` | `mr-saymaz-bow.webp` | the closing card |
+| `reveal` (six frames) | `mr-saymaz-reveal-01-bound.webp` … `-06-identity-revealed.webp`, 640 × 1120 | the Finale reveal: bound in the cursed gown, the chains and violet bindings break, the gold faceplate cracks, his face is revealed |
+| `merged.slyffindor`, `merged.huffleclaw` | `slyffindor.webp`, `huffleclaw.webp`, 512 × 512 | the Merge Spell when a pair fuses, and the fused fighter in Act III |
+| `hug` | — (still to come) | the hug step |
 
-To add one: put the file in `public/assets/saga/` (PNG or WebP), write its file name in the slot (for example `"ready": "mr-saymaz-ready.webp"`), deploy and reload. A missing Mr. Saymaz pose falls back to `ready`; a picture that fails to load falls back to the placeholder. `node art/place-avatar.cjs avatar <source.png> <out.webp>` trims and centres a merged-team picture the way the team avatars are made (needs Sharp).
+All Mr. Saymaz pictures share one canvas (1024 × 1792 in the art pack, shoes on the same line), so the board shows every pose and reveal frame in the same box with no jump; they were only scaled, never trimmed. The reveal frames cross-fade (opacity only) while he fades in, then a soft flash covers the change from the gown to his own clothes. Light mode and reduced motion show the identity frame, then the standing pose. The frames load while the armour cracks, so they are ready when the reveal starts.
 
-Until then: Mr. Saymaz appears as a softly lit silhouette, the hug step shows him with the four Level 12 creatures around him, and each fused pair shows its two Level 12 creatures together in the pair's colours.
+**Fused teams:** each pair has a still picture (made with `node art/place-avatar.cjs avatar <source.png> <out.webp> 512`, framed like the team avatars) and a nine-pose sheet in `public/assets/poses/` (`slyffindor.webp`, `huffleclaw.webp`; 3 × 3 cells of 320 px, team states, cache tag 11.0.0). In Animated mode the fused fighter is a creature avatar, so the raid's attack, guard and hit poses play from its own sheet. In Light mode it is the still picture and the sheets are not downloaded. If a picture fails to load, the two Level 12 creatures stand in for it, as before.
 
-In the fused fight, the two Level 12 creatures inside the fused fighter take their own attack, guard and hit poses together. Once a merged picture is added it replaces them as a still picture that moves with the raid's attacks. The pose controller already reserves the `slyffindor` and `huffleclaw` keys (team states, cache tag 11.0.0) for nine-pose sheets, if those are made later; showing them would also need a small change in `game.js`.
+**The hug illustration (still to come):** put the file in `public/assets/saga/` and write its name in the `hug` slot, for example `"hug": "hug.webp"`. A wide picture, about 1600 × 900, with its own background works best. Until then the hug step shows Mr. Saymaz with the four Level 12 creatures close around him.
+
+To replace any picture: keep the file name or write the new one in its slot, deploy and reload. A missing Mr. Saymaz pose falls back to `ready`; a picture that fails to load falls back to the placeholder.
 
 ## Repacking
 
-`art/pack-poses.cjs` and `art/extract-poses.cjs` pack pose sheets as described in the v10.5.0 guide; the Level 11, Level 12 and Vixar sheets were packed with them from the supplied art packs, with the same cell sizes and ground anchor (95% of the cell height).
+`art/pack-poses.cjs` and `art/extract-poses.cjs` pack pose sheets as described in the v10.5.0 guide; the Level 11, Level 12, Vixar and fused-team sheets were packed with them from the supplied art packs, with the same cell sizes and ground anchor (95% of the cell height). The fused-team sheets arrived packed; their sizes and SHA-256 hashes were checked against the pack's manifest before they were added.

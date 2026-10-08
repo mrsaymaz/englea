@@ -41,4 +41,4 @@ No long tasks in any run; the worst frame was 33 ms (50 ms once, with effects on
 - Physical smart boards and iPhone/Safari were not tested.
 - The Apps Script was tested with the repository's Apps Script harness, not a live Google Sheet.
 - The English voice uses the device's own speech voices (British English first, then any English voice). On a device with no English voice the browser picks its default voice or stays silent; the lines always stay on screen.
-- Mr. Saymaz's pictures, the hug illustration and the merged-team pictures are placeholders until the art is supplied; the tests check that the slots load nothing while empty and fall back cleanly.
+- The hug illustration is a placeholder until the art is supplied; the empty slot downloads nothing.

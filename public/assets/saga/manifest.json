@@ -2,16 +2,24 @@
   "version": "11.0.0",
   "howTo": "Put each picture in this folder (public/assets/saga/) and write its file name below, then reload the board. A slot left as null keeps the built-in placeholder, and nothing is downloaded for it.",
   "mrSaymaz": {
-    "portrait": null,
-    "ready": null,
-    "proud": null,
-    "support": null,
-    "wave": null,
-    "bow": null
+    "portrait": "mr-saymaz-portrait.webp",
+    "ready": "mr-saymaz-ready.webp",
+    "proud": "mr-saymaz-proud.webp",
+    "support": "mr-saymaz-support.webp",
+    "wave": "mr-saymaz-wave.webp",
+    "bow": "mr-saymaz-bow.webp"
   },
+  "reveal": [
+    "mr-saymaz-reveal-01-bound.webp",
+    "mr-saymaz-reveal-02-first-break.webp",
+    "mr-saymaz-reveal-03-chains-falling.webp",
+    "mr-saymaz-reveal-04-last-binding.webp",
+    "mr-saymaz-reveal-05-faceplate-crack.webp",
+    "mr-saymaz-reveal-06-identity-revealed.webp"
+  ],
   "hug": null,
   "merged": {
-    "slyffindor": null,
-    "huffleclaw": null
+    "slyffindor": "slyffindor.webp",
+    "huffleclaw": "huffleclaw.webp"
   }
 }
