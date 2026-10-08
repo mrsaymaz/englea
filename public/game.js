@@ -5586,6 +5586,9 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 }
                 return LeagueSaga.finaleNames({ contributions, navigators, merge });
             }
+            // The Finale shows the creatures' own pictures in every display mode (one still picture each, no pose sheets):
+            // the story needs the Celestial creatures turning back into their Level 0 selves, which the Light-mode crests can't show.
+            const finaleCreature = (id, level) => window.AnimatedMode?.still?.(id, level) || getAvatarSVG(id, level ? sagaFormTraits(id, level) : [], level);
             function startSagaFinale({ replay = false } = {}) {
                 const c = sagaClass();
                 if (!c) return false;
@@ -5597,7 +5600,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const order = ['gryffindor', 'slytherin', 'hufflepuff', 'ravenclaw'];
                 LeagueSagaScenes.finale.start({
                     className:c, date, replay, voice:finaleVoice, lines:LeagueSaga.lines(Number(c[0])), names:sagaFinaleNames(c),
-                    teams:order.map(id => { const team = teamsData.find(t => t.id === id); return { id, name:team.name, color:team.color, markup:getAvatarSVG(id, sagaFormTraits(id, 12), 12) }; }),
+                    teams:order.map(id => { const team = teamsData.find(t => t.id === id); return { id, name:team.name, color:team.color, markup:finaleCreature(id, 12), baby:finaleCreature(id, 0) }; }),
                     still:isLeanMode() && performanceMode !== 'animated' || window.matchMedia('(prefers-reduced-motion: reduce)').matches,
                     sound:name => playSound(name),
                     onChange:() => { window.syncStateToController?.(); updateSceneControls(); },

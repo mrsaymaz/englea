@@ -19,8 +19,13 @@
     const facing=(id,level)=>LEFT_FACING[id]?.includes(clamp(level))?'left':'right';
     function markup(id,level){
         if(!valid(id))return '';
+        scope.CreaturePoses?.preload(id,clamp(level));
+        return still(id,level);
+    }
+    // The same picture without its pose sheets: for scenes that only show it (the Finale, in every display mode).
+    function still(id,level){
+        if(!valid(id))return '';
         level=clamp(level);
-        scope.CreaturePoses?.preload(id,level);
         return `<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}" data-native-facing="${facing(id,level)}" role="img" aria-label="${id}, level ${level}"><img class="animated-sprite" src="${source(id,level)}" width="384" height="384" alt="" decoding="async" draggable="false"></span>`;
     }
     function preload(id,level){
@@ -172,7 +177,7 @@
         frame.dataset.assetFailed='true';
         frame.innerHTML=`<span class="animated-art-fallback">${symbols[frame.dataset.avatarTeam]||'✦'}</span>`;
     },true);
-    scope.AnimatedMode={markup,preload,warmNext,enqueue,cancelAll,cancelTeam,pump,setEnabled,
+    scope.AnimatedMode={markup,still,preload,warmNext,enqueue,cancelAll,cancelTeam,pump,setEnabled,
         configure(callbacks){bridge=callbacks;},
         displayLevel(id,actual){return held.has(id)?held.get(id):clamp(actual);},
         hasVisual(id){return held.has(id);},

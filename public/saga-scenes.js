@@ -76,14 +76,11 @@
    <ellipse cx="420" cy="220" rx="560" ry="54" fill="#7f1d1d" opacity=".13"/><ellipse cx="1240" cy="160" rx="500" ry="46" fill="#9f1239" opacity=".11"/><ellipse cx="820" cy="300" rx="700" ry="40" fill="#450a0a" opacity=".2"/>
    <path d="M0 505 L70 480 L130 492 L190 455 L245 470 L300 430 L350 452 L420 440 L470 470 L540 462 L600 488 L1000 488 L1060 465 L1130 472 L1190 440 L1250 455 L1300 425 L1360 448 L1420 438 L1480 462 L1540 450 L1600 470 L1600 800 L0 800 Z" fill="url(#sbFar)"/>
    <path d="M0 505 L70 480 L130 492 L190 455 L245 470 L300 430 L350 452 L420 440 L470 470 L540 462 L600 488 M1000 488 L1060 465 L1130 472 L1190 440 L1250 455 L1300 425 L1360 448 L1420 438 L1480 462 L1540 450 L1600 470" fill="none" stroke="#fb923c" stroke-opacity=".3" stroke-width="2"/>
-   <radialGradient id="sbCrater" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fde68a"/><stop offset=".4" stop-color="#f97316" stop-opacity=".7"/><stop offset="1" stop-color="#f97316" stop-opacity="0"/></radialGradient>
-   <path d="M108 470 C90 420 126 392 100 350 C84 322 118 300 104 262" fill="none" stroke="#2a0507" stroke-width="40" stroke-linecap="round" opacity=".45"/>
-   <path d="M1492 470 C1510 420 1474 392 1500 350 C1516 322 1482 300 1496 262" fill="none" stroke="#2a0507" stroke-width="40" stroke-linecap="round" opacity=".45"/>
-   <path d="M-60 640 L10 580 L70 520 L104 482 L134 480 L170 520 L230 572 L300 610 L360 640 L360 800 L-60 800 Z" fill="url(#sbNear)"/>
-   <path d="M1660 640 L1590 580 L1530 520 L1496 482 L1466 480 L1430 520 L1370 572 L1300 610 L1240 640 L1240 800 L1660 800 Z" fill="url(#sbNear)"/>
-   <ellipse cx="119" cy="482" rx="40" ry="16" fill="url(#sbCrater)"/><ellipse cx="1481" cy="482" rx="40" ry="16" fill="url(#sbCrater)"/>
-   <g fill="none" stroke-linecap="round"><g stroke="#f97316" stroke-opacity=".28" stroke-width="16"><path d="M112 486 C104 520 84 548 60 578"/><path d="M128 488 C142 524 168 552 200 586"/><path d="M1488 486 C1496 520 1516 548 1540 578"/><path d="M1472 488 C1458 524 1432 552 1400 586"/></g>
-    <g stroke="url(#sbLava)" stroke-width="4"><path d="M112 486 C104 520 84 548 60 578"/><path d="M128 488 C142 524 168 552 200 586"/><path d="M1488 486 C1496 520 1516 548 1540 578"/><path d="M1472 488 C1458 524 1432 552 1400 586"/></g></g>
+   <linearGradient id="sbSpire" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0710"/><stop offset=".55" stop-color="#14030a"/><stop offset="1" stop-color="#060102"/></linearGradient>
+   <g><polygon points="18,640 52,420 70,402 96,640" fill="url(#sbSpire)"/><polygon points="70,640 118,300 136,272 170,640" fill="url(#sbSpire)"/><polygon points="150,640 196,470 212,456 240,640" fill="url(#sbSpire)"/><polygon points="228,640 252,540 262,532 284,640" fill="url(#sbSpire)"/></g>
+   <g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#fb923c" stroke-opacity=".55" stroke-width="2"><path d="M70 402 L96 640"/><path d="M136 272 L170 640"/><path d="M212 456 L240 640"/><path d="M262 532 L284 640"/></g><g stroke="#f97316" stroke-opacity=".3" stroke-width="10"><path d="M57 640 L65 526 L59 451"/><path d="M120 640 L130 463 L125 326"/><path d="M195 640 L206 552 L202 503"/></g><g stroke="url(#sbLava)" stroke-width="2.5"><path d="M57 640 L65 526 L59 451"/><path d="M120 640 L130 463 L125 326"/><path d="M195 640 L206 552 L202 503"/></g></g>
+   <g><polygon points="1582,640 1548,420 1530,402 1504,640" fill="url(#sbSpire)"/><polygon points="1530,640 1482,300 1464,272 1430,640" fill="url(#sbSpire)"/><polygon points="1450,640 1404,470 1388,456 1360,640" fill="url(#sbSpire)"/><polygon points="1372,640 1348,540 1338,532 1316,640" fill="url(#sbSpire)"/></g>
+   <g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#fb923c" stroke-opacity=".55" stroke-width="2"><path d="M1530 402 L1504 640"/><path d="M1464 272 L1430 640"/><path d="M1388 456 L1360 640"/><path d="M1338 532 L1316 640"/></g><g stroke="#f97316" stroke-opacity=".3" stroke-width="10"><path d="M1543 640 L1535 526 L1541 451"/><path d="M1480 640 L1470 463 L1475 326"/><path d="M1405 640 L1394 552 L1398 503"/></g><g stroke="url(#sbLava)" stroke-width="2.5"><path d="M1543 640 L1535 526 L1541 451"/><path d="M1480 640 L1470 463 L1475 326"/><path d="M1405 640 L1394 552 L1398 503"/></g></g>
    <g fill="none" stroke="#f97316" stroke-linecap="round" opacity=".55"><path d="M560 640 L610 652 L640 646 L700 664" stroke-width="2.5"/><path d="M1040 640 L990 654 L960 648 L900 666" stroke-width="2.5"/><path d="M360 700 L420 690 L470 706" stroke-width="2"/><path d="M1240 700 L1180 690 L1130 706" stroke-width="2"/></g>
    </svg>`;},
   gilded(){
@@ -134,7 +131,7 @@
  // Light mode and reduced motion: the same beats as still frames. Opacity and transforms only.
  const PIECES=[[50,46,48,22,40,0,78,0,61,25],[50,46,61,25,78,0,100,0,100,34,76,36],[50,46,76,36,100,34,100,80,73,66],[50,46,73,66,100,80,100,100,66,100,61,72],
   [50,46,61,72,66,100,28,100,36,71],[50,46,36,71,28,100,0,100,0,70,24,62],[50,46,24,62,0,70,0,24,27,32],[50,46,27,32,0,24,0,0,40,0,48,22]];
- const RIFT='M200 0 L178 38 L152 74 L134 118 L112 150 L106 200 L92 246 L100 300 L86 352 L104 410 L118 468 L148 520 L170 566 L200 600 L222 566 L248 524 L268 470 L294 414 L300 354 L314 296 L298 236 L304 176 L284 120 L262 72 L230 36 Z';
+ const RIFT='M206 0 L196 40 L214 70 L186 112 L204 140 L166 196 L148 250 L162 288 L136 340 L156 392 L176 430 L166 470 L192 520 L186 560 L200 600 L216 556 L210 512 L234 470 L228 424 L252 384 L266 330 L246 284 L260 236 L240 190 L226 140 L238 104 L218 66 L226 30 Z';
  let escapeJob=null;
  function stopEscape(){if(!escapeJob)return;escapeJob.cancelled=true;for(const a of escapeJob.anims)try{a.cancel();}catch{}escapeJob.layer?.remove();escapeJob.overlay?.classList.remove('saga-escape','saga-cut','saga-dark');clock?.clear();escapeJob=null;}
  function escape({act,overlay,reduced=false,sound=()=>{},cut=()=>{},onDone=()=>{}}={}){
@@ -162,15 +159,15 @@
   const core=el('div','saga-core');core.style.setProperty('--glow',glow);form.append(core);
   const rift=el('div','saga-rift'),riftColor=next?.color||'#f43f5e',nextSrc=next?`./assets/animated/${next.art}.webp?v=11.0.0`:'';
   rift.style.setProperty('--rift',riftColor);
-  rift.innerHTML=`<svg viewBox="0 0 400 600" preserveAspectRatio="none"><defs><clipPath id="sagaRiftClip"><path d="${RIFT}"/></clipPath><radialGradient id="sagaRiftVoid" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="${riftColor}" stop-opacity=".45"/><stop offset="1" stop-color="#000"/></radialGradient></defs>
-   <path d="${RIFT}" fill="url(#sagaRiftVoid)"/>${nextSrc?`<image href="${nextSrc}" x="-180" y="36" width="760" height="616" preserveAspectRatio="xMidYMid meet" clip-path="url(#sagaRiftClip)" opacity=".95"/>`:''}
+  rift.innerHTML=`<svg viewBox="0 0 400 600" preserveAspectRatio="none"><defs><clipPath id="sagaRiftClip"><path d="${RIFT}"/></clipPath><radialGradient id="sagaRiftVoid" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="${riftColor}" stop-opacity=".45"/><stop offset="1" stop-color="#000"/></radialGradient><radialGradient id="sagaRiftDepth" cx=".5" cy=".47" r=".5"><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity=".75"/><stop offset="1" stop-color="#000" stop-opacity=".95"/></radialGradient></defs>
+   <path d="${RIFT}" fill="url(#sagaRiftVoid)"/>${nextSrc?`<image href="${nextSrc}" x="-550" y="40" width="1500" height="1214" preserveAspectRatio="xMidYMid meet" clip-path="url(#sagaRiftClip)" opacity=".9"/>`:''}<path d="${RIFT}" fill="url(#sagaRiftDepth)"/>
    <path class="rim-glow" d="${RIFT}" stroke="${riftColor}"/><path class="rim" d="${RIFT}" stroke="${next?.act===3?'#fde68a':'#fecdd3'}"/></svg>`;
   const caption=el('div','saga-caption');caption.style.setProperty('--caption',next?.act===3?'#fde68a':'#fda4af');
   caption.innerHTML=`<b>${act.winTitle.toUpperCase()}</b><span>${act.act===1?'…but Vixar slipped through the rift. Something scarlet is waiting.':'…but the light behind the rift is golden now.'}</span>`;
   L.append(dark,burst,rift,form,victory,flash,top,bottom,caption);
   const ribbons=[];
   if(!still){const colors=['#fde68a','#f59e0b','#fb7185','#a78bfa','#38bdf8','#4ade80'];
-   for(let i=0;i<20;i++){const r=el('i','saga-ribbon');r.style.left=`${3+(i*47)%94}%`;r.style.background=colors[i%colors.length];L.append(r);
+   for(let i=0;i<20;i++){const r=el('i','saga-ribbon');r.style.left=`${(3+((i*37)%20)*4.7).toFixed(1)}%`;r.style.background=colors[i%colors.length];L.append(r);
     const anim=play(r,[{transform:'translateY(0) rotate(0deg) rotateY(0deg)'},{transform:`translateY(${62+(i%5)*7}vh) rotate(${(i%2?1:-1)*(200+i*11)}deg) rotateY(540deg)`}],{duration:2700+(i%4)*240,delay:(i%7)*80,fill:'forwards',easing:'cubic-bezier(.25,.6,.55,1)'});if(anim)ribbons.push(anim);}}
   arenaEl.append(L);overlay.classList.add('saga-escape');overlay.dataset.escape=act.shatter;
   // 0 s · victory.
@@ -216,24 +213,61 @@
  function skipEscape(){if(!escapeJob)return false;if(root.SceneRuntime?.fastForward)root.SceneRuntime.fastForward('saga',()=>!escapeJob,20000);return true;}
 
  // ---- The Finale: a scene, not a fight. No timers, no scores; Mr. Saymaz advances it from the phone (or here). ----
+ // Colour script: the gold prison (crack) → a white flash (break) → dawn over open hills (reveal, thank-you, names)
+ // → golden light (hug) → the storybook end card.
  const STEPS=['crack','break','reveal','speech','names','hug','closing'];
  const STEP_NAMES={crack:'The crack',break:'The break',reveal:'The reveal',speech:'The thank-you',names:'The names',hug:'The hug',closing:'The closing card'};
+ const CAPTIONS={crack:'Light breaks through the gold…',break:'The curse shatters.',reveal:'Someone was trapped inside all along…',freed:'Mr. Saymaz is free!',hug:'The four creatures become little again…'};
  let finale=null;
+ // The seams of light follow the lines along which the armour splits (the PIECES edges), with a little zigzag and a
+ // few short branches, masked to the armour itself so no line runs into the air.
+ const SEAMS=[[528,196,440,0],[671,222,858,0],[836,320,1100,303],[803,587,1100,712],[671,641,726,890],[396,632,308,890],[264,552,0,623],[297,285,0,214]];
+ function crackPaths(){
+  let k=7;const rnd=()=>{k=(k*9301+49297)%233280;return k/233280;},paths=[];
+  const jag=pts=>{let d=`M${pts[0]} ${pts[1]}`;for(let i=2;i<pts.length;i+=2){const ax=pts[i-2],ay=pts[i-1],bx=pts[i],by=pts[i+1],len=Math.hypot(bx-ax,by-ay)||1,nx=-(by-ay)/len,ny=(bx-ax)/len,n=Math.max(2,Math.round(len/42));
+   for(let j=1;j<=n;j++){const t=j/n,off=j===n?0:(rnd()-.5)*26;d+=` L${(ax+(bx-ax)*t+nx*off).toFixed(0)} ${(ay+(by-ay)*t+ny*off).toFixed(0)}`;}}return d;};
+  SEAMS.forEach(([mx,my,ex,ey],i)=>{paths.push(jag([550,409,mx,my,ex,ey]));
+   const a=Math.atan2(ey-my,ex-mx)+(i%2?.7:-.7),len=70+rnd()*50;paths.push(jag([mx,my,mx+Math.cos(a)*len,my+Math.sin(a)*len]));});
+  const g=cls=>`<g class="${cls}">${paths.map((d,i)=>`<path pathLength="100" class="${i%2?'branch':'seam'}" d="${d}"/>`).join('')}</g>`;
+  return `<svg class="finale-cracks" viewBox="0 0 1100 890" aria-hidden="true">${g('glow')}${g('core')}</svg>`;
+ }
+ // Dawn over open hills: the world outside the prison. One static picture.
+ const DAWN=`<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+  <linearGradient id="fdSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0c29"/><stop offset=".26" stop-color="#2e1a4f"/><stop offset=".44" stop-color="#7a2f63"/><stop offset=".55" stop-color="#d0605a"/><stop offset=".61" stop-color="#f59f5b"/><stop offset=".66" stop-color="#fde3a7"/></linearGradient>
+  <radialGradient id="fdSun" cx="800" cy="575" r="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fffbeb"/><stop offset=".12" stop-color="#fff1c1" stop-opacity=".95"/><stop offset=".34" stop-color="#fdba74" stop-opacity=".45"/><stop offset="1" stop-color="#fb923c" stop-opacity="0"/></radialGradient>
+  <linearGradient id="fdFar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a24a6e"/><stop offset="1" stop-color="#6d2a55"/></linearGradient>
+  <linearGradient id="fdMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a2149"/><stop offset="1" stop-color="#3a1534"/></linearGradient>
+  <linearGradient id="fdGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b1a2e"/><stop offset=".5" stop-color="#24101f"/><stop offset="1" stop-color="#120811"/></linearGradient>
+  <radialGradient id="fdCloud"><stop offset="0" stop-color="#fbcfe8" stop-opacity=".9"/><stop offset=".6" stop-color="#f9a8d4" stop-opacity=".35"/><stop offset="1" stop-color="#f9a8d4" stop-opacity="0"/></radialGradient>
+  <radialGradient id="fdCloudLow"><stop offset="0" stop-color="#fff1c1" stop-opacity=".95"/><stop offset=".6" stop-color="#fdba74" stop-opacity=".35"/><stop offset="1" stop-color="#fdba74" stop-opacity="0"/></radialGradient>
+  <radialGradient id="fdPool" cx="800" cy="760" r="520" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 456) scale(1 .4)"><stop offset="0" stop-color="#fcd34d" stop-opacity=".55"/><stop offset=".45" stop-color="#f59e0b" stop-opacity=".18"/><stop offset="1" stop-color="#f59e0b" stop-opacity="0"/></radialGradient></defs>
+  <rect width="1600" height="900" fill="url(#fdSky)"/><rect width="1600" height="900" fill="url(#fdSun)"/>
+  <g fill="url(#fdCloud)" opacity=".5"><ellipse cx="330" cy="300" rx="300" ry="16"/><ellipse cx="470" cy="326" rx="200" ry="9"/><ellipse cx="1240" cy="268" rx="340" ry="18"/><ellipse cx="1110" cy="300" rx="190" ry="8"/></g>
+  <g fill="url(#fdCloudLow)" opacity=".6"><ellipse cx="560" cy="452" rx="260" ry="11"/><ellipse cx="1060" cy="440" rx="300" ry="12"/><ellipse cx="250" cy="488" rx="200" ry="7"/></g>
+  <circle cx="800" cy="578" r="74" fill="#fffbeb" opacity=".95"/>
+  <path d="M0 560 C120 520 230 512 360 540 C470 562 560 548 660 560 C740 570 860 570 940 560 C1060 546 1150 520 1270 532 C1400 546 1500 520 1600 528 L1600 900 L0 900 Z" fill="url(#fdFar)"/>
+  <path d="M0 610 C160 576 300 590 430 612 C560 632 680 622 760 616 C860 610 960 618 1080 604 C1220 588 1380 572 1600 600 L1600 900 L0 900 Z" fill="url(#fdMid)"/>
+  <path d="M0 668 C240 640 520 650 800 652 C1080 654 1360 640 1600 664 L1600 900 L0 900 Z" fill="url(#fdGround)"/>
+  <rect y="600" width="1600" height="300" fill="url(#fdPool)"/>
+  <path d="M0 668 C240 640 520 650 800 652 C1080 654 1360 640 1600 664" fill="none" stroke="#fde68a" stroke-opacity=".35" stroke-width="2"/>
+  </svg>`;
  function finaleRoot(){let host=doc.getElementById('saga-finale');if(!host){host=el('div');host.id='saga-finale';host.setAttribute('aria-hidden','true');host.setAttribute('role','dialog');host.setAttribute('aria-label','The Finale');doc.body.append(host);}return host;}
  function speak(text){try{const s=root.speechSynthesis;if(!s||!text)return;s.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=.9;const v=s.getVoices().find(x=>/^en(-|_)GB/i.test(x.lang))||s.getVoices().find(x=>/^en/i.test(x.lang));if(v)u.voice=v;s.speak(u);}catch{}}
  function quiet(){try{root.speechSynthesis?.cancel();}catch{}}
- // options: {className, date, lines, names:{team:[{name,gave}]}, teams:[{id,name,color,markup}], replay, voice, still, sound(name), onChange(), onEnd()}
+ function caption(f,text){const c=f?.host.querySelector('.finale-caption');if(!c)return;c.textContent=text||'';c.classList.toggle('on',Boolean(text));}
+ // options: {className, date, lines, names:{team:[{name,gave}]}, teams:[{id,name,color,markup,baby}], replay, voice, still, sound(name), onChange(), onEnd()}
  function startFinale(options){
   stopFinale(false);
   const host=finaleRoot(),still=Boolean(options.still)||reducedMotion();
   finale={...options,still,step:0,line:0,anims:new Set(),host,themePlayed:false};
-  host.className='';host.classList.toggle('still',still);host.dataset.step='crack';
+  host.className='';host.classList.toggle('still',still);host.dataset.step='crack';delete host.dataset.beat;
   const motes=Array.from({length:12},(_,i)=>`<i class="saga-mote" style="--x:${(6+i*8)%94}%;--dx:${(i%2?1:-1)*(14+i*3)}px;--s:${3+(i%4)}px;--t:${8+(i%5)}s;--d:${-i*1.1}s"></i>`).join('');
-  host.innerHTML=`<div class="finale-sky"></div><div class="finale-light"></div><div class="finale-rays" aria-hidden="true"></div><div class="finale-motes" aria-hidden="true">${motes}</div><div class="finale-floor" aria-hidden="true"></div>
+  host.innerHTML=`<div class="finale-sky">${ARENA.gilded().replace(/gb(Sky|Glow|Bar|Shaft)/g,'fg$1')}</div><div class="finale-light">${DAWN}</div><div class="finale-rays" aria-hidden="true"></div><div class="finale-motes" aria-hidden="true">${motes}</div><div class="finale-floor" aria-hidden="true"></div>
    <div class="finale-stage"><div class="finale-boss"><div class="finale-boss-glow"></div><div class="finale-boss-pieces">${PIECES.map(pts=>{const poly=[];for(let i=0;i<pts.length;i+=2)poly.push(`${pts[i]}% ${pts[i+1]}%`);return `<div class="finale-piece" style="clip-path:polygon(${poly.join(',')})"><img src="./assets/animated/vixar-gilded-cracking.webp?v=11.0.0" alt=""></div>`;}).join('')}</div>
-    <svg class="finale-cracks" viewBox="0 0 1100 890" aria-hidden="true"><g class="glow"><path pathLength="100" d="M550 409 L528 196 L440 0"/><path pathLength="100" d="M550 409 L671 222 L858 0"/><path pathLength="100" d="M550 409 L836 320 L1100 303"/><path pathLength="100" d="M550 409 L803 587 L1100 712"/><path pathLength="100" d="M550 409 L671 641 L726 890"/><path pathLength="100" d="M550 409 L396 632 L308 890"/><path pathLength="100" d="M550 409 L264 552 L0 623"/><path pathLength="100" d="M550 409 L297 285 L0 214"/></g><g class="core"><path pathLength="100" d="M550 409 L528 196 L440 0"/><path pathLength="100" d="M550 409 L671 222 L858 0"/><path pathLength="100" d="M550 409 L836 320 L1100 303"/><path pathLength="100" d="M550 409 L803 587 L1100 712"/><path pathLength="100" d="M550 409 L671 641 L726 890"/><path pathLength="100" d="M550 409 L396 632 L308 890"/><path pathLength="100" d="M550 409 L264 552 L0 623"/><path pathLength="100" d="M550 409 L297 285 L0 214"/></g></svg></div>
+    ${crackPaths()}</div>
     <div class="finale-pillar" aria-hidden="true"></div><div class="finale-teacher"></div><div class="finale-creatures"></div><div class="finale-flakes" aria-hidden="true"></div><div class="finale-hearts" aria-hidden="true"></div></div>
    <div class="finale-flash" aria-hidden="true"></div>
+   <p class="finale-caption" aria-live="polite"></p>
    <div class="finale-dialogue" aria-live="polite" hidden><span class="finale-speaker">Mr. Saymaz</span><p></p><small></small><i class="finale-more" aria-hidden="true"></i></div>
    <section class="finale-names" hidden><p class="finale-kicker">The Vixar Saga</p><h2>They carried the saga</h2><div class="finale-name-grid"></div></section>
    <figure class="finale-hug" hidden></figure>
@@ -241,6 +275,8 @@
    <footer class="finale-controls"><span class="finale-step"></span><button type="button" class="finale-continue">Continue ›</button></footer>`;
   host.querySelector('.finale-teacher').append(teacherArt('ready'));
   finale.reveal=preloadReveal(still);
+  // The hug's poses load while the armour cracks, so they are ready when he bends down and opens his arms.
+  if(!still)for(const url of [teacherUrl('bow'),teacherUrl('support'),artUrl(manifest.mrSaymaz?.kneel)])if(url){const img=new Image();img.decoding='async';img.src=url;}
   const creatures=host.querySelector('.finale-creatures');
   for(const t of options.teams||[]){const c=el('div','finale-creature');c.dataset.house=t.id;c.style.setProperty('--team-color',t.color);c.innerHTML=`<div class="finale-creature-art">${t.markup||''}</div><i class="finale-creature-glow"></i>`;creatures.append(c);}
   host.querySelector('.finale-continue').onclick=()=>next();
@@ -259,9 +295,11 @@
   host.querySelector('.finale-hug').hidden=!(step==='hug'||step==='closing')||!host.querySelector('.finale-hug img');
   const teacher=host.querySelector('.saga-teacher-art');
   if(step!=='reveal')endReveal(f);
+  caption(f,CAPTIONS[step]);
+  if(step!=='hug'&&step!=='closing')host.classList.remove('cubs-home','kneeling','hugging','hug-zoom');
   if(step==='crack'){
    // Seams of light run across the armour exactly where it will split, wider with each heartbeat.
-   host.querySelectorAll('.finale-cracks path').forEach((p,i)=>{if(f.still)p.style.strokeDashoffset='0';else play(p,[{strokeDashoffset:100},{strokeDashoffset:0}],{duration:2400,delay:(i%8)*160,fill:'forwards',easing:'ease-out'});});
+   host.querySelectorAll('.finale-cracks path').forEach((p,i)=>{const n=i%16,branch=n%2===1;if(f.still)p.style.strokeDashoffset='0';else play(p,[{strokeDashoffset:100},{strokeDashoffset:0}],{duration:branch?900:2200,delay:branch?1300+(n>>1)*220:(n>>1)*180,fill:'forwards',easing:'ease-out'});});
    const boss=host.querySelector('.finale-boss'),glow=host.querySelector('.finale-boss-glow');
    [0,1,2].forEach(i=>after(()=>{if(finale===f&&STEPS[f.step]==='crack'){f.sound?.('heartbeat');host.dataset.beat=String(i+1);
     play(boss,[{transform:'translateX(-50%) scale(1)'},{transform:'translateX(-50%) scale(1.025)',offset:.25},{transform:'translateX(-50%) scale(1)'}],{duration:520,easing:'ease-out'});
@@ -274,7 +312,7 @@
     const out=`translate(${(cx/len*46).toFixed(0)}vw,${(cy/len*46+20).toFixed(0)}vh) rotate(${(i%2?1:-1)*(30+i*9)}deg)`;
     if(f.still)piece.style.opacity='0';else play(piece,[{transform:'none',opacity:1},{transform:out,opacity:0}],{duration:1400,delay:i*25,fill:'forwards',easing:'cubic-bezier(.2,.6,.35,1)'});});
    const flakes=host.querySelector('.finale-flakes');flakes.replaceChildren();
-   if(!f.still)for(let i=0;i<24;i++){const k=el('i','finale-flake');k.style.left=`${32+(i*29)%36}%`;k.style.top=`${16+(i*17)%34}%`;flakes.append(k);
+   if(!f.still)for(let i=0;i<24;i++){const k=el('i','finale-flake'),r=n=>((i*9301+n*49297)%233280)/233280;k.style.left=`${(30+r(1)*40).toFixed(1)}%`;k.style.top=`${(10+r(2)*46).toFixed(1)}%`;flakes.append(k);
     play(k,[{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:`translate(${(i%2?1:-1)*(30+i*5)}px,${280+i*9}px) rotate(${i*37}deg)`,opacity:0}],{duration:1900+(i%5)*160,delay:(i%6)*60,fill:'forwards',easing:'ease-in'});}
    play(host.querySelector('.finale-pillar'),[{transform:'translateX(-50%) scaleY(0)',opacity:0},{transform:'translateX(-50%) scaleY(1)',opacity:1}],{duration:900,delay:400,fill:'backwards',easing:'cubic-bezier(.2,.8,.2,1)'});
    // The merged teams separate back into the four house creatures.
@@ -283,6 +321,7 @@
    play(host.querySelector('.finale-teacher'),[{opacity:0,transform:'translate(-50%,10px) scale(.94)'},{opacity:1,transform:'translate(-50%,0) scale(1)'}],{duration:1200,fill:'backwards',easing:'ease-out'});
    setTeacherPose(teacher,'ready');
    playReveal(f);
+   if(!f.reveal||f.reveal.failed)after(()=>{if(finale===f&&STEPS[f.step]==='reveal')caption(f,CAPTIONS.freed);},f.still?0:1400);
   }else if(step==='speech'){
    if(!f.themePlayed){f.themePlayed=true;f.sound?.('finaleTheme');}
    showLine();
@@ -300,7 +339,7 @@
    if(!f.hugDone)hugScene(f,true);
    host.querySelector('.finale-closing-line').textContent=`${f.className} freed Mr. Saymaz.`;
    host.querySelector('.finale-date').textContent=f.date||'';
-   play(host.querySelector('.finale-closing'),[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:1100,fill:'backwards',easing:'ease-out'});
+   play(host.querySelector('.finale-closing'),[{opacity:0,transform:'translate(-50%,12px)'},{opacity:1,transform:'translate(-50%,0)'}],{duration:1100,fill:'backwards',easing:'ease-out'});
   }
   host.querySelector('.finale-continue').textContent=step==='closing'?'Finish ✓':'Continue ›';
   f.onChange?.();
@@ -334,7 +373,7 @@
   after(()=>{
    if(finale!==f||STEPS[f.step]!=='reveal')return;
    play(layer.querySelector('.finale-reveal-flash'),[{opacity:0},{opacity:.92,offset:.45},{opacity:0}],{duration:900,easing:'ease-in-out'});
-   after(()=>{if(finale===f&&STEPS[f.step]==='reveal'){f.sound?.('heartbeat');endReveal(f,true);}},f.still?0:380);
+   after(()=>{if(finale===f&&STEPS[f.step]==='reveal'){f.sound?.('heartbeat');endReveal(f,true);caption(f,CAPTIONS.freed);}},f.still?0:380);
   },f.still?1800:1500+last*REVEAL_HOLD+600);
  }
  function endReveal(f,fade=false){
@@ -345,35 +384,61 @@
   if(fade){play(wrap.querySelector('.saga-teacher-art'),[{opacity:0},{opacity:1}],{duration:520,easing:'ease-out'});const a=play(layer,[{opacity:1},{opacity:0}],{duration:520,easing:'ease-out'});if(a){a.finished.catch(()=>{}).then(()=>layer.remove());f.onChange?.();return;}}
   layer.remove();f.onChange?.();
  }
- // ---- The hug: the four Celestial creatures glow and turn back into their Level 0 selves, run to Mr. Saymaz, and he
- // kneels and hugs them. Two pictures finish it when they are added (manifest: mrSaymaz.kneel and hug); until then he
- // opens his arms (the support pose) and the little ones gather close around him. About five seconds; still in Light
- // mode and with reduced motion (the last frame at once). instant: straight to the last frame (Skip, the closing card).
+ // ---- The hug: the four Celestial creatures glow and turn back into their Level 0 selves, run to Mr. Saymaz, he bends
+ // down to them, opens his arms, the camera moves in and the little ones jump into his arms. About six seconds; Light
+ // mode and reduced motion show the last frame at once (instant: the same, for Skip and the closing card).
+ // Two pictures replace the stand-ins when they are added (manifest: mrSaymaz.kneel, then hug).
+ // Where each little one lands, as fractions of his picture (640 × 1120): two in front at his waist, two at his shoulders.
+ const ARMS={gryffindor:{x:.37,y:.45,h:.21,z:4},hufflepuff:{x:.64,y:.46,h:.21,z:4},slytherin:{x:.27,y:.31,h:.2,z:3},ravenclaw:{x:.74,y:.3,h:.2,z:3}};
+ const KNEEL_DROP=.22; // a kneeling picture holds them lower
  function hugScene(f,instant=false){
-  const host=f.host,teacher=host.querySelector('.saga-teacher-art'),creatures=[...host.querySelectorAll('.finale-creature')];
+  const host=f.host,stage=host.querySelector('.finale-stage'),box=host.querySelector('.finale-teacher'),teacher=host.querySelector('.saga-teacher-art'),creatures=[...host.querySelectorAll('.finale-creature')];
   const still=f.still||instant,kneel=artUrl(manifest.mrSaymaz?.kneel),hugUrl=artUrl(manifest.hug);
   const at=(ms,fn)=>{if(still){fn();return;}after(()=>{if(finale===f&&['hug','closing'].includes(STEPS[f.step]))fn();},ms);};
-  f.hugDone=true;host.classList.remove('cubs-home','hugging','kneeling');
+  f.hugDone=true;host.classList.remove('cubs-home','hugging','kneeling','hug-zoom');
+  creatures.forEach(c=>{c.style.transform='';c.style.transformOrigin='';c.style.zIndex='';});
   // 1 · the glow and the change.
   creatures.forEach((c,i)=>{const team=(f.teams||[])[i],glow=c.querySelector('.finale-creature-glow');
-   if(!still)play(glow,[{opacity:0,transform:'scale(.6)'},{opacity:1,transform:'scale(1.15)',offset:.7},{opacity:0,transform:'scale(1.4)'}],{duration:1300,delay:i*140,easing:'ease-out'});
-   at(800+i*140,()=>{const art=c.querySelector('.finale-creature-art');art.innerHTML=team?.baby||art.innerHTML;c.classList.add('is-baby');
+   if(!still)play(glow,[{opacity:0,transform:'translate(-50%,-50%) scale(.6)'},{opacity:1,transform:'translate(-50%,-50%) scale(1.15)',offset:.7},{opacity:0,transform:'translate(-50%,-50%) scale(1.4)'}],{duration:1300,delay:i*140,easing:'ease-out'});
+   at(800+i*140,()=>{const art=c.querySelector('.finale-creature-art');if(!c.classList.contains('is-baby')){art.innerHTML=team?.baby||art.innerHTML;c.classList.add('is-baby');}
     play(art,[{transform:'scale(.4)',opacity:.2},{transform:'scale(1.12)',opacity:1,offset:.6},{transform:'scale(1)',opacity:1}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});});});
   if(!still)at(700,()=>f.sound?.('mergeResolve'));
-  // 2 · the little ones run to him (little hops).
-  at(1900,()=>{const stageBox=host.querySelector('.finale-stage').getBoundingClientRect(),mid=stageBox.left+stageBox.width/2,spots=[-.2,-.11,.11,.2];
-   creatures.forEach((c,i)=>{const r=c.getBoundingClientRect(),dx=mid+spots[i]*Math.min(stageBox.width,1100)-(r.left+r.width/2);c.style.setProperty('--home',`${dx.toFixed(0)}px`);
+  // 2 · the little ones run to his feet (little hops) and he bends down to them.
+  at(1900,()=>{const stageBox=stage.getBoundingClientRect(),mid=stageBox.left+stageBox.width/2,t=box.getBoundingClientRect(),spots=[-.62,-.3,.3,.62];
+   creatures.forEach((c,i)=>{const r=c.getBoundingClientRect(),dx=mid+spots[i]*Math.max(t.width,160)-(r.left+r.width/2);c.style.setProperty('--home',`${dx.toFixed(0)}px`);
     if(!still)play(c,[{transform:'translateX(0)'},{transform:`translateX(${(dx*.33).toFixed(0)}px) translateY(-18px)`,offset:.2},{transform:`translateX(${(dx*.5).toFixed(0)}px)`,offset:.36},{transform:`translateX(${(dx*.75).toFixed(0)}px) translateY(-16px)`,offset:.6},{transform:`translateX(${(dx*.88).toFixed(0)}px)`,offset:.76},{transform:`translateX(${dx.toFixed(0)}px)`}],{duration:1300,delay:i*60,easing:'linear'});});
    host.classList.add('cubs-home');});
-  // 3 · he kneels and opens his arms.
-  at(2700,()=>{host.classList.add('kneeling');if(kneel){teacher.dataset.pose='';const img=teacher.querySelector('img');if(img)img.src=kneel;}else setTeacherPose(teacher,'support');});
+  at(2500,()=>setTeacherPose(teacher,'bow'));
+  // 3 · he kneels and opens his arms; the camera moves in; they jump into his arms.
+  at(3500,()=>{
+   if(kneel){teacher.dataset.pose='kneel';const img=teacher.querySelector('img');if(img)img.src=kneel;}else setTeacherPose(teacher,'support');
+   host.classList.add('kneeling');
+   // Measured once on the un-zoomed stage: his picture (contain, centred) and each little one's picture.
+   const prev=stage.style.transform;stage.style.transform='none';
+   const s=stage.getBoundingClientRect(),t=box.getBoundingClientRect(),ih=t.height,iw=Math.min(t.width,ih*640/1120),ix=t.left+(t.width-iw)/2,iy=t.top,drop=kneel?KNEEL_DROP:0;
+   creatures.forEach(c=>{const spot=ARMS[c.dataset.house];if(!spot)return;const saved=c.style.transform;c.style.transform='none';
+    const cb=c.getBoundingClientRect(),ab=c.querySelector('.finale-creature-art').getBoundingClientRect();c.style.transform=saved;
+    const ox=ab.left-cb.left+ab.width/2,oy=ab.top-cb.top+ab.height/2,scale=spot.h*ih/Math.max(ab.height,1);
+    const dx=ix+spot.x*iw-(cb.left+ox),dy=iy+(spot.y+drop)*ih-(cb.top+oy),home=parseFloat(c.style.getPropertyValue('--home'))||0;
+    const end=`translate(${dx.toFixed(0)}px,${dy.toFixed(0)}px) scale(${scale.toFixed(3)})`;
+    c.style.transformOrigin=`${ox.toFixed(0)}px ${oy.toFixed(0)}px`;c.style.zIndex=String(spot.z);
+    if(!still)play(c,[{transform:`translateX(${home}px)`},{transform:`translate(${((home+dx)/2).toFixed(0)}px,${(Math.min(0,dy)-70).toFixed(0)}px) scale(${((1+scale)/2).toFixed(3)})`,offset:.5},{transform:end}],{duration:760,delay:200+(spot.z===4?0:160),easing:'cubic-bezier(.3,.7,.4,1)',fill:'backwards'});
+    c.style.transform=end;});
+   // The camera: his chest moves to the middle of the screen, 1.55× closer; for the end card, lower and less close.
+   const cx=ix+iw*.5-s.left,cy=iy+ih*(.36+drop*.6)-s.top,W=root.innerWidth||s.width,H=root.innerHeight||s.height;
+   host.style.setProperty('--zox',`${cx.toFixed(0)}px`);host.style.setProperty('--zoy',`${cy.toFixed(0)}px`);
+   host.style.setProperty('--zx',`${(W/2-s.left-cx).toFixed(0)}px`);host.style.setProperty('--zy',`${(H*.46-s.top-cy).toFixed(0)}px`);host.style.setProperty('--zy2',`${(H*.67-s.top-cy).toFixed(0)}px`);
+   stage.style.transform=prev;host.classList.add('hug-zoom');
+   host.querySelectorAll('.finale-hearts').forEach(h=>{h.style.setProperty('--hx',`${cx.toFixed(0)}px`);h.style.setProperty('--hy',`${cy.toFixed(0)}px`);});});
   // 4 · the hug.
-  at(3600,()=>{host.classList.add('hugging');f.sound?.('finaleTheme');
-   const hug=host.querySelector('.finale-hug');
-   if(hugUrl&&!hug.querySelector('img')){const img=new Image();img.alt='Mr. Saymaz hugs the four little creatures';img.decoding='async';img.onerror=()=>{img.remove();hug.hidden=true;};img.src=hugUrl;hug.append(img);}
-   hug.hidden=!hug.querySelector('img');if(!hug.hidden)play(hug,[{opacity:0},{opacity:1}],{duration:1400,easing:'ease-out'});
+  at(4500,()=>{host.classList.add('hugging');f.sound?.('finaleTheme');caption(f,'');
+   creatures.forEach((c,i)=>play(c.querySelector('.finale-creature-art'),[{transform:'scale(1)'},{transform:'scale(1.07,.94)',offset:.4},{transform:'scale(1)'}],{duration:620,delay:i*90,easing:'ease-out'}));
    const hearts=host.querySelector('.finale-hearts');hearts.replaceChildren();
-   if(!still&&hug.hidden)for(let i=0;i<7;i++){const h=el('i','finale-heart');h.style.left=`${44+(i*7)%14}%`;hearts.append(h);play(h,[{opacity:0,transform:'translateY(0) scale(.5)'},{opacity:1,transform:'translateY(-40px) scale(1)',offset:.3},{opacity:0,transform:'translateY(-150px) scale(.8)'}],{duration:2400,delay:i*260,easing:'ease-out'});}});
+   if(!still)for(let i=0;i<9;i++){const h=el('i','finale-heart');h.style.setProperty('--off',`${((i%2?1:-1)*(16+(i*37)%120))}px`);hearts.append(h);play(h,[{opacity:0,transform:'translateY(0) scale(.5)'},{opacity:1,transform:'translateY(-50px) scale(1)',offset:.3},{opacity:0,transform:'translateY(-190px) scale(.8)'}],{duration:2600,delay:300+i*260,easing:'ease-out'});}});
+  // 5 · the hug illustration, when it is added, takes over the screen.
+  at(5600,()=>{const hug=host.querySelector('.finale-hug');
+   if(hugUrl&&!hug.querySelector('img')){const img=new Image();img.alt='Mr. Saymaz hugs the four little creatures';img.decoding='async';img.onerror=()=>{img.remove();hug.hidden=true;};img.src=hugUrl;hug.append(img);}
+   hug.hidden=!hug.querySelector('img');if(!hug.hidden)play(hug,[{opacity:0},{opacity:1}],{duration:1400,easing:'ease-out'});});
   f.onChange?.();
  }
  function showLine(){

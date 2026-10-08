@@ -8,7 +8,7 @@ Run `npm run test:v11` for the full dependency-free suite (all v10.5.1 checks pl
 - the Apps Script `Vixar_Saga` and `Vixar_Finale_Lines` tabs, `SAGA_SAVE` / `SAGA_SET` / `SAGA_LINES_SAVE`, Merge rows in Challenge_Log;
 - the Netlify messages for an older script;
 - the Level 11/12 art, its cache tag and the Level 10 fallback;
-- the saga art: Mr. Saymaz's portrait, five poses and six reveal frames (sizes read from the WebP headers), the fused teams' pictures and nine-pose sheets (hashes checked), the empty hug slot;
+- the saga art: Mr. Saymaz's portrait, five poses and six reveal frames (sizes read from the WebP headers), the fused teams' pictures and nine-pose sheets (hashes checked), the empty kneeling and hug slots;
 - the wiring (the class cap replaces Level 10 everywhere; the Rift gates every fight; build 11.0.0) and the light-effects rules.
 
 `npm run test:board` now also runs `board-v11.cjs` (board + phone in Chromium):
@@ -17,7 +17,7 @@ Run `npm run test:v11` for the full dependency-free suite (all v10.5.1 checks pl
 - a win (the escape, the reward panel, the cap rising next session, the row queued offline and saved after sign-in);
 - Level 11 (Mythic) and no chest above the cap;
 - Act III: the Edict, the Merge Spell from the board and the phone, the rescue, the second casting, a partial merge, Merge rows; Slyffindor's picture in the spell and in the fight, posed from its own sheet;
-- the Finale from the phone with the English voice, the six-frame reveal, Freed, Mr. Saymaz's portrait as the ally, Replay the Finale;
+- the Finale from the phone with the English voice, the six-frame reveal, the hug (the four Level 0 creatures in his open arms; their own pictures in Light mode too), Freed, Mr. Saymaz's portrait as the ally, Replay the Finale;
 - recovery mid-fight; Light mode with reduced motion; the Level 10 fallback; the phone panel's size;
 - Teacher Studio's Finale speech tab.
 

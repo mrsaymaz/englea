@@ -45,9 +45,9 @@ Nothing is saved: the preview keeps everything in that browser tab's memory, nev
 
 ## The fights
 
-**Act I · Violet.** The familiar Vixar fight. At the moment of victory the board celebrates, then freezes: the violet form shatters into crystal and an eye opens in a tear behind it. The reward panel shows "The Violet Form Is Broken" and each team's Level 11 form.
+**Act I · Violet.** The familiar Vixar fight. Each act opens with a title card (the act, the form's name and one line of story). At the moment of victory the board celebrates, then freezes like a film: the violet form shatters into crystal and Scarlet Vixar's face looks through a tear in the air. The reward ceremony shows "The Violet Form Is Broken" and each team's Level 11 form.
 
-**Act II · Scarlet.** Longer and tougher. Scarlet Vixar's **Scarlet Brand** marks one team for six seconds; while the mark is on, part of that team's damage heals Vixar, so the other teams carry the attack. The scarlet form shatters into embers and a gold crack appears.
+**Act II · Scarlet.** Longer and tougher. Scarlet Vixar's **Scarlet Brand** marks one team for six seconds; while the mark is on, part of that team's damage heals Vixar, so the other teams carry the attack. The arena is a crimson eclipse over obsidian spires. The scarlet form shatters into embers and Gilded Vixar looks through the tear.
 
 **Act III · Gilded.** Gilded Vixar can't be pushed below 70% until it casts the **Edict of Separation**. Then the **Merge Spell** begins:
 - Houses answer English questions from the class's islands in a fixed order: Gryffindor, Hufflepuff, Slytherin, Ravenclaw, then again. Each house needs 2 right answers for its pair to fuse (4 per pair).
@@ -56,7 +56,7 @@ Nothing is saved: the preview keeps everything in that browser tab's memory, nev
 - **Slyffindor** (Gryffindor + Slytherin) and **Huffleclaw** (Hufflepuff + Ravenclaw) fight as one stronger fighter each. A pair that did not fuse fights on as two teams.
 - Answer from the board or the phone. Every answer is logged in **Challenge_Log** (`Merge · …`).
 
-**The Finale** (after Act III): the gold cracks, the armour breaks, Mr. Saymaz breaks free of the cursed gown (its chains, violet bindings and gold faceplate shatter) and thanks the class line by line (one line per Continue), the board names up to three students from each house who carried it (contributions in the saga sessions, Island Run navigators, Merge Spell answers), the four creatures hug him, and a closing card shows the class and the date. Press Continue on the board or the phone. **English voice** reads the lines aloud with the device's English voice, if it has one.
+**The Finale** (after Act III): the gold cracks, the armour breaks, Mr. Saymaz breaks free of the cursed gown (its chains, violet bindings and gold faceplate shatter) and thanks the class line by line (one line per Continue), the board names up to three students from each house who carried it (contributions in the saga sessions, Island Run navigators, Merge Spell answers), the four Celestial creatures turn back into their Level 0 selves, run to him and jump into his arms, and a closing card shows the class and the date. Short captions tell the story between the steps. Press Continue on the board or the phone. **English voice** reads the lines aloud with the device's English voice, if it has one.
 
 After the Finale the class is **Freed**: Mr. Saymaz stands where the raid sigil was, as an ally. Tap him to replay the Finale (no fight).
 
@@ -64,10 +64,15 @@ After the Finale the class is **Freed**: Mr. Saymaz stands where the raid sigil 
 
 Edit what Mr. Saymaz says in the Finale for each grade: one line per Continue, 1 to 10 lines of up to 160 characters. **Use the default lines** restores the built-in speech. **Save online** writes the Vixar_Finale_Lines tab; other boards pick it up at the next sign-in.
 
+## Also in this build
+
+- **Every fighter faces Vixar** (and its opponent in the Arena).
+- **English Wheel cards no longer show point totals**, which can get very large. The card says "✓ Right: keep Level 5 and its points · ✗ Wrong: back to Level 4", and the result says "Hufflepuff gets to keep its Level 5 and its points!" or "Hufflepuff goes back to Level 4 and the points it had there."
+
 ## Old smart boards
 
 The new combat effects (damage numbers, sparks, hit-stop, the ground warning, shield shards, a small shake) animate only position and opacity, share the board's effects budget and stop when the scene pauses or the tab is hidden. **Light mode** or **reduced motion** shows the numbers still and plays the escapes and the Finale as still frames with the same results.
 
 ## The art
 
-Mr. Saymaz (portrait, five poses and a six-frame reveal in which he breaks free of the cursed gown) and the two fused creatures, Slyffindor and Huffleclaw (pictures and nine-pose sheets), are in this build. **Only the hug illustration is still to come:** until it is added, the hug step shows Mr. Saymaz with the four Level 12 creatures close around him. To add it, see **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams". Earlier guides are in `archive/`.
+Mr. Saymaz (portrait, five poses and a six-frame reveal in which he breaks free of the cursed gown) and the two fused creatures, Slyffindor and Huffleclaw (pictures and nine-pose sheets), are in this build. **Still to come:** Mr. Saymaz kneeling with his arms open, and the hug illustration. Until they are added, he bends down to the little creatures and holds them with his arms open. To add them, see **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams". Scarlet and Gilded Vixar fight as their full pictures; sharper pose sheets can be added later (same guide). Earlier guides are in `archive/`.

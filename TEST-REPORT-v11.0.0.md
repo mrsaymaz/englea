@@ -5,10 +5,22 @@ v11.0.0 is built on v10.5.1 (the supplied zip matched the repository's v10.5.1 e
 ## Tests
 
 - **`npm run test:v11`** (dependency-free): passes, 174 PASS lines. It includes every earlier suite and the new `v11.cjs` (17 checks): saga stages and caps, one advance per win, attempts, corrections and the merge of two copies; the Merge Spell engine (turn order, rescue, second casting, suggested student); the Finale names and lines; the Apps Script `Vixar_Saga` / `Vixar_Finale_Lines` tabs and Merge rows; the Netlify messages for an older script; the Level 10 art fallback and cache tags; the saga art (Mr. Saymaz's portrait, poses and six reveal frames, sizes read from the WebP headers; the fused teams' pictures and nine-pose sheets, hashes checked); the wiring; the light-effects rules.
-- **`npm run test:board`** (Chromium, board + phone): all twelve suites pass, 55 PASS lines (41 from the ten earlier suites, unchanged, plus 14 new). `board-preview.cjs` (3 checks) opens every act of the fight preview in Animated and Light mode, the Finale with example names and the launcher, and checks that the preview leaves the classes' saved data alone and calls no server except the access check. The new `board-v11.cjs` (11 checks) plays the saga end to end: the Rift hold, a loss, a win with the escape and the offline save, Level 11 the next session, Act III with the Merge Spell answered from the board and the phone (rescue, second casting, partial merge; Slyffindor's picture in the spell and its own poses in the fight), the Finale from the phone with the six-frame reveal, Freed with Mr. Saymaz's portrait as the ally, Replay, recovery mid-fight, Light mode with reduced motion, the Level 10 fallback, the phone panel on a 393 × 852 screen, and Teacher Studio's Finale speech tab.
+- **`npm run test:board`** (Chromium, board + phone): all twelve suites pass, 55 PASS lines (41 from the ten earlier suites, unchanged, plus 14 new). `board-preview.cjs` (3 checks) opens every act of the fight preview in Animated and Light mode, the Finale with example names and the launcher, and checks that the preview leaves the classes' saved data alone and calls no server except the access check. The new `board-v11.cjs` (11 checks) plays the saga end to end: the Rift hold, a loss, a win with the escape and the offline save, Level 11 the next session, Act III with the Merge Spell answered from the board and the phone (rescue, second casting, partial merge; Slyffindor's picture in the spell and its own poses in the fight), the Finale from the phone with the six-frame reveal and the hug (the four Level 0 creatures in Mr. Saymaz's open arms, their own pictures in Light mode too), Freed with Mr. Saymaz's portrait as the ally, Replay, recovery mid-fight, Light mode with reduced motion, the Level 10 fallback, the phone panel on a 393 × 852 screen, and Teacher Studio's Finale speech tab.
 - **`npm test`** (the original core suites): the older core runner stops at `students.cjs`, and `verify.cjs` and `resilience.cjs` fail on their own. **All three fail the same way on the untouched v10.5.1 code**: their expectations predate later versions (the phone's "Load islands" prompt, the "Next to invite" list, the contribution badge text, a DOM stub). `students.cjs` got two selector fixes here and now gets further; the rest is left as it was. The suites earlier in that runner (Island Run integration, Apps Script, participation, teamwork and others) pass. The v10.5.1 report also relied on `test:v105` and `test:board`, not this runner.
 - **`npm run test:finale`** (`vixar-finale.cjs`): passes.
 - Updated earlier tests: Level 10 expectations became the class cap where the saga changes them (pose clamp, halo anchors, recovery limits, version strings, the remote build). No earlier check was removed or skipped.
+
+## Visual review
+
+Every saga beat was captured frame by frame at 1366 × 768 in Animated and Light mode (title cards, the three fights, the escapes, the reward ceremonies, the Merge Spell and each step of the Finale) and checked by eye. Fixed on the way:
+- seams of light in the Finale's crack ran past the armour into the air (now drawn only across the armour, with a zigzag and small branches);
+- the Finale's dialogue box sat under the Continue button; the house banners covered the creatures and Mr. Saymaz; the closing card's title covered his face;
+- in Light mode the hug showed the house crests instead of the creatures (the Finale now uses the creatures' own pictures in every mode, one still picture each);
+- the escape's confetti fell in two columns only; the tear in the air read as a red gem (now a jagged tear with the next form's face looking through);
+- Act II's side volcanoes read as tents (now obsidian spires with molten seams);
+- the preview bar covered titles at the top centre (moved to the top-left corner).
+
+The wheel cards' new wording is checked by `board-v104.cjs` and `v104.cjs`.
 
 ## Found by the fight preview
 
@@ -42,6 +54,8 @@ No long tasks in any run; the worst frame was 33 ms (50 ms once, with effects on
 
 The Finale reveal (Mr. Saymaz's six frames cross-fading, then the flash), measured the same way over 7.5 seconds, twice: 60.1 fps both times, worst frame 17 ms, no long tasks. The frames are 640 × 1120 WebP (82–120 KB each) and load while the armour cracks. In Light mode the fused fighters stay still pictures, so their pose sheets are not downloaded.
 
+The rebuilt Finale, measured the same way (two runs): the crack 54.1 and 51.4 fps (three long tasks at its start, while the scene is built; worst frame 150 ms), the break 48.2 and 44.9 fps (worst frame 83 ms), the hug 59.1 and 58.8 fps (worst frame 83 ms). The backdrops are static pictures; only transforms, opacity and the crack's line drawing move.
+
 These are headless measurements, not a real smart board.
 
 ## Not covered
@@ -49,4 +63,4 @@ These are headless measurements, not a real smart board.
 - Physical smart boards and iPhone/Safari were not tested.
 - The Apps Script was tested with the repository's Apps Script harness, not a live Google Sheet.
 - The English voice uses the device's own speech voices (British English first, then any English voice). On a device with no English voice the browser picks its default voice or stays silent; the lines always stay on screen.
-- The hug illustration is a placeholder until the art is supplied; the empty slot downloads nothing.
+- Mr. Saymaz's kneeling pose and the hug illustration are not supplied yet; the hug plays with his other poses, and the empty slots download nothing.

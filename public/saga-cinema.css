@@ -218,3 +218,137 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 .merge-option:hover:not(:disabled) { border-color:#b45309; background:#fff; }
 .merge-option b { background:linear-gradient(180deg,#fcd34d,#b45309); color:#1c1917; font-family:var(--saga-display); }
 .merge-option:focus-visible { outline:3px solid #b45309; outline-offset:2px; }
+
+/* ---------------------------------------------------------------------------------------------------------------
+   The Finale. Colour script: the gold prison (the crack) → a white flash (the break) → dawn over open hills (the
+   reveal, the thank-you, the names) → golden light (the hug) → the storybook end card. Short captions tell the story
+   between the steps. Static pictures; only transforms and opacity move.
+   --------------------------------------------------------------------------------------------------------------- */
+.finale-sky { position:absolute; inset:0; background:#070401; }
+.finale-sky svg,.finale-light svg { position:absolute; inset:0; width:100%; height:100%; display:block; }
+.finale-light { background:#0f0c29; }
+.finale-light::after { content:''; position:absolute; inset:0; opacity:0; transition:opacity 1.8s ease;
+  background:radial-gradient(ellipse 60% 70% at 50% 58%,rgba(255,240,200,.6),rgba(253,186,116,.22) 40%,transparent 70%); }
+#saga-finale.hugging .finale-light::after { opacity:1; }
+.finale-rays { position:absolute; left:50%; top:calc(64% - min(75vw,1000px)); width:min(150vw,2000px); aspect-ratio:1; transform:translateX(-50%); opacity:0; transition:opacity 1.6s ease;
+  background:repeating-conic-gradient(from 0deg,rgba(255,247,220,.1) 0 2.5deg,transparent 2.5deg 11deg);
+  -webkit-mask-image:radial-gradient(circle,#000 0,rgba(0,0,0,.45) 22%,transparent 42%); mask-image:radial-gradient(circle,#000 0,rgba(0,0,0,.45) 22%,transparent 42%); }
+#saga-finale:not([data-step="crack"]) .finale-rays { opacity:.75; }
+#saga-finale.hugging .finale-rays { opacity:1; }
+.finale-motes { position:absolute; inset:0; overflow:hidden; opacity:0; transition:opacity 1.2s ease; pointer-events:none; }
+.finale-motes .saga-mote { background:radial-gradient(circle,#fffbeb 0 25%,#fcd34d 50%,rgba(245,158,11,0) 75%); animation-name:sagaDust; }
+.finale-floor { position:absolute; left:50%; bottom:8%; width:min(90vw,1200px); height:20%; transform:translateX(-50%); border-radius:50%; opacity:0; transition:opacity 1.4s ease;
+  background:radial-gradient(ellipse at center,rgba(255,220,160,.32),rgba(245,158,11,.1) 45%,transparent 70%); }
+#saga-finale:not([data-step="crack"]) .finale-motes,#saga-finale:not([data-step="crack"]):not([data-step="break"]) .finale-floor { opacity:1; }
+#saga-finale.still .finale-motes,body.performance-light #saga-finale .finale-motes { display:none; }
+@media (prefers-reduced-motion:reduce) { #saga-finale .finale-motes { display:none; } }
+
+/* The crack: seams of light run across the armour (masked to the armour), wider with each heartbeat; then the break */
+#saga-finale .finale-cracks { -webkit-mask:url("assets/animated/vixar-gilded-cracking.webp?v=11.0.0") center/100% 100% no-repeat; mask:url("assets/animated/vixar-gilded-cracking.webp?v=11.0.0") center/100% 100% no-repeat; }
+#saga-finale .finale-cracks path { fill:none; stroke-dasharray:100; stroke-dashoffset:100; stroke-linejoin:round; stroke-linecap:round; }
+#saga-finale .finale-cracks .glow path { stroke:#fcd34d; stroke-opacity:.42; stroke-width:9; }
+#saga-finale .finale-cracks .core path { stroke:#fffdf5; stroke-width:2.4; }
+#saga-finale .finale-cracks .glow .branch { stroke-width:6; } #saga-finale .finale-cracks .core .branch { stroke-width:1.6; }
+#saga-finale[data-beat="2"] .finale-cracks .glow path { stroke-width:14; } #saga-finale[data-beat="2"] .finale-cracks .core path { stroke-width:3.4; }
+#saga-finale[data-beat="2"] .finale-cracks .glow .branch { stroke-width:9; } #saga-finale[data-beat="2"] .finale-cracks .core .branch { stroke-width:2.2; }
+#saga-finale[data-beat="3"] .finale-cracks .glow path { stroke-width:20; stroke-opacity:.55; } #saga-finale[data-beat="3"] .finale-cracks .core path { stroke-width:4.6; }
+#saga-finale[data-beat="3"] .finale-cracks .glow .branch { stroke-width:12; } #saga-finale[data-beat="3"] .finale-cracks .core .branch { stroke-width:3; }
+.finale-boss-glow { position:absolute; inset:14% 26% 22%; border-radius:50%; opacity:.25; background:radial-gradient(circle,#fffbeb 0,rgba(253,230,138,.7) 30%,rgba(245,158,11,0) 70%); }
+#saga-finale[data-beat="3"] .finale-boss-glow { opacity:.5; }
+.finale-boss-pieces { position:absolute; inset:0; }
+.finale-piece { position:absolute; inset:0; will-change:transform,opacity; }
+.finale-piece img { width:100%; height:100%; object-fit:contain; display:block; }
+#saga-finale[data-step="break"] .finale-boss { opacity:1; }
+#saga-finale[data-step="break"] .finale-cracks,#saga-finale[data-step="break"] .finale-boss-glow { opacity:0; transition:opacity .15s ease; }
+#saga-finale:not([data-step="crack"]):not([data-step="break"]) .finale-boss { visibility:hidden; transition:none; }
+.finale-flash { position:absolute; inset:0; z-index:8; background:#fffdf5; opacity:0; pointer-events:none; }
+.finale-pillar { position:absolute; left:50%; top:-12%; bottom:0; width:min(28vw,320px); transform:translateX(-50%); transform-origin:50% 0; opacity:0; transition:opacity 1.4s ease;
+  background:linear-gradient(90deg,transparent,rgba(255,251,235,.45) 30%,rgba(255,255,255,.75) 50%,rgba(255,251,235,.45) 70%,transparent);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 80%,transparent); mask-image:linear-gradient(180deg,transparent,#000 18%,#000 80%,transparent); }
+#saga-finale[data-step="break"] .finale-pillar,#saga-finale[data-step="reveal"] .finale-pillar { opacity:.85; }
+#saga-finale[data-step="speech"] .finale-pillar { opacity:.18; }
+
+/* The captions between the steps */
+.finale-caption { position:absolute; left:50%; bottom:1.3rem; z-index:7; margin:0; transform:translateX(-50%); width:max-content; max-width:min(70vw,900px); padding:.55rem 3rem;
+  font-family:var(--saga-display); font-weight:700; font-size:clamp(1rem,1.9vw,1.55rem); letter-spacing:.08em; color:#fef3c7; text-align:center; text-shadow:0 2px 12px rgba(0,0,0,.85);
+  background:linear-gradient(90deg,transparent,rgba(12,6,18,.62) 18%,rgba(12,6,18,.62) 82%,transparent); opacity:0; transition:opacity .9s ease; pointer-events:none; }
+.finale-caption.on { opacity:1; }
+#saga-finale[data-step="speech"] .finale-caption,#saga-finale[data-step="names"] .finale-caption,#saga-finale[data-step="closing"] .finale-caption { display:none; }
+
+/* Mr. Saymaz and the creatures, standing on the ground in the dawn light */
+.finale-stage { transition:transform 1.8s cubic-bezier(.45,0,.2,1); }
+#saga-finale.hug-zoom .finale-stage { transform-origin:var(--zox) var(--zoy); transform:translate(var(--zx),var(--zy)) scale(1.55); }
+#saga-finale.hug-zoom[data-step="closing"] .finale-stage { transform:translate(var(--zx),var(--zy2)) scale(1.2); }
+.finale-teacher { transition:opacity 1s ease,transform .9s cubic-bezier(.2,.8,.2,1); z-index:2; transform-origin:50% 100%; }
+.finale-teacher::before { content:''; position:absolute; left:16%; right:16%; bottom:-1.6%; height:6%; border-radius:50%; background:radial-gradient(ellipse at center,rgba(20,6,16,.62),rgba(20,6,16,0) 70%); }
+#saga-finale[data-step="hug"] .finale-teacher { opacity:1; }
+#saga-finale[data-step="names"] .finale-teacher { transform:translateX(-50%) scale(.9); }
+.finale-creatures { left:50%; right:auto; bottom:2%; width:min(1240px,96vw); height:42%; transform:translateX(-50%); z-index:3;
+  display:grid; grid-template-columns:1fr 1fr minmax(220px,24%) 1fr 1fr; justify-items:center; align-items:end; }
+#saga-finale[data-step="hug"] .finale-creatures,#saga-finale[data-step="closing"] .finale-creatures { opacity:1; }
+.finale-creature { position:relative; width:min(15vw,200px); height:100%; margin:0; display:flex; align-items:flex-end; justify-content:center; transform-origin:50% 100%; transition:transform .6s ease; }
+.finale-creature:nth-child(2),.finale-creature:nth-child(3) { margin:0; }
+.finale-creature:nth-child(3) { grid-column:4; }
+.finale-creature::after { content:''; position:absolute; left:20%; right:20%; bottom:2%; height:7%; border-radius:50%; z-index:-1; background:radial-gradient(ellipse at center,rgba(20,6,16,.55),rgba(20,6,16,0) 70%); transition:opacity .3s ease; }
+#saga-finale[data-step="names"] .finale-creature { transform:scale(.66); }
+#saga-finale.cubs-home .finale-creature { transform:translateX(var(--home,0)); transition:none; }
+#saga-finale.kneeling .finale-creature { transition:none; }
+#saga-finale.kneeling .finale-creature::after { opacity:0; }
+.finale-creature-art { position:relative; flex:none; width:100%; height:100%; }
+.finale-creature-art > * { width:100%; height:100%; }
+.finale-creature:nth-child(n+3) .finale-creature-art > svg { transform:scaleX(-1); }
+.finale-creature-glow { position:absolute; left:50%; top:62%; width:120%; aspect-ratio:1; height:auto; transform:translate(-50%,-50%); border-radius:50%; opacity:0; pointer-events:none;
+  background:radial-gradient(circle,#fff 0,rgba(255,251,235,.9) 22%,color-mix(in srgb,var(--team-color) 45%,transparent) 48%,transparent 70%); }
+.finale-creature.is-baby .finale-creature-art { width:64%; height:auto; aspect-ratio:1; margin:0 auto 3%; }
+.finale-hearts { position:absolute; inset:0; pointer-events:none; z-index:5; }
+.finale-heart { position:absolute; left:calc(var(--hx,50%) + var(--off,0px)); top:calc(var(--hy,40%) - 60px); width:22px; height:20px; margin-left:-11px; opacity:0;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'><path fill='%23fb7185' d='M12 21C5 15 1 11 1 6.5 1 3.4 3.5 1 6.5 1c2.1 0 4.1 1.2 5.5 3 1.4-1.8 3.4-3 5.5-3C20.5 1 23 3.4 23 6.5 23 11 19 15 12 21z'/></svg>") center/contain no-repeat; }
+.finale-hug { position:absolute; inset:0; z-index:5; margin:0; display:block; }
+.finale-hug img { width:100%; height:100%; object-fit:cover; border-radius:0; display:block; }
+
+/* The dialogue box (above the controls) */
+.finale-dialogue { position:absolute; left:50%; bottom:5.4rem; z-index:6; width:min(980px,88vw); transform:translateX(-50%); padding:1.4rem 2.2rem 1.3rem; border-radius:12px; text-align:left;
+  background:linear-gradient(180deg,rgba(30,18,40,.94),rgba(12,8,20,.96)); border:2px solid #d4a017;
+  box-shadow:inset 0 0 0 4px rgba(12,8,20,.9),inset 0 0 0 5px rgba(253,230,138,.35),0 18px 50px rgba(0,0,0,.6); }
+.finale-speaker { position:absolute; left:1.6rem; top:-1.05rem; padding:.35rem 1.1rem; border-radius:6px; background:linear-gradient(180deg,#fde68a,#b45309); color:#1c1917;
+  font-family:var(--saga-display); font-weight:800; font-size:clamp(.78rem,1.2vw,.95rem); letter-spacing:.18em; text-transform:uppercase; box-shadow:0 4px 12px rgba(0,0,0,.4); }
+.finale-dialogue p { margin:0; font-family:var(--saga-body); font-weight:600; font-size:clamp(1.35rem,2.8vw,2.3rem); line-height:1.25; color:#fffbeb; }
+.finale-dialogue small { position:absolute; right:3.2rem; bottom:.55rem; font:700 .78rem var(--saga-body); color:#fcd34d; letter-spacing:.14em; }
+.finale-more { position:absolute; right:1.4rem; bottom:.7rem; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:11px solid #fcd34d; animation:sagaMore 1s ease-in-out infinite; }
+@keyframes sagaMore { 50% { transform:translateY(4px); } }
+#saga-finale.still .finale-more { animation:none; }
+
+/* The banners: two houses on each side of Mr. Saymaz, each creature under its own banner */
+.finale-names { top:2.5%; width:min(1240px,96vw); padding:0; border:0; border-radius:0; background:none; text-align:center; z-index:5; }
+.finale-kicker { margin:0; font-family:var(--saga-display); font-weight:700; font-size:clamp(.72rem,1.2vw,.95rem); letter-spacing:.5em; padding-left:.5em; color:#fcd34d; }
+.finale-names h2 { margin:.15rem 0 .8rem; font-family:var(--saga-display); font-weight:800; font-size:clamp(1.7rem,3.8vw,3.1rem); letter-spacing:.12em; text-transform:uppercase;
+  background:linear-gradient(180deg,#fffbeb,#fde68a 50%,#d97706); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 18px rgba(0,0,0,.5)); }
+.finale-name-grid { grid-template-columns:1fr 1fr minmax(220px,24%) 1fr 1fr; gap:clamp(.4rem,1.2vw,1rem); margin-top:0; }
+.finale-house:nth-child(3) { grid-column:4; }
+.finale-house { position:relative; padding:1.1rem .6rem 2.4rem; border:0; border-radius:0; clip-path:polygon(0 0,100% 0,100% 87%,50% 100%,0 87%);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--team-color) 62%,#140d04),color-mix(in srgb,var(--team-color) 28%,#0b0703));
+  box-shadow:inset 0 7px 0 #fcd34d,inset 0 9px 0 rgba(0,0,0,.35),inset 0 0 0 2px rgba(253,230,138,.35); }
+.finale-house h3 { margin:0 0 .4rem; font-family:var(--saga-display); font-weight:800; font-size:clamp(.78rem,1.25vw,1rem); letter-spacing:.2em; color:#fffbeb; }
+.finale-person { margin-top:.45rem; }
+.finale-person strong { font-family:var(--saga-display); font-weight:700; font-size:clamp(.92rem,1.55vw,1.28rem); color:#fff; letter-spacing:.03em; }
+.finale-person small,.finale-house-all { color:#fde68a; font-family:var(--saga-body); font-size:clamp(.66rem,.95vw,.76rem); }
+
+/* The end card: the camera pulls back a little; the words sit in the sky above them */
+#saga-finale[data-step="closing"]::after { content:''; position:absolute; inset:0; z-index:6; pointer-events:none; background:linear-gradient(180deg,rgba(10,6,24,.82),rgba(10,6,24,.5) 34%,rgba(10,6,24,0) 52%); }
+.finale-closing { top:4%; width:min(1100px,94vw); padding:0; border:0; border-radius:0; background:none; z-index:7; text-align:center; }
+.finale-ornament { width:min(40vw,360px); height:18px; display:block; margin:0 auto .5rem; overflow:visible; }
+.finale-ornament path { fill:none; stroke:#fcd34d; stroke-width:1.5; } .finale-ornament .gem { fill:#fcd34d; stroke:#fffbeb; }
+.finale-closing-title { margin:.2rem 0 .1rem; font-family:var(--saga-display); font-weight:900; font-size:clamp(1.9rem,5vw,4.4rem); line-height:1.05; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+  background:linear-gradient(180deg,#fffbeb,#fde68a 45%,#d97706); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 6px 24px rgba(0,0,0,.55)); }
+.finale-closing-line { margin:.1rem 0 0; font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:clamp(1.15rem,2.2vw,1.8rem); color:#fef3c7; font-weight:400; }
+.finale-date { margin-top:.3rem; font:700 .85rem var(--saga-body); letter-spacing:.2em; color:#fcd34d; }
+.finale-the-end { margin-top:.7rem; font-family:var(--saga-display); font-weight:700; font-size:clamp(.8rem,1.3vw,1rem); letter-spacing:.6em; padding-left:.6em; color:#fde68a; text-transform:uppercase; }
+.finale-the-end::before,.finale-the-end::after { content:''; display:inline-block; width:3rem; height:1px; margin:0 1rem; vertical-align:middle; background:#fcd34d; }
+/* Controls */
+.finale-controls { z-index:9; }
+.finale-step { font-family:var(--saga-display); letter-spacing:.2em; }
+.finale-continue { font-family:var(--saga-display); font-weight:800; letter-spacing:.14em; border-radius:999px; padding:.75rem 1.5rem; background:linear-gradient(180deg,#b45309,#78350f); border-color:#fcd34d; }
+/* Each creature looks toward Mr. Saymaz, whichever way its picture was drawn */
+#saga-finale .finale-creature .animated-avatar { transform:none; }
+#saga-finale .finale-creature:nth-child(-n+2) .animated-avatar[data-native-facing="left"],
+#saga-finale .finale-creature:nth-child(n+3) .animated-avatar[data-native-facing="right"] { transform:scaleX(-1); }

@@ -1,13 +1,14 @@
 {
   "version": "11.0.0",
-  "howTo": "Put each picture in this folder (public/assets/saga/) and write its file name below, then reload the board. A slot left as null keeps the built-in placeholder, and nothing is downloaded for it.",
+  "howTo": "Put each picture in this folder (public/assets/saga/) and write its file name below, then reload the board. A slot left as null keeps the built-in placeholder, and nothing is downloaded for it. kneel: Mr. Saymaz kneeling with his arms open (640 × 1120, same framing as his other poses), used in the hug. hug: the hug illustration (about 1600 × 900), shown full-screen at the end of the hug.",
   "mrSaymaz": {
     "portrait": "mr-saymaz-portrait.webp",
     "ready": "mr-saymaz-ready.webp",
     "proud": "mr-saymaz-proud.webp",
     "support": "mr-saymaz-support.webp",
     "wave": "mr-saymaz-wave.webp",
-    "bow": "mr-saymaz-bow.webp"
+    "bow": "mr-saymaz-bow.webp",
+    "kneel": null
   },
   "reveal": [
     "mr-saymaz-reveal-01-bound.webp",
