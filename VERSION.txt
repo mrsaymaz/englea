@@ -4,5 +4,5 @@ v11.0.0: The Vixar Saga. Each class fights three forms of Vixar across the term 
 
 Apps Script update: deploy GOOGLE-APPS-SCRIPT-v11.0.0.gs as a New version of the existing web app (adds the Vixar_Saga and Vixar_Finale_Lines tabs).
 No new Netlify or Cloudflare environment variables.
-Art still to be added: the hug illustration only (slot in public/assets/saga/manifest.json; a placeholder until then).
+Art still to be added (labelled placeholders under the final names, never shown on the board): public/assets/saga/mr-saymaz-kneel.webp and hug.webp; optional sharper Scarlet and Gilded Vixar poses in art/vixar-poses/ (packed with node art/pack-vixar-poses.cjs). Replace each file with the real picture under the same name.
 Read START-HERE-v11.0.0.md and TEST-REPORT-v11.0.0.md.

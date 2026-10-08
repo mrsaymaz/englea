@@ -12,7 +12,7 @@
    8. Light mode and reduced motion run the escape and the Finale to the same result.
    9. A Level 11 avatar that fails to load shows the Level 10 form; the phone's saga panel fits an iPhone 14 Pro screen.
   10. Teacher Studio's Finale speech tab: per-grade lines, checked, saved online and used by the board. */
-const assert=require('assert/strict'),fs=require('fs');
+const assert=require('assert/strict'),fs=require('fs'),path=require('path');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
@@ -132,20 +132,25 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await board.screenshot({path:'output/v11-fused-fight.png'});
   console.log(`PASS second casting and a partial merge: Slyffindor fused (its picture in the spell and the fight, posed from its own sheet); ${mergeRows.length} Merge answers logged for Google Sheets (no duplicate IDs)`);
 
-  // 6. The Finale from the phone.
+  // 6. The Finale from the phone. Here the kneeling pose and the hug illustration are full size (stand-ins for the art
+  // still to come), so the board uses them; the Light-mode run below gets the shipped half-size placeholders and skips them.
+  const pub=f=>fs.readFileSync(path.join(__dirname,'../public',f));
+  await board.route('**/assets/saga/mr-saymaz-kneel.webp*',r=>r.fulfill({contentType:'image/webp',body:pub('assets/saga/mr-saymaz-support.webp')}));
+  await board.route('**/assets/saga/hug.webp*',r=>r.fulfill({contentType:'image/webp',body:pub('assets/animated/vixar-gilded.webp')}));
   await board.evaluate(()=>__qa.raidThreshold());await board.waitForFunction(()=>__qa.sagaState().finale,null,{timeout:20000});
   await phone.waitForFunction(()=>document.getElementById('mobile-saga-live').dataset.mode==='finale');
   await tap(phone,'#mobile-saga-live button','English voice: off');await board.waitForFunction(()=>__qa.sagaState().finale?.voice===true);
   const steps=[];let revealSeen=null,hugSeen=null;for(let i=0;i<20;i++){const v=(await saga()).finale;if(!v)break;steps.push(v.step+(v.line?':'+v.line:''));
    if(v.step==='reveal'){await board.waitForFunction(()=>LeagueSagaScenes.finale.view()?.reveal?.frame>=4,null,{timeout:8000});revealSeen=await board.evaluate(()=>({view:LeagueSagaScenes.finale.view().reveal,frames:[...document.querySelectorAll('.finale-reveal-frame')].map(f=>f.src.replace(/^.*\/|\?.*$/g,'')),loaded:[...document.querySelectorAll('.finale-reveal-frame')].every(f=>f.naturalWidth===640)}));await board.screenshot({path:'output/v11-finale-reveal.png'});}
-   if(v.step==='hug'){await board.waitForFunction(()=>document.getElementById('saga-finale').classList.contains('hugging'),null,{timeout:9000});await wait(900);
+   if(v.step==='hug'){await board.waitForFunction(()=>document.getElementById('saga-finale').classList.contains('hugging'),null,{timeout:9000});
+    await board.waitForFunction(()=>{const h=document.querySelector('.finale-hug');return h&&!h.hidden&&h.querySelector('img')?.complete;},null,{timeout:6000});
     hugSeen=await board.evaluate(()=>({levels:[...document.querySelectorAll('.finale-creature.is-baby .animated-avatar')].map(a=>a.dataset.avatarLevel),zoom:document.getElementById('saga-finale').classList.contains('hug-zoom'),
-     pose:document.querySelector('.finale-teacher .saga-teacher-art').dataset.pose,inArms:[...document.querySelectorAll('.finale-creature')].every(c=>/scale/.test(c.style.transform))}));
+     pose:document.querySelector('.finale-teacher .saga-teacher-art').dataset.pose,kneelSrc:/mr-saymaz-kneel\.webp/.test(document.querySelector('.finale-teacher .saga-teacher-art img').src),hug:/hug\.webp/.test(document.querySelector('.finale-hug img')?.src||''),inArms:[...document.querySelectorAll('.finale-creature')].every(c=>/scale/.test(c.style.transform))}));
     await board.screenshot({path:'output/v11-finale-hug.png'});}
    await phone.waitForFunction(()=>document.querySelector('#mobile-saga-live button.primary'));await tap(phone,'#mobile-saga-live button.primary','');await wait(250);
    if(v.step==='names'){await board.screenshot({path:'output/v11-finale-names.png'});}}
   assert.deepEqual(steps.filter(x=>!x.startsWith('speech:')),['crack','break','reveal','names','hug','closing']);assert(steps.filter(x=>x.startsWith('speech:')).length>=4,'each speech line is one Continue');
-  assert.deepEqual(hugSeen,{levels:['0','0','0','0'],zoom:true,pose:'support',inArms:true},'the four creatures turn back into their Level 0 selves and jump into his open arms');assert.equal(revealSeen.frames.length,6);assert.match(revealSeen.frames[0],/bound/);assert.equal(revealSeen.loaded,true,'every reveal frame was ready');assert.equal(revealSeen.view.frames,6);
+  assert.deepEqual(hugSeen,{levels:['0','0','0','0'],zoom:true,pose:'kneel',kneelSrc:true,hug:true,inArms:true},'the four creatures turn back into their Level 0 selves and jump into his arms as he kneels; the hug illustration follows');assert.equal(revealSeen.frames.length,6);assert.match(revealSeen.frames[0],/bound/);assert.equal(revealSeen.loaded,true,'every reveal frame was ready');assert.equal(revealSeen.view.frames,6);
   s=await saga();assert.equal(s.finale,null);assert.equal(await board.evaluate(()=>LeagueSaga.stageOf('5-A')),'Freed');
   assert.equal(await board.evaluate(()=>document.querySelector('#vixar-raid-btn .saga-ally-portrait img')?.src.includes('mr-saymaz-portrait.webp')),true,'Mr. Saymaz’s portrait as the ally');
   assert.equal(await board.evaluate(()=>document.getElementById('vixar-raid-btn').classList.contains('saga-ally')),true,'the epilogue ally sits where the sigil was');
@@ -153,7 +158,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await tap(phone,'#mobile-saga-panel button','Replay the Finale');await board.waitForFunction(()=>__qa.sagaState().finale?.replay===true);
   await board.evaluate(()=>LeagueScenes.skip());assert.equal((await saga()).finale.step,'closing');await board.evaluate(()=>__qa.finaleNext());
   assert.equal(await board.evaluate(()=>LeagueSaga.stageOf('5-A')),'Freed');assert.equal(await board.evaluate(()=>__qa.state().raid),null,'no fight');
-  console.log(`PASS the Finale from the phone (${steps.length} steps, English voice on; the reveal reached frame ${revealSeen.view.frame} of 6 before Continue; in the hug the four Level 0 creatures jump into his open arms), 5-A is Freed, Mr. Saymaz’s portrait appears as the ally, and Replay the Finale plays it again with no fight`);
+  console.log(`PASS the Finale from the phone (${steps.length} steps, English voice on; the reveal reached frame ${revealSeen.view.frame} of 6 before Continue; in the hug the four Level 0 creatures jump into his arms as he kneels, then the hug illustration), 5-A is Freed, Mr. Saymaz’s portrait appears as the ally, and Replay the Finale plays it again with no fight`);
 
   // 7. Recovery: the Rift survives a reload; a reload mid-fight is not an attempt.
   await board.evaluate(()=>{LeagueScenes.cancel();__qa.reset({saveUndo:false,clearUndo:true,message:'Next lesson'});__qa.saga('Scarlet');__qa.seed(11,1000);__qa.setMission(true);__qa.startRaid();});
@@ -176,13 +181,13 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await again.evaluate(()=>__qa.raidThreshold());await again.waitForFunction(()=>__qa.sagaState().finale,null,{timeout:20000});
   assert.equal(await again.evaluate(()=>document.getElementById('saga-finale').classList.contains('still')),true,'still frames');
   const stillSteps=[];let stillReveal=null,stillHug=null;for(let i=0;i<20;i++){const v=(await again.evaluate(()=>__qa.sagaState())).finale;if(!v)break;stillSteps.push(v.step);
-   if(v.step==='hug')stillHug=await again.evaluate(()=>({pictures:[...document.querySelectorAll('.finale-creature.is-baby img.animated-sprite')].map(i=>i.src.replace(/^.*\/|\?.*$/g,'')),crests:document.querySelectorAll('.finale-creature svg').length,zoom:document.getElementById('saga-finale').classList.contains('hug-zoom')}));
+   if(v.step==='hug')stillHug=await again.evaluate(()=>({pictures:[...document.querySelectorAll('.finale-creature.is-baby img.animated-sprite')].map(i=>i.src.replace(/^.*\/|\?.*$/g,'')),crests:document.querySelectorAll('.finale-creature svg').length,zoom:document.getElementById('saga-finale').classList.contains('hug-zoom'),pose:document.querySelector('.finale-teacher .saga-teacher-art').dataset.pose,hug:!document.querySelector('.finale-hug').hidden}));
    if(v.step==='reveal'){const first=v.reveal,src=await again.evaluate(()=>document.querySelector('.finale-reveal-frame')?.src.replace(/^.*\/|\?.*$/g,''));await again.waitForFunction(()=>!document.querySelector('.finale-reveal'),null,{timeout:5000});stillReveal={first,src,after:await again.evaluate(()=>LeagueSagaScenes.finale.view().reveal)};}
    await again.evaluate(()=>__qa.finaleNext());}
   assert.deepEqual(stillReveal.first,{frame:1,frames:1});assert.match(stillReveal.src,/identity-revealed/);assert.equal(stillReveal.after,null,'then the standing pose');
   assert.deepEqual([...new Set(stillSteps)],['crack','break','reveal','speech','names','hug','closing']);
-  assert.deepEqual(stillHug,{pictures:['gryffindor-0.webp','slytherin-0.webp','hufflepuff-0.webp','ravenclaw-0.webp'],crests:0,zoom:true},'the hug shows the creatures’ own Level 0 pictures in Light mode too');
-  console.log('PASS Light mode with reduced motion: the escape ends on the same reward, and the Finale keeps every step as still frames (the reveal shows the identity frame, then Mr. Saymaz standing; the hug shows the creatures’ Level 0 pictures in his arms)');
+  assert.deepEqual(stillHug,{pictures:['gryffindor-0.webp','slytherin-0.webp','hufflepuff-0.webp','ravenclaw-0.webp'],crests:0,zoom:true,pose:'support',hug:false},'the hug shows the creatures’ own Level 0 pictures in Light mode too; the half-size placeholders are skipped');
+  console.log('PASS Light mode with reduced motion: the escape ends on the same reward, and the Finale keeps every step as still frames (the reveal shows the identity frame, then Mr. Saymaz standing; the hug shows the creatures’ Level 0 pictures in his arms and skips the placeholder art)');
 
   // 9. Art fallback and the phone panel's size.
   const p3=await e.page(ctx);await p3.route('**/assets/animated/gryffindor-11.webp*',r=>r.fulfill({status:404,body:''}));

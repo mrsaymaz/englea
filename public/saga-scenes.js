@@ -276,7 +276,8 @@
   host.querySelector('.finale-teacher').append(teacherArt('ready'));
   finale.reveal=preloadReveal(still);
   // The hug's poses load while the armour cracks, so they are ready when he bends down and opens his arms.
-  if(!still)for(const url of [teacherUrl('bow'),teacherUrl('support'),artUrl(manifest.mrSaymaz?.kneel)])if(url){const img=new Image();img.decoding='async';img.src=url;}
+  if(!still)for(const url of [teacherUrl('bow'),teacherUrl('support')])if(url){const img=new Image();img.decoding='async';img.src=url;}
+  finale.kneelArt=slotArt(artUrl(manifest.mrSaymaz?.kneel),KNEEL_MIN);finale.hugArt=slotArt(artUrl(manifest.hug),HUG_MIN);
   const creatures=host.querySelector('.finale-creatures');
   for(const t of options.teams||[]){const c=el('div','finale-creature');c.dataset.house=t.id;c.style.setProperty('--team-color',t.color);c.innerHTML=`<div class="finale-creature-art">${t.markup||''}</div><i class="finale-creature-glow"></i>`;creatures.append(c);}
   host.querySelector('.finale-continue').onclick=()=>next();
@@ -387,13 +388,17 @@
  // ---- The hug: the four Celestial creatures glow and turn back into their Level 0 selves, run to Mr. Saymaz, he bends
  // down to them, opens his arms, the camera moves in and the little ones jump into his arms. About six seconds; Light
  // mode and reduced motion show the last frame at once (instant: the same, for Skip and the closing card).
- // Two pictures replace the stand-ins when they are added (manifest: mrSaymaz.kneel, then hug).
+ // Two pictures replace the stand-ins when they are added (manifest: mrSaymaz.kneel, then hug). The build ships half-size
+ // placeholders under those names, with their names written on them; the board skips a picture under the minimum
+ // width and keeps the stand-ins, so the real picture only has to replace the file. Both load while the Finale runs.
+ const KNEEL_MIN=480,HUG_MIN=1000;
+ function slotArt(url,min){const r={ok:false,src:null};if(!url)return r;const img=new Image();img.decoding='async';img.onload=()=>{r.ok=img.naturalWidth>=min;r.src=r.ok?url:null;};img.src=url;return r;}
  // Where each little one lands, as fractions of his picture (640 × 1120): two in front at his waist, two at his shoulders.
  const ARMS={gryffindor:{x:.37,y:.45,h:.21,z:4},hufflepuff:{x:.64,y:.46,h:.21,z:4},slytherin:{x:.27,y:.31,h:.2,z:3},ravenclaw:{x:.74,y:.3,h:.2,z:3}};
  const KNEEL_DROP=.22; // a kneeling picture holds them lower
  function hugScene(f,instant=false){
   const host=f.host,stage=host.querySelector('.finale-stage'),box=host.querySelector('.finale-teacher'),teacher=host.querySelector('.saga-teacher-art'),creatures=[...host.querySelectorAll('.finale-creature')];
-  const still=f.still||instant,kneel=artUrl(manifest.mrSaymaz?.kneel),hugUrl=artUrl(manifest.hug);
+  const still=f.still||instant,kneel=f.kneelArt?.src||null,hugUrl=f.hugArt?.src||null;
   const at=(ms,fn)=>{if(still){fn();return;}after(()=>{if(finale===f&&['hug','closing'].includes(STEPS[f.step]))fn();},ms);};
   f.hugDone=true;host.classList.remove('cubs-home','hugging','kneeling','hug-zoom');
   creatures.forEach(c=>{c.style.transform='';c.style.transformOrigin='';c.style.zIndex='';});

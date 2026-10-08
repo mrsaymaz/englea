@@ -30,7 +30,7 @@ Team and Vixar state orders are unchanged (teams: `ready`, `attack`, `guard`, `h
 - **Cache tags:** the new pictures load with `?v=11.0.0`; the v10.5.0 sheets keep `?v=10.5.0`, so boards that already have them do not download them again.
 - **Fallback:** if a Level 11 or 12 avatar or sheet fails to load, the board shows the Level 10 picture of the same team instead of a gap.
 - Scarlet and Gilded Vixar always use their pictures, in every mode. The Violet form keeps the Light mode drawing as before.
-- **Scarlet and Gilded Vixar fight as their full pictures, without pose sheets.** Their sheets (448 px cells) look soft on a large board, so `poses:false` in `public/vixar-saga.js` switches them off; the board shows the sharp 1100 × 890 picture with the fight's own motion (charge, hits, guard). The sheets stay in the build. To use sharper sheets: supply nine images per form (ready, charge, cast, guard, exposed, hit, ultimate, defeat, proud), each about 1254 × 1254 with the same framing as the base picture, pack them with `art/pack-poses.cjs`, then set `poses:true`.
+- **Scarlet and Gilded Vixar fight as their full pictures, without pose sheets.** Their sheets (448 px cells) look soft on a large board, so `poses:false` in `public/vixar-saga.js` switches them off; the board shows the sharp 1100 × 890 picture with the fight's own motion (charge, hits, guard). The sheets stay in the build. For sharper sheets, `art/vixar-poses/` holds 18 labelled placeholders under their final names (`vixar-scarlet-ready.png` … `vixar-gilded-proud.png`): replace them with the real pictures (about 1254 × 1254, transparent, framed like the base picture) and run `node art/pack-vixar-poses.cjs scarlet` (or `gilded`). It packs a 3 × 3 sheet of 640 px cells, refuses placeholders and switches the form's poses on. See `art/vixar-poses/README.md`.
 - **Every fighter faces Vixar.** The creatures on the left look right and those on the right look left. A few pictures were drawn looking left (Gryffindor Levels 0–2, Slytherin Level 0); `animated-mode.js` marks them (`data-native-facing`) and the fight flips them when needed. The Finale uses the same marks so every creature looks toward Mr. Saymaz.
 - `public/creature-studio.html` previews Levels 0–12, the three Vixar forms and the two fused creatures.
 
@@ -49,10 +49,10 @@ The saga's own pictures are listed in **`public/assets/saga/manifest.json`**. Th
 | `mrSaymaz.proud` | `mr-saymaz-proud.webp` | while the names are shown, and in the speech |
 | `mrSaymaz.support`, `mrSaymaz.wave` | `mr-saymaz-support.webp`, `mr-saymaz-wave.webp` | the speech (the poses take turns line by line); `support` (arms open) also holds the little creatures in the hug and the closing card until `kneel` is added |
 | `mrSaymaz.bow` | `mr-saymaz-bow.webp` | the hug: he bends down to the little creatures at his feet |
-| `mrSaymaz.kneel` | — (still to come) | the hug: kneeling with his arms open; replaces `support` there |
+| `mrSaymaz.kneel` | `mr-saymaz-kneel.webp`: **placeholder** (half size, labelled) | the hug: kneeling with his arms open; replaces `support` there once the real picture is in |
 | `reveal` (six frames) | `mr-saymaz-reveal-01-bound.webp` … `-06-identity-revealed.webp`, 640 × 1120 | the Finale reveal: bound in the cursed gown, the chains and violet bindings break, the gold faceplate cracks, his face is revealed |
 | `merged.slyffindor`, `merged.huffleclaw` | `slyffindor.webp`, `huffleclaw.webp`, 512 × 512 | the Merge Spell when a pair fuses, and the fused fighter in Act III |
-| `hug` | — (still to come) | the end of the hug, full screen |
+| `hug` | `hug.webp`: **placeholder** (half size, labelled) | the end of the hug, full screen, once the real picture is in |
 
 All Mr. Saymaz pictures share one canvas (1024 × 1792 in the art pack, shoes on the same line), so the board shows every pose and reveal frame in the same box with no jump; they were only scaled, never trimmed. The reveal frames cross-fade (opacity only) while he fades in, then a soft flash covers the change from the gown to his own clothes. Light mode and reduced motion show the identity frame, then the standing pose. The frames load while the armour cracks, so they are ready when the reveal starts.
 
@@ -62,7 +62,7 @@ All Mr. Saymaz pictures share one canvas (1024 × 1792 in the art pack, shoes on
 - `mrSaymaz.kneel`: Mr. Saymaz kneeling on one knee with his arms open wide, smiling down. Same canvas and framing as his other poses (1024 × 1792 in the art pack, 640 × 1120 on the board, transparent background, his knee and shoe on the same ground line as the standing poses). With it, the little ones land in his arms lower down.
 - `hug`: the four Level 0 creatures (lion cub, little snake, bear cub, eaglet) in Mr. Saymaz's arms as he kneels and hugs them, in the board's style, about 1600 × 900 with its own warm background. It fades in full screen after they jump into his arms and stays behind the closing card.
 
-Put each file in `public/assets/saga/` and write its name in its slot, for example `"kneel": "mr-saymaz-kneel.webp"` and `"hug": "hug.webp"`. Light mode and reduced motion show the last frame of the hug at once.
+Both files are in the build as labelled half-size placeholders (`mr-saymaz-kneel.webp`, 320 × 560; `hug.webp`, 800 × 450), and the slots already name them. The board skips a kneeling picture under 480 px wide and a hug picture under 1000 px wide, so the placeholders are never shown in class: replace each file with the real picture under the same name (as WebP, or keep the extension you use and change the name in the slot), deploy and reload. Light mode and reduced motion show the last frame of the hug at once.
 
 To replace any picture: keep the file name or write the new one in its slot, deploy and reload. A missing Mr. Saymaz pose falls back to `ready`; a picture that fails to load falls back to the placeholder.
 

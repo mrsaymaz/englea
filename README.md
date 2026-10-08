@@ -15,7 +15,7 @@ Vixar is no longer one fight. Each class now plays its own three-act saga across
 
 **Upgrading from v10.5.1:** paste **GOOGLE-APPS-SCRIPT-v11.0.0.gs** into the Apps Script editor and deploy it as a **New version** of the existing web app. It adds two tabs (**Vixar_Saga**, **Vixar_Finale_Lines**) and logs Merge Spell answers in **Challenge_Log**. No new Netlify or Cloudflare environment variables. Then deploy the whole project and reload the board and the phone (both show **v11.0.0**).
 
-**Art still to come:** Mr. Saymaz kneeling with his arms open, the hug illustration, and (optional) sharper pose sheets for Scarlet and Gilded Vixar. Until then the hug plays with his other poses, and the two forms fight as their full pictures. See **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams".
+**Art still to come (placeholders in the build):** Mr. Saymaz kneeling with his arms open (`public/assets/saga/mr-saymaz-kneel.webp`), the hug illustration (`public/assets/saga/hug.webp`) and, optionally, sharper Scarlet and Gilded Vixar poses (`art/vixar-poses/`, 18 pictures). Each placeholder is a labelled half-size picture under its final name; the board never shows them. Replace a file with the real picture under the same name. Until then the hug plays with his other poses, and the two forms fight as their full pictures. See **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams".
 
 ## Verification
 
