@@ -20,7 +20,8 @@ window.__qa={
  // v11.0.0: every fight belongs to a class's Vixar Saga and opens only with the Rift. saga() puts the class at a stage
  // (a fresh row) with the Rift open; raid() starts the fight of that stage.
  saga(stage='Violet',className='5-A'){if(selectedClass!==className)setSessionClass(className);document.querySelectorAll('dialog[open]').forEach(d=>d.close());LeagueSaga.reset();if(stage!=='Violet')LeagueSaga.setStage(className,stage,{note:'test'});sagaSessionWin=null;riftOpen=true;updateGameState(true);},
- raid(mission=true,stage='Violet'){this.saga(stage,selectedClass||'5-A');Object.assign(classMission,{completed:mission,rewardGranted:mission,progress:mission?15:0});updateClassMissionUI();startVixarRaid();},
+ raid(mission=true,stage='Violet'){this.saga(stage,selectedClass||'5-A');this.setMission(mission);startVixarRaid();},
+ setMission(done=true){Object.assign(classMission,{completed:done,rewardGranted:done,progress:done?15:0});updateClassMissionUI();},startRaid:()=>startVixarRaid(),
  sagaState(){return {rift:riftOpen,cap:levelCap(),row:LeagueSaga.get(selectedClass),win:sagaSessionWin,fought:sagaFoughtToday(),sigil:document.getElementById('vixar-raid-btn').classList.contains('visible'),
   merge:vixarRaidState?.merge?{done:vixarRaidState.merge.done,success:vixarRaidState.merge.success,casting:vixarRaidState.merge.casting,turn:vixarRaidState.merge.turn,card:vixarRaidState.mergeCard&&{id:vixarRaidState.mergeCard.id,answer:vixarRaidState.mergeCard.answer},outcome:Boolean(vixarRaidState.mergeOutcome),student:vixarRaidState.mergeStudent,pairs:vixarRaidState.merge.pairs,log:vixarRaidState.merge.log.length}:null,
   fused:vixarRaidState?.mergedPairs||[],edict:Boolean(vixarRaidState?.edictCast),act:vixarRaidState?.act?.stage||null,finale:LeagueSagaScenes.finale.view(),escaping:LeagueSagaScenes.escaping,

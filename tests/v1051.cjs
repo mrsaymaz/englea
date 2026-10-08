@@ -3,7 +3,7 @@
    - The pose layer is square and fitted by CSS (aspect-ratio), so showing a pose never measures the page; older
      browsers without aspect-ratio still measure once.
    (A pre-scaled runner sprite cache was tried and measured: the runner's pose drawing costs about 0.1 ms per frame,
-   so it gained nothing and was left out. See ../TEST-REPORT-v10.5.1.md.)
+   so it gained nothing and was left out. See ../archive/TEST-REPORT-v10.5.1.md.)
    Browser checks: board-v1051.cjs. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 let checks=0;const test=async(name,fn)=>{await fn();checks++;console.log('PASS '+name);};

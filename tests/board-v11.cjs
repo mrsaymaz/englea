@@ -10,7 +10,8 @@
    6. The Finale from the phone (Continue, the English voice), Freed, the epilogue ally, Replay the Finale (no fight).
    7. Session recovery keeps the Rift; a reload mid-fight counts no attempt.
    8. Light mode and reduced motion run the escape and the Finale to the same result.
-   9. A Level 11 avatar that fails to load shows the Level 10 form; the phone's saga panel fits an iPhone 14 Pro screen. */
+   9. A Level 11 avatar that fails to load shows the Level 10 form; the phone's saga panel fits an iPhone 14 Pro screen.
+  10. Teacher Studio's Finale speech tab: per-grade lines, checked, saved online and used by the board. */
 const assert=require('assert/strict'),fs=require('fs');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -42,11 +43,11 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await board.evaluate(()=>__qa.seed(10,1000));await board.waitForFunction(()=>__qa.sagaState().sigil);
   await phone.waitForFunction(()=>document.getElementById('mobile-saga-panel').innerText.includes('Level 10: 4 of 4 teams'));
   await tap(phone,'#mobile-saga-panel button','Close the Rift');await board.waitForFunction(()=>!__qa.sagaState().rift&&!__qa.sagaState().sigil);
-  await phone.waitForSelector('#mobile-saga-panel .saga-hold');await hold(1700);await board.waitForFunction(()=>__qa.sagaState().sigil);
+  await phone.waitForSelector('#mobile-saga-panel .saga-hold',{state:'attached'});await hold(1700);await board.waitForFunction(()=>__qa.sagaState().sigil);
   console.log('PASS the Rift: a short tap does nothing; a 1.5 s hold opens it; the sigil appears only with every team at Level 10; close and reopen');
 
   // 2. A loss.
-  await board.evaluate(()=>{__qa.studentAward('gryffindor','5-A:gryffindor:0');Object.assign(classMission,{completed:false,rewardGranted:false,progress:0});updateClassMissionUI();document.getElementById('vixar-raid-btn').click();});
+  await board.evaluate(()=>{__qa.studentAward('gryffindor','5-A:gryffindor:0');__qa.setMission(false);document.getElementById('vixar-raid-btn').click();});
   await board.waitForFunction(()=>__qa.state().raid?.running);await board.evaluate(()=>LeagueScenes.skip());
   await board.waitForFunction(()=>__qa.sagaState().result);
   let s=await saga();assert.equal(s.result,'The Empty Crown Endures');assert.equal(s.row.stage,'Violet');assert.equal(s.row.attempts,1);assert.equal(s.rift,false);assert.equal(s.fought,true);assert.equal(s.cap,10);
@@ -59,7 +60,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
   // 3. A win in the next session.
   await board.evaluate(()=>{LeagueScenes.cancel();__qa.reset({saveUndo:false,clearUndo:true,message:'Next lesson'});});
-  await board.evaluate(()=>{__qa.selectClass('5-A');__qa.seed(10,1000);Object.assign(classMission,{completed:true,rewardGranted:true,progress:15});updateClassMissionUI();});await closeDialogs(board);
+  await board.evaluate(()=>{__qa.selectClass('5-A');__qa.seed(10,1000);__qa.setMission(true);});await closeDialogs(board);
   await phone.waitForFunction(()=>document.getElementById('mobile-saga-panel').innerText.includes('attempt 2'));
   await hold(1700);await board.waitForFunction(()=>__qa.sagaState().sigil);
   await board.evaluate(()=>{document.getElementById('vixar-raid-btn').click();});await board.waitForFunction(()=>__qa.state().raid?.running);
@@ -95,7 +96,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await board.waitForFunction(()=>__qa.state().raid?.running);await wait(300);
   await board.evaluate(()=>__qa.raidHP(.70));await board.waitForFunction(()=>__qa.sagaState().merge?.card,null,{timeout:8000});
   s=await saga();assert.equal(s.edict,true);assert.equal(s.merge.turn.house,'gryffindor');const missed=s.merge.student.name;
-  await board.evaluate(()=>{const c=vixarRaidState.mergeCard;document.querySelectorAll('#merge-spell .merge-option')[(c.answer+1)%3].click();});
+  await board.evaluate(()=>{const c=__qa.sagaState().merge.card;document.querySelectorAll('#merge-spell .merge-option')[(c.answer+1)%3].click();});
   s=await saga();assert.equal(s.merge.turn.house,'slytherin');assert.equal(s.merge.turn.rescue,true);
   const banner=await board.evaluate(()=>document.querySelector('#merge-spell .merge-turn').innerText);
   assert.match(banner,/Slytherin can rescue the pair/i);assert(!banner.includes(missed),'the student who missed is not named');
@@ -142,7 +143,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   console.log(`PASS the Finale from the phone (${steps.length} steps, English voice on), 5-A is Freed, the epilogue ally appears, and Replay the Finale plays it again with no fight`);
 
   // 7. Recovery: the Rift survives a reload; a reload mid-fight is not an attempt.
-  await board.evaluate(()=>{__qa.saga('Scarlet');__qa.seed(11,1000);Object.assign(classMission,{completed:true,rewardGranted:true,progress:15});startVixarRaid();});
+  await board.evaluate(()=>{LeagueScenes.cancel();__qa.reset({saveUndo:false,clearUndo:true,message:'Next lesson'});__qa.saga('Scarlet');__qa.seed(11,1000);__qa.setMission(true);__qa.startRaid();});
   await board.waitForFunction(()=>__qa.state().raid?.running);await board.evaluate(()=>__qa.checkpoint());
   const again=await e.page(ctx);await again.evaluate(()=>__qa.start({resume:true}));await wait(900);
   const restored=await again.evaluate(()=>__qa.sagaState());assert.equal(restored.rift,true);assert.equal(restored.row.attempts,0);assert.equal(restored.row.stage,'Scarlet');assert.equal(restored.sigil,true);
@@ -175,6 +176,26 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   assert(size.h>0&&size.h<size.vh*.6&&size.w<=size.vw,'the saga panel fits the screen: '+JSON.stringify(size));
   await phone.screenshot({path:'output/v11-phone-saga-panel.png'});
   console.log(`PASS a missing Level 11 avatar shows the Level 10 form; the phone's saga panel is ${Math.round(size.h)} px tall on a ${size.vw}×${size.vh} screen`);
+
+  // 10. Teacher Studio: the Finale speech per grade.
+  const p4=await e.page(ctx);let linesSaved=null;
+  await p4.route('**/api/session',async r=>{const body=JSON.parse(r.request().postData()),ok=d=>r.fulfill({contentType:'application/json',body:JSON.stringify({status:'success',...d})});
+   if(body.type==='SAGA_LINES_SAVE'){linesSaved=body;return ok({sagaVersion:1,finaleLines:{grade:body.grade,lines:body.lines,at:Date.now()}});}
+   if(body.type==='ISLAND_GET')return ok({islandProgress:{},sagaVersion:1,saga:null,sagaExtras:null,finaleLines:null});
+   if(body.type==='TEACHING_GET')return ok({unit:body.unit,content:{},revision:'0'.repeat(64),version:0});return ok({});});
+  await p4.evaluate(()=>{__qa.start();__qa.selectClass('6-C');document.querySelectorAll('dialog[open]').forEach(d=>d.close());LeagueStudio.open({className:'6-C'});});
+  await p4.fill('#studio-pin','2595');await p4.click('#studio-auth button');await p4.waitForSelector('#studio-workspace:not([hidden])',{timeout:8000}).catch(async err=>{console.log('studio status:',await p4.textContent('#studio-status'));throw err;});
+  await p4.click('[data-studio-tab="finale"]');await p4.waitForSelector('#studio-finale-lines');
+  assert.equal(await p4.inputValue('#studio-finale-lines'),(await p4.evaluate(()=>LeagueSaga.DEFAULT_LINES[6].join('\n'))),'the default Grade 6 lines are shown');
+  assert.match(await p4.textContent('#studio-status'),/default lines/);
+  await p4.fill('#studio-finale-lines','x'.repeat(170));assert.match(await p4.textContent('.studio-finale-count'),/too long/);
+  await p4.click('#studio-finale-save');assert.equal(linesSaved,null,'too-long lines are not sent');
+  await p4.fill('#studio-finale-lines','Thank you, 6-C and every class in Grade 6.\n\nYou set me free.\nI will never forget it.');
+  await p4.click('#studio-finale-save');await p4.waitForFunction(()=>/Saved online/.test(document.getElementById('studio-status').textContent));
+  assert.equal(linesSaved.type,'SAGA_LINES_SAVE');assert.equal(linesSaved.grade,6);assert.equal(linesSaved.className,'6-C');assert.deepEqual(linesSaved.lines,['Thank you, 6-C and every class in Grade 6.','You set me free.','I will never forget it.']);
+  assert.deepEqual(await p4.evaluate(()=>LeagueSaga.lines(6)),linesSaved.lines,'this board’s Grade 6 Finale uses the new lines');
+  assert.deepEqual(await p4.evaluate(()=>LeagueSaga.lines(5)),await p4.evaluate(()=>[...LeagueSaga.DEFAULT_LINES[5]]),'other grades keep theirs');
+  console.log('PASS Teacher Studio · Finale speech: Grade 6 shows the default lines, refuses lines over 160 characters, saves 3 lines online and the board’s Finale uses them');
   assert.deepEqual(e.errors,[]);
  }finally{await e.close();}
 })().catch(error=>{console.error(error);process.exit(1);});

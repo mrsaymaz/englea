@@ -2,6 +2,21 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 11.0.0
+**The Vixar Saga** (spec builds 11.0, 11.1 and 11.2, delivered together):
+- **Per-class saga.** Each class has a stage: Violet → Scarlet → Gilded → Freed. The level cap follows it: 10, 11 (Mythic), 12 (Celestial). A win moves the class on once; the new cap starts from the next session. A loss counts an attempt and keeps the stage. Undo never changes the saga; a reload mid-fight counts nothing.
+- **The Rift.** Every saga fight is opened from the phone (More controls → Vixar Saga → a 1.5-second hold). The raid sigil appears only when every team is at the act's level. One fight per class per session. The phone shows readiness ("Level 11: 3 of 4 teams · Class Mission ✓"), offers Switch to Soft on Hard mode, and has Set stage (Manage, PIN) for corrections.
+- **Act I · Violet** and **Act II · Scarlet** end in an escape: a false victory, the celebration freezes, the form shatters (crystal, then embers), an eye in a tear, then a gold crack. The reward panel previews each team's next form.
+- **Act II · the Scarlet Brand**: Vixar marks one team for 6 s; 30% of that team's damage heals Vixar.
+- **Act III · Gilded**: the Edict of Separation at 70% HP; the **Merge Spell** (houses answer in turn, 2 right answers per house, a miss passes to the partner house for a rescue, a 2-minute circle and one 1-minute second casting). **Slyffindor** (Gryffindor + Slytherin) and **Huffleclaw** (Hufflepuff + Ravenclaw) fight fused; an unfused pair fights apart. Merge answers are logged in Challenge_Log as `Merge · …` rows.
+- **The Finale**: crack, break, reveal, Mr. Saymaz's thank-you speech (one line per Continue, English voice optional), up to three names per house, the hug, a closing card. Continue from the board or the phone. A **Freed** class sees Mr. Saymaz as an ally and can replay the Finale.
+- **Teacher Studio → Finale speech**: the speech per grade (1–10 lines, up to 160 characters each), saved online.
+- **Fight effects** for the raid and the Arena: damage numbers, hit sparks, hit-stop on criticals, a ground warning before Vixar's blow, shield shards and a small shake on heavy blows. Transforms and opacity only, within the effects budget; still numbers in Light mode and with reduced motion.
+- **New art**: Level 11 and Level 12 avatars and pose sheets for all four teams; Scarlet Vixar, Gilded Vixar and its cracking frame. Missing Level 11/12 art falls back to Level 10. Art slots for Mr. Saymaz, the hug and the merged teams (`public/assets/saga/manifest.json`), with placeholders until the pictures are added.
+- Balance lab (`tests/saga-balance.cjs`, 20 fights per scenario): every requirement met → Act I 20/20, Act II 20/20, Act III 20/20; Act III with one pair fused 13/20; Merge Spell failed 2/20; Act II without the Class Mission 0/20.
+
+**Apps Script update:** deploy `GOOGLE-APPS-SCRIPT-v11.0.0.gs` as a New version (new tabs Vixar_Saga and Vixar_Finale_Lines). `GOOGLE-APPS-SCRIPT-v10.4.0.gs` moved to `archive/`. No new environment variables.
+
 ## 10.5.1
 **Lighter creature poses** (nothing looks or plays differently):
 - 10 pose sheets stay decoded instead of 6: four teams at their current and next level, an island boss and Vixar. In a test lesson where every team evolved twice, sheet requests fell from 46 to 31.

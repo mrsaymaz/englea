@@ -2,7 +2,7 @@
    - A pose on a team card is square and fitted inside the avatar box by CSS, and showing it measures nothing.
    - Ten pose sheets stay decoded through a lesson in which every team evolves.
    - Island Run still draws the team's creature poses for the runner.
-   Frame rates on a slowed CPU are in ../TEST-REPORT-v10.5.1.md. */
+   Frame rates on a slowed CPU are in ../archive/TEST-REPORT-v10.5.1.md. */
 const assert=require('assert/strict');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
