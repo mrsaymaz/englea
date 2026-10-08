@@ -284,3 +284,10 @@ body.performance-light .merge-creature,body.performance-light .merge-fused-art {
 #vixar-preview-bar button:hover,#vixar-preview-bar a:hover { background:rgba(253,230,138,.18); }
 #vixar-preview-bar button:focus-visible,#vixar-preview-bar a:focus-visible { outline:2px solid #fde68a; outline-offset:2px; }
 #vixar-preview-bar .vp-note { padding:0 6px; color:#fcd34d; font-weight:500; }
+
+/* ---- Every fighter faces Vixar: teams on the left look right, teams on the right look left. Pose sheets look
+   right; a few still pictures look left (data-native-facing, set by animated-mode.js). ---- */
+.vixar-team-fighter[data-face="left"] .animated-avatar > .creature-pose-layer,
+.vixar-team-fighter[data-face="left"] .animated-avatar:not([data-native-facing="left"]) > .animated-sprite,
+.vixar-team-fighter[data-face="right"] .animated-avatar[data-native-facing="left"] > .animated-sprite,
+.vixar-team-fighter[data-face="left"] img.merged-art { transform:scaleX(-1); }

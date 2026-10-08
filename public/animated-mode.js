@@ -13,11 +13,15 @@
     const valid=id=>ids.includes(id);
     // v11.0.0: the Level 11 and 12 forms carry their own tag; Levels 0–10 keep v6.7 so they are not downloaded again.
     const source=(id,level)=>`./assets/animated/${id}-${clamp(level)}.webp?v=${clamp(level)>10?'11.0.0':'6.7'}`;
+    // v11.0.0: which way each still picture looks. Almost all look right, like every pose sheet; these few look left.
+    // Fights use it so every creature faces its opponent (see vixar-saga.css and combat-motion.css).
+    const LEFT_FACING={gryffindor:[0,1,2],slytherin:[0]};
+    const facing=(id,level)=>LEFT_FACING[id]?.includes(clamp(level))?'left':'right';
     function markup(id,level){
         if(!valid(id))return '';
         level=clamp(level);
         scope.CreaturePoses?.preload(id,level);
-        return `<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}" role="img" aria-label="${id}, level ${level}"><img class="animated-sprite" src="${source(id,level)}" width="384" height="384" alt="" decoding="async" draggable="false"></span>`;
+        return `<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}" data-native-facing="${facing(id,level)}" role="img" aria-label="${id}, level ${level}"><img class="animated-sprite" src="${source(id,level)}" width="384" height="384" alt="" decoding="async" draggable="false"></span>`;
     }
     function preload(id,level){
         if(!enabled||!valid(id))return Promise.resolve();

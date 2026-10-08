@@ -35,7 +35,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await waitCard();
   let view=await board.evaluate(()=>LeagueChallenge.remoteView());
   assert(types.includes(view.type),view.type);assert.equal(view.team,'Gryffindor');assert.equal(view.student,last);
-  assert.match(await boardText(),new RegExp(`${last} · Gryffindor[\\s\\S]*Right: keep Level 5 · ✗ Wrong: back to Level 4`));
+  assert.match(await boardText(),new RegExp(`${last} · Gryffindor[\\s\\S]*Right: keep Level 5 and its points · ✗ Wrong: back to Level 4`));
   await phone.waitForFunction(()=>!document.getElementById('mobile-challenge').hidden);
   assert.equal(await phone.evaluate(()=>document.getElementById('mobile-wheel-title').textContent),'ENGLISH CHALLENGE');
   console.log(`PASS five awards: Level 5 → English wheel → a ${view.type} card for ${last} (the student who gave the last point), on the board and the phone`);
@@ -48,7 +48,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const afterWrong=await board.evaluate(()=>__qa.team('gryffindor'));
   assert.equal(afterWrong.level,4);assert.equal(afterWrong.points,atFour.restore.points);assert.deepEqual(afterWrong.traits,atFour.restore.traits);
   assert(!afterWrong.wheelMilestonesReached.includes(5),'the wheel waits at Level 5 again');assert(pointsAt5>afterWrong.points);
-  let text=await boardText();assert.match(text,/✗ Wrong/);assert.match(text,/Gryffindor goes back to Level 4 and [\d,]+ points\./);
+  let text=await boardText();assert.match(text,/✗ Wrong/);assert.match(text,/Gryffindor goes back to Level 4 and the points it had there\./);assert.doesNotMatch(text,/\d{1,3}(,\d{3})+ points/,'no point totals on the card');
   if(view.choice)assert.match(text,/Correct answer: [ABC]\) /);
   await phone.waitForFunction(()=>document.querySelector('#mobile-challenge .mobile-challenge-result.wrong'));
   await tapPhone('Continue');await board.waitForFunction(()=>!LeagueChallenge.active&&!document.getElementById('wheel-modal').classList.contains('visible'));
@@ -61,9 +61,9 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   if(view.choice){const answer=await board.evaluate(()=>LeagueChallenge.card.answer);await tapPhone('ABC'[answer]+') ');}
   else await tapPhone('✓ Correct');
   await board.waitForFunction(()=>LeagueChallenge.remoteView()?.outcome==='right');
-  assert.deepEqual(await board.evaluate(()=>__qa.team('gryffindor')),kept);assert.match(await boardText(),new RegExp(`✓ Right![\\s\\S]*Gryffindor keeps Level 5 and ${kept.points.toLocaleString('en-US')} points!`));
+  assert.deepEqual(await board.evaluate(()=>__qa.team('gryffindor')),kept);assert.match(await boardText(),/✓ Right![\s\S]*Gryffindor gets to keep its Level 5 and its points!/);
   await board.click('.challenge-continue');await board.waitForFunction(()=>!LeagueChallenge.active);
-  console.log(`PASS Level 5 again → a new wheel; right (${view.type}, answered on the phone) keeps Level 5 and ${kept.points} points`);
+  console.log(`PASS Level 5 again → a new wheel; right (${view.type}, answered on the phone) keeps Level 5 and its points`);
 
   // 3. Taboo: the phone shows the word and the forbidden Turkish words; the board does not show the word.
   await board.evaluate(()=>__qa.challengeWheel('slytherin',5,'Taboo Description'));await waitCard();

@@ -4165,6 +4165,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function sagaFightReady() { const act = sagaFightAct(); return Boolean(act && riftOpen && !sagaFoughtToday() && allTeamsAtLeastLevel(act.level)); }
             // Boss art and seal targets: the Violet form keeps the Light mode drawing; Scarlet and Gilded always use their art.
             const raidUsesArt = () => performanceMode === 'animated' || (vixarRaidState?.act?.act || 1) > 1;
+            // A form's action poses are used only when its sheet is sharp enough for the boss's size on the board. Until the
+            // high-resolution Scarlet and Gilded sheets arrive, those forms act with their own crisp picture (the raid's
+            // charge, cast, recoil and final-blast movement) instead of a soft pose ('none' turns the pose layer off).
+            const vixarPoseId = (act = vixarRaidState?.act) => act?.poses ? act.art : 'none';
             const VIXAR_LEGENDARY_DAMAGE_MULTIPLIER = 1.38;
             const VIXAR_COORDINATED_ASSAULT_MULTIPLIER = 1.32;
             const VIXAR_LEGENDARY_OVERDRIVE_MULTIPLIER = 1.55;
@@ -4364,10 +4368,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
             function renderVixarRaidFighters() {
                 const host = document.getElementById('vixar-team-layer');
                 host.innerHTML = vixarRaidState.fighters.map(fighter => {
-                    const rightSide = fighter.arenaSlot === 1 || fighter.arenaSlot === 3;
+                    const rightSide = fighter.arenaSlot === 1 || fighter.arenaSlot === 3 || fighter.arenaSlot === 'm1';
                     const relicText = fighter.hasRelic ? `${fighter.merged ? '✦' : teamRelics[fighter.id].icon} ${fighter.relicUsed ? 'USED' : 'READY'}` : 'RELIC LOCKED';
                     return `
-                        <section id="vixar-team-${fighter.id}" class="vixar-team-fighter ${rightSide ? 'right-side' : ''} ${fighter.merged ? 'is-merged' : ''}" data-team="${fighter.id}" data-slot="${fighter.arenaSlot}" style="--team-color:${fighter.color}${fighter.merged ? `;--team-color-b:${fighter.colors[1]}` : ''}">
+                        <section id="vixar-team-${fighter.id}" class="vixar-team-fighter ${rightSide ? 'right-side' : ''} ${fighter.merged ? 'is-merged' : ''}" data-face="${rightSide ? 'left' : 'right'}" data-team="${fighter.id}" data-slot="${fighter.arenaSlot}" style="--team-color:${fighter.color}${fighter.merged ? `;--team-color-b:${fighter.colors[1]}` : ''}">
                             <div class="vixar-team-panel">
                                 <div class="vixar-team-line">
                                     ${vixarFighterName(fighter)}
@@ -4387,7 +4391,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                                 </div>
                             </div>
                             <div id="vixar-team-status-${fighter.id}" class="vixar-team-status"></div>
-                            <div id="vixar-avatar-shell-${fighter.id}" class="vixar-avatar-shell" style="--team-color:${fighter.color}">
+                            <div id="vixar-avatar-shell-${fighter.id}" class="vixar-avatar-shell" style="--team-color:${fighter.color}"><i class="saga-ground" aria-hidden="true"></i>
                                 <div class="raid-travel"><div class="raid-pose">${vixarFighterArt(fighter)}</div></div>
                                 <div class="saga-brand-mark" aria-hidden="true"></div>
                             </div>
@@ -5250,7 +5254,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const overlay = document.getElementById('vixar-raid-overlay');
                 overlay.classList.toggle('phase-two', nextPhase >= 2);
                 overlay.classList.toggle('phase-three', nextPhase >= 3);
-                const poseId = vixarRaidState.act.art;
+                const poseId = vixarPoseId();
                 if (nextPhase === 2) {
                     globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'proud',{id:poseId,duration:1500,priority:40});
                     vixarAnnounce('VIXAR reveals six astral arms', '#c4b5fd');
@@ -5802,14 +5806,18 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 document.getElementById('vixar-result-title').textContent = victory ? act.winTitle : act.lossTitle;
                 const nextCap = LeagueSaga.cap(act.next);
                 document.getElementById('vixar-result-subtitle').textContent = victory
-                    ? `${act.winLine}. Level ${nextCap} unlocked for every team in ${c}.`
-                    : `${reason} ${c} keeps its stage and its level cap.`;
+                    ? `${act.winLine}. From the next lesson, every team in ${c} can grow to Level ${nextCap}.`
+                    : `${reason} ${c} keeps its stage and its level cap. Grow stronger together and open the Rift again in a later lesson.`;
+                // v11.0.0: the result is a ceremony scene, not a dialog box (saga-cinema.css).
+                const panel = document.getElementById('vixar-result-panel');
+                panel.classList.add('saga-ceremony'); panel.classList.toggle('loss', !victory);
+                panel.dataset.kicker = `${act.kicker.split(' · ')[0]} · ${victory ? 'Complete' : 'Not yet'}`;
                 document.getElementById('vixar-result-stats').innerHTML = vixarResultStats(state, victory);
                 // Each team's next form is shown once, as a preview of the reward.
                 const preview = document.getElementById('vixar-result-preview');
                 if (preview) {
                     preview.hidden = !victory;
-                    preview.innerHTML = victory ? `<small>Level ${nextCap} · ${LeagueSaga.tierName(nextCap)} forms</small><div>${teamsData.map(team => `<figure style="--team-color:${team.color}">${getAvatarSVG(team.id, [...team.traits.filter(id => !teamTraits[team.id].find(t => t.id === id)?.stage), ...teamTraits[team.id].filter(t => t.stage && t.stage <= nextCap).map(t => t.id)], nextCap)}<figcaption>${team.name}</figcaption></figure>`).join('')}</div>` : '';
+                    preview.innerHTML = victory ? `<small>Level ${nextCap} · ${LeagueSaga.tierName(nextCap)} forms</small><div>${teamsData.map(team => `<figure style="--team-color:${team.color};--i:${teamsData.indexOf(team)}">${getAvatarSVG(team.id, [...team.traits.filter(id => !teamTraits[team.id].find(t => t.id === id)?.stage), ...teamTraits[team.id].filter(t => t.stage && t.stage <= nextCap).map(t => t.id)], nextCap)}<figcaption>${team.name}<em>Level ${nextCap} · ${LeagueSaga.tierName(nextCap)}</em></figcaption></figure>`).join('')}</div>` : '';
                 }
                 document.getElementById('vixar-retry-btn').hidden = true;
                 document.getElementById('vixar-result-panel').classList.add('visible');
@@ -5862,21 +5870,24 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const overlay = document.getElementById('vixar-raid-overlay');
                 overlay.dataset.act = act.form;
                 overlay.classList.toggle('saga-form-art', act.act > 1);
+                LeagueSagaScenes.arena(act);
                 const art = document.getElementById('vixar-boss-animated-art');
                 const src = `./assets/animated/${act.art}.webp?v=${act.act > 1 ? '11.0.0' : '6.7'}`;
                 if (!art.getAttribute('src')?.startsWith(`./assets/animated/${act.art}.webp`)) art.src = src;
-                document.getElementById('vixar-animated-actor').dataset.poseId = act.art;
-                globalThis.CreaturePoses?.preload(act.art);
+                document.getElementById('vixar-animated-actor').dataset.poseId = vixarPoseId(act);
+                if (act.poses) globalThis.CreaturePoses?.preload(act.art);
                 overlay.querySelector('.vixar-title').textContent = act.title;
                 overlay.querySelector('.vixar-epithet').textContent = act.epithet;
                 overlay.querySelector('.vixar-raid-kicker').textContent = `${act.kicker} · ${vixarRaidState.className}`;
                 const curtain = overlay.querySelector('.vixar-intro-curtain');
                 curtain.dataset.act = act.form;
-                curtain.querySelector('.vixar-intro-kicker').textContent = act.kicker;
+                curtain.querySelector('.vixar-intro-kicker').textContent = act.kicker.split(' · ')[0];
                 curtain.querySelector('.vixar-intro-title').textContent = act.title;
+                const epithet = curtain.querySelector('.saga-intro-epithet');
+                if (epithet) epithet.textContent = act.epithet;
                 curtain.querySelector('.vixar-intro-subtitle').textContent = act.act === 1
-                    ? 'Four Legendary teams · Unity alone can break the Empty Crown'
-                    : act.act === 2 ? 'The scarlet eye opens · four Mythic teams step into the tear' : 'A gold crack opens in the dark · four Celestial teams, one class';
+                    ? 'Four Legendary teams stand together. Only unity can break the Empty Crown.'
+                    : act.act === 2 ? 'The rift has opened again. Vixar returns, reforged in scarlet fire.' : 'The last form is a prison of gold, and something inside it is still alive.';
                 LeagueSagaScenes.introArt(curtain, act);
             }
             function startVixarRaid() {
@@ -5920,14 +5931,17 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 applyRaidActVisuals(vixarRaidState.act);
                 layoutVixarGuardian();
                 document.getElementById('vixar-result-panel').classList.remove('visible');
-                const showIntro = !isLeanMode() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                setVixarIntroVisible(showIntro);
-                // Full effects retain the entrance, with a timer fallback when CSS
-                // animation is unavailable. The lean profiles reveal the stage at once.
-                const introDelay=showIntro?3100:0;
+                // v11.0.0: every mode opens with the act's title card. It moves in Animated and Ultra mode; Light mode and
+                // reduced motion show it still for 2.2 seconds (no animation cost on old boards).
+                const stillIntro = performanceMode === 'light' || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                const curtainEl = overlay.querySelector('.vixar-intro-curtain');
+                curtainEl?.classList.toggle('still', stillIntro);
+                if (curtainEl) { curtainEl.hidden = true; void curtainEl.offsetWidth; }
+                setVixarIntroVisible(true);
+                const introDelay=stillIntro?2200:3100;
                 vixarRaidState.combatBeginsAt=now+introDelay+100;
                 vixarRaidState.boss.nextActionAt=vixarRaidState.combatBeginsAt+420;
-                if(showIntro)vixarSchedule(()=>LeagueScenes.phase('raid','seals'),introDelay);else LeagueScenes.phase('raid','seals');
+                vixarSchedule(()=>{LeagueScenes.phase('raid','seals');setVixarIntroVisible(false);},introDelay);
                 document.getElementById('vixar-boss-stage').style.opacity = '';
                 document.getElementById('vixar-chest-armor')?.setAttribute('opacity', '1');
                 document.getElementById('vixar-clock').textContent = (vixarRaidState.duration / 1000).toFixed(1);
@@ -6276,7 +6290,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if (!card) return false;
                 return LeagueChallenge.open(card, {
                     team:team?.name || '', teamColor:team?.color, student:wheel?.student?.name || '', delay,
-                    stakes:team ? `✓ Right: keep Level ${team.level} · ✗ Wrong: back to Level ${wheel.restore?.level ?? wheel.stage - 1}` : '',
+                    // v11.0.0: no point totals on the card (they grow large); the level says enough.
+                    stakes:team ? `✓ Right: keep Level ${team.level} and its points · ✗ Wrong: back to Level ${wheel.restore?.level ?? wheel.stage - 1}` : '',
                     color:subjectColors[index % subjectColors.length],
                     onResolve:ok => resolveChallenge(ok, card, wheel, ctx.island),
                     onClose:advanceQueuedWheel
@@ -6296,7 +6311,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if (ok === null) return '';
                 playSound(ok ? 'evolve' : 'timer');
                 if (!team) return 'Practice card · no points change.';
-                if (ok) return `${team.name} keeps Level ${team.level} and ${team.points.toLocaleString()} points!`;
+                if (ok) return `${team.name} gets to keep its Level ${team.level} and its points!`;
                 return restoreTeamBeforeWheel(team, wheel);
             }
             function restoreTeamBeforeWheel(team, wheel) {
@@ -6321,8 +6336,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 animateTeamScore(team.id, { fromValue:previousPoints, targetValue:team.points, delta:team.points - previousPoints, modifiers:[{ icon:'🃏', label:'Challenge missed' }] });
                 updateTeamDOM(team, true, true);
                 updateGameState({ teamId:team.id, updateVisuals:true, updateAvatar:true });
-                addHistoryLog(`🃏 ${team.name} goes back to Level ${team.level} (${team.points.toLocaleString()} points).`, team.color);
-                return `${team.name} goes back to Level ${team.level} and ${team.points.toLocaleString()} points.`;
+                addHistoryLog(`🃏 ${team.name} goes back to Level ${team.level}.`, team.color);
+                return `${team.name} goes back to Level ${team.level} and the points it had there.`;
             }
             LeagueChallenge.configure({ changed:() => { if (window.syncStateToController) window.syncStateToController(); } });
 

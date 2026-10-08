@@ -134,7 +134,7 @@ await test('Board wiring: the go-back point, the stakes, wrong/right/skip, the r
  assert.equal((game.match(/noteLevelStart\(team\);/g)||[]).length,4,'every level-up records where the team stood (Animated, both chests, Unity)');
  assert.match(game,/if \(person\) lastAwardStudent\.set\(team\.id, \{id:person\.id, name:person\.name\}\);/);
  assert.match(game,/if \(startChallenge\(sub, index, activeAnimatedWheel, \{ delay:advanceImmediately \? 0 : undefined \}\)\) \{/);
- assert.match(game,/stakes:team \? `✓ Right: keep Level \$\{team\.level\} · ✗ Wrong: back to Level \$\{wheel\.restore\?\.level \?\? wheel\.stage - 1\}` : '',/);
+ assert.match(game,/stakes:team \? `✓ Right: keep Level \$\{team\.level\} and its points · ✗ Wrong: back to Level \$\{wheel\.restore\?\.level \?\? wheel\.stage - 1\}` : '',/);
  assert.match(game,/team\.wheelMilestonesReached = team\.wheelMilestonesReached\.filter\(stage => stage <= team\.level\);/);
  assert.match(game,/saveState\(\); \/\/ Undo puts the team back/);
  assert.match(game,/if \(LeagueChallenge\.active\) \{ LeagueChallenge\.command\(\{op:LeagueChallenge\.answered \? 'continue' : 'skip'\}\); return; \}/,'Close Wheel / Skip / Exit: Skip card before an answer, Continue after');
