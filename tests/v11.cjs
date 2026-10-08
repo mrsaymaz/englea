@@ -202,7 +202,9 @@ await test('Saga art: Mr. Saymaz (portrait, five poses, a six-frame reveal on on
 });
 await test('Wiring: the class cap replaces Level 10 in chests, traits, Unity, the badge and the phone; the Rift gates every fight; build 11.0.0',()=>{
  const game=pub('game.js'),html=pub('index.html');
- assert.match(game,/const REMOTE_BUILD = '11\.0\.0';/);for(const f of ['vixar-saga.js','merge-spell.js','fight-fx.js','saga-scenes.js','saga-remote.js','vixar-saga.css'])assert(html.includes(f+'?v=11.0.0'),f);
+ assert.match(game,/const REMOTE_BUILD = '11\.0\.0';/);
+ assert.equal(html.match(/<script src="([^"]+)"/)[1],'./vixar-preview.js?v=11.0.0','the fight preview loads before every other script');
+ assert.match(pub('vixar-preview.js'),/if\(!match\)return;/,'and does nothing without a #preview- address');for(const f of ['vixar-saga.js','merge-spell.js','fight-fx.js','saga-scenes.js','saga-remote.js','vixar-saga.css'])assert(html.includes(f+'?v=11.0.0'),f);
  assert.match(game,/if \(team\.level >= levelCap\(\) \|\| team\.pendingEvolution\) return false;/);
  assert.match(game,/if \(team\.level >= levelCap\(\) \|\| team\.evolutionProgress < 3 \|\| team\.pendingEvolution\) return false;\s*let available = traitsForStage\(team\.id, team\.level \+ 1, team\.traits\);/);
  assert.match(game,/const remainingLevels = Math\.max\(0, levelCap\(\) - team\.level\);/);assert.match(game,/team\.level = Math\.min\(levelCap\(\), team\.level \+ 1\);/);

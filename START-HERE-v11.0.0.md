@@ -37,6 +37,12 @@ If the old script is still deployed, the phone says "The Vixar Saga is kept on t
 
 The saga row is saved through the phone's outbox, like the other Google Sheets saves. Offline, it waits ("Offline · the board's saved copy") and is sent after the Teacher sign-in.
 
+## Try the fights first: the Vixar fight preview
+
+Open **`vixar-preview.html`** on your site (for example `https://your-site.netlify.app/vixar-preview.html`) and choose Act I, II or III, or the Finale, in Animated or Light mode. The board asks for the access code as usual, then opens straight into that fight with every team at the act's level, the Class Mission complete and the Rift open. Use Pause, Skip and Exit as in class; answer the Merge Spell on the board. The **Preview** button at the top switches act or display.
+
+Nothing is saved: the preview keeps everything in that browser tab's memory, never touches the classes' saga, sessions or contributions, and sends nothing to Google Sheets. The address is `index.html#preview-act1` (… `act2`, `act3`, `finale`, with `-light` for Light mode).
+
 ## The fights
 
 **Act I · Violet.** The familiar Vixar fight. At the moment of victory the board celebrates, then freezes: the violet form shatters into crystal and an eye opens in a tear behind it. The reward panel shows "The Violet Form Is Broken" and each team's Level 11 form.

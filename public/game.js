@@ -8115,4 +8115,58 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
         });
         recoveryReady=false;
 
+        // v11.0.0 · The Vixar fight preview (vixar-preview.js: index.html#preview-act1 … #preview-act3, #preview-finale):
+        // the real fight of one act, set up as if the class were ready for it (every team at the act's level, the Class
+        // Mission complete, the Rift open). The tab keeps everything in memory, so nothing reaches the classes' saga,
+        // sessions or Google Sheets, and no phone room is opened.
+        if(window.LeagueVixarPreview?.active)setupVixarPreview(window.LeagueVixarPreview);
+        function setupVixarPreview(preview){
+            const ACTS={act1:{stage:'Violet',level:10,label:'Act I'},act2:{stage:'Scarlet',level:11,label:'Act II'},act3:{stage:'Gilded',level:12,label:'Act III'},finale:{stage:'Gilded',level:12,label:'Finale'}};
+            const setup=ACTS[preview.act]||ACTS.act1,CLASS='5-A';
+            // The class prompts (Load islands, the teacher sign-in) have nothing to do in the preview.
+            const QUIET=['island-cloud-dialog','teacher-signin-dialog'];
+            new MutationObserver(list=>{for(const m of list){const d=m.target;if(d.tagName==='DIALOG'&&d.open&&QUIET.includes(d.id))d.close();}}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+            function finaleNames(){
+                // Example names for the Finale's names step, taken from the roster this board uses.
+                const sid=crypto.randomUUID?.()||String(Date.now()),contributions=[],navigators=[],merge=[];
+                LeagueStudents.teams.forEach(team=>LeagueStudents.members(CLASS,team).slice(0,3).forEach((person,i)=>{
+                    contributions.push({team,name:person.name,contributions:12-i*3,sessionId:sid});
+                    if(i===0)navigators.push({team,student:person.name});
+                    if(i===1)merge.push({id:`${sid}-m-${team}`,team,student:person.name,result:'right'});
+                }));
+                LeagueSaga.acceptExtras(CLASS,{contributions,navigators,merge});
+            }
+            function bar(){
+                const nav=document.createElement('nav');nav.id='vixar-preview-bar';nav.setAttribute('aria-label','Vixar fight preview');
+                const toggle=document.createElement('button');toggle.type='button';toggle.className='vp-toggle';toggle.textContent=`Preview · ${setup.label}`;toggle.setAttribute('aria-expanded','true');
+                toggle.addEventListener('click',()=>{const open=!nav.classList.contains('open');nav.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));});
+                const menu=document.createElement('div');menu.className='vp-menu';
+                const note=document.createElement('span');note.className='vp-note';note.textContent='Nothing is saved';menu.append(note);
+                for(const [act,info] of Object.entries(ACTS)){const b=document.createElement('button');b.type='button';b.textContent=info.label;if(act===preview.act)b.setAttribute('aria-current','true');b.addEventListener('click',()=>preview.go(act,preview.mode));menu.append(b);}
+                const mode=document.createElement('button');mode.type='button';mode.className='vp-mode';mode.textContent=preview.mode==='light'?'Animated mode':'Light mode';mode.addEventListener('click',()=>preview.go(preview.act,preview.mode==='light'?'animated':'light'));
+                const home=document.createElement('a');home.href=preview.home;home.textContent='All acts';
+                home.addEventListener('click',e=>{try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1){e.preventDefault();history.back();}}catch{}});
+                menu.append(mode,home);nav.append(toggle,menu);document.body.append(nav);
+                // During a fight or the Finale the bar folds to one small button.
+                const fold=()=>{const busy=Boolean(LeagueScenes.active);nav.classList.toggle('compact',busy);if(!busy)nav.classList.add('open');else nav.classList.remove('open');toggle.setAttribute('aria-expanded',String(nav.classList.contains('open')));};
+                document.addEventListener('league-scene-change',fold);fold();
+            }
+            const begin=()=>{
+                if(!LeagueAccess.granted){setTimeout(begin,250);return;}
+                prepareHostSession(false);
+                document.getElementById('startup-overlay').classList.add('hidden');document.body.classList.add('session-started');
+                LeaguePerformance.start();setPerformanceMode(preview.mode,{persist:false});
+                setSessionClass(CLASS);document.querySelectorAll('dialog[open]').forEach(d=>d.close());
+                LeagueSaga.reset();if(setup.stage!=='Violet')LeagueSaga.setStage(CLASS,setup.stage,{note:'Preview'});
+                sagaSessionWin=null;riftOpen=true;recoveryRestoring=true;
+                teamsData.forEach(t=>{LeagueRules.resetTeam(t);t.level=setup.level;t.traits=teamTraits[t.id].slice(0,setup.level).map(v=>v.id);t.points=1000;t.hasRelic=true;t.cachedSVG='';});
+                recoveryRestoring=false;
+                Object.assign(classMission,{completed:true,rewardGranted:true,progress:15});updateClassMissionUI();updateGameState(true);
+                bar();addHistoryLog(`Preview · ${setup.label}: every team at Level ${setup.level}, the Class Mission complete. Nothing is saved.`,'#fde68a');
+                if(preview.act==='finale'){finaleNames();setTimeout(()=>startSagaFinale({replay:false}),500);}
+                else setTimeout(()=>startVixarRaid(),700);
+            };
+            begin();
+        }
+
     });

@@ -21,6 +21,8 @@ Run `npm run test:v11` for the full dependency-free suite (all v10.5.1 checks pl
 - recovery mid-fight; Light mode with reduced motion; the Level 10 fallback; the phone panel's size;
 - Teacher Studio's Finale speech tab.
 
+`npm run test:board` also runs `board-preview.cjs`: every act of the fight preview (Animated and Light), the Finale with example names, the launcher's links, and nothing reaching the classes' saved data or the server.
+
 `npm run test:saga-balance` runs the balance lab (`saga-balance.cjs [fights]`, default 20 per scenario) and writes `balance-lab/saga-balance.json`. `npm run test:finale` runs `vixar-finale.cjs`.
 
 # v10.4.0 checks

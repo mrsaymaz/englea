@@ -19,6 +19,7 @@
 /* ---- The raid, per act ---- */
 #vixar-raid-overlay.saga-form-art #vixar-boss-svg { visibility:hidden; }
 #vixar-raid-overlay.saga-form-art #vixar-animated-actor { display:block; }
+#vixar-raid-overlay.saga-form-art #vixar-boss-animated-art { display:block; position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; }
 #vixar-raid-overlay[data-act="scarlet"] .vixar-title { color:#fecdd3; text-shadow:0 0 22px rgba(244,63,94,.6); }
 #vixar-raid-overlay[data-act="gilded"] .vixar-title { color:#fef3c7; text-shadow:0 0 22px rgba(251,191,36,.6); }
 #vixar-raid-overlay[data-act="scarlet"] .vixar-arena-eclipse { background:radial-gradient(circle at 50% 42%,rgba(244,63,94,.28),rgba(76,5,25,.55) 40%,transparent 70%); }
@@ -272,3 +273,14 @@ body[data-effects-budget="2"] .fx-spark,body[data-effects-budget="2"] .fx-telegr
 }
 body.performance-light .merge-orbit { animation:none; }
 body.performance-light .merge-creature,body.performance-light .merge-fused-art { transition:none; }
+
+/* ---- The Vixar fight preview bar (index.html#preview-…; nothing is saved) ---- */
+#vixar-preview-bar { position:fixed; top:8px; left:50%; transform:translateX(-50%); z-index:13000; display:flex; align-items:center; gap:6px; max-width:calc(100vw - 24px); padding:4px; border:1px solid rgba(253,230,138,.55); border-radius:999px; background:rgba(8,6,18,.9); color:#fef3c7; font:600 12px/1.2 system-ui,-apple-system,'Segoe UI',sans-serif; }
+#vixar-preview-bar .vp-menu { display:none; align-items:center; gap:4px; flex-wrap:wrap; }
+#vixar-preview-bar.open .vp-menu { display:flex; }
+#vixar-preview-bar button,#vixar-preview-bar a { padding:6px 10px; border:0; border-radius:999px; background:transparent; color:inherit; font:inherit; cursor:pointer; text-decoration:none; white-space:nowrap; }
+#vixar-preview-bar .vp-toggle { background:#92400e; color:#fff7ed; letter-spacing:.04em; }
+#vixar-preview-bar button[aria-current="true"] { background:#fde68a; color:#1c1917; }
+#vixar-preview-bar button:hover,#vixar-preview-bar a:hover { background:rgba(253,230,138,.18); }
+#vixar-preview-bar button:focus-visible,#vixar-preview-bar a:focus-visible { outline:2px solid #fde68a; outline-offset:2px; }
+#vixar-preview-bar .vp-note { padding:0 6px; color:#fcd34d; font-weight:500; }

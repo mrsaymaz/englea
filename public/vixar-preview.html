@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vixar Fight Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800&display=swap">
+<style>
+/* The game's night arena: one dark look, the act colours as the only accents. Header, a display switch, then the
+   three acts in order and the Finale as cards with each form's own picture; a short "in the fight" guide below. */
+:root{
+ --night:#07060f; --panel:#100e1f; --line:#2a2545; --ink:#f5f1ff; --muted:#a9a3c6; --gold:#fde68a; --ember:#92400e;
+ --violet:#a78bfa; --scarlet:#f43f5e; --gilded:#f59e0b; --freed:#fef3c7;
+ --display:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif; --body:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
+ --data:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--night)}
+body{margin:0;color:var(--ink);font:400 15px/1.55 var(--body);padding-inline:16px;padding-block:28px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+header{display:grid;gap:10px}
+.eyebrow{margin:0;font:700 11px/1 var(--display);letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+h1{margin:0;font:800 clamp(28px,5vw,52px)/1.05 var(--display);letter-spacing:.14em;text-transform:uppercase;text-wrap:balance}
+.lede{margin:0;max-width:64ch;color:var(--muted)}
+.lede strong{color:var(--ink);font-weight:500}
+.display{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.display-label{font:700 11px/1 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.switch{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.switch input{position:absolute;opacity:0;pointer-events:none}
+.switch label{padding:7px 16px;border-radius:999px;font:500 13px/1 var(--body);color:var(--muted);cursor:pointer}
+.switch input:checked+label{background:var(--gold);color:#1c1917}
+.switch input:focus-visible+label{outline:2px solid var(--gold);outline-offset:2px}
+.display-note{font-size:13px;color:var(--muted)}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:0;padding:0;list-style:none}
+.act{--act:var(--violet);position:relative;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;min-width:0;padding:16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--act) 14%,var(--panel)),var(--panel) 46%)}
+.act[data-act="act2"]{--act:var(--scarlet)} .act[data-act="act3"]{--act:var(--gilded)} .act[data-act="finale"]{--act:var(--freed)}
+.figure{height:190px;max-width:100%;overflow:hidden;border-radius:10px;background:radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--act) 30%,transparent),transparent 68%)}
+.figure img{display:block;width:100%;height:100%;object-fit:contain}
+.act-head{display:grid;gap:2px}
+.act-kicker{font:700 11px/1.2 var(--display);letter-spacing:.24em;text-transform:uppercase;color:var(--act)}
+.act h2{margin:0;font:800 20px/1.15 var(--display);letter-spacing:.12em;text-transform:uppercase}
+.stats{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none;font:500 12px/1 var(--data);font-variant-numeric:tabular-nums;color:var(--muted)}
+.stats li{padding:5px 7px;border:1px solid var(--line);border-radius:6px}
+.act p{margin:0;color:var(--muted);font-size:14px;min-width:0}
+.start{display:block;padding:12px 14px;border-radius:10px;background:var(--act);color:#120f1d;font:800 13px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;text-align:center;text-decoration:none}
+.start:hover{filter:brightness(1.08)}
+.start:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 24px;padding:18px;border:1px solid var(--line);border-radius:14px}
+.guide h3{margin:0 0 4px;font:700 12px/1.2 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.guide p{margin:0;color:var(--muted);font-size:14px}
+.guide kbd{font:500 12px var(--data);padding:1px 5px;border:1px solid var(--line);border-radius:4px;color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){.start{transition:filter .15s ease}}
+</style>
+</head>
+<body>
+<main class="wrap">
+ <header>
+  <p class="eyebrow">English League · v11.0 · The Vixar Saga</p>
+  <h1>Vixar Fight Preview</h1>
+  <p class="lede">Try each act with the real fight. Every start is fresh: <strong>all four teams at the act’s level, the Class Mission complete, the Rift open</strong>, so the fight can be won. Nothing is saved and nothing reaches Google Sheets.</p>
+ </header>
+
+ <section class="display" aria-label="Display">
+  <span class="display-label" id="display-label">Display</span>
+  <div class="switch" role="radiogroup" aria-labelledby="display-label">
+   <input type="radio" name="mode" id="mode-animated" value="animated" checked><label for="mode-animated">Animated</label>
+   <input type="radio" name="mode" id="mode-light" value="light"><label for="mode-light">Light</label>
+  </div>
+  <span class="display-note" id="display-note">Animated: the creature art, poses and fight effects.</span>
+ </section>
+
+ <ol class="acts">
+  <li class="act" data-act="act1">
+   <div class="figure"><img src="assets/animated/vixar.webp?v=11.0.0" alt="Violet Vixar" width="1100" height="890" loading="lazy"></div>
+   <div class="act-head"><span class="act-kicker">Act I</span><h2>Violet Vixar</h2></div>
+   <div><ul class="stats"><li>4,200 HP</li><li>85 s</li><li>Level 10</li></ul></div>
+   <p>The first form. A win starts the board’s celebration, then everything freezes: the violet form shatters and an eye opens in a tear. The reward panel previews every team’s Level 11 form.</p>
+   <a class="start" href="index.html#preview-act1">Start Act I</a>
+  </li>
+  <li class="act" data-act="act2">
+   <div class="figure"><img src="assets/animated/vixar-scarlet.webp?v=11.0.0" alt="Scarlet Vixar" width="1100" height="890" loading="lazy"></div>
+   <div class="act-head"><span class="act-kicker">Act II</span><h2>Scarlet Vixar</h2></div>
+   <div><ul class="stats"><li>5,600 HP</li><li>95 s</li><li>Level 11 · Mythic</li></ul></div>
+   <p>The Scarlet Brand marks one team for six seconds; part of that team’s damage heals Vixar, so the others carry the attack. A win ends in the second escape and a gold crack.</p>
+   <a class="start" href="index.html#preview-act2">Start Act II</a>
+  </li>
+  <li class="act" data-act="act3">
+   <div class="figure"><img src="assets/animated/vixar-gilded.webp?v=11.0.0" alt="Gilded Vixar" width="1100" height="890" loading="lazy"></div>
+   <div class="act-head"><span class="act-kicker">Act III</span><h2>Gilded Vixar</h2></div>
+   <div><ul class="stats"><li>7,000 HP</li><li>110 s</li><li>Level 12 · Celestial</li></ul></div>
+   <p>At 70% HP Vixar casts the Edict of Separation. Answer the Merge Spell on the board to fuse Slyffindor and Huffleclaw, then break the curse. A win leads straight into the Finale.</p>
+   <a class="start" href="index.html#preview-act3">Start Act III</a>
+  </li>
+  <li class="act" data-act="finale">
+   <div class="figure"><img src="assets/saga/mr-saymaz-ready.webp?v=11.0.0" alt="Mr. Saymaz" width="640" height="1120" loading="lazy"></div>
+   <div class="act-head"><span class="act-kicker">After Act III</span><h2>The Finale</h2></div>
+   <div><ul class="stats"><li>7 steps</li><li>Continue</li><li>no fight</li></ul></div>
+   <p>The gold armour cracks, Mr. Saymaz breaks free of the cursed gown, thanks the class line by line and names who carried each house. The hug shows a stand-in until its picture arrives.</p>
+   <a class="start" href="index.html#preview-finale">Start the Finale</a>
+  </li>
+ </ol>
+
+ <section class="guide" aria-label="In the fight">
+  <div><h3>In a fight</h3><p><kbd>Pause</kbd>, <kbd>Skip</kbd> and <kbd>Exit</kbd> sit at the top right. Skip jumps to the end of the fight and plays its result.</p></div>
+  <div><h3>The Merge Spell</h3><p>Click an answer on the board. Two right answers from each house fuse the pair; a wrong answer passes the turn to the partner house.</p></div>
+  <div><h3>Switching</h3><p>The <kbd>Preview</kbd> button at the top of the board changes the act or the display, and goes back to this page.</p></div>
+ </section>
+</main>
+<script>
+(function(){
+ 'use strict';
+ const KEY='englishLeague.previewMode';
+ const notes={animated:'Animated: the creature art, poses and fight effects.',light:'Light: the old-board mode, with still pictures and lighter effects.'};
+ const links=[...document.querySelectorAll('.start')];
+ links.forEach(a=>{a.dataset.base=a.getAttribute('href');});
+ function apply(mode){
+  links.forEach(a=>{a.setAttribute('href',a.dataset.base+(mode==='light'?'-light':''));});
+  document.getElementById('display-note').textContent=notes[mode];
+  try{localStorage.setItem(KEY,mode);}catch{}
+ }
+ let saved='animated';try{saved=localStorage.getItem(KEY)==='light'?'light':'animated';}catch{}
+ document.getElementById('mode-'+saved).checked=true;apply(saved);
+ document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',()=>apply(r.value)));
+})();
+</script>
+</body>
+</html>
