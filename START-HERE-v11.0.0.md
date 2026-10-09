@@ -1,5 +1,7 @@
 # v11.0.0 — The Vixar Saga
 
+**Latest revision: 11.0.0-visual2.** Transparent Finale embrace over the continuous dawn, clearer battle/level labels, remote overlap fixes, and lighter Island Run effects. Open **FINALE-PREVIEW.html** after extracting. See **VISUAL-REFINEMENT.md** and **VISUAL-TEST-REPORT.md**. No additional Apps Script update is needed.
+
 Each class now has its own Vixar Saga: three fights across the term, each against a stronger form of Vixar, ending with Mr. Saymaz freed from the curse. Everything from v10.5.1 is kept: tallies, wheels, the Challenge Deck, the Battle Arena, Island Run, Secret Agent and the Comeback Halo.
 
 ## Deploying this update
@@ -75,4 +77,4 @@ The new combat effects (damage numbers, sparks, hit-stop, the ground warning, sh
 
 ## The art
 
-Mr. Saymaz (portrait, five poses and a six-frame reveal in which he breaks free of the cursed gown) and the two fused creatures, Slyffindor and Huffleclaw (pictures and nine-pose sheets), are in this build. **Still to come (placeholders in the build):** Mr. Saymaz kneeling with his arms open (`public/assets/saga/mr-saymaz-kneel.webp`) and the hug illustration (`public/assets/saga/hug.webp`). Both files are labelled half-size placeholders that the board skips: until they are replaced, he bends down to the little creatures and holds them with his arms open. Replace each file with the real picture under the same name, deploy and reload. Scarlet and Gilded Vixar fight as their full pictures; the placeholders for sharper poses are in `art/vixar-poses/` (see the README there). Details: **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams". Earlier guides are in `archive/`.
+Mr. Saymaz (portrait, five poses and a six-frame reveal in which he breaks free of the cursed gown) and the two fused creatures, Slyffindor and Huffleclaw (pictures and nine-pose sheets), are in this build. The kneeling pose, sunrise hug illustration and 18 high-resolution Vixar poses are now included and enabled. Open ART-PREVIEW.html for an offline art check. Details: ART-UPGRADE.md. Earlier guides are in `archive/`.

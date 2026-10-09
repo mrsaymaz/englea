@@ -157,3 +157,13 @@ body.unity-reward-active #unity-event-overlay .unity-event-kicker{display:none}
 body.unity-reward-active .unity-ascension-level{font-size:clamp(18px,2vw,28px);font-weight:950;color:#fff;line-height:1.1}
 body.unity-reward-active .unity-ascension-step{font-size:clamp(10px,.9vw,13px)}
 body.unity-reward-active #unity-event-skip{display:none}
+
+/* motion1: compact, form-specific Vixar spells. Only transforms/opacity animate. */
+.raid-boss-shot::before { content:""; position:absolute; right:65%; top:43%; width:80%; height:14%; border-radius:999px; background:linear-gradient(90deg,transparent,currentColor); opacity:.65; }
+.raid-boss-shot[data-projectile="chain"]::before,
+.raid-boss-shot[data-projectile="brand"]::before { display:none; }
+.raid-boss-shot[data-form="gilded"]::before { border-radius:1px; height:10%; top:45%; }
+.raid-boss-impact { width:clamp(48px,6vw,84px); height:clamp(48px,6vw,84px); contain:layout style; }
+.raid-boss-impact svg { display:block; width:100%; height:100%; overflow:visible; }
+.raid-boss-block { width:clamp(60px,7vw,104px); height:clamp(60px,7vw,104px); }
+@media (prefers-reduced-motion: reduce) { .raid-boss-shot,.raid-boss-impact { display:none; } }

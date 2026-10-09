@@ -25,7 +25,7 @@
   return vixarForms.includes(id)?{key:id,cols:3,rows:3,states:vixarStates}:null;
  }
  // The tag of each picture: the v10.5.0 sheets keep theirs, so boards that already have them do not download them again.
- const tag=key=>/-1[12]$|^vixar-|^slyffindor$|^huffleclaw$/.test(key)?'11.0.0':'10.5.0';
+ const tag=key=>/^vixar-(scarlet|gilded)$/.test(key)?'11.0.0-art1':/-1[12]$|^slyffindor$|^huffleclaw$/.test(key)?'11.0.0':'10.5.0';
  function load(id,n){
   const p=pack(id,n);if(!p||typeof root.Image!=='function')return Promise.resolve(null);
   let e=cache.get(p.key);if(e){cache.delete(p.key);cache.set(p.key,e);return e.promise;}
@@ -37,7 +37,7 @@
   cache.set(p.key,e);img.src=e.url;while(cache.size>MAX_SHEETS)cache.delete(cache.keys().next().value);return e.promise;
  }
  function loaded(id,n){const p=pack(id,n),e=p&&cache.get(p.key);return e?.ready?e:null;}
- function canonical(p,state){if(p.states.includes(state))return state;return ({charge:'ready',cast:'attack',revive:'proud',knockout:p.key==='vixar'||bosses.includes(p.key)?'defeat':'hit',fatigue:'guard',landing:'guard',acknowledge:'support',arrive:'ready',ultimate:'attack'})[state]||'ready';}
+ function canonical(p,state){if(p.states.includes(state))return state;return ({charge:'ready',cast:'attack',revive:'proud',knockout:vixarForms.includes(p.key)||bosses.includes(p.key)?'defeat':'hit',fatigue:'guard',landing:'guard',acknowledge:'support',arrive:'ready',ultimate:'attack'})[state]||'ready';}
  function index(p,state){return Math.max(0,p.states.indexOf(canonical(p,state)));}
  function frame(e,state){const i=index(e,state),w=e.img.naturalWidth/e.cols,h=e.img.naturalHeight/e.rows;return {x:i%e.cols*w,y:Math.floor(i/e.cols)*h,w,h};}
  function draw(ctx,e,state,x,y,w,h,flip=false){
@@ -76,12 +76,16 @@
  function arena(id,kind,impact){const host=document.getElementById('battle-shell-'+id);if(kind==='revive')clear(host);if(kind==='attack')exchange(host,impact);else act(host,kind,{duration:kind==='knockout'?60000:kind==='guard'?650:kind==='revive'?1100:500});}
  // Read health only. One bracing response on entering the low-HP band, never a per-tick animation.
  function healthChanged(scene,id,hp,maxHP){const host=document.getElementById((scene==='arena'?'battle-shell-':'vixar-avatar-shell-')+id);if(!host||!maxHP)return;const low=hp>0&&hp/maxHP<=.25,was=health.get(host);health.set(host,low);if(low&&!was)act(host,'fatigue',{duration:1100,priority:15});}
- function raid(id,kind,impact){
+ function raid(id,kind,impact,options={}){
   if(id==='guardian')return;
   if(id==='boss'){
-   const el=document.getElementById('vixar-animated-actor');if(!document.body.classList.contains('performance-animated'))return;
+   const el=document.getElementById('vixar-animated-actor');if(!el||(!document.body.classList.contains('performance-animated')&&!document.getElementById('vixar-raid-overlay')?.classList.contains('saga-form-art')))return;
    const state=kind==='attack'?'cast':kind==='cast'?'charge':kind==='arrive'?'ready':kind;
-   show(el,state,{id:el.dataset.poseId||'vixar',duration:kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?1100:650});
+   const poseOptions={id:el.dataset.poseId||'vixar',duration:options.duration||(kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?800:kind==='hit'?310:650),priority:({attack:55,cast:35,hit:60,guard:70,ultimate:90,knockout:100})[kind]||20};
+   if(kind==='attack'&&options.releaseAt){
+    const ticket=epoch,release=Math.max(20,options.releaseAt);
+    if(show(el,'charge',{...poseOptions,duration:release}))after(()=>{if(ticket===epoch)show(el,'cast',{...poseOptions,duration:Math.max(100,poseOptions.duration-release)});},release);
+   }else show(el,state,poseOptions);
   }else{const host=document.getElementById('vixar-avatar-shell-'+id);if(kind==='revive')clear(host);if(kind==='attack')exchange(host,impact||520);else act(host,kind,{duration:kind==='knockout'?60000:kind==='revive'?1100:650});}
  }
  function bossState(b,hit=false){return b?.defeated||b?.state==='defeated'?'defeat':hit?'hit':({arrive:'ready',warn:'ready',strike:'attack',expose:'exposed',counter:'guard',knockout:'attack'})[b?.state]||'ready';}

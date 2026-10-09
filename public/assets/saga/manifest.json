@@ -1,6 +1,6 @@
 {
   "version": "11.0.0",
-  "howTo": "Put each picture in this folder (public/assets/saga/) and write its file name below, then reload the board. A slot left as null keeps the built-in placeholder, and nothing is downloaded for it. Two pictures are still placeholders, half size with their names written on them: mr-saymaz-kneel.webp (Mr. Saymaz kneeling with his arms open, 640 × 1120, framed like his other poses) and hug.webp (the hug illustration, about 1600 × 900). The board skips a kneeling picture under 480 px wide and a hug picture under 1000 px wide and plays the hug with his other poses, so the real picture only has to replace the file under the same name.",
+  "howTo": "Illustrated Mr. Saymaz and the Level 0 reunion. hug.webp is a genuinely transparent 1024-square cutout; the existing Finale dawn is the only background. See VISUAL-REFINEMENT.md.",
   "mrSaymaz": {
     "portrait": "mr-saymaz-portrait.webp",
     "ready": "mr-saymaz-ready.webp",
@@ -22,5 +22,6 @@
   "merged": {
     "slyffindor": "slyffindor.webp",
     "huffleclaw": "huffleclaw.webp"
-  }
+  },
+  "artRevision": "11.0.0-visual2"
 }

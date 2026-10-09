@@ -33,6 +33,16 @@ function harness(){
  return {P,c,actor,advance,ready,settle,images,tasks,nodes,fire,Element};
 }
 (async()=>{
+await test('Vixar anticipates, releases once, and cannot cast after cancellation or defeat',async()=>{
+ for(const interrupted of [false,'clear','knockout']){
+  const h=harness(),{el}=h.actor('boss','vixar-scarlet');el.dataset.poseId='vixar-scarlet';h.nodes.set('vixar-animated-actor',el);
+  h.P.load('vixar-scarlet');await h.ready();h.P.raid('boss','attack',420,{releaseAt:92.4});assert.equal(el.dataset.creaturePose,'charge');
+  h.advance(50);if(interrupted==='clear')h.P.clear();if(interrupted==='knockout')h.P.raid('boss','knockout');
+  h.advance(50);assert.equal(el.dataset.creaturePose,interrupted==='clear'?undefined:interrupted==='knockout'?'defeat':'cast');h.P.clear();
+ }
+ const h=harness(),{el}=h.actor('boss','vixar-gilded');el.dataset.poseId='vixar-gilded';h.nodes.set('vixar-animated-actor',el);
+ h.P.load('vixar-gilded');await h.ready();h.P.raid('boss','cast',undefined,{duration:3600});h.advance(3500);assert.equal(el.dataset.creaturePose,'charge');h.advance(100);assert.equal(el.dataset.creaturePose,undefined);
+});
 await test('All 52 levels (v11.0.0: 0–12), ten bosses and the three Vixar forms resolve to the expected states; invalid IDs cannot form URLs',()=>{
  const {P}=harness();for(const id of ['gryffindor','slytherin','hufflepuff','ravenclaw'])for(let n=0;n<=12;n++){assert.equal(P.pack(id,n).states.length,9);assert.equal(P.pack(id,n).key,id+'-'+n);}
  for(const id of ['veyr','tickthorn','mirrath','rootmaw','vox','kaelis','morrow','noctryn','ferron','astrax'])assert.equal(P.pack(id).states.length,6);
@@ -54,6 +64,9 @@ await test('Knockout interrupts attack; revive removes the knockout lock in Aren
   h.P[scene]('gryffindor','knockout');assert.equal(el.dataset.creaturePose,'hit');assert.equal(h.P.show(el,'proud'),false);
   h.P[scene]('gryffindor','revive');assert.equal(el.dataset.creaturePose,'proud');h.advance(1200);assert.equal(el.dataset.creaturePose,undefined);
  }
+});
+await test('Every Vixar form shows defeat on knockout and retains the nine-state atlas order',async()=>{
+ for(const id of ['vixar','vixar-scarlet','vixar-gilded']){const h=harness(),{el}=h.actor('boss',id);h.P.load(id);await h.ready();h.P.show(el,'knockout',{id});assert.equal(el.dataset.creaturePose,'defeat');assert.equal(el.children[0].style.backgroundPosition,'50% 100%');}
 });
 await test('Pause, hidden document, scene exit and fast-forward cancel or suppress pending visual work',async()=>{
  for(const event of ['league-scene-change','visibilitychange','league-pause-change','pagehide']){const h=harness(),{el}=h.actor('battle-shell-gryffindor');h.P.load('gryffindor',4);await h.ready();h.P.arena('gryffindor','attack');

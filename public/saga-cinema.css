@@ -277,8 +277,8 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 
 /* Mr. Saymaz and the creatures, standing on the ground in the dawn light */
 .finale-stage { transition:transform 1.8s cubic-bezier(.45,0,.2,1); }
-#saga-finale.hug-zoom .finale-stage { transform-origin:var(--zox) var(--zoy); transform:translate(var(--zx),var(--zy)) scale(1.55); }
-#saga-finale.hug-zoom[data-step="closing"] .finale-stage { transform:translate(var(--zx),var(--zy2)) scale(1.2); }
+#saga-finale.hug-zoom .finale-stage { transform-origin:var(--zox) var(--zoy); transform:translate(var(--zx),var(--zy)) scale(var(--hug-zoom,1.55)); }
+#saga-finale.hug-zoom[data-step="closing"] .finale-stage { transform:translate(var(--zx),var(--zy)) scale(var(--hug-zoom,1.55)); }
 .finale-teacher { transition:opacity 1s ease,transform .9s cubic-bezier(.2,.8,.2,1); z-index:2; transform-origin:50% 100%; }
 .finale-teacher::before { content:''; position:absolute; left:16%; right:16%; bottom:-1.6%; height:6%; border-radius:50%; background:radial-gradient(ellipse at center,rgba(20,6,16,.62),rgba(20,6,16,0) 70%); }
 #saga-finale[data-step="hug"] .finale-teacher { opacity:1; }
@@ -303,8 +303,8 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 .finale-hearts { position:absolute; inset:0; pointer-events:none; z-index:5; }
 .finale-heart { position:absolute; left:calc(var(--hx,50%) + var(--off,0px)); top:calc(var(--hy,40%) - 60px); width:22px; height:20px; margin-left:-11px; opacity:0;
   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'><path fill='%23fb7185' d='M12 21C5 15 1 11 1 6.5 1 3.4 3.5 1 6.5 1c2.1 0 4.1 1.2 5.5 3 1.4-1.8 3.4-3 5.5-3C20.5 1 23 3.4 23 6.5 23 11 19 15 12 21z'/></svg>") center/contain no-repeat; }
-.finale-hug { position:absolute; inset:0; z-index:5; margin:0; display:block; }
-.finale-hug img { width:100%; height:100%; object-fit:cover; border-radius:0; display:block; }
+.finale-hug { position:absolute; inset:0; z-index:5; margin:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8vh; pointer-events:none; background:transparent; }
+.finale-hug img { width:min(86vw,64vh); height:auto; max-height:72vh; aspect-ratio:1; object-fit:contain; object-position:center bottom; border-radius:0; display:block; }
 
 /* The dialogue box (above the controls) */
 .finale-dialogue { position:absolute; left:50%; bottom:5.4rem; z-index:6; width:min(980px,88vw); transform:translateX(-50%); padding:1.4rem 2.2rem 1.3rem; border-radius:12px; text-align:left;
@@ -338,7 +338,7 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 .finale-closing { top:4%; width:min(1100px,94vw); padding:0; border:0; border-radius:0; background:none; z-index:7; text-align:center; }
 .finale-ornament { width:min(40vw,360px); height:18px; display:block; margin:0 auto .5rem; overflow:visible; }
 .finale-ornament path { fill:none; stroke:#fcd34d; stroke-width:1.5; } .finale-ornament .gem { fill:#fcd34d; stroke:#fffbeb; }
-.finale-closing-title { margin:.2rem 0 .1rem; font-family:var(--saga-display); font-weight:900; font-size:clamp(1.9rem,5vw,4.4rem); line-height:1.05; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+.finale-closing-title { margin:.2rem 0 .1rem; font-family:var(--saga-display); font-weight:900; font-size:clamp(1.6rem,min(5vw,7.2vh),4.4rem); line-height:1.05; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
   background:linear-gradient(180deg,#fffbeb,#fde68a 45%,#d97706); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 6px 24px rgba(0,0,0,.55)); }
 .finale-closing-line { margin:.1rem 0 0; font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:clamp(1.15rem,2.2vw,1.8rem); color:#fef3c7; font-weight:400; }
 .finale-date { margin-top:.3rem; font:700 .85rem var(--saga-body); letter-spacing:.2em; color:#fcd34d; }
@@ -352,3 +352,31 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 #saga-finale .finale-creature .animated-avatar { transform:none; }
 #saga-finale .finale-creature:nth-child(-n+2) .animated-avatar[data-native-facing="left"],
 #saga-finale .finale-creature:nth-child(n+3) .animated-avatar[data-native-facing="right"] { transform:scaleX(-1); }
+
+/* finale1: keep all five faces in frame; text belongs in the quiet sky. */
+#saga-finale [hidden] { display:none !important; }
+#saga-finale.hug-art-ready .finale-teacher,
+#saga-finale.hug-art-ready .finale-creatures { visibility:hidden; }
+#saga-finale.still .finale-stage,#saga-finale.still .finale-teacher { transition:none; }
+@media (prefers-reduced-motion:reduce) {
+ #saga-finale .finale-stage,#saga-finale .finale-teacher { transition:none; }
+}
+@media (max-height:540px) {
+ .finale-closing { top:2%; }
+ .finale-ornament { height:10px;margin-bottom:2px; }
+ .finale-closing-line { font-size:clamp(.8rem,2.5vh,1.2rem); }
+ .finale-date,.finale-the-end { font-size:.65rem;margin-top:3px; }
+}
+
+/* visual2: the final picture is a transparent actor layer over the continuous dawn. */
+#saga-finale[data-step="closing"] .finale-closing { max-height:29vh; }
+.finale-caption { bottom:5.2rem; max-width:min(88vw,900px); padding:.45rem 1.2rem; text-wrap:balance; }
+.finale-closing-title { white-space:normal; text-wrap:balance; }
+.finale-dialogue { max-height:35vh; overflow-y:auto; overscroll-behavior:contain; }
+.finale-house { min-width:0; }
+.finale-person strong { overflow-wrap:anywhere; }
+@media (max-width:760px) {
+ .finale-name-grid { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:62vh; overflow-y:auto; }
+ .finale-house:nth-child(3) { grid-column:auto; }
+ .finale-house { padding:.7rem .4rem 1.4rem; }
+}

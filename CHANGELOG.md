@@ -1,3 +1,22 @@
+# 11.0.0-visual2 · Continuous Finale and visual refinement
+
+- Transparent reunion uses the existing dawn background and matched camera framing.
+- Refined labels, recognition panels, remote clearance, focus states and runner motion.
+- Added asset/alpha/continuity checks; updated an obsolete boss cache assertion.
+- No gameplay, progression, curriculum or Apps Script changes.
+
+# 11.0.0-finale1 · Illustrated Finale
+
+- Integrated the revised Mr. Saymaz portrait, six poses and six liberation frames.
+- Added the matching Level 0 sunrise embrace; kept the title above all faces.
+- Corrected kneeling alignment, decode readiness, skip cancellation and animation pause/resume.
+- Added an offline Finale rehearsal and nine automated integration test groups.
+- All earned class/team progress remains unchanged by the visual transformation.
+
+# v11.0.0 art revision — 11.0.0-art1
+
+Finished kneeling and title-safe reunion artwork; 18 native-resolution Scarlet/Gilded poses; active 640 px atlas cells; matched idle registration; correct defeat mapping for all Vixar forms; slow-load-safe Finale illustration; offline artwork preview. See ART-UPGRADE.md and ART-TEST-REPORT.md.
+
 # Changelog
 
 Newest first. Full notes for earlier versions are in `archive/`.

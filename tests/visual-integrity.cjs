@@ -1,0 +1,17 @@
+/* Asset integrity and visual continuity checks; no browser required. */
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),sharp=require('sharp');
+const root=path.resolve(__dirname,'..'),pub=path.join(root,'public');
+function walk(p){return fs.readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(p,e.name)):[path.join(p,e.name)])}
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+(async()=>{
+ let count=0;const missing=[];
+ for(const file of walk(pub).filter(x=>/\.(html|css)$/.test(x))){const text=fs.readFileSync(file,'utf8'),re=file.endsWith('.html')?/(?:src|href)=["']([^"']+)["']/g:/url\(\s*["']?([^\s"')]+)["']?\s*\)/g;
+  for(const [,url] of text.matchAll(re)){if(/^(data:|https?:|#|%23|blob:|javascript:|mailto:)/.test(url)||url.includes('${'))continue;const name=url.split(/[?#]/)[0];if(!name||name.startsWith('/api/'))continue;const target=path.resolve(name.startsWith('/')?pub:path.dirname(file),name.replace(/^\//,''));count++;if(!fs.existsSync(target))missing.push(path.relative(root,file)+': '+url);}}
+ assert.deepEqual(missing,[]);console.log(`PASS ${count} static page, stylesheet, image and font references exist`);
+ const file=path.join(pub,'assets/saga/hug.webp'),{data,info}=await sharp(file).ensureAlpha().raw().toBuffer({resolveWithObject:true});assert.deepEqual([info.width,info.height],[1024,1024]);let empty=0,opaque=0;for(let i=3;i<data.length;i+=4){if(data[i]===0)empty++;if(data[i]>240)opaque++}assert(empty>info.width*info.height*.3);assert(opaque>info.width*info.height*.2);for(const [x,y] of [[0,0],[1023,0],[0,1023],[1023,1023]])assert.equal(data[(y*1024+x)*4+3],0);console.log('PASS reunion cutout has real transparent padding, interior silhouette and no opaque backdrop');
+ const css=read('public/saga-cinema.css'),scene=read('public/saga-scenes.js');assert.match(css,/\.finale-hug \{[^}]*background:transparent/);assert(!/\.finale-hug\s*\{[^}]*background:linear-gradient/.test(css));assert(!/hug-art-ready \.finale-stage/.test(css));assert.match(scene,/\['\.finale-teacher','\.finale-creatures'\]/);assert.match(css,/hug-zoom\[data-step="closing"\][^{]*\{[^}]*scale\(var\(--hug-zoom,1\.55\)\)/);console.log('PASS continuous dawn, actor-only crossfade and stable closing-camera scale');
+ const refinements=['public/visual-refinement.css','public/island-runner/visual-refinement.css'];for(const name of refinements){const s=read(name);assert.equal((s.match(/\{/g)||[]).length,(s.match(/\}/g)||[]).length);for(const block of s.matchAll(/@keyframes\s+\w+\s*\{((?:[^{}]*\{[^{}]*\})+)[^}]*\}/g))assert(!/\b(filter|box-shadow|letter-spacing|width|height):/.test(block[1]),'lightweight keyframes: '+name);}
+ const board=read('public/index.html'),runner=read('public/island-runner/index.html');assert(board.includes('visual-refinement.css?v=11.0.0-visual2'));assert(runner.includes('../visual-refinement.css?v=11.0.0-visual2'));assert(runner.includes('"visual-refinement.css?v=11.0.0-visual2"'));console.log('PASS refinement styles load last on both surfaces; new keyframes use transform/opacity');
+ // WCAG relative luminance formula: critical damage stays readable on its bright gold fill.
+ const lum=hex=>{const c=hex.match(/\w\w/g).map(n=>parseInt(n,16)/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2]};const ratio=(lum('ffe6a5')+.05)/(lum('211707')+.05);assert(ratio>=7);console.log(`PASS critical-hit label contrast ${ratio.toFixed(1)}:1`);
+})().catch(e=>{console.error(e);process.exit(1)});

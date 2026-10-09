@@ -1161,7 +1161,7 @@
       "file": "vixar-gilded.webp",
       "cols": 3,
       "rows": 3,
-      "cell": 448,
+      "cell": 640,
       "states": [
         "ready",
         "charge",
@@ -1173,14 +1173,14 @@
         "defeat",
         "proud"
       ],
-      "bytes": 538794,
-      "sha256": "3060eb42e464f35e0ead70dec6440bc376f9c1b6dcb927162dddfd3784aafe8a"
+      "bytes": 1241274,
+      "sha256": "42d5cf8adef569f32dbabbb22216460c5668ed954f13f644824e4453d13eacb6"
     },
     "vixar-scarlet": {
       "file": "vixar-scarlet.webp",
       "cols": 3,
       "rows": 3,
-      "cell": 448,
+      "cell": 640,
       "states": [
         "ready",
         "charge",
@@ -1192,8 +1192,8 @@
         "defeat",
         "proud"
       ],
-      "bytes": 426192,
-      "sha256": "03174a65a593ae4cd4e673a7cf50674f8db9dae497d4714b030626f85f9a9258"
+      "bytes": 1039488,
+      "sha256": "d0f6eaf74fa4f62b752bea8e22f16be6427347d42b5e79cc3167608e9283ec8d"
     },
     "vox": {
       "file": "vox.webp",

@@ -1,5 +1,7 @@
 # English League v11.0.0 — The Vixar Saga
 
+**Latest revision: 11.0.0-visual2.** Transparent Finale embrace over the continuous dawn, clearer battle/level labels, remote overlap fixes, and lighter Island Run effects. Open **FINALE-PREVIEW.html** after extracting. See **VISUAL-REFINEMENT.md** and **VISUAL-TEST-REPORT.md**. No additional Apps Script update is needed.
+
 Vixar is no longer one fight. Each class now plays its own three-act saga across the term: break the **Violet** form, then the **Scarlet** form, then the **Gilded** form, and free Mr. Saymaz from the curse. Start with **START-HERE-v11.0.0.md**.
 
 - **Three acts, one class at a time.** Each win moves the class to the next form and raises its level cap: Level 10 → **11 (Mythic)** → **12 (Celestial)**. The new cap starts from the next session.
@@ -15,7 +17,7 @@ Vixar is no longer one fight. Each class now plays its own three-act saga across
 
 **Upgrading from v10.5.1:** paste **GOOGLE-APPS-SCRIPT-v11.0.0.gs** into the Apps Script editor and deploy it as a **New version** of the existing web app. It adds two tabs (**Vixar_Saga**, **Vixar_Finale_Lines**) and logs Merge Spell answers in **Challenge_Log**. No new Netlify or Cloudflare environment variables. Then deploy the whole project and reload the board and the phone (both show **v11.0.0**).
 
-**Art still to come (placeholders in the build):** Mr. Saymaz kneeling with his arms open (`public/assets/saga/mr-saymaz-kneel.webp`), the hug illustration (`public/assets/saga/hug.webp`) and, optionally, sharper Scarlet and Gilded Vixar poses (`art/vixar-poses/`, 18 pictures). Each placeholder is a labelled half-size picture under its final name; the board never shows them. Replace a file with the real picture under the same name. Until then the hug plays with his other poses, and the two forms fight as their full pictures. See **CREATURES-v11.0.0.md** → "Mr. Saymaz and the fused teams".
+**Art upgrade included:** Mr. Saymaz kneeling, the sunrise reunion with all four Level 0 creatures, and 18 high-resolution Scarlet/Gilded Vixar poses are installed. Both boss pose sheets are enabled. Open **ART-PREVIEW.html** directly on your computer to inspect the new artwork; see **ART-UPGRADE.md** for details.
 
 ## Verification
 

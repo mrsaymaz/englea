@@ -19,10 +19,10 @@
 
  // ---- Art slots ----
  let manifest={mrSaymaz:{},reveal:[],hug:null,merged:{}};let manifestLoaded=false;
- const ready=(async()=>{try{const r=await fetch('./assets/saga/manifest.json?v=11.0.0',{cache:'no-cache'});if(r.ok){const m=await r.json();manifest={mrSaymaz:m?.mrSaymaz||{},reveal:Array.isArray(m?.reveal)?m.reveal.slice(0,12):[],hug:m?.hug||null,merged:m?.merged||{}};}}catch{}manifestLoaded=true;
+ const ready=(async()=>{try{const r=await fetch('./assets/saga/manifest.json?v=11.0.0-visual2',{cache:'no-cache'});if(r.ok){const m=await r.json();manifest={mrSaymaz:m?.mrSaymaz||{},reveal:Array.isArray(m?.reveal)?m.reveal.slice(0,12):[],hug:m?.hug||null,merged:m?.merged||{}};}}catch{}manifestLoaded=true;
   doc.dispatchEvent(new CustomEvent('league-saga-art'));})();
  const safe=name=>typeof name==='string'&&/^[A-Za-z0-9._-]{1,80}\.(webp|png|jpg|jpeg)$/i.test(name)?name:null;
- const artUrl=name=>safe(name)?`./assets/saga/${safe(name)}?v=11.0.0`:null;
+ const artUrl=name=>safe(name)?`./assets/saga/${safe(name)}?v=${/^(mr-saymaz-|hug\.)/.test(name)?'11.0.0-visual2':'11.0.0'}`:null;
  function teacherUrl(pose){const m=manifest.mrSaymaz||{};return artUrl(m[pose])||artUrl(m.ready)||null;}
  // Placeholder until Mr. Saymaz's picture is added: a warm figure of light, clearly a person, not a caricature.
  function silhouette(label=true){
@@ -117,7 +117,7 @@
   curtain.querySelector('.saga-intro-art')?.remove();curtain.querySelector('.saga-intro-form')?.remove();
   if(!act)return;
   const form=el('div','saga-intro-form');form.setAttribute('aria-hidden','true');
-  form.innerHTML=`<img src="./assets/animated/${act.art}.webp?v=${act.act>1?'11.0.0':'6.7'}" alt="" decoding="async">`;
+  form.innerHTML=`<img src="./assets/animated/${act.art}.webp?v=${act.act>1?'11.0.0-art1':'6.7'}" alt="" decoding="async">`;
   curtain.prepend(form);
  }
 
@@ -152,12 +152,12 @@
   const top=el('div','saga-letterbox top'),bottom=el('div','saga-letterbox bottom');
   const victory=el('div','saga-victory');victory.innerHTML='<b>VICTORY</b><small>The form falls</small><div class="frozen"><b>VICTORY</b><small>The form falls</small></div>';
   const form=el('div','saga-form');set(form,{left:`${box.left-a.left}px`,top:`${box.top-a.top}px`,width:`${box.width}px`,height:`${box.height}px`});
-  const src=`./assets/animated/${act.art}.webp?v=${act.act>1?'11.0.0':'6.7'}`;
+  const src=`./assets/animated/${act.art}.webp?v=${act.act>1?'11.0.0-art1':'6.7'}`;
   const pieces=PIECES.map(pts=>{const p=el('div','saga-piece');const poly=[];for(let i=0;i<pts.length;i+=2)poly.push(`${pts[i]}% ${pts[i+1]}%`);p.style.clipPath=`polygon(${poly.join(',')})`;
    p.innerHTML=`<img src="${src}" alt="" decoding="async">`;form.append(p);
    let cx=0,cy=0;const n=pts.length/2;for(let i=0;i<pts.length;i+=2){cx+=pts[i];cy+=pts[i+1];}p._dir=[cx/n-50,cy/n-46];return p;});
   const core=el('div','saga-core');core.style.setProperty('--glow',glow);form.append(core);
-  const rift=el('div','saga-rift'),riftColor=next?.color||'#f43f5e',nextSrc=next?`./assets/animated/${next.art}.webp?v=11.0.0`:'';
+  const rift=el('div','saga-rift'),riftColor=next?.color||'#f43f5e',nextSrc=next?`./assets/animated/${next.art}.webp?v=11.0.0-art1`:'';
   rift.style.setProperty('--rift',riftColor);
   rift.innerHTML=`<svg viewBox="0 0 400 600" preserveAspectRatio="none"><defs><clipPath id="sagaRiftClip"><path d="${RIFT}"/></clipPath><radialGradient id="sagaRiftVoid" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="${riftColor}" stop-opacity=".45"/><stop offset="1" stop-color="#000"/></radialGradient><radialGradient id="sagaRiftDepth" cx=".5" cy=".47" r=".5"><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity=".75"/><stop offset="1" stop-color="#000" stop-opacity=".95"/></radialGradient></defs>
    <path d="${RIFT}" fill="url(#sagaRiftVoid)"/>${nextSrc?`<image href="${nextSrc}" x="-550" y="40" width="1500" height="1214" preserveAspectRatio="xMidYMid meet" clip-path="url(#sagaRiftClip)" opacity=".9"/>`:''}<path d="${RIFT}" fill="url(#sagaRiftDepth)"/>
@@ -276,7 +276,7 @@
   host.querySelector('.finale-teacher').append(teacherArt('ready'));
   finale.reveal=preloadReveal(still);
   // The hug's poses load while the armour cracks, so they are ready when he bends down and opens his arms.
-  if(!still)for(const url of [teacherUrl('bow'),teacherUrl('support')])if(url){const img=new Image();img.decoding='async';img.src=url;}
+  for(const url of ['ready','proud','support','wave','bow'].map(teacherUrl))if(url){const img=new Image();img.decoding='async';img.src=url;}
   finale.kneelArt=slotArt(artUrl(manifest.mrSaymaz?.kneel),KNEEL_MIN);finale.hugArt=slotArt(artUrl(manifest.hug),HUG_MIN);
   const creatures=host.querySelector('.finale-creatures');
   for(const t of options.teams||[]){const c=el('div','finale-creature');c.dataset.house=t.id;c.style.setProperty('--team-color',t.color);c.innerHTML=`<div class="finale-creature-art">${t.markup||''}</div><i class="finale-creature-glow"></i>`;creatures.append(c);}
@@ -286,14 +286,22 @@
   enterStep();
   return true;
  }
- function play(node,frames,opts){if(!finale||finale.still||root.SceneRuntime?.fastForwarding||typeof node?.animate!=='function')return null;const a=node.animate(frames,opts);finale.anims.add(a);a.finished.catch(()=>{}).then(()=>finale?.anims.delete(a));return a;}
+ // Animation objects need the same pause lifecycle as the scene clock.
+ function play(node,frames,opts){
+  const f=finale;if(!f||f.still||f.settling||root.SceneRuntime?.fastForwarding||typeof node?.animate!=='function')return null;
+  const a=node.animate(frames,opts);f.anims.add(a);if(root.SceneRuntime?.paused)a.pause();
+  a.finished.catch(()=>{}).then(()=>f.anims.delete(a));return a;
+ }
+ doc.addEventListener('league-pause-change',e=>{
+  for(const a of finale?.anims||[])try{if(e.detail?.paused)a.pause();else if(a.playState==='paused')a.play();}catch{}
+ });
  function enterStep(){
   const f=finale;if(!f)return;const step=STEPS[f.step],host=f.host;
   host.dataset.step=step;root.LeagueScenes?.phase?.('finale',step);
   host.querySelector('.finale-step').textContent=f.replay?`Replay · ${STEP_NAMES[step]}`:STEP_NAMES[step];
   const bubble=host.querySelector('.finale-dialogue');bubble.hidden=step!=='speech';
   host.querySelector('.finale-names').hidden=step!=='names';host.querySelector('.finale-closing').hidden=step!=='closing';
-  host.querySelector('.finale-hug').hidden=!(step==='hug'||step==='closing')||!host.querySelector('.finale-hug img');
+  host.querySelector('.finale-hug').hidden=!(step==='hug'||step==='closing')||!f.hugImageReady;
   const teacher=host.querySelector('.saga-teacher-art');
   if(step!=='reveal')endReveal(f);
   caption(f,CAPTIONS[step]);
@@ -337,7 +345,8 @@
   }else if(step==='hug'){
    hugScene(f);
   }else if(step==='closing'){
-   if(!f.hugDone)hugScene(f,true);
+   if(!f.hugComplete)hugScene(f,true);
+   showHugIllustration(f);
    host.querySelector('.finale-closing-line').textContent=`${f.className} freed Mr. Saymaz.`;
    host.querySelector('.finale-date').textContent=f.date||'';
    play(host.querySelector('.finale-closing'),[{opacity:0,transform:'translate(-50%,12px)'},{opacity:1,transform:'translate(-50%,0)'}],{duration:1100,fill:'backwards',easing:'ease-out'});
@@ -352,7 +361,14 @@
  function preloadReveal(still){
   const names=(manifest.reveal||[]).map(artUrl);if(names.length<2||names.some(u=>!u))return null;
   const urls=still?[names[names.length-1]]:names,r={frames:[],failed:false,index:-1,done:false};
-  for(const url of urls){const img=new Image();img.className='finale-reveal-frame';img.alt='';img.decoding='async';img.onerror=()=>{r.failed=true;};img.src=url;img.decode?.().catch(()=>{});r.frames.push(img);}
+  // Keep the standing pose visible until every liberation frame is ready to paint.
+  r.loaded=Promise.all(urls.map(url=>new Promise(resolve=>{
+   const img=new Image();img.className='finale-reveal-frame';img.alt='';img.decoding='async';r.frames.push(img);
+   img.onerror=()=>{r.failed=true;resolve(false);};
+   img.onload=()=>{if(!img.naturalWidth){r.failed=true;resolve(false);return;}
+    Promise.resolve(img.decode?.()).then(()=>resolve(true),()=>{r.failed=true;resolve(false);});};
+   img.src=url;
+  })));
   return r;
  }
  function revealFrame(f,i){
@@ -363,6 +379,14 @@
   r.index=i;if(!f.still&&REVEAL_SOUNDS[i])f.sound?.(REVEAL_SOUNDS[i]);f.onChange?.();
  }
  function playReveal(f){
+  const r=f.reveal;if(!r)return;
+  r.loaded.then(()=>after(()=>{
+   if(finale!==f||STEPS[f.step]!=='reveal'||r.done)return;
+   if(r.failed){caption(f,CAPTIONS.freed);return;}
+   beginReveal(f);
+  },0));
+ }
+ function beginReveal(f){
   const r=f.reveal,wrap=f.host.querySelector('.finale-teacher');if(!r||r.failed||!wrap)return;
   const layer=el('div','finale-reveal');layer.setAttribute('aria-hidden','true');
   r.frames.forEach(img=>{img.style.opacity='0';layer.append(img);});
@@ -379,7 +403,7 @@
  }
  function endReveal(f,fade=false){
   const wrap=f?.host.querySelector('.finale-teacher'),layer=wrap?.querySelector('.finale-reveal');
-  if(f?.reveal){f.reveal.done=true;f.reveal.index=-1;}
+  if(f?.reveal){if(layer||STEPS[f.step]!=='crack'&&STEPS[f.step]!=='break')f.reveal.done=true;f.reveal.index=-1;}
   if(!layer){wrap?.classList.remove('revealing');return;}
   wrap.classList.remove('revealing');
   if(fade){play(wrap.querySelector('.saga-teacher-art'),[{opacity:0},{opacity:1}],{duration:520,easing:'ease-out'});const a=play(layer,[{opacity:1},{opacity:0}],{duration:520,easing:'ease-out'});if(a){a.finished.catch(()=>{}).then(()=>layer.remove());f.onChange?.();return;}}
@@ -388,22 +412,50 @@
  // ---- The hug: the four Celestial creatures glow and turn back into their Level 0 selves, run to Mr. Saymaz, he bends
  // down to them, opens his arms, the camera moves in and the little ones jump into his arms. About six seconds; Light
  // mode and reduced motion show the last frame at once (instant: the same, for Skip and the closing card).
- // Two pictures replace the stand-ins when they are added (manifest: mrSaymaz.kneel, then hug). The build ships half-size
- // placeholders under those names, with their names written on them; the board skips a picture under the minimum
- // width and keeps the stand-ins, so the real picture only has to replace the file. Both load while the Finale runs.
+ // Both finished pictures load while the Finale runs. A failed or undersized replacement retains the live scene.
  const KNEEL_MIN=480,HUG_MIN=1000;
- function slotArt(url,min){const r={ok:false,src:null};if(!url)return r;const img=new Image();img.decoding='async';img.onload=()=>{r.ok=img.naturalWidth>=min;r.src=r.ok?url:null;};img.src=url;return r;}
- // Where each little one lands, as fractions of his picture (640 × 1120): two in front at his waist, two at his shoulders.
+ function slotArt(url,min){const r={ok:false,src:null,promise:Promise.resolve(null)};if(!url)return r;const img=new Image();img.decoding='async';
+  r.promise=new Promise(resolve=>{img.onload=()=>{r.ok=img.naturalWidth>=min;r.src=r.ok?url:null;resolve(r.src);};img.onerror=()=>resolve(null);});img.src=url;return r;}
+ function showHugIllustration(f){
+  if(f.hugPictureRequested)return;f.hugPictureRequested=true;
+  Promise.resolve(f.hugArt?.promise).then(url=>{
+   if(!url||finale!==f||!['hug','closing'].includes(STEPS[f.step]))return;
+   const hug=f.host.querySelector('.finale-hug');if(!hug||hug.querySelector('img'))return;
+   const img=new Image();img.alt='Mr. Saymaz hugs the four little creatures';img.decoding='async';
+   img.onload=()=>after(()=>{if(finale!==f||!['hug','closing'].includes(STEPS[f.step]))return;f.hugImageReady=true;hug.hidden=false;
+    // Crossfade only the actors. The dawn, ground, light and particles never change scenes.
+    const duration=f.still?0:900;
+    play(hug,[{opacity:0},{opacity:1}],{duration,easing:'ease-in-out'});
+    for(const selector of ['.finale-teacher','.finale-creatures']){
+     const actor=f.host.querySelector(selector);if(!actor)continue;actor.style.opacity='0';
+     play(actor,[{opacity:1},{opacity:0}],{duration,easing:'ease-in-out'});
+    }
+    after(()=>{if(finale===f)f.host.classList.add('hug-art-ready');},duration);
+   },0);
+   img.onerror=()=>{img.remove();hug.hidden=true;};hug.append(img);img.src=url;
+  });
+ }
+ // Where each little one lands, measured within the shared portrait canvas.
  const ARMS={gryffindor:{x:.37,y:.45,h:.21,z:4},hufflepuff:{x:.64,y:.46,h:.21,z:4},slytherin:{x:.27,y:.31,h:.2,z:3},ravenclaw:{x:.74,y:.3,h:.2,z:3}};
- const KNEEL_DROP=.22; // a kneeling picture holds them lower
+ const KNEEL_ARMS={gryffindor:{x:.34,y:.75,h:.19,z:4},hufflepuff:{x:.68,y:.75,h:.19,z:4},slytherin:{x:.28,y:.65,h:.15,z:3},ravenclaw:{x:.75,y:.59,h:.16,z:3}};
+ function containedPortrait(rect){
+  const scale=Math.min(rect.width/1024,rect.height/1792),width=1024*scale,height=1792*scale;
+  return {width,height,left:rect.left+(rect.width-width)/2,top:rect.top+(rect.height-height)/2};
+ }
+ function reunionFraming(width,height,portraitHeight){
+  const canvas=Math.min(width*.86,height*.64);
+  return {zoom:canvas*.796/(Math.max(1,portraitHeight)*.583),centerY:height*.92-canvas*.488};
+ }
  function hugScene(f,instant=false){
   const host=f.host,stage=host.querySelector('.finale-stage'),box=host.querySelector('.finale-teacher'),teacher=host.querySelector('.saga-teacher-art'),creatures=[...host.querySelectorAll('.finale-creature')];
-  const still=f.still||instant,kneel=f.kneelArt?.src||null,hugUrl=f.hugArt?.src||null;
-  const at=(ms,fn)=>{if(still){fn();return;}after(()=>{if(finale===f&&['hug','closing'].includes(STEPS[f.step]))fn();},ms);};
+  const still=f.still||instant,epoch=f.hugEpoch=(f.hugEpoch||0)+1;
+  if(instant){for(const a of f.anims)try{a.cancel();}catch{}f.anims.clear();}
+  f.settling=still;
+  const at=(ms,fn)=>{if(still){fn();return;}after(()=>{if(finale===f&&f.hugEpoch===epoch&&['hug','closing'].includes(STEPS[f.step]))fn();},ms);};
   f.hugDone=true;host.classList.remove('cubs-home','hugging','kneeling','hug-zoom');
   creatures.forEach(c=>{c.style.transform='';c.style.transformOrigin='';c.style.zIndex='';});
   // 1 · the glow and the change.
-  creatures.forEach((c,i)=>{const team=(f.teams||[])[i],glow=c.querySelector('.finale-creature-glow');
+  creatures.forEach((c,i)=>{const team=(f.teams||[]).find(t=>t.id===c.dataset.house),glow=c.querySelector('.finale-creature-glow');
    if(!still)play(glow,[{opacity:0,transform:'translate(-50%,-50%) scale(.6)'},{opacity:1,transform:'translate(-50%,-50%) scale(1.15)',offset:.7},{opacity:0,transform:'translate(-50%,-50%) scale(1.4)'}],{duration:1300,delay:i*140,easing:'ease-out'});
    at(800+i*140,()=>{const art=c.querySelector('.finale-creature-art');if(!c.classList.contains('is-baby')){art.innerHTML=team?.baby||art.innerHTML;c.classList.add('is-baby');}
     play(art,[{transform:'scale(.4)',opacity:.2},{transform:'scale(1.12)',opacity:1,offset:.6},{transform:'scale(1)',opacity:1}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});});});
@@ -416,35 +468,35 @@
   at(2500,()=>setTeacherPose(teacher,'bow'));
   // 3 · he kneels and opens his arms; the camera moves in; they jump into his arms.
   at(3500,()=>{
+   const kneel=f.kneelArt?.src||null;
    if(kneel){teacher.dataset.pose='kneel';const img=teacher.querySelector('img');if(img)img.src=kneel;}else setTeacherPose(teacher,'support');
    host.classList.add('kneeling');
    // Measured once on the un-zoomed stage: his picture (contain, centred) and each little one's picture.
    const prev=stage.style.transform;stage.style.transform='none';
-   const s=stage.getBoundingClientRect(),t=box.getBoundingClientRect(),ih=t.height,iw=Math.min(t.width,ih*640/1120),ix=t.left+(t.width-iw)/2,iy=t.top,drop=kneel?KNEEL_DROP:0;
-   creatures.forEach(c=>{const spot=ARMS[c.dataset.house];if(!spot)return;const saved=c.style.transform;c.style.transform='none';
+   const s=stage.getBoundingClientRect(),t=containedPortrait(box.getBoundingClientRect()),ih=t.height,iw=t.width,ix=t.left,iy=t.top;
+   creatures.forEach(c=>{const spot=(kneel?KNEEL_ARMS:ARMS)[c.dataset.house];if(!spot)return;const saved=c.style.transform;c.style.transform='none';
     const cb=c.getBoundingClientRect(),ab=c.querySelector('.finale-creature-art').getBoundingClientRect();c.style.transform=saved;
     const ox=ab.left-cb.left+ab.width/2,oy=ab.top-cb.top+ab.height/2,scale=spot.h*ih/Math.max(ab.height,1);
-    const dx=ix+spot.x*iw-(cb.left+ox),dy=iy+(spot.y+drop)*ih-(cb.top+oy),home=parseFloat(c.style.getPropertyValue('--home'))||0;
+    const dx=ix+spot.x*iw-(cb.left+ox),dy=iy+spot.y*ih-(cb.top+oy),home=parseFloat(c.style.getPropertyValue('--home'))||0;
     const end=`translate(${dx.toFixed(0)}px,${dy.toFixed(0)}px) scale(${scale.toFixed(3)})`;
     c.style.transformOrigin=`${ox.toFixed(0)}px ${oy.toFixed(0)}px`;c.style.zIndex=String(spot.z);
     if(!still)play(c,[{transform:`translateX(${home}px)`},{transform:`translate(${((home+dx)/2).toFixed(0)}px,${(Math.min(0,dy)-70).toFixed(0)}px) scale(${((1+scale)/2).toFixed(3)})`,offset:.5},{transform:end}],{duration:760,delay:200+(spot.z===4?0:160),easing:'cubic-bezier(.3,.7,.4,1)',fill:'backwards'});
     c.style.transform=end;});
-   // The camera: his chest moves to the middle of the screen, 1.55× closer; for the end card, lower and less close.
-   const cx=ix+iw*.5-s.left,cy=iy+ih*(.36+drop*.6)-s.top,W=root.innerWidth||s.width,H=root.innerHeight||s.height;
+   // Match the cutout's head/foot band at different board aspect ratios; the background stays still.
+   const cx=ix+iw*.5-s.left,cy=iy+ih*(kneel?.69:.36)-s.top,W=root.innerWidth||s.width,H=root.innerHeight||s.height;
+   const framing=reunionFraming(W,H,ih);host.style.setProperty('--hug-zoom',String(framing.zoom));
    host.style.setProperty('--zox',`${cx.toFixed(0)}px`);host.style.setProperty('--zoy',`${cy.toFixed(0)}px`);
-   host.style.setProperty('--zx',`${(W/2-s.left-cx).toFixed(0)}px`);host.style.setProperty('--zy',`${(H*.46-s.top-cy).toFixed(0)}px`);host.style.setProperty('--zy2',`${(H*.67-s.top-cy).toFixed(0)}px`);
+   host.style.setProperty('--zx',`${(W/2-s.left-cx).toFixed(0)}px`);host.style.setProperty('--zy',`${(framing.centerY-s.top-cy).toFixed(0)}px`);host.style.setProperty('--zy2',`${(framing.centerY-s.top-cy).toFixed(0)}px`);
    stage.style.transform=prev;host.classList.add('hug-zoom');
    host.querySelectorAll('.finale-hearts').forEach(h=>{h.style.setProperty('--hx',`${cx.toFixed(0)}px`);h.style.setProperty('--hy',`${cy.toFixed(0)}px`);});});
   // 4 · the hug.
-  at(4500,()=>{host.classList.add('hugging');f.sound?.('finaleTheme');caption(f,'');
+  at(4500,()=>{f.hugComplete=true;host.classList.add('hugging');if(!instant)f.sound?.('finaleTheme');caption(f,'');
    creatures.forEach((c,i)=>play(c.querySelector('.finale-creature-art'),[{transform:'scale(1)'},{transform:'scale(1.07,.94)',offset:.4},{transform:'scale(1)'}],{duration:620,delay:i*90,easing:'ease-out'}));
    const hearts=host.querySelector('.finale-hearts');hearts.replaceChildren();
    if(!still)for(let i=0;i<9;i++){const h=el('i','finale-heart');h.style.setProperty('--off',`${((i%2?1:-1)*(16+(i*37)%120))}px`);hearts.append(h);play(h,[{opacity:0,transform:'translateY(0) scale(.5)'},{opacity:1,transform:'translateY(-50px) scale(1)',offset:.3},{opacity:0,transform:'translateY(-190px) scale(.8)'}],{duration:2600,delay:300+i*260,easing:'ease-out'});}});
-  // 5 · the hug illustration, when it is added, takes over the screen.
-  at(5600,()=>{const hug=host.querySelector('.finale-hug');
-   if(hugUrl&&!hug.querySelector('img')){const img=new Image();img.alt='Mr. Saymaz hugs the four little creatures';img.decoding='async';img.onerror=()=>{img.remove();hug.hidden=true;};img.src=hugUrl;hug.append(img);}
-   hug.hidden=!hug.querySelector('img');if(!hug.hidden)play(hug,[{opacity:0},{opacity:1}],{duration:1400,easing:'ease-out'});});
-  f.onChange?.();
+  // 5 · wait for the decoded artwork if a slow connection has not finished loading it yet.
+  at(6000,()=>showHugIllustration(f));
+  f.settling=false;f.onChange?.();
  }
  function showLine(){
   const f=finale;if(!f)return;const bubble=f.host.querySelector('.finale-dialogue'),lines=f.lines?.length?f.lines:['Thank you.'];

@@ -1,0 +1,28 @@
+/* 11.0.0-visual2 · Keep focus on the question, lane choices and creature silhouettes. */
+.run-hud { box-shadow:inset 0 1px 0 var(--league-edge-light),0 6px 18px #02081750; }
+.coin-hud b,.score-hud b,#coinTarget { font-variant-numeric:tabular-nums; }
+.prompt-panel h2 { text-wrap:balance; text-shadow:0 2px 2px #0005; }
+.prompt-panel .eyebrow { color:#f3d89b; }
+.game-surface { isolation:isolate; }
+.answer-card { border-color:#fff4d6; box-shadow:0 4px 0 #223044,0 8px 16px #0004; }
+.answer-card b { box-shadow:inset 0 0 0 1px #0b162822; }
+.boss-hud { background:linear-gradient(135deg,#101c30f5,#071221f5); border-color:#ebce864d; }
+/* Long island names and teacher-edited labels may wrap inside the banner. */
+.run-banner { max-width:84%; white-space:normal; padding-inline:clamp(14px,4vw,54px); }
+.run-banner strong,.run-banner span { overflow-wrap:anywhere; text-wrap:balance; }
+.run-banner strong { font-size:clamp(24px,3.8vw,52px); }
+.run-banner.boss strong { font-size:clamp(26px,4.4vw,62px); }
+/* One static glow plus transform movement, replacing per-frame shadow/filter repaint. */
+.island.current:not(.locked) .island-art { filter:drop-shadow(0 0 10px #f3c96b55) drop-shadow(0 12px 10px #03091199); animation-name:islandInviteLight; }
+@keyframes islandInviteLight { 0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)} }
+.run-banner { animation-name:bannerArriveLight; }
+@keyframes bannerArriveLight { 0%{opacity:0;transform:translate(-50%,-50%) scale(.96)}14%,82%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-56%)} }
+.answer-card.result-correct { animation-name:gateResolveLight; box-shadow:0 4px 0 #223044,0 0 0 3px #86efac,0 0 18px #4ade8055; }
+@keyframes gateResolveLight { 0%{transform:translate(-50%,-50%) scale(1);opacity:1}35%{transform:translate(-50%,-50%) scale(1.08);opacity:1}100%{transform:translate(-50%,-50%) scale(1.02);opacity:0} }
+.runner-reduced .island.current:not(.locked) .island-art,
+.runner-reduced .answer-card.result-correct { animation:none!important; }
+.runner-reduced .run-banner { animation-name:bannerFade!important; }
+@media (prefers-reduced-motion:reduce) {
+ .island.current:not(.locked) .island-art,.answer-card.result-correct { animation:none!important; }
+ .run-banner { animation-name:bannerFade!important; }
+}

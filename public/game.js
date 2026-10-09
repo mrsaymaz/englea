@@ -4653,7 +4653,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     if (absorbed > 0) {
                         createVixarImpact(document.getElementById('vixar-boss-stage'), '#c4b5fd', `AEGIS ${Math.round(absorbed)}`);
                         RaidMotion.move('boss', 'guard');
-                        RaidMotion.ring(document.getElementById('vixar-boss-stage'), '#c4b5fd', true);
+                        RaidMotion.ring(document.getElementById('vixar-boss-stage'), RaidMotion.bossStyle().color, true);
                         if (boss.shieldHP <= 0) globalThis.LeagueFightFX?.shieldBreak(vixarBossTarget(), '#c4b5fd');
                     }
                 }
@@ -4825,16 +4825,15 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const targetEl = document.getElementById(`vixar-team-${target.id}`);
                 const fill = document.getElementById(`vixar-team-hp-fill-${target.id}`);
                 if(!options.presented){
-                    RaidMotion.move('boss','attack',document.getElementById(`vixar-avatar-shell-${target.id}`));
                     const travel = 420;
-                    // A red ground mark warns the team just before the blow lands.
-                    globalThis.LeagueFightFX?.telegraph(document.getElementById(`vixar-avatar-shell-${target.id}`), vixarRaidState.act.color === '#a78bfa' ? '#f472b6' : '#f43f5e', travel);
+                    // A form-coloured ground mark warns the team just before the blow lands.
+                    globalThis.LeagueFightFX?.telegraph(document.getElementById(`vixar-avatar-shell-${target.id}`), RaidMotion.bossStyle().color, travel);
                     RaidMotion.bossShot(vixarBossTarget(),document.getElementById(`vixar-avatar-shell-${target.id}`),label,travel);
                     vixarSchedule(()=>vixarApplyTeamDamage(target,amount,label,{...options,presented:true}),travel);return 0;
                 }
                 if (target.invulnerableUntil > now) {
                     animateVixarTeam(target, 'guard');
-                    createVixarImpact(targetEl, '#fef08a', 'IMMUNE');
+                    RaidMotion.bossImpact(document.getElementById(`vixar-avatar-shell-${target.id}`),label,'blocked');
                     return 0;
                 }
 
@@ -4848,7 +4847,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     target.shieldHP -= absorbed;
                     damage -= absorbed;
                     if (absorbed > 0) {
-                        createVixarImpact(targetEl, target.color, `SHIELD ${Math.round(absorbed)}`);
+                        if (damage <= 0) RaidMotion.bossImpact(document.getElementById(`vixar-avatar-shell-${target.id}`),label,'blocked');
                         animateVixarTeam(target, 'guard');
                         if (target.shieldHP <= 0) globalThis.LeagueFightFX?.shieldBreak(document.getElementById(`vixar-avatar-shell-${target.id}`), target.color);
                     }
@@ -4863,7 +4862,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 target.damageTaken += damage;
                 animateVixarTeam(target, options.rend ? 'void-rended' : 'hit', options.rend ? 560 : 440);
                 if (label) setVixarTeamStatus(target, label, 920);
-                createVixarImpact(targetEl, '#fda4af', `−${damage}`);
+                RaidMotion.bossImpact(document.getElementById(`vixar-avatar-shell-${target.id}`),label,'hit');
                 if (!isLeanMode()) {
                     targetEl?.classList.add('boss-hit');
                     fill?.classList.remove('damage-pulse');
@@ -4930,7 +4929,6 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if (!living.length) return;
                 const target = living.sort((a, b) => (a.hp / a.maxHP) - (b.hp / b.maxHP))[0];
                 const targetEl = document.getElementById(`vixar-team-${target.id}`);
-                const targetAvatar = document.getElementById(`vixar-avatar-shell-${target.id}`);
                 const bossStage = document.getElementById('vixar-boss-stage');
                 targetEl.classList.add('is-targeted');
                 bossStage.classList.add('casting');
@@ -4939,8 +4937,6 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 vixarSchedule(() => {
                     targetEl.classList.remove('is-targeted');
                     bossStage.classList.remove('casting');
-                    createVixarLineEffect('vixar-null-lance-beam', bossStage, targetAvatar, 700);
-                    createVixarImpactWave(targetAvatar);
                     const damage = 138 + vixarRaidState.boss.phase * 32;
                     vixarApplyTeamDamage(target, damage, 'NULL LANCE', { piercing:true });
                     vixarScreenFlash('rgba(139,92,246,.30)');
@@ -4951,22 +4947,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
             function performVixarCrownfall() {
                 vixarAnnounce('Crownfall · Imperial Ruin', '#e9d5ff');
-                const layer = document.getElementById('vixar-fx-layer');
                 const living = vixarRaidState.fighters.filter(fighter => fighter.alive);
                 living.forEach((fighter, index) => {
-                    const target = document.getElementById(`vixar-avatar-shell-${fighter.id}`);
-                    if (!isLeanMode()) {
-                        const point = vixarArenaCenterForElement(target);
-                        const shard = document.createElement('div');
-                        shard.className = 'vixar-crownfall-shard';
-                        shard.style.left = `${point.x - 9}px`;
-                        shard.style.animationDelay = `${index * .12}s`;
-                        layer.appendChild(shard);
-                        vixarSchedule(() => shard.remove(), 1650);
-                    }
                     vixarSchedule(() => {
                         if (!fighter.alive) return;
-                        createVixarImpactWave(target);
                         vixarApplyTeamDamage(fighter, 76 + vixarRaidState.boss.phase * 27, 'CROWNFALL');
                         shakeVixarArena();
                     }, 720 + index * 115);
@@ -5011,7 +4995,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
 
             function performVixarAegis() {
                 RaidMotion.move('boss', 'guard');
-                RaidMotion.ring(document.getElementById('vixar-boss-stage'), '#c4b5fd', true);
+                RaidMotion.ring(document.getElementById('vixar-boss-stage'), RaidMotion.bossStyle().color, true);
                 const boss = vixarRaidState.boss;
                 boss.shieldHP += 250 + boss.phase * 85;
                 if (!isLeanMode()) {
@@ -5039,7 +5023,6 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 vixarSchedule(() => {
                     seal?.classList.remove('inverted');
                     vixarApplyTeamDamage(target, 112 + vixarRaidState.boss.phase * 24, 'INVERTED', { piercing:true });
-                    createVixarImpactWave(document.getElementById(`vixar-avatar-shell-${target.id}`));
                 }, 700);
                 playSound('debuff');
             }
@@ -5072,24 +5055,12 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if (!living.length) return;
                 const targetCount = vixarRaidState.boss.phase >= 3 ? living.length : Math.min(2, living.length);
                 const targets = shuffledBattleOrder(living).slice(0, targetCount);
-                let sweep = null;
-                if (!isLeanMode()) {
-                    const averageY = targets.reduce((sum, fighter) => {
-                        const el = document.getElementById(`vixar-avatar-shell-${fighter.id}`);
-                        return sum + vixarArenaCenterForElement(el).y;
-                    }, 0) / targets.length;
-                    sweep = document.createElement('div');
-                    sweep.className = 'vixar-void-sweep';
-                    sweep.style.top = `${averageY}px`;
-                    document.getElementById('vixar-fx-layer').appendChild(sweep);
-                }
                 vixarAnnounce('Oblivion Sweep', '#f0abfc');
                 vixarSchedule(() => {
                     targets.forEach(fighter => vixarApplyTeamDamage(fighter, 105 + vixarRaidState.boss.phase * 28, 'OBLIVION SWEEP', { piercing:true }));
                     vixarScreenFlash('rgba(217,70,239,.28)');
                     shakeVixarArena();
                 }, 620);
-                if (sweep) vixarSchedule(() => sweep.remove(), 1400);
                 playSound('signature');
             }
 
@@ -5097,21 +5068,10 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const living = vixarRaidState.fighters.filter(fighter => fighter.alive);
                 if (!living.length) return;
                 const target = living.sort((a, b) => (a.hp / a.maxHP) - (b.hp / b.maxHP))[0];
-                const targetAvatar = document.getElementById(`vixar-avatar-shell-${target.id}`);
-                const point = isLeanMode() ? null : vixarArenaCenterForElement(targetAvatar);
                 vixarAnnounce('Soul Rend · Threefold Execution', '#f9a8d4');
                 for (let index = 0; index < 3; index++) {
                     vixarSchedule(() => {
                         if (!target.alive) return;
-                        if (point) {
-                            const slash = document.createElement('div');
-                            slash.className = 'vixar-rend-slash';
-                            slash.style.left = `${point.x + (index - 1) * 8}px`;
-                            slash.style.top = `${point.y + (index - 1) * 7}px`;
-                            slash.style.setProperty('--slash-angle', `${index === 1 ? -42 : index === 2 ? 18 : 52}deg`);
-                            document.getElementById('vixar-fx-layer').appendChild(slash);
-                            vixarSchedule(() => slash.remove(), 600);
-                        }
                         vixarApplyTeamDamage(target, 52 + vixarRaidState.boss.phase * 13, 'SOUL REND', { rend:true, piercing:index === 2, ignoreShield:index === 2 });
                         playSound('attack');
                     }, index * 310);
@@ -5172,7 +5132,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const boss = vixarRaidState.boss;
                 if (!vixarRaidState.fighters.some(fighter => fighter.alive)) return;
                 if (boss.phase === 3 && !boss.fifthSilenceUsed) {
-                    RaidMotion.move('boss', 'cast');
+                    RaidMotion.move('boss', 'cast', null, {duration:3600});
                     performVixarFifthSilence();
                     boss.actionIndex += 1;
                     return;
@@ -5188,7 +5148,11 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 if (act.merge) phaseActions = phaseActions.filter(action => action !== performVixarEdict);
                 const action = phaseActions[boss.actionIndex % phaseActions.length];
                 boss.actionIndex += 1;
-                if (action !== performVixarAegis) RaidMotion.move('boss', 'attack');
+                // Anticipation uses the existing spell delay; release still lands 420 ms after damage is queued.
+                const windup = new Map([[performVixarNullLance,900],[performVixarCrownfall,720],
+                    [performVixarGravityCollapse,1250],[performVixarInversion,700],
+                    [performVixarOblivionSweep,620],[performVixarEdict,260]]).get(action);
+                if (windup) RaidMotion.move('boss', 'cast', null, {duration:windup});
                 action();
             }
 
@@ -5875,7 +5839,7 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 overlay.classList.toggle('saga-form-art', act.act > 1);
                 LeagueSagaScenes.arena(act);
                 const art = document.getElementById('vixar-boss-animated-art');
-                const src = `./assets/animated/${act.art}.webp?v=${act.act > 1 ? '11.0.0' : '6.7'}`;
+                const src = `./assets/animated/${act.art}.webp?v=${act.act > 1 ? '11.0.0-art1' : '6.7'}`;
                 if (!art.getAttribute('src')?.startsWith(`./assets/animated/${act.art}.webp`)) art.src = src;
                 document.getElementById('vixar-animated-actor').dataset.poseId = vixarPoseId(act);
                 if (act.poses) globalThis.CreaturePoses?.preload(act.art);

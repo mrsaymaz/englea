@@ -1,7 +1,7 @@
 /* v11.0.0: packs the nine sharper pose pictures of Scarlet or Gilded Vixar into the board's pose sheet, then switches
    that form's poses on. Usage: node art/pack-vixar-poses.cjs scarlet|gilded [--check]
    Sources: art/vixar-poses/vixar-{form}-{state}.png (or .webp), one per state, at least 1000 × 1000 with a transparent
-   background. The build ships labelled half-size placeholders under those names; the packer refuses them.
+   background. The build includes the finished high-resolution sources; the packer refuses low-resolution stand-ins.
    Same rules as art/pack-poses.cjs: one scale for the whole form (its largest picture fills 88% of a cell), each picture
    centred with its lowest point at 95% of the cell (the board's ground anchor). Cells are 640 px (a 1920 × 1920 sheet).
    --check only reports what is missing or still a placeholder. Needs the sharp package (npm install sharp). */
@@ -36,6 +36,12 @@ const root=path.resolve(__dirname,'..'),dir=path.join(__dirname,'vixar-poses'),i
  }
  const sheet=path.join(root,'public/assets/poses',id+'.webp');
  await sharp({create:{width:CELL*3,height:CELL*3,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite(layers).webp({quality:85,alphaQuality:100,effort:5}).toFile(sheet);
+ // Match the idle picture to the ready cell's scale and anchor, so finishing an action does not make Vixar jump in size.
+ const p=parts[0],stillCell=CELL*2,w=Math.round(p.width*scale*2),h=Math.round(p.height*scale*2);
+ const input=await sharp(p.file).extract({left:p.left,top:p.top,width:p.width,height:p.height}).resize(w,h).png().toBuffer();
+ await sharp({create:{width:stillCell,height:stillCell,channels:4,background:{r:0,g:0,b:0,alpha:0}}})
+  .composite([{input,left:Math.round((stillCell-w)/2),top:Math.round(stillCell*.95-h)}]).webp({quality:90,alphaQuality:100,effort:5})
+  .toFile(path.join(root,'public/assets/animated',id+'.webp'));
  const bytes=fs.readFileSync(sheet),manifestFile=path.join(root,'public/assets/poses/manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
  manifest.packs[id]={...manifest.packs[id],file:id+'.webp',cols:3,rows:3,cell:CELL,states:STATES,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex')};
  fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');

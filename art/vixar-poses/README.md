@@ -1,6 +1,6 @@
-# Sharper Scarlet and Gilded Vixar poses (placeholders)
+# Sharper Scarlet and Gilded Vixar poses (finished sources)
 
-The 18 pictures in this folder are labelled placeholders, half size (627 × 627). Each one names the file it stands for, the pose and the final size. Replace them with the real pictures under the same names:
+These 18 pictures are the finished transparent sources: 1254 × 1254 renders with 80 px empty padding on each edge (1414 × 1414 files). The padding is not upscaling. Both runtime sheets are already packed and enabled.
 
 | File | Pose |
 |---|---|
@@ -23,4 +23,4 @@ node art/pack-vixar-poses.cjs scarlet --check   # lists what is missing or still
 node art/pack-vixar-poses.cjs scarlet           # packs public/assets/poses/vixar-scarlet.webp and switches its poses on
 ```
 
-The same for `gilded`. Until a form is packed, it fights as its full picture (no poses), as it does now.
+The same for `gilded`. Packing also rebuilds the matching idle picture in `public/assets/animated/`. Repack after editing any source.

@@ -36,7 +36,11 @@ await test('Wiring: the current build on the page, the phone check and Island Ru
  assert(pub('teaching.js').includes("file+'?v="+build+"'"));
  // v11.0.0: the original sheets are unchanged, so boards do not download them again; only the new sheets have a new tag.
  const js=pub('creature-poses.js');assert.match(js,/url:base\+p\.key\+'\.webp\?v='\+tag\(p\.key\)/);
- assert.match(js,/const tag=key=>\/-1\[12\]\$\|\^vixar-\|\^slyffindor\$\|\^huffleclaw\$\/\.test\(key\)\?'11\.0\.0':'10\.5\.0';/);
+ // Verify cache routing behavior: the later high-resolution boss revision has its own tag.
+ const tag=require('node:vm').runInNewContext('('+js.match(/const tag=([^\n]+);/)[1]+')');
+ for(const key of ['gryffindor-0','ravenclaw-10','veyr','vixar'])assert.equal(tag(key),'10.5.0');
+ for(const key of ['gryffindor-11','slytherin-12','slyffindor','huffleclaw'])assert.equal(tag(key),'11.0.0');
+ for(const key of ['vixar-scarlet','vixar-gilded'])assert.equal(tag(key),'11.0.0-art1');
 });
 console.log(JSON.stringify({checks}));
 })().catch(error=>{console.error(error);process.exit(1);});

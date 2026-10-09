@@ -175,7 +175,7 @@ await test('New art falls back to the Level 10 pictures when a Level 11 or 12 sh
  const p=P.load('gryffindor',11);assert.match(images[0].src,/gryffindor-11\.webp\?v=11\.0\.0$/);images[0].onerror();
  assert.match(images[1].src,/gryffindor-10\.webp\?v=10\.5\.0$/,'the Level 10 sheet is requested instead');images[1].onload();for(let i=0;i<6;i++)await Promise.resolve();
  const e=await p;assert.equal(e.key,'gryffindor-10');
- P.load('vixar-scarlet');assert.match(images[2].src,/vixar-scarlet\.webp\?v=11\.0\.0$/);P.load('veyr');assert.match(images[3].src,/veyr\.webp\?v=10\.5\.0$/);
+ P.load('vixar-scarlet');assert.match(images[2].src,/vixar-scarlet\.webp\?v=11\.0\.0-art1$/);P.load('veyr');assert.match(images[3].src,/veyr\.webp\?v=10\.5\.0$/);
  const anim=pub('animated-mode.js');assert.match(anim,/if\(Number\(frame\.dataset\.avatarLevel\)>10&&!img\.dataset\.fallback\)\{img\.dataset\.fallback='10';img\.src=source\(frame\.dataset\.avatarTeam,10\);return;\}/);
  assert.match(pub('island-runner/app.js'),/Math\.min\(10,Math\.max\(0,Math\.round\(H\.context\.level\)\|\|0\)\)/);
  for(const team of ['gryffindor','slytherin','hufflepuff','ravenclaw'])for(const n of [11,12]){
@@ -184,25 +184,23 @@ await test('New art falls back to the Level 10 pictures when a Level 11 or 12 sh
  same(manifest.packs['vixar-gilded'].states,['ready','charge','cast','guard','exposed','hit','ultimate','defeat','proud']);
  const slots=JSON.parse(pub('assets/saga/manifest.json'));assert.equal(slots.hug,'hug.webp');same(Object.keys(slots.mrSaymaz),['portrait','ready','proud','support','wave','bow','kneel']);assert.equal(slots.mrSaymaz.kneel,'mr-saymaz-kneel.webp');same(Object.keys(slots.merged),['slyffindor','huffleclaw']);
 });
-await test('Saga art: Mr. Saymaz (portrait, five poses, a six-frame reveal on one canvas) and the fused teams (pictures and nine-pose sheets); placeholders for the kneeling pose, the hug and the sharper Vixar poses',()=>{
+await test('Saga art: Mr. Saymaz (portrait, five poses, a six-frame reveal on one canvas) and the fused teams (pictures and nine-pose sheets); finished kneeling, hug and high-resolution Vixar poses',()=>{
  // WebP size from the file header (VP8X, VP8L or VP8), so no image library is needed.
  const size=file=>{const b=fs.readFileSync(file);assert.equal(b.toString('ascii',0,4)+b.toString('ascii',8,12),'RIFFWEBP',file);const kind=b.toString('ascii',12,16);
   if(kind==='VP8X')return [1+b.readUIntLE(24,3),1+b.readUIntLE(27,3)];if(kind==='VP8L'){const n=b.readUInt32LE(21);return [1+(n&0x3fff),1+((n>>14)&0x3fff)];}return [b.readUInt16LE(26)&0x3fff,b.readUInt16LE(28)&0x3fff];};
  const slots=JSON.parse(pub('assets/saga/manifest.json')),dir=path.join(__dirname,'../public/assets/saga'),safe=/^[A-Za-z0-9._-]{1,80}\.(webp|png|jpg|jpeg)$/i;
  for(const [pose,name] of Object.entries(slots.mrSaymaz)){if(pose==='kneel')continue;assert.match(name,safe,pose);same(size(path.join(dir,name)),pose==='portrait'?[320,320]:[640,1120],pose);}
- // Still to come: the kneeling pose and the hug illustration are half-size placeholders under their final names, under the
- // widths the board accepts, so the board keeps its stand-ins until the real pictures replace the files.
+ // Finished pictures exceed the board's acceptance thresholds.
  const scenesCode=pub('saga-scenes.js'),min=k=>Number(scenesCode.match(new RegExp(k+'=(\\d+)'))[1]);
- same(size(path.join(dir,slots.mrSaymaz.kneel)),[320,560],'kneel placeholder');assert(320<min('KNEEL_MIN')&&min('KNEEL_MIN')<=640);
- same(size(path.join(dir,slots.hug)),[800,450],'hug placeholder');assert(800<min('HUG_MIN')&&min('HUG_MIN')<=1600);
- // The sharper Scarlet and Gilded poses: nine labelled placeholders per form for art/pack-vixar-poses.cjs, which refuses
- // anything under 1000 px; until it packs real ones the two forms keep their poses off.
+ same(size(path.join(dir,slots.mrSaymaz.kneel)),[1024,1792],'kneeling master-size runtime art');assert(1024>=min('KNEEL_MIN'));
+ same(size(path.join(dir,slots.hug)),[1024,1024],'transparent hug');assert(1672>=min('HUG_MIN'));
+ // Nine finished native-resolution images per form, with empty padding, and active runtime sheets.
  const pngSize=file=>{const b=fs.readFileSync(file);assert.equal(b.toString('ascii',1,4),'PNG',file);return [b.readUInt32BE(16),b.readUInt32BE(20)];};
  const states=['ready','charge','cast','guard','exposed','hit','ultimate','defeat','proud'],src=path.join(__dirname,'../art/vixar-poses');
  same(fs.readdirSync(src).filter(f=>f.endsWith('.png')).sort(),['gilded','scarlet'].flatMap(form=>states.map(s=>`vixar-${form}-${s}.png`)).sort());
- for(const f of fs.readdirSync(src).filter(f=>f.endsWith('.png')))same(pngSize(path.join(src,f)),[627,627],f);
+ for(const f of fs.readdirSync(src).filter(f=>f.endsWith('.png')))same(pngSize(path.join(src,f)),[1414,1414],f);
  const packer=fs.readFileSync(path.join(__dirname,'../art/pack-vixar-poses.cjs'),'utf8');assert.match(packer,/CELL=640,MIN=1000/);assert.match(packer,/poses:false`,`art:'\$\{id\}',poses:true`/);
- assert.match(pub('vixar-saga.js'),/art:'vixar-scarlet',poses:false/);assert.match(pub('vixar-saga.js'),/art:'vixar-gilded',poses:false/);
+ assert.match(pub('vixar-saga.js'),/art:'vixar-scarlet',poses:true/);assert.match(pub('vixar-saga.js'),/art:'vixar-gilded',poses:true/);
  assert.equal(slots.reveal.length,6,'six reveal frames');for(const name of slots.reveal){assert.match(name,safe);same(size(path.join(dir,name)),[640,1120],name);}
  assert.match(slots.reveal[0],/bound/);assert.match(slots.reveal[5],/identity-revealed/);
  for(const [pair,name] of Object.entries(slots.merged)){assert.match(name,safe);same(size(path.join(dir,name)),[512,512],pair);}

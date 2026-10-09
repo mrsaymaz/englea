@@ -20,11 +20,11 @@
    kicker:'Act I · Violet Vixar',winTitle:'The Violet Form Is Broken',winLine:'Vixar’s first form is broken',lossTitle:'The Empty Crown Endures',
    next:'Scarlet',color:'#a78bfa',shatter:'crystal',escape:true}),
   Scarlet:Object.freeze({act:2,stage:'Scarlet',form:'scarlet',level:11,bossHP:5600,sealHP:300,duration:95000,pace:.9,armor:112,
-   phases:['Crimson Dominion','Edict of Separation','The Fifth Silence'],art:'vixar-scarlet',poses:false,title:'SCARLET VIXAR',epithet:'The Crown Reforged in Embers',
+   phases:['Crimson Dominion','Edict of Separation','The Fifth Silence'],art:'vixar-scarlet',poses:true,title:'SCARLET VIXAR',epithet:'The Crown Reforged in Embers',
    kicker:'Act II · Scarlet Vixar',winTitle:'The Scarlet Form Is Broken',winLine:'Vixar’s second form is broken',lossTitle:'The Scarlet Crown Endures',
    next:'Gilded',color:'#f43f5e',shatter:'ember',escape:true,brand:true}),
   Gilded:Object.freeze({act:3,stage:'Gilded',form:'gilded',level:12,bossHP:7000,sealHP:360,duration:110000,pace:.86,armor:116,
-   phases:['Gilded Dominion','Edict of Separation','The Fifth Silence'],art:'vixar-gilded',poses:false,title:'GILDED VIXAR',epithet:'The Golden Prison',
+   phases:['Gilded Dominion','Edict of Separation','The Fifth Silence'],art:'vixar-gilded',poses:true,title:'GILDED VIXAR',epithet:'The Golden Prison',
    kicker:'Act III · Gilded Vixar',winTitle:'The Curse Is Broken',winLine:'Mr. Saymaz is free',lossTitle:'The Gilded Crown Endures',
    next:'Freed',color:'#fbbf24',shatter:'metal',escape:false,merge:true})
  });
