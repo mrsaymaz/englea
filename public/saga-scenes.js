@@ -229,7 +229,8 @@
   SEAMS.forEach(([mx,my,ex,ey],i)=>{paths.push(jag([550,409,mx,my,ex,ey]));
    const a=Math.atan2(ey-my,ex-mx)+(i%2?.7:-.7),len=70+rnd()*50;paths.push(jag([mx,my,mx+Math.cos(a)*len,my+Math.sin(a)*len]));});
   const g=cls=>`<g class="${cls}">${paths.map((d,i)=>`<path pathLength="100" class="${i%2?'branch':'seam'}" d="${d}"/>`).join('')}</g>`;
-  return `<svg class="finale-cracks" viewBox="0 0 1100 890" aria-hidden="true">${g('glow')}${g('core')}</svg>`;
+  // An SVG alpha mask (not a CSS mask image), so the seams stay on the armour in the offline preview opened from disk too.
+  return `<svg class="finale-cracks" viewBox="0 0 1100 890" aria-hidden="true"><defs><mask id="finaleArmour" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="890" style="mask-type:alpha"><image href="./assets/animated/vixar-gilded-cracking.webp?v=11.0.0" width="1100" height="890"/></mask></defs><g mask="url(#finaleArmour)">${g('glow')}${g('core')}</g></svg>`;
  }
  // Dawn over open hills: the world outside the prison. One static picture.
  const DAWN=`<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
@@ -376,7 +377,27 @@
   if(r.failed){endReveal(f,true);return;} // a frame that did not load: straight to his standing pose
   img.style.opacity='1';play(img,[{opacity:0},{opacity:1}],{duration:REVEAL_FADE,easing:'ease-out'});
   if(prev&&prev!==img){prev.style.opacity='0';play(prev,[{opacity:1},{opacity:0}],{duration:REVEAL_FADE,easing:'ease-in'});}
-  r.index=i;if(!f.still&&REVEAL_SOUNDS[i])f.sound?.(REVEAL_SOUNDS[i]);f.onChange?.();
+  r.index=i;if(!f.still&&REVEAL_SOUNDS[i])f.sound?.(REVEAL_SOUNDS[i]);
+  faceplateCrack(f,i);f.onChange?.();
+ }
+ // The faceplate frame's own crack is a hairline; on a classroom board it needs light. Seams of light run across the
+ // gold mask while that frame shows, then flash away as his face appears. Drawn on the frames' 1024 × 1792 canvas, so
+ // it stays on the mask at any size. Animated mode only (Light mode shows the identity frame directly).
+ const FACEPLATE_SEAMS=['M572 150 L586 182 L572 210 L592 240 L578 270 L586 298','M586 182 L612 196 L632 192','M592 240 L560 252','M578 270 L604 282'];
+ function faceplateCrack(f,i){
+  const r=f.reveal,layer=f.host.querySelector('.finale-reveal');if(!r||!layer||f.still)return;
+  const at=(manifest.reveal||[]).findIndex(n=>/faceplate/i.test(n));if(at<0)return;
+  let crack=layer.querySelector('.finale-faceplate-crack');
+  if(i===at&&!crack){
+   crack=el('div','finale-faceplate-crack');
+   const seams=FACEPLATE_SEAMS.map(d=>`<path pathLength="100" d="${d}"/>`).join('');
+   crack.innerHTML=`<svg viewBox="0 0 1024 1792" preserveAspectRatio="xMidYMid meet"><defs><radialGradient id="fpSpark"><stop offset="0" stop-color="#fffdf5" stop-opacity=".95"/><stop offset=".45" stop-color="#fde68a" stop-opacity=".45"/><stop offset="1" stop-color="#fde68a" stop-opacity="0"/></radialGradient></defs><circle class="spark" cx="584" cy="214" r="70" fill="url(#fpSpark)"/><g class="glow">${seams}</g><g class="core">${seams}</g></svg>`;
+   layer.insertBefore(crack,layer.querySelector('.finale-reveal-flash'));
+   crack.querySelectorAll('path').forEach((p,k)=>play(p,[{strokeDashoffset:100},{strokeDashoffset:0}],{duration:k?260:420,delay:k?260+k*60:0,fill:'both',easing:'ease-out'}));
+   play(crack.querySelector('.spark'),[{opacity:0,transform:'scale(.4)'},{opacity:.9,transform:'scale(1)',offset:.35},{opacity:.35,transform:'scale(.8)'}],{duration:620,fill:'both',easing:'ease-out'});
+  }else if(i>at&&crack){
+   play(crack,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(1.04)'}],{duration:REVEAL_FADE,fill:'forwards',easing:'ease-in'});
+  }
  }
  function playReveal(f){
   const r=f.reveal;if(!r)return;

@@ -1,7 +1,5 @@
 # v11.0.0 — The Vixar Saga
 
-**Latest revision: 11.0.0-visual2.** Transparent Finale embrace over the continuous dawn, clearer battle/level labels, remote overlap fixes, and lighter Island Run effects. Open **FINALE-PREVIEW.html** after extracting. See **VISUAL-REFINEMENT.md** and **VISUAL-TEST-REPORT.md**. No additional Apps Script update is needed.
-
 Each class now has its own Vixar Saga: three fights across the term, each against a stronger form of Vixar, ending with Mr. Saymaz freed from the curse. Everything from v10.5.1 is kept: tallies, wheels, the Challenge Deck, the Battle Arena, Island Run, Secret Agent and the Comeback Halo.
 
 ## Deploying this update
@@ -77,4 +75,11 @@ The new combat effects (damage numbers, sparks, hit-stop, the ground warning, sh
 
 ## The art
 
-Mr. Saymaz (portrait, five poses and a six-frame reveal in which he breaks free of the cursed gown) and the two fused creatures, Slyffindor and Huffleclaw (pictures and nine-pose sheets), are in this build. The kneeling pose, sunrise hug illustration and 18 high-resolution Vixar poses are now included and enabled. Open ART-PREVIEW.html for an offline art check. Details: ART-UPGRADE.md. Earlier guides are in `archive/`.
+All the saga's art is in this build: Mr. Saymaz, illustrated to match the creatures (portrait, six poses including kneeling, a six-frame reveal in which he breaks free of the cursed gown, and the hug picture with the four Level 0 creatures), Scarlet and Gilded Vixar with nine poses each, and the fused Slyffindor and Huffleclaw. In Light mode the bosses stay still pictures, so their large pose sheets are not downloaded. The source pictures are in `art/`; details in **CREATURES-v11.0.0.md**. Earlier guides are in `archive/`.
+
+## Look before deploying
+
+Open these from the unzipped folder in Chrome, Edge, Firefox or Safari. They use the game's own scene code, connect to nothing and save nothing:
+- **FINALE-PREVIEW.html**: the Finale (or just the hug), with Pause, Closing card and a Light-mode switch.
+- **ART-PREVIEW.html**: the new pictures on a neutral background, including all nine poses of each Vixar form.
+- **BATTLE-MOTION-PREVIEW.html**: Vixar's spells for each form (single target, shielded, four-target volley).

@@ -1,22 +1,3 @@
-# 11.0.0-visual2 · Continuous Finale and visual refinement
-
-- Transparent reunion uses the existing dawn background and matched camera framing.
-- Refined labels, recognition panels, remote clearance, focus states and runner motion.
-- Added asset/alpha/continuity checks; updated an obsolete boss cache assertion.
-- No gameplay, progression, curriculum or Apps Script changes.
-
-# 11.0.0-finale1 · Illustrated Finale
-
-- Integrated the revised Mr. Saymaz portrait, six poses and six liberation frames.
-- Added the matching Level 0 sunrise embrace; kept the title above all faces.
-- Corrected kneeling alignment, decode readiness, skip cancellation and animation pause/resume.
-- Added an offline Finale rehearsal and nine automated integration test groups.
-- All earned class/team progress remains unchanged by the visual transformation.
-
-# v11.0.0 art revision — 11.0.0-art1
-
-Finished kneeling and title-safe reunion artwork; 18 native-resolution Scarlet/Gilded poses; active 640 px atlas cells; matched idle registration; correct defeat mapping for all Vixar forms; slow-load-safe Finale illustration; offline artwork preview. See ART-UPGRADE.md and ART-TEST-REPORT.md.
-
 # Changelog
 
 Newest first. Full notes for earlier versions are in `archive/`.
@@ -31,7 +12,7 @@ Newest first. Full notes for earlier versions are in `archive/`.
 - **The Finale**: crack, break, reveal, Mr. Saymaz's thank-you speech (one line per Continue, English voice optional), up to three names per house, the hug (the four Celestial creatures turn back into their Level 0 selves and jump into his arms), a closing card. Continue from the board or the phone. A **Freed** class sees Mr. Saymaz as an ally and can replay the Finale.
 - **Teacher Studio → Finale speech**: the speech per grade (1–10 lines, up to 160 characters each), saved online.
 - **Fight effects** for the raid and the Arena: damage numbers, hit sparks, hit-stop on criticals, a ground warning before Vixar's blow, shield shards and a small shake on heavy blows. Transforms and opacity only, within the effects budget; still numbers in Light mode and with reduced motion.
-- **New art**: Level 11 and Level 12 avatars and pose sheets for all four teams; Scarlet Vixar, Gilded Vixar and its cracking frame. Missing Level 11/12 art falls back to Level 10. Mr. Saymaz: a portrait (the ally), five poses for the Finale and a six-frame reveal as he breaks free of the cursed gown. Slyffindor and Huffleclaw: pictures for the Merge Spell and nine-pose sheets for the fused fight (still pictures in Light mode). Art still to come ships as labelled half-size placeholders under the final names: `public/assets/saga/mr-saymaz-kneel.webp` and `hug.webp` (the board skips them and plays the hug with his other poses until the real pictures replace the files), and 18 source pictures in `art/vixar-poses/` for sharper Scarlet and Gilded Vixar poses (`node art/pack-vixar-poses.cjs scarlet|gilded` packs them and switches the poses on).
+- **New art**: Level 11 and Level 12 avatars and pose sheets for all four teams; Scarlet Vixar, Gilded Vixar and its cracking frame. Missing Level 11/12 art falls back to Level 10. Mr. Saymaz: a portrait (the ally), five poses for the Finale and a six-frame reveal as he breaks free of the cursed gown. Slyffindor and Huffleclaw: pictures for the Merge Spell and nine-pose sheets for the fused fight (still pictures in Light mode). The kneeling pose, the hug picture and the sharper Vixar poses arrived with the visual polish (below); the board skips a kneeling or hug picture that is too small (under 480 or 1000 px wide).
 - **Vixar fight preview** (`vixar-preview.html`, `index.html#preview-act1` … `#preview-finale`): each act, or the Finale, opens straight into the real fight with every requirement met. The tab keeps everything in memory, so no class data is read or written and nothing is sent; the access code still applies.
 - **Look and story pass** (after the first preview):
   - Every fighter faces Vixar (and its opponent in the Arena), whichever way its picture was drawn.
@@ -41,6 +22,17 @@ Newest first. Full notes for earlier versions are in `archive/`.
   - The escape is staged like a cutscene: letterbox bars, the frozen VICTORY, the heartbeat, the shatter, and the next form's face looking through a jagged tear. The reward is a ceremony with each team's next form on a pedestal.
   - Scarlet and Gilded Vixar fight as their full, sharp pictures; their pose sheets are switched off until higher-resolution sheets are supplied.
   - The Finale has a colour script (the gold prison, a white flash, dawn over open hills, golden light for the hug, the end card), short captions between the steps, seams of light that run only across the armour, a dialogue box above the controls, house banners with each creature under its banner, and an end card that leaves Mr. Saymaz and the little creatures in view. The Finale shows the creatures' own pictures in every display mode.
+- **Visual polish** (supplied build, revisions art1, motion1, finale1 and visual2):
+  - Art: the illustrated Mr. Saymaz throughout (portrait, poses, kneeling, six registered reveal frames) and a transparent hug picture with the four Level 0 creatures that crossfades over the same dawn; 18 high-resolution Scarlet and Gilded Vixar poses packed into 640-px sheets, with idle pictures at the same scale and ground line (`art/pack-vixar-poses.cjs` rebuilds both). PNG sources are in `art/`.
+  - Fights: each Vixar form has its own casting movement and spell shapes (violet lance, scarlet flame, gilded spear and more); a spell gathers at the source for 22% of its 420 ms flight, then lands exactly when the damage does; a four-team volley is one casting gesture; knockout shows the defeat pose for every form.
+  - Finale: the reveal waits until every frame is decoded; Pause also pauses the Finale's animations; Skip settles the hug once; the hug picture waits for a slow download.
+  - Board and Island Run: crisp level digits, a gold critical-hit badge with dark text, larger HP labels on boards, champions panels matching the ceremony, room for the Comeback Halo badge on the phone, lighter Island Run effects (transforms instead of repainted glows), wrapping banners, consistent focus rings.
+  - Offline previews: `FINALE-PREVIEW.html`, `ART-PREVIEW.html`, `BATTLE-MOTION-PREVIEW.html`. Revision notes are in `archive/v11.0.0-visual-polish/`.
+- **Review of the polish build** (browser-tested here; the build had not been run in a browser):
+  - The Finale's speech box clipped Mr. Saymaz's nameplate (the box scrolled; now only long lines scroll).
+  - Light mode downloaded and played the 1920-px Scarlet and Gilded pose sheets; it keeps them still pictures again, as Light mode is meant for old boards.
+  - The faceplate frame of the reveal showed only a hairline crack; seams of light now run across the mask on that frame and flash away as his face appears.
+  - Revision notes folded into these guides; tests updated for the finished art.
 - Balance lab (`tests/saga-balance.cjs`, 20 fights per scenario): every requirement met → Act I 20/20, Act II 20/20, Act III 20/20; Act III with one pair fused 13/20; Merge Spell failed 2/20; Act II without the Class Mission 0/20.
 
 **Apps Script update:** deploy `GOOGLE-APPS-SCRIPT-v11.0.0.gs` as a New version (new tabs Vixar_Saga and Vixar_Finale_Lines). `GOOGLE-APPS-SCRIPT-v10.4.0.gs` moved to `archive/`. No new environment variables.

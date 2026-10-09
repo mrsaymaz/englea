@@ -132,11 +132,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await board.screenshot({path:'output/v11-fused-fight.png'});
   console.log(`PASS second casting and a partial merge: Slyffindor fused (its picture in the spell and the fight, posed from its own sheet); ${mergeRows.length} Merge answers logged for Google Sheets (no duplicate IDs)`);
 
-  // 6. The Finale from the phone. Here the kneeling pose and the hug illustration are full size (stand-ins for the art
-  // still to come), so the board uses them; the Light-mode run below gets the shipped half-size placeholders and skips them.
-  const pub=f=>fs.readFileSync(path.join(__dirname,'../public',f));
-  await board.route('**/assets/saga/mr-saymaz-kneel.webp*',r=>r.fulfill({contentType:'image/webp',body:pub('assets/saga/mr-saymaz-support.webp')}));
-  await board.route('**/assets/saga/hug.webp*',r=>r.fulfill({contentType:'image/webp',body:pub('assets/animated/vixar-gilded.webp')}));
+  // 6. The Finale from the phone, with the shipped kneeling pose and hug picture.
   await board.evaluate(()=>__qa.raidThreshold());await board.waitForFunction(()=>__qa.sagaState().finale,null,{timeout:20000});
   await phone.waitForFunction(()=>document.getElementById('mobile-saga-live').dataset.mode==='finale');
   await tap(phone,'#mobile-saga-live button','English voice: off');await board.waitForFunction(()=>__qa.sagaState().finale?.voice===true);
@@ -181,13 +177,14 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await again.evaluate(()=>__qa.raidThreshold());await again.waitForFunction(()=>__qa.sagaState().finale,null,{timeout:20000});
   assert.equal(await again.evaluate(()=>document.getElementById('saga-finale').classList.contains('still')),true,'still frames');
   const stillSteps=[];let stillReveal=null,stillHug=null;for(let i=0;i<20;i++){const v=(await again.evaluate(()=>__qa.sagaState())).finale;if(!v)break;stillSteps.push(v.step);
-   if(v.step==='hug')stillHug=await again.evaluate(()=>({pictures:[...document.querySelectorAll('.finale-creature.is-baby img.animated-sprite')].map(i=>i.src.replace(/^.*\/|\?.*$/g,'')),crests:document.querySelectorAll('.finale-creature svg').length,zoom:document.getElementById('saga-finale').classList.contains('hug-zoom'),pose:document.querySelector('.finale-teacher .saga-teacher-art').dataset.pose,hug:!document.querySelector('.finale-hug').hidden}));
+   if(v.step==='hug'){await again.waitForFunction(()=>{const h=document.querySelector('.finale-hug');return h&&!h.hidden&&h.querySelector('img')?.complete;},null,{timeout:8000});stillHug=await again.evaluate(()=>({pictures:[...document.querySelectorAll('.finale-creature.is-baby img.animated-sprite')].map(i=>i.src.replace(/^.*\/|\?.*$/g,'')),crests:document.querySelectorAll('.finale-creature svg').length,zoom:document.getElementById('saga-finale').classList.contains('hug-zoom'),pose:document.querySelector('.finale-teacher .saga-teacher-art').dataset.pose,hug:!document.querySelector('.finale-hug').hidden}));}
    if(v.step==='reveal'){const first=v.reveal,src=await again.evaluate(()=>document.querySelector('.finale-reveal-frame')?.src.replace(/^.*\/|\?.*$/g,''));await again.waitForFunction(()=>!document.querySelector('.finale-reveal'),null,{timeout:5000});stillReveal={first,src,after:await again.evaluate(()=>LeagueSagaScenes.finale.view().reveal)};}
    await again.evaluate(()=>__qa.finaleNext());}
   assert.deepEqual(stillReveal.first,{frame:1,frames:1});assert.match(stillReveal.src,/identity-revealed/);assert.equal(stillReveal.after,null,'then the standing pose');
   assert.deepEqual([...new Set(stillSteps)],['crack','break','reveal','speech','names','hug','closing']);
-  assert.deepEqual(stillHug,{pictures:['gryffindor-0.webp','slytherin-0.webp','hufflepuff-0.webp','ravenclaw-0.webp'],crests:0,zoom:true,pose:'support',hug:false},'the hug shows the creatures’ own Level 0 pictures in Light mode too; the half-size placeholders are skipped');
-  console.log('PASS Light mode with reduced motion: the escape ends on the same reward, and the Finale keeps every step as still frames (the reveal shows the identity frame, then Mr. Saymaz standing; the hug shows the creatures’ Level 0 pictures in his arms and skips the placeholder art)');
+  assert.deepEqual(stillHug,{pictures:['gryffindor-0.webp','slytherin-0.webp','hufflepuff-0.webp','ravenclaw-0.webp'],crests:0,zoom:true,pose:'kneel',hug:true},'the hug shows the creatures’ own Level 0 pictures in Light mode too, Mr. Saymaz kneels and the hug picture appears at once');
+  assert.equal(await again.evaluate(()=>performance.getEntriesByType('resource').some(r=>/assets\/poses\/vixar-gilded\.webp/.test(r.name))),false,'Light mode keeps Gilded Vixar a still picture: its pose sheet is not downloaded');
+  console.log('PASS Light mode with reduced motion: the escape ends on the same reward, and the Finale keeps every step as still frames (the reveal shows the identity frame, then Mr. Saymaz standing; the hug shows the creatures’ Level 0 pictures in his arms as he kneels, then the hug picture; Gilded Vixar’s pose sheet is not downloaded)');
 
   // 9. Art fallback and the phone panel's size.
   const p3=await e.page(ctx);await p3.route('**/assets/animated/gryffindor-11.webp*',r=>r.fulfill({status:404,body:''}));

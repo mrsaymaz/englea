@@ -79,7 +79,8 @@
  function raid(id,kind,impact,options={}){
   if(id==='guardian')return;
   if(id==='boss'){
-   const el=document.getElementById('vixar-animated-actor');if(!el||(!document.body.classList.contains('performance-animated')&&!document.getElementById('vixar-raid-overlay')?.classList.contains('saga-form-art')))return;
+   // Light mode keeps Vixar a still picture (the boss still moves): its 1920-px pose sheets are not downloaded there.
+   const el=document.getElementById('vixar-animated-actor');if(!el||!document.body.classList.contains('performance-animated'))return;
    const state=kind==='attack'?'cast':kind==='cast'?'charge':kind==='arrive'?'ready':kind;
    const poseOptions={id:el.dataset.poseId||'vixar',duration:options.duration||(kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?800:kind==='hit'?310:650),priority:({attack:55,cast:35,hit:60,guard:70,ultimate:90,knockout:100})[kind]||20};
    if(kind==='attack'&&options.releaseAt){

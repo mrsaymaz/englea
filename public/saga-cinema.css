@@ -244,7 +244,6 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 @media (prefers-reduced-motion:reduce) { #saga-finale .finale-motes { display:none; } }
 
 /* The crack: seams of light run across the armour (masked to the armour), wider with each heartbeat; then the break */
-#saga-finale .finale-cracks { -webkit-mask:url("assets/animated/vixar-gilded-cracking.webp?v=11.0.0") center/100% 100% no-repeat; mask:url("assets/animated/vixar-gilded-cracking.webp?v=11.0.0") center/100% 100% no-repeat; }
 #saga-finale .finale-cracks path { fill:none; stroke-dasharray:100; stroke-dashoffset:100; stroke-linejoin:round; stroke-linecap:round; }
 #saga-finale .finale-cracks .glow path { stroke:#fcd34d; stroke-opacity:.42; stroke-width:9; }
 #saga-finale .finale-cracks .core path { stroke:#fffdf5; stroke-width:2.4; }
@@ -372,7 +371,8 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
 #saga-finale[data-step="closing"] .finale-closing { max-height:29vh; }
 .finale-caption { bottom:5.2rem; max-width:min(88vw,900px); padding:.45rem 1.2rem; text-wrap:balance; }
 .finale-closing-title { white-space:normal; text-wrap:balance; }
-.finale-dialogue { max-height:35vh; overflow-y:auto; overscroll-behavior:contain; }
+/* Long lines scroll inside the text, so the speaker's nameplate above the box is never clipped. */
+.finale-dialogue p { max-height:calc(35vh - 2.8rem); overflow-y:auto; overscroll-behavior:contain; }
 .finale-house { min-width:0; }
 .finale-person strong { overflow-wrap:anywhere; }
 @media (max-width:760px) {
@@ -380,3 +380,11 @@ body.performance-light #vixar-result-panel.saga-ceremony .vixar-result-preview f
  .finale-house:nth-child(3) { grid-column:auto; }
  .finale-house { padding:.7rem .4rem 1.4rem; }
 }
+
+/* The faceplate cracks: seams of light on the gold mask during that reveal frame (see faceplateCrack in saga-scenes.js). */
+.finale-faceplate-crack { position:absolute; inset:0; pointer-events:none; }
+.finale-faceplate-crack svg { width:100%; height:100%; display:block; overflow:visible; }
+.finale-faceplate-crack path { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:100; stroke-dashoffset:100; }
+.finale-faceplate-crack .glow path { stroke:#fde68a; stroke-opacity:.6; stroke-width:16; }
+.finale-faceplate-crack .core path { stroke:#fffdf5; stroke-width:5; }
+.finale-faceplate-crack .spark { opacity:0; transform-box:fill-box; transform-origin:center; }

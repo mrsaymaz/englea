@@ -30,7 +30,7 @@ Team and Vixar state orders are unchanged (teams: `ready`, `attack`, `guard`, `h
 - **Cache tags:** the new pictures load with `?v=11.0.0`; the v10.5.0 sheets keep `?v=10.5.0`, so boards that already have them do not download them again.
 - **Fallback:** if a Level 11 or 12 avatar or sheet fails to load, the board shows the Level 10 picture of the same team instead of a gap.
 - Scarlet and Gilded Vixar always use their pictures, in every mode. The Violet form keeps the Light mode drawing as before.
-- **Scarlet and Gilded Vixar now use nine high-resolution poses each.** Sources are in `art/vixar-poses/`; the two 1920 × 1920 runtime sheets use 640 px cells. Both forms have `poses:true`. The packer also creates a matching idle picture so poses return to the same scale and ground anchor. Light mode retains the still picture.
+- **Scarlet and Gilded Vixar now use nine high-resolution poses each.** Sources are in `art/vixar-poses/`; the two 1920 × 1920 runtime sheets use 640 px cells. Both forms have `poses:true`. The packer also creates a matching idle picture so poses return to the same scale and ground anchor. Light mode keeps the still picture and does not download the sheets (the boss still moves).
 - **Every fighter faces Vixar.** The creatures on the left look right and those on the right look left. A few pictures were drawn looking left (Gryffindor Levels 0–2, Slytherin Level 0); `animated-mode.js` marks them (`data-native-facing`) and the fight flips them when needed. The Finale uses the same marks so every creature looks toward Mr. Saymaz.
 - `public/creature-studio.html` previews Levels 0–12, the three Vixar forms and the two fused creatures.
 
@@ -47,22 +47,20 @@ The saga's own pictures are listed in **`public/assets/saga/manifest.json`**. Th
 | `mrSaymaz.portrait` | `mr-saymaz-portrait.webp`, 320 × 320 | the round ally portrait on the board for a Freed class |
 | `mrSaymaz.ready` | `mr-saymaz-ready.webp`, 640 × 1120 | the Finale, after the reveal |
 | `mrSaymaz.proud` | `mr-saymaz-proud.webp` | while the names are shown, and in the speech |
-| `mrSaymaz.support`, `mrSaymaz.wave` | `mr-saymaz-support.webp`, `mr-saymaz-wave.webp` | the speech (the poses take turns line by line); `support` (arms open) also holds the little creatures in the hug and the closing card until `kneel` is added |
+| `mrSaymaz.support`, `mrSaymaz.wave` | `mr-saymaz-support.webp`, `mr-saymaz-wave.webp` | the speech (the poses take turns line by line); `support` (arms open) stands in for `kneel` if that picture is missing |
 | `mrSaymaz.bow` | `mr-saymaz-bow.webp` | the hug: he bends down to the little creatures at his feet |
 | `mrSaymaz.kneel` | `mr-saymaz-kneel.webp`: 1024 × 1792, transparent | the hug: kneeling with his arms open; used during the hug before the reunion illustration |
 | `reveal` (six frames) | `mr-saymaz-reveal-01-bound.webp` … `-06-identity-revealed.webp`, 640 × 1120 | the Finale reveal: bound in the cursed gown, the chains and violet bindings break, the gold faceplate cracks, his face is revealed |
 | `merged.slyffindor`, `merged.huffleclaw` | `slyffindor.webp`, `huffleclaw.webp`, 512 × 512 | the Merge Spell when a pair fuses, and the fused fighter in Act III |
-| `hug` | `hug.webp`: 1672 × 941, finished sunrise scene | the end of the hug, full screen, and behind the closing title |
+| `hug` | `hug.webp`: 1024 × 1024, transparent (source `art/saga/hug.png`) | the end of the hug: the live characters dissolve into it over the same dawn, and it stays under the closing title |
 
 All Mr. Saymaz pictures share one canvas (1024 × 1792 in the art pack, shoes on the same line), so the board shows every pose and reveal frame in the same box with no jump; they were only scaled, never trimmed. The reveal frames cross-fade (opacity only) while he fades in, then a soft flash covers the change from the gown to his own clothes. Light mode and reduced motion show the identity frame, then the standing pose. The frames load while the armour cracks, so they are ready when the reveal starts.
 
 **Fused teams:** each pair has a still picture (made with `node art/place-avatar.cjs avatar <source.png> <out.webp> 512`, framed like the team avatars) and a nine-pose sheet in `public/assets/poses/` (`slyffindor.webp`, `huffleclaw.webp`; 3 × 3 cells of 320 px, team states, cache tag 11.0.0). In Animated mode the fused fighter is a creature avatar, so the raid's attack, guard and hit poses play from its own sheet. In Light mode it is the still picture and the sheets are not downloaded. If a picture fails to load, the two Level 12 creatures stand in for it, as before.
 
-**The hug (two pictures still to come).** The hug step plays in about six seconds: the four Celestial creatures glow and turn back into their Level 0 selves, run to Mr. Saymaz, he bends down to them (`bow`), opens his arms (`support`), the camera moves in and the little ones jump into his arms; hearts rise. Two pictures make it complete:
-- `mrSaymaz.kneel`: Mr. Saymaz kneeling on one knee with his arms open wide, smiling down. Same canvas and framing as his other poses (1024 × 1792 in the art pack, 640 × 1120 on the board, transparent background, his knee and shoe on the same ground line as the standing poses). With it, the little ones land in his arms lower down.
-- `hug`: the four Level 0 creatures (lion cub, little snake, bear cub, eaglet) in Mr. Saymaz's arms as he kneels and hugs them, in the board's style, about 1600 × 900 with its own warm background. It fades in full screen after they jump into his arms and stays behind the closing card.
+**The hug.** About six seconds: the four Celestial creatures glow and turn back into their Level 0 selves, run to Mr. Saymaz, he bends down to them (`bow`), kneels with his arms open (`kneel`), the camera moves in and the little ones jump into his arms; hearts rise. Then only the characters dissolve into the hug picture (a transparent cut-out of him hugging the lion cub, little snake, bear cub and eaglet), so the dawn, the light and the ground never change. The board skips a kneeling picture under 480 px wide or a hug picture under 1000 px wide and keeps the live scene instead. Light mode and reduced motion show the final hug at once.
 
-Both files are finished and installed. The 1024 × 1792 kneeling PNG and full-size hug PNG are in `art/saga/`. The board loads their WebP copies. The upper part of the hug is open sky for the title. Light mode and reduced motion show the final reunion frame without the movement sequence.
+**The reveal's faceplate.** The fifth reveal frame's crack is a hairline in the art, so the board draws seams of light across the gold mask while that frame shows (on the frames' 1024 × 1792 canvas, so it stays on the mask at any size) and lets them flash away as his face appears. Animated mode only.
 
 To replace any picture: keep the file name or write the new one in its slot, deploy and reload. A missing Mr. Saymaz pose falls back to `ready`; a picture that fails to load falls back to the placeholder.
 

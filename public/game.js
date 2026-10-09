@@ -5218,14 +5218,15 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const overlay = document.getElementById('vixar-raid-overlay');
                 overlay.classList.toggle('phase-two', nextPhase >= 2);
                 overlay.classList.toggle('phase-three', nextPhase >= 3);
-                const poseId = vixarPoseId();
+                // Phase poses play in Animated mode only; Light mode keeps Vixar a still picture (no pose sheet download).
+                const poseId = performanceMode === 'animated' ? vixarPoseId() : null;
                 if (nextPhase === 2) {
-                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'proud',{id:poseId,duration:1500,priority:40});
+                    if (poseId) globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'proud',{id:poseId,duration:1500,priority:40});
                     vixarAnnounce('VIXAR reveals six astral arms', '#c4b5fd');
                     playSound('battleStart');
                 } else if (nextPhase === 3) {
                     document.getElementById('vixar-chest-armor')?.setAttribute('opacity', '.28');
-                    globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'exposed',{id:poseId,duration:2000,priority:40});
+                    if (poseId) globalThis.CreaturePoses?.show(document.getElementById('vixar-animated-actor'),'exposed',{id:poseId,duration:2000,priority:40});
                     vixarAnnounce('The true void core is exposed', '#f0abfc');
                     vixarScreenFlash('rgba(217,70,239,.26)');
                     playSound('signature');
@@ -5842,7 +5843,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const src = `./assets/animated/${act.art}.webp?v=${act.act > 1 ? '11.0.0-art1' : '6.7'}`;
                 if (!art.getAttribute('src')?.startsWith(`./assets/animated/${act.art}.webp`)) art.src = src;
                 document.getElementById('vixar-animated-actor').dataset.poseId = vixarPoseId(act);
-                if (act.poses) globalThis.CreaturePoses?.preload(act.art);
+                // Light mode keeps Vixar a still picture, so its pose sheet is fetched only in Animated mode.
+                if (act.poses && performanceMode === 'animated') globalThis.CreaturePoses?.preload(act.art);
                 overlay.querySelector('.vixar-title').textContent = act.title;
                 overlay.querySelector('.vixar-epithet').textContent = act.epithet;
                 overlay.querySelector('.vixar-raid-kicker').textContent = `${act.kicker} · ${vixarRaidState.className}`;

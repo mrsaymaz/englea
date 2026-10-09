@@ -4,11 +4,5 @@ v11.0.0: The Vixar Saga. Each class fights three forms of Vixar across the term 
 
 Apps Script update: deploy GOOGLE-APPS-SCRIPT-v11.0.0.gs as a New version of the existing web app (adds the Vixar_Saga and Vixar_Finale_Lines tabs).
 No new Netlify or Cloudflare environment variables.
-Art revision 11.0.0-art1: finished kneeling and hug artwork, 18 sharp boss poses, active 640-pixel atlas cells and matched idle anchors. See ART-UPGRADE.md.
+Visual polish (art1, motion1, finale1, visual2) and its browser review: the illustrated Mr. Saymaz, the hug with the four Level 0 creatures, 18 high-resolution Scarlet and Gilded Vixar poses, form-specific spells, refined board and Island Run styles, offline previews (FINALE-PREVIEW.html, ART-PREVIEW.html, BATTLE-MOTION-PREVIEW.html). No further Apps Script change.
 Read START-HERE-v11.0.0.md and TEST-REPORT-v11.0.0.md.
-
-Motion revision 11.0.0-motion1: distinct Vixar casting/attack movements, form-specific projectiles, synchronized hit effects and offline battle rehearsal. See BATTLE-MOTION-UPDATE.md.
-
-Finale revision 11.0.0-finale1: illustrated green-eyed Mr. Saymaz throughout, registered liberation frames, Level 0 reunion choreography, matching sunrise hug, pause/skip fixes and offline FINALE-PREVIEW.html. No additional Apps Script changes.
-
-Visual revision 11.0.0-visual2: transparent reunion and continuous Finale background, actor-only dissolve, responsive framing, readable battle labels, remote clearance and lighter runner effects. See VISUAL-REFINEMENT.md.

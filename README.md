@@ -1,7 +1,5 @@
 # English League v11.0.0 — The Vixar Saga
 
-**Latest revision: 11.0.0-visual2.** Transparent Finale embrace over the continuous dawn, clearer battle/level labels, remote overlap fixes, and lighter Island Run effects. Open **FINALE-PREVIEW.html** after extracting. See **VISUAL-REFINEMENT.md** and **VISUAL-TEST-REPORT.md**. No additional Apps Script update is needed.
-
 Vixar is no longer one fight. Each class now plays its own three-act saga across the term: break the **Violet** form, then the **Scarlet** form, then the **Gilded** form, and free Mr. Saymaz from the curse. Start with **START-HERE-v11.0.0.md**.
 
 - **Three acts, one class at a time.** Each win moves the class to the next form and raises its level cap: Level 10 → **11 (Mythic)** → **12 (Celestial)**. The new cap starts from the next session.
@@ -13,11 +11,11 @@ Vixar is no longer one fight. Each class now plays its own three-act saga across
 - **Told like a story.** Each act opens with a title card; each form has its own world (violet void, crimson eclipse, golden cage); the escape plays like a cutscene; the reward is a ceremony; the Finale moves from the gold prison to dawn. Every fighter faces Vixar. English Wheel cards name the level a team keeps or goes back to, not point totals.
 - **Game-feel combat, light on old boards.** Damage numbers, hit sparks, short hit-stops on criticals, a red ground warning before Vixar's blow, shields that shatter and a few pixels of shake on heavy hits. All of it uses transforms and opacity only, counts against the board's effects budget and turns into still numbers in Light mode or with reduced motion.
 - **Fight preview:** `vixar-preview.html` opens any act (or the Finale) straight into the real fight, in Animated or Light mode, with nothing saved.
-- **New art:** Level 11 and Level 12 forms of all four teams (avatars and action poses), Scarlet Vixar, Gilded Vixar and its cracking frame, Mr. Saymaz (five poses, a portrait and a six-frame reveal) and the fused Slyffindor and Huffleclaw (pictures and action poses).
+- **New art:** Level 11 and Level 12 forms of all four teams (avatars and action poses), Scarlet Vixar and Gilded Vixar with nine high-resolution poses each, Gilded Vixar's cracking frame, the illustrated Mr. Saymaz (portrait, six poses including kneeling, a six-frame reveal and the hug picture with the four Level 0 creatures) and the fused Slyffindor and Huffleclaw (pictures and action poses).
 
 **Upgrading from v10.5.1:** paste **GOOGLE-APPS-SCRIPT-v11.0.0.gs** into the Apps Script editor and deploy it as a **New version** of the existing web app. It adds two tabs (**Vixar_Saga**, **Vixar_Finale_Lines**) and logs Merge Spell answers in **Challenge_Log**. No new Netlify or Cloudflare environment variables. Then deploy the whole project and reload the board and the phone (both show **v11.0.0**).
 
-**Art upgrade included:** Mr. Saymaz kneeling, the sunrise reunion with all four Level 0 creatures, and 18 high-resolution Scarlet/Gilded Vixar poses are installed. Both boss pose sheets are enabled. Open **ART-PREVIEW.html** directly on your computer to inspect the new artwork; see **ART-UPGRADE.md** for details.
+**All the art is in.** Open these from the unzipped folder to look before deploying (nothing is saved): **FINALE-PREVIEW.html** (the Finale), **ART-PREVIEW.html** (the new pictures) and **BATTLE-MOTION-PREVIEW.html** (Vixar's spells). On the deployed site, `vixar-preview.html` opens the real fights.
 
 ## Verification
 
