@@ -2,6 +2,48 @@
 
 Newest first. Full notes for earlier versions are in `archive/`.
 
+## 11.0.0-scenes1 · Painted worlds
+- Four generated painterly environments, preserving approved creature and teacher art.
+- Gilded prison transforms into the same arena at dawn; continuous setting through the reveal and hug.
+- Form-specific source casting seals, one per volley, within the effects budget. Damage timing unchanged.
+- Decoded-image fallbacks and replay guards; updated offline rehearsals.
+- 42 deterministic test groups passed; new browser playback not verified here. See SAGA-SCENES-UPDATE.md.
+
+## 11.0.0
+**The Vixar Saga** (spec builds 11.0, 11.1 and 11.2, delivered together):
+- **Per-class saga.** Each class has a stage: Violet → Scarlet → Gilded → Freed. The level cap follows it: 10, 11 (Mythic), 12 (Celestial). A win moves the class on once; the new cap starts from the next session. A loss counts an attempt and keeps the stage. Undo never changes the saga; a reload mid-fight counts nothing.
+- **The Rift.** Every saga fight is opened from the phone (More controls → Vixar Saga → a 1.5-second hold). The raid sigil appears only when every team is at the act's level. One fight per class per session. The phone shows readiness ("Level 11: 3 of 4 teams · Class Mission ✓"), offers Switch to Soft on Hard mode, and has Set stage (Manage, PIN) for corrections.
+- **Act I · Violet** and **Act II · Scarlet** end in an escape: a false victory, the celebration freezes, the form shatters (crystal, then embers) and the next form looks through a tear in the air. The reward ceremony previews each team's next form.
+- **Act II · the Scarlet Brand**: Vixar marks one team for 6 s; 30% of that team's damage heals Vixar.
+- **Act III · Gilded**: the Edict of Separation at 70% HP; the **Merge Spell** (houses answer in turn, 2 right answers per house, a miss passes to the partner house for a rescue, a 2-minute circle and one 1-minute second casting). **Slyffindor** (Gryffindor + Slytherin) and **Huffleclaw** (Hufflepuff + Ravenclaw) fight fused; an unfused pair fights apart. Merge answers are logged in Challenge_Log as `Merge · …` rows.
+- **The Finale**: crack, break, reveal, Mr. Saymaz's thank-you speech (one line per Continue, English voice optional), up to three names per house, the hug (the four Celestial creatures turn back into their Level 0 selves and jump into his arms), a closing card. Continue from the board or the phone. A **Freed** class sees Mr. Saymaz as an ally and can replay the Finale.
+- **Teacher Studio → Finale speech**: the speech per grade (1–10 lines, up to 160 characters each), saved online.
+- **Fight effects** for the raid and the Arena: damage numbers, hit sparks, hit-stop on criticals, a ground warning before Vixar's blow, shield shards and a small shake on heavy blows. Transforms and opacity only, within the effects budget; still numbers in Light mode and with reduced motion.
+- **New art**: Level 11 and Level 12 avatars and pose sheets for all four teams; Scarlet Vixar, Gilded Vixar and its cracking frame. Missing Level 11/12 art falls back to Level 10. Mr. Saymaz: a portrait (the ally), five poses for the Finale and a six-frame reveal as he breaks free of the cursed gown. Slyffindor and Huffleclaw: pictures for the Merge Spell and nine-pose sheets for the fused fight (still pictures in Light mode). The kneeling pose, the hug picture and the sharper Vixar poses arrived with the visual polish (below); the board skips a kneeling or hug picture that is too small (under 480 or 1000 px wide).
+- **Vixar fight preview** (`vixar-preview.html`, `index.html#preview-act1` … `#preview-finale`): each act, or the Finale, opens straight into the real fight with every requirement met. The tab keeps everything in memory, so no class data is read or written and nothing is sent; the access code still applies.
+- **Look and story pass** (after the first preview):
+  - Every fighter faces Vixar (and its opponent in the Arena), whichever way its picture was drawn.
+  - English Wheel cards no longer show point totals: "✓ Right: keep Level 5 and its points · ✗ Wrong: back to Level 4", then "Hufflepuff gets to keep its Level 5 and its points!" or "Hufflepuff goes back to Level 4 and the points it had there."
+  - Each act opens with a title card in every display mode (the form behind the act's name, its epithet and one line of story), in a bundled display font (Cinzel, SIL Open Font License).
+  - Each form has its own world: the violet void (Act I), a crimson eclipse over obsidian spires and molten seams (Act II), a golden cage (Act III); a few embers or gold motes drift in Animated mode only.
+  - The escape is staged like a cutscene: letterbox bars, the frozen VICTORY, the heartbeat, the shatter, and the next form's face looking through a jagged tear. The reward is a ceremony with each team's next form on a pedestal.
+  - Scarlet and Gilded Vixar fight as their full, sharp pictures; their pose sheets are switched off until higher-resolution sheets are supplied.
+  - The Finale has a colour script (the gold prison, a white flash, dawn over open hills, golden light for the hug, the end card), short captions between the steps, seams of light that run only across the armour, a dialogue box above the controls, house banners with each creature under its banner, and an end card that leaves Mr. Saymaz and the little creatures in view. The Finale shows the creatures' own pictures in every display mode.
+- **Visual polish** (supplied build, revisions art1, motion1, finale1 and visual2):
+  - Art: the illustrated Mr. Saymaz throughout (portrait, poses, kneeling, six registered reveal frames) and a transparent hug picture with the four Level 0 creatures that crossfades over the same dawn; 18 high-resolution Scarlet and Gilded Vixar poses packed into 640-px sheets, with idle pictures at the same scale and ground line (`art/pack-vixar-poses.cjs` rebuilds both). PNG sources are in `art/`.
+  - Fights: each Vixar form has its own casting movement and spell shapes (violet lance, scarlet flame, gilded spear and more); a spell gathers at the source for 22% of its 420 ms flight, then lands exactly when the damage does; a four-team volley is one casting gesture; knockout shows the defeat pose for every form.
+  - Finale: the reveal waits until every frame is decoded; Pause also pauses the Finale's animations; Skip settles the hug once; the hug picture waits for a slow download.
+  - Board and Island Run: crisp level digits, a gold critical-hit badge with dark text, larger HP labels on boards, champions panels matching the ceremony, room for the Comeback Halo badge on the phone, lighter Island Run effects (transforms instead of repainted glows), wrapping banners, consistent focus rings.
+  - Offline previews: `FINALE-PREVIEW.html`, `ART-PREVIEW.html`, `BATTLE-MOTION-PREVIEW.html`. Revision notes are in `archive/v11.0.0-visual-polish/`.
+- **Review of the polish build** (browser-tested here; the build had not been run in a browser):
+  - The Finale's speech box clipped Mr. Saymaz's nameplate (the box scrolled; now only long lines scroll).
+  - Light mode downloaded and played the 1920-px Scarlet and Gilded pose sheets; it keeps them still pictures again, as Light mode is meant for old boards.
+  - The faceplate frame of the reveal showed only a hairline crack; seams of light now run across the mask on that frame and flash away as his face appears.
+  - Revision notes folded into these guides; tests updated for the finished art.
+- Balance lab (`tests/saga-balance.cjs`, 20 fights per scenario): every requirement met → Act I 20/20, Act II 20/20, Act III 20/20; Act III with one pair fused 13/20; Merge Spell failed 2/20; Act II without the Class Mission 0/20.
+
+**Apps Script update:** deploy `GOOGLE-APPS-SCRIPT-v11.0.0.gs` as a New version (new tabs Vixar_Saga and Vixar_Finale_Lines). `GOOGLE-APPS-SCRIPT-v10.4.0.gs` moved to `archive/`. No new environment variables.
+
 ## 10.5.1
 **Lighter creature poses** (nothing looks or plays differently):
 - 10 pose sheets stay decoded instead of 6: four teams at their current and next level, an island boss and Vixar. In a test lesson where every team evolved twice, sheet requests fell from 46 to 31.

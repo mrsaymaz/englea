@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="./public/"><title>The Vixar Saga · Finale rehearsal</title>
+<link rel="stylesheet" href="animated-mode.css"><link rel="stylesheet" href="vixar-saga.css"><link rel="stylesheet" href="saga-cinema.css">
+<link rel="stylesheet" href="visual-refinement.css">
+<link rel="stylesheet" href="saga-worlds.css">
+<style>
+@font-face{font-family:Cinzel;src:url(assets/fonts/cinzel-latin.woff2)}
+*{box-sizing:border-box}body{margin:0;background:#100b20;color:#fdf3db;font:16px system-ui,sans-serif}main{max-width:940px;padding:8vh 28px;margin:auto}h1{font:600 clamp(28px,5vw,52px) Cinzel,Georgia,serif;line-height:1.2}p{line-height:1.7;color:#c7becf}button{font:600 14px system-ui;padding:10px 16px;border-radius:999px;color:#fff3ce;background:#30233e;border:1px solid #96784e;cursor:pointer}button:focus-visible{outline:3px solid #fde68a;outline-offset:3px}button:disabled{opacity:.4;cursor:wait}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0}.preview-tools{position:fixed;bottom:18px;left:18px;z-index:13000;display:flex;gap:8px;flex-wrap:wrap;max-width:55vw}.preview-tools[hidden]{display:none}.preview-note{font-size:13px}.league-scene-paused *,.league-scene-paused *::before,.league-scene-paused *::after{animation-play-state:paused!important}.finale-creature-art img{object-fit:contain}.finale-creature-art{overflow:visible}@media(max-width:600px){.preview-tools button{padding:8px;font-size:11px}.finale-step{display:none}}
+</style></head><body class="performance-animated"><main>
+<p>The Vixar Saga · Painted worlds · 11.0.0-scenes1</p><h1>Home, at last.</h1>
+<p>Rehearse the actual Finale with the illustrated Mr. Saymaz: breaking bindings, the face reveal, the thank-you, and all four creatures returning to their Level 0 forms for the embrace.</p>
+<div class="actions"><button id="start" disabled>Play full Finale</button><button id="reunion" disabled>Rehearse the reunion</button><label><input id="light" type="checkbox"> Light / still mode</label></div>
+<p>Use <strong>Continue</strong> to move between scenes. The liberation and reunion animations play within their scenes; leave them a few seconds to finish. The closing card stays until you press Finish.</p>
+<p class="preview-note">Offline rehearsal only. No connection, PIN, session data or score changes. For the best view, use a landscape screen and your browser’s full-screen option.</p>
+</main><nav class="preview-tools" id="tools" hidden aria-label="Rehearsal controls"><button id="pause">Pause</button><button id="skip">Closing card</button><button id="exit">Exit preview</button></nav>
+<script>
+// Preview-only manifest adapter: permits file:// rehearsal with the production scene module.
+const nativeFetch=window.fetch?.bind(window),previewManifest={
+  "version": "11.0.0",
+  "howTo": "Illustrated Mr. Saymaz and the Level 0 reunion. hug.webp is a genuinely transparent 1024-square cutout; the existing Finale dawn is the only background. See VISUAL-REFINEMENT.md.",
+  "mrSaymaz": {
+    "portrait": "mr-saymaz-portrait.webp",
+    "ready": "mr-saymaz-ready.webp",
+    "proud": "mr-saymaz-proud.webp",
+    "support": "mr-saymaz-support.webp",
+    "wave": "mr-saymaz-wave.webp",
+    "bow": "mr-saymaz-bow.webp",
+    "kneel": "mr-saymaz-kneel.webp"
+  },
+  "reveal": [
+    "mr-saymaz-reveal-01-bound.webp",
+    "mr-saymaz-reveal-02-first-break.webp",
+    "mr-saymaz-reveal-03-chains-falling.webp",
+    "mr-saymaz-reveal-04-last-binding.webp",
+    "mr-saymaz-reveal-05-faceplate-crack.webp",
+    "mr-saymaz-reveal-06-identity-revealed.webp"
+  ],
+  "hug": "hug.webp",
+  "merged": {
+    "slyffindor": "slyffindor.webp",
+    "huffleclaw": "huffleclaw.webp"
+  },
+  "artRevision": "11.0.0-visual2"
+};
+window.fetch=(url,...args)=>String(url).includes('assets/saga/manifest.json')?Promise.resolve({ok:true,json:async()=>previewManifest}):nativeFetch(url,...args);
+</script>
+<script src="classroom-runtime.js"></script><script src="saga-scenes.js"></script>
+<script>
+const $=id=>document.getElementById(id),ids=['gryffindor','slytherin','hufflepuff','ravenclaw'],colors=['#f97316','#22c55e','#facc15','#38bdf8'];
+const creature=(id,level)=>`<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}"><img class="animated-sprite" src="assets/animated/${id}-${level}.webp" alt="${id} Level ${level}"></span>`;
+async function start(reunion=false){await LeagueSagaScenes.ready;SceneRuntime.resume('teacher');LeagueSagaScenes.finale.start({className:'Your class',date:'The Vixar Saga',replay:true,voice:false,still:$('light').checked,lines:['You brought me home. Every answer, every kind word, and every act of teamwork helped break the curse.'],names:{},teams:ids.map((id,i)=>({id,name:id[0].toUpperCase()+id.slice(1),color:colors[i],markup:creature(id,12),baby:creature(id,0)})),onEnd:()=>{$('tools').hidden=true},onChange:()=>{$('tools').hidden=!LeagueSagaScenes.finale.active}});$('tools').hidden=false;if(reunion)for(let i=0;i<5;i++)LeagueSagaScenes.finale.next();}
+$('start').onclick=()=>start();$('reunion').onclick=()=>start(true);
+$('pause').onclick=()=>SceneRuntime.paused?SceneRuntime.resume('teacher'):SceneRuntime.pause('teacher');
+$('skip').onclick=()=>{SceneRuntime.resume('teacher');LeagueSagaScenes.finale.skip()};
+$('exit').onclick=()=>{LeagueSagaScenes.finale.stop();SceneRuntime.resume('teacher');$('tools').hidden=true};
+document.addEventListener('league-pause-change',e=>{$('pause').textContent=e.detail.paused?'Resume':'Pause'});
+LeagueSagaScenes.ready.then(()=>{$('start').disabled=false;$('reunion').disabled=false;for(const id of ids)for(const level of [0,12]){const img=new Image();img.src=`assets/animated/${id}-${level}.webp`}});
+</script></body></html>

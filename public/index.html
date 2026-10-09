@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<!-- English League Island Run Edition v10.5.1 -->
+<!-- English League Island Run Edition v11.0.0 · The Vixar Saga -->
 <html lang="en" class="access-locked">
 <head>
     <meta charset="UTF-8">
+    <!-- v11.0.0: the Vixar fight preview (#preview-act1 … #preview-finale) must load before every other script. -->
+    <script src="./vixar-preview.js?v=11.0.0"></script>
     <link rel="stylesheet" href="./access-gate.css?v=8.7.0">
     <script src="./access-gate.js?v=8.7.0"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>English League with Mr. Saymaz</title>
     <link rel="stylesheet" href="./styles.css?v=6.5">
 <!-- WebRTC P2P Data Channels -->
     <script src="./vendor/peerjs.min.js?v=1.5.4"></script>
     <link rel="stylesheet" href="./game.css?v=8.7.0">
 
-    <link rel="stylesheet" href="./animated-mode.css?v=6.7">
-    <link rel="stylesheet" href="./combat-motion.css?v=8.7.0">
+    <link rel="stylesheet" href="./animated-mode.css?v=11.0.0-motion1">
+    <link rel="stylesheet" href="./combat-motion.css?v=11.0.0">
     <script src="./classroom-runtime.js?v=8.7.0"></script>
     <script src="./session-recovery.js?v=8.7.0"></script>
     <script src="./remote-protocol.js?v=8.7.0"></script>
     <script src="./performance-budget.js?v=8.7.0"></script>
-    <script src="./sheets-outbox.js?v=10.5.1"></script>
+    <script src="./sheets-outbox.js?v=11.0.0"></script>
     <link rel="stylesheet" href="./classroom.css?v=8.7.0">
     <link rel="stylesheet" href="./students.css?v=8.7.0">
-    <script src="./student-rosters.js?v=10.5.1"></script>
-    <script src="./roster-manager.js?v=10.5.1"></script>
-    <script src="./teacher-signin.js?v=10.5.1"></script>
-    <script src="./student-ui.js?v=10.5.1"></script>
+    <script src="./student-rosters.js?v=11.0.0"></script>
+    <script src="./roster-manager.js?v=11.0.0"></script>
+    <script src="./teacher-signin.js?v=11.0.0"></script>
+    <script src="./student-ui.js?v=11.0.0"></script>
     <script src="./secret-agent.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./secret-agent.css?v=8.7.0">
     <script src="./motion.js?v=8.7.0"></script>
@@ -33,43 +35,52 @@
     <script src="./arena-techniques.js?v=8.7.0"></script>
     <script src="./combat-projectiles.js?v=8.7.0"></script>
     <link rel="stylesheet" href="./combat-projectiles.css?v=8.7.0">
-    <script src="./creature-poses.js?v=10.5.1"></script>
-    <link rel="stylesheet" href="./creature-poses.css?v=10.5.1">
-    <script src="./arena-motion.js?v=10.5.1"></script>
+    <script src="./creature-poses.js?v=11.0.0-review"></script>
+    <link rel="stylesheet" href="./creature-poses.css?v=11.0.0">
+    <script src="./arena-motion.js?v=11.0.0"></script>
     <script src="./guardian-assembly.js?v=8.7.0"></script>
-    <script src="./animated-mode.js?v=10.5.1"></script>
-    <script src="./raid-motion.js?v=10.5.1"></script>
+    <script src="./animated-mode.js?v=11.0.0"></script>
+    <script src="./raid-motion.js?v=11.0.0-scenes1"></script>
+    <script src="./vixar-saga.js?v=11.0.0-art1"></script>
+    <script src="./merge-spell.js?v=11.0.0"></script>
+    <script src="./fight-fx.js?v=11.0.0"></script>
+    <script src="./saga-scenes.js?v=11.0.0-scenes1"></script>
+    <script src="./saga-remote.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./vixar-saga.css?v=11.0.0">
+    <link rel="stylesheet" href="./saga-cinema.css?v=11.0.0-review">
     <link rel="stylesheet" href="./roster-manager.css?v=8.7.0">
-    <link rel="stylesheet" href="./island-run.css?v=10.5.1">
-    <script src="./adventure.js?v=10.5.1"></script>
-    <script src="./island-runner/content.js?v=10.5.1"></script>
-    <script src="./teaching-model.js?v=10.5.1"></script>
-    <script src="./teaching.js?v=10.5.1"></script>
-    <script src="./teacher-studio.js?v=10.5.1"></script>
-    <link rel="stylesheet" href="./teacher-studio.css?v=10.5.1">
-    <script src="./lesson-recap.js?v=10.5.1"></script>
-    <link rel="stylesheet" href="./adventure.css?v=10.5.1">
-    <script src="./island-progress.js?v=10.5.1"></script>
-    <script src="./passport-seals.js?v=10.5.1"></script>
-    <script src="./navigator-seals.js?v=10.5.1"></script>
-    <script src="./league-season.js?v=10.5.1"></script>
-    <script src="./comeback-halo.js?v=10.5.1"></script>
-    <script src="./ask-questions.js?v=10.5.1"></script>
-    <script src="./challenge-deck.js?v=10.5.1"></script>
-    <link rel="stylesheet" href="./challenge-deck.css?v=10.5.1">
-    <link rel="stylesheet" href="./island-progress.css?v=10.5.1">
-    <link rel="stylesheet" href="./remote-sync.css?v=10.5.1">
-    <script src="./question-log.js?v=10.5.1"></script>
-    <script src="./island-run.js?v=10.5.1"></script>
-    <script src="./run-remote.js?v=10.5.1"></script>
-    <link rel="stylesheet" href="./remote-compact.css?v=10.5.1">
-    <link rel="stylesheet" href="./league-look.css?v=10.5.1">
-    <link rel="stylesheet" href="./board-v95.css?v=10.5.1">
-    <link rel="stylesheet" href="./league-v97.css?v=10.5.1">
-    <link rel="stylesheet" href="./league-v10.css?v=10.5.1">
-    <script src="./board-fx.js?v=10.5.1"></script>
-    <link rel="stylesheet" href="./arena-v95.css?v=10.5.1">
-    <script src="./arena-fx.js?v=10.5.1"></script>
+    <link rel="stylesheet" href="./island-run.css?v=11.0.0">
+    <script src="./adventure.js?v=11.0.0"></script>
+    <script src="./island-runner/content.js?v=11.0.0"></script>
+    <script src="./teaching-model.js?v=11.0.0"></script>
+    <script src="./teaching.js?v=11.0.0"></script>
+    <script src="./teacher-studio.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./teacher-studio.css?v=11.0.0">
+    <script src="./lesson-recap.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./adventure.css?v=11.0.0">
+    <script src="./island-progress.js?v=11.0.0"></script>
+    <script src="./passport-seals.js?v=11.0.0"></script>
+    <script src="./navigator-seals.js?v=11.0.0"></script>
+    <script src="./league-season.js?v=11.0.0"></script>
+    <script src="./comeback-halo.js?v=11.0.0"></script>
+    <script src="./ask-questions.js?v=11.0.0"></script>
+    <script src="./challenge-deck.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./challenge-deck.css?v=11.0.0">
+    <link rel="stylesheet" href="./island-progress.css?v=11.0.0">
+    <link rel="stylesheet" href="./remote-sync.css?v=11.0.0">
+    <script src="./question-log.js?v=11.0.0"></script>
+    <script src="./island-run.js?v=11.0.0"></script>
+    <script src="./run-remote.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./remote-compact.css?v=11.0.0">
+    <link rel="stylesheet" href="./league-look.css?v=11.0.0">
+    <link rel="stylesheet" href="./board-v95.css?v=11.0.0">
+    <link rel="stylesheet" href="./league-v97.css?v=11.0.0">
+    <link rel="stylesheet" href="./league-v10.css?v=11.0.0">
+    <script src="./board-fx.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./arena-v95.css?v=11.0.0">
+    <script src="./arena-fx.js?v=11.0.0"></script>
+    <link rel="stylesheet" href="./visual-refinement.css?v=11.0.0-visual2">
+<link rel="stylesheet" href="./saga-worlds.css?v=11.0.0-scenes1">
 </head>
 <body class="p-4 sm:p-8">
     <section id="access-screen" aria-labelledby="access-title">
@@ -81,7 +92,7 @@
 <!-- STARTUP SCREEN -->
     <div id="startup-overlay" class="fixed inset-0 z-[10000] bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
         <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase tracking-widest mb-8">English League</h1>
-        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v10.5.1</div>
+        <div class="mb-3 -mt-6 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">Island Run Edition · v11.0.0 · The Vixar Saga</div>
         <div class="startup-card bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
             <h2 class="startup-section-title text-xl font-bold text-slate-200 mb-4">Smartboard Display</h2>
             <div class="performance-selector" role="group" aria-label="Smartboard visual quality">
@@ -127,6 +138,8 @@
         <button id="mobile-teacher-status" type="button" role="status" aria-live="polite" hidden></button>
         <div id="mobile-scene-controls" hidden><span id="mobile-scene-name"></span><button id="remote-pause-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_PAUSE')">Pause</button><button id="remote-skip-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_SKIP')">Skip</button><button id="remote-exit-btn" class="mobile-remote-action" type="button" onclick="sendRemoteAction('SCENE_EXIT')">Exit</button></div>
         <main class="mobile-controller-main">
+            <!-- v11.0.0: the live Vixar Saga controls (the Merge Spell, the Finale). -->
+            <section id="mobile-saga-live" class="saga-remote-live" aria-label="Vixar Saga" aria-live="polite" hidden></section>
             <section id="mobile-run-panel" class="remote-run-panel" aria-label="Island Run controls" hidden>
                 <div class="remote-run-navigator">
                     <span>Navigator · this session</span>
@@ -259,6 +272,7 @@
                         <button type="button" class="remote-switch" role="switch" data-run-option="pictures" aria-checked="false"><span>Picture gates</span><span class="remote-switch-state">Off</span></button>
                     </div>
                 </section>
+                <section id="mobile-saga-panel" class="saga-remote-panel" aria-label="Vixar Saga"></section>
                 <section class="remote-sheet-actions">
                     <button id="mobile-teacher-btn" type="button" data-closes-sheet onclick="LeagueTeacher.ask()">Teacher sign-in</button>
                     <button id="mobile-manage-btn" type="button" data-closes-sheet onclick="LeagueStudio.open()">Manage roster and questions</button>
@@ -946,15 +960,18 @@
             <div id="vixar-announcer" aria-live="off" aria-hidden="true"></div>
 
             <div class="vixar-intro-curtain" hidden aria-hidden="true">
-                <div class="vixar-intro-kicker">Forbidden English League Encounter</div>
+                <div class="vixar-intro-kicker">Act I</div>
                 <div class="vixar-intro-title">VIXAR</div>
-                <div class="vixar-intro-subtitle">Four teams must become Legendary · Unity alone can break the Empty Crown</div>
+                <div class="saga-intro-ornament"><svg viewBox="0 0 400 20" preserveAspectRatio="none"><path d="M0 10 H184 M216 10 H400"/><path class="gem" d="M200 1 L209 10 L200 19 L191 10 Z"/></svg></div>
+                <div class="saga-intro-epithet">The Sovereign Beyond the Empty Crown</div>
+                <div class="vixar-intro-subtitle">Four Legendary teams stand together. Only unity can break the Empty Crown.</div>
             </div>
 
             <div id="vixar-result-panel" aria-live="polite">
                 <div id="vixar-result-title">Raid Complete</div>
                 <div id="vixar-result-subtitle"></div>
                 <div id="vixar-result-stats" class="vixar-result-grid"></div>
+                <div id="vixar-result-preview" class="vixar-result-preview" hidden></div>
                 <div class="vixar-result-actions">
                     <button id="vixar-retry-btn" class="vixar-result-btn" type="button">Challenge Again</button>
                     <button id="vixar-return-btn" class="vixar-result-btn secondary" type="button">Return to League</button>
@@ -1039,7 +1056,7 @@
         </div>
     </div>
 
-    <script src="./game.js?v=10.5.1"></script>
+    <script src="./game.js?v=11.0.0-review"></script>
 
 </body>
 </html>

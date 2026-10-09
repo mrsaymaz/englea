@@ -1,0 +1,80 @@
+# v11.0.0 verification
+
+v11.0.0 is built on v10.5.1 (the supplied zip matched the repository's v10.5.1 exactly). It adds the Vixar Saga from the v11 design spec (builds 11.0, 11.1 and 11.2 together), the supplied Level 11, Level 12, Scarlet Vixar and Gilded Vixar art, and lightweight fight effects.
+
+## Visual polish build: browser review
+
+The supplied polish build (revisions art1, motion1, finale1, visual2) arrived in four parts. Part 3 first arrived cut off (no end record); the re-sent Part 3 was complete, and the assembled build (548 files) matched the parts byte for byte. It had not been run in a browser; this review ran it in Chromium:
+- **Storyboards**, frame by frame: the Finale at 1024 × 768, 1366 × 768 and 1920 × 1080 in Animated mode and at 1366 × 768 in Light mode; all three fights, title cards, escapes and reward ceremonies in Animated mode, and Scarlet and Gilded in Light mode; the board, the Arena, the champions screen, the phone (393 × 852) and Island Run (map, banner, question); the three offline preview pages opened from disk.
+- **Found and fixed:**
+  - The Finale's speech box clipped Mr. Saymaz's nameplate (the box itself scrolled). Only long lines scroll now.
+  - Light mode downloaded the 1920-px Scarlet and Gilded pose sheets and played them: the boss pose rule, the act's preload and the two phase poses all ran in Light mode. Light mode keeps the still pictures again (the boss still moves); `board-v11.cjs` checks that the Gilded sheet is not downloaded.
+  - The reveal's faceplate frame showed only a hairline crack. Seams of light now run across the mask on that frame.
+  - Opened from disk, `FINALE-PREVIEW.html` lost the crack's seams (the browser blocks a CSS mask image from a file). The armour mask is now an SVG mask, which works from disk and on the site alike.
+  - My own test still expected the placeholder-era stand-ins; it now checks the kneeling pose and the hug picture in both modes.
+- **Looked right and left as supplied:** the illustrated Mr. Saymaz and his registered reveal frames; the kneel-and-hug choreography and the dissolve into the transparent hug picture over the same dawn (aligned at all three screen sizes); the closing card above the faces; Scarlet and Gilded poses (charge, cast with spear, lunge); form-coloured spells and impact marks; the escape's tear showing the next form's face; the board, Arena, champions, phone and Island Run refinements.
+- **Old computers** (headless Chromium, CPU slowed 4×, 8 s of fighting): Violet 58.3 fps (one long task at the start), Scarlet 59.4 and 58.9, Gilded 59.6 and 59.5 (worst frame 67 ms). The Finale: crack 53.5 and 53.8 fps, break 53.5 and 47.2, hug with the dissolve 59.5 and 59.3 (worst frame 67 ms).
+- **Tests of the polish build:** `vixar-motion.cjs` (6), `visual-integrity.cjs` (5), `art-upgrade.cjs` (5) and `finale-integration.cjs` (9) pass; the last three need the `sharp` package.
+
+## Tests
+
+- **`npm run test:v11`** (dependency-free): passes, 176 PASS lines (174 before the polish build; its pose tests added two). It includes every earlier suite and the new `v11.cjs` (17 checks): saga stages and caps, one advance per win, attempts, corrections and the merge of two copies; the Merge Spell engine (turn order, rescue, second casting, suggested student); the Finale names and lines; the Apps Script `Vixar_Saga` / `Vixar_Finale_Lines` tabs and Merge rows; the Netlify messages for an older script; the Level 10 art fallback and cache tags; the saga art (Mr. Saymaz's portrait, poses and six reveal frames, sizes read from the WebP headers; the fused teams' pictures and nine-pose sheets, hashes checked); the wiring; the light-effects rules.
+- **`npm run test:board`** (Chromium, board + phone): all twelve suites pass, 55 PASS lines (41 from the ten earlier suites, unchanged, plus 14 new). `board-preview.cjs` (3 checks) opens every act of the fight preview in Animated and Light mode, the Finale with example names and the launcher, and checks that the preview leaves the classes' saved data alone and calls no server except the access check. The new `board-v11.cjs` (11 checks) plays the saga end to end: the Rift hold, a loss, a win with the escape and the offline save, Level 11 the next session, Act III with the Merge Spell answered from the board and the phone (rescue, second casting, partial merge; Slyffindor's picture in the spell and its own poses in the fight), the Finale from the phone with the six-frame reveal and the hug (the four Level 0 creatures in Mr. Saymaz's arms; full-size kneeling and hug pictures used, the shipped placeholders skipped; their own pictures in Light mode too), Freed with Mr. Saymaz's portrait as the ally, Replay, recovery mid-fight, Light mode with reduced motion, the Level 10 fallback, the phone panel on a 393 × 852 screen, and Teacher Studio's Finale speech tab.
+- **`npm test`** (the original core suites): the older core runner stops at `students.cjs`, and `verify.cjs` and `resilience.cjs` fail on their own. **All three fail the same way on the untouched v10.5.1 code**: their expectations predate later versions (the phone's "Load islands" prompt, the "Next to invite" list, the contribution badge text, a DOM stub). `students.cjs` got two selector fixes here and now gets further; the rest is left as it was. The suites earlier in that runner (Island Run integration, Apps Script, participation, teamwork and others) pass. The v10.5.1 report also relied on `test:v105` and `test:board`, not this runner.
+- **`npm run test:finale`** (`vixar-finale.cjs`): passes.
+- Updated earlier tests: Level 10 expectations became the class cap where the saga changes them (pose clamp, halo anchors, recovery limits, version strings, the remote build). No earlier check was removed or skipped.
+
+## Visual review
+
+Every saga beat was captured frame by frame at 1366 × 768 in Animated and Light mode (title cards, the three fights, the escapes, the reward ceremonies, the Merge Spell and each step of the Finale) and checked by eye. Fixed on the way:
+- seams of light in the Finale's crack ran past the armour into the air (now drawn only across the armour, with a zigzag and small branches);
+- the Finale's dialogue box sat under the Continue button; the house banners covered the creatures and Mr. Saymaz; the closing card's title covered his face;
+- in Light mode the hug showed the house crests instead of the creatures (the Finale now uses the creatures' own pictures in every mode, one still picture each);
+- the escape's confetti fell in two columns only; the tear in the air read as a red gem (now a jagged tear with the next form's face looking through);
+- Act II's side volcanoes read as tents (now obsidian spires with molten seams);
+- the preview bar covered titles at the top centre (moved to the top-left corner).
+
+The wheel cards' new wording is checked by `board-v104.cjs` and `v104.cjs`.
+
+## Found by the fight preview
+
+In Light mode, Scarlet and Gilded Vixar were not drawn (the boss picture stayed hidden, so the arena looked empty while the fight ran normally). Fixed in `vixar-saga.css`; `board-preview.cjs` now checks that both forms are drawn in Light mode.
+
+## Balance lab
+
+`tests/saga-balance.cjs` runs the real raid engine in Chromium (seeded randomness, fast-forwarded scene clock, no shortcuts in damage, HP or boss rules), 20 fights per scenario. "Every requirement" means all four teams at the act's level and the Class Mission complete; in Act III also the Merge Spell.
+
+| Scenario | Wins | Spec target |
+|---|---:|---|
+| Act I · Violet · Level 10 · Class Mission | 20 / 20 | (as v10.5.1) |
+| Act II · Scarlet · Level 11 · Class Mission | 20 / 20 | 8 or more in 10 |
+| Act III · Gilded · Level 12 · Class Mission · both pairs fused | 20 / 20 | 8 or more in 10 |
+| Act III · one pair fused | 13 / 20 | — |
+| Act III · Merge Spell failed (no pair fused) | 2 / 20 | rare |
+| Act II · no Class Mission | 0 / 20 | — |
+
+The tuning values sit in one object in `game.js` (`sagaBalance`): the Scarlet Brand heals Vixar by 30% of the marked team's damage; a fused fighter deals 1.18× damage; the Fifth Silence hits fused fighters for 30% and unfused ones for 20%; an unfused class gets two last stands (one with a partial merge).
+
+## Old computers
+
+The Vixar raid in Animated mode (headless Chromium, 1366 × 768, CPU slowed 4×, 8 seconds of fighting per run), with the v11 fight effects on and switched off:
+
+| Fight | Effects on | Effects off |
+|---|---|---|
+| Act I · Violet (two runs) | 57.5 and 57.8 fps | 59.9 and 59.4 fps |
+| Act II · Scarlet | 57.3 fps | 59.8 fps |
+
+No long tasks in any run; the worst frame was 33 ms (50 ms once, with effects on). At most 12 effect elements were alive at once (new sparks and ground warnings are skipped once 14 are alive, and at most 8 numbers show). Light mode and reduced motion skip everything but still numbers.
+
+The Finale reveal (Mr. Saymaz's six frames cross-fading, then the flash), measured the same way over 7.5 seconds, twice: 60.1 fps both times, worst frame 17 ms, no long tasks. The frames are 640 × 1120 WebP (82–120 KB each) and load while the armour cracks. In Light mode the fused fighters stay still pictures, so their pose sheets are not downloaded.
+
+The rebuilt Finale, measured the same way (two runs): the crack 54.1 and 51.4 fps (three long tasks at its start, while the scene is built; worst frame 150 ms), the break 48.2 and 44.9 fps (worst frame 83 ms), the hug 59.1 and 58.8 fps (worst frame 83 ms). The backdrops are static pictures; only transforms, opacity and the crack's line drawing move.
+
+These are headless measurements, not a real smart board.
+
+## Not covered
+
+- Physical smart boards and iPhone/Safari were not tested.
+- The Apps Script was tested with the repository's Apps Script harness, not a live Google Sheet.
+- The English voice uses the device's own speech voices (British English first, then any English voice). On a device with no English voice the browser picks its default voice or stays silent; the lines always stay on screen.
+- `art/pack-vixar-poses.cjs` was not re-run: the shipped Scarlet and Gilded sheets and idle pictures are the supplied ones, checked by `art-upgrade.cjs` (state order, sizes, hashes, idle registration).

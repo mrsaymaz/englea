@@ -1,0 +1,60 @@
+/* 11.0.0-visual2: quiet surfaces, strong information hierarchy and consistent interaction states.
+   Layout-specific overrides are scoped; no changes to rules, scores or gameplay hitboxes. */
+:root {
+ --league-focus:#bae6fd;
+ --league-edge-light:rgba(225,236,250,.12);
+ --league-control-shadow:inset 0 1px 0 var(--league-edge-light),0 4px 12px rgba(0,0,0,.18);
+ color-scheme:dark;
+}
+/* A consistent, visible focus ring on board and teacher controls. */
+:where(button,a,input,select,textarea,summary,[tabindex]):focus-visible {
+ outline:3px solid var(--league-focus); outline-offset:3px;
+}
+:where(button) { touch-action:manipulation; }
+:where(button:disabled) { cursor:not-allowed; }
+:where(.team-score-number,.mobile-team-score,.team-level-badge strong,.battle-hp-text,.vixar-team-hp-number) {
+ font-variant-numeric:tabular-nums lining-nums;
+}
+/* Keep level digits crisp from a distance, with the border carrying the elemental glow. */
+#teams-grid .team-level-badge strong { text-shadow:0 2px 2px #000; }
+#teams-grid .team-level-display { background:linear-gradient(145deg,#101c30,#050b17); }
+#teams-grid .team-card-title { min-width:0; text-wrap:balance; }
+@media (hover:none) { #teams-grid .team-container:hover { transform:none; } }
+/* Existing champions stay dominant; the recognition row shares their panel language. */
+#winner-card { scrollbar-gutter:stable; scroll-padding:20px; }
+#winner-text,.champion-role { font-family:var(--saga-display,Georgia,serif); }
+.team-recognition-card { background:linear-gradient(165deg,#142237,#0b1526); border-color:var(--league-line-strong); border-top-color:var(--recognition-color); box-shadow:inset 0 1px 0 var(--league-edge-light),0 8px 22px #02061740; }
+.team-recognition-name { letter-spacing:.035em; }
+.team-recognition-contributor { border-radius:7px; padding:2px 3px; }
+.team-recognition-contributor:first-child { background:rgba(243,201,107,.075); }
+.team-recognition-count { color:#d7eafa; }
+#play-again-btn { background:linear-gradient(180deg,#f7dc9b,#dfb764); color:#241a08; border-color:#ffedc4; box-shadow:var(--league-control-shadow); }
+/* Critical damage may use bright yellow/green: dark text remains readable on every house hue. */
+.arena-number.critical { background:#ffe6a5; border-color:#fff4d4; color:#211707; text-shadow:none; }
+.arena-number { font-variant-numeric:tabular-nums; }
+/* Stop painting the covered tally scene during full-screen activities. */
+body.battle-active #dynamic-background,body.winner-active #dynamic-background,
+body.vixar-raid-active #dynamic-background,body.saga-finale-active #dynamic-background,
+body.island-run-active #dynamic-background { visibility:hidden; }
+/* Halo badges have reserved space. Touch targets retain their compact layout. */
+#mobile-controller .mobile-team-card:has(.mobile-halo-chip) .mobile-team-name { padding-right:35px; }
+#mobile-controller .mobile-team-name { min-width:0; overflow-wrap:anywhere; }
+#mobile-controller .mobile-invite-count { min-width:1.7em; text-align:right; }
+#mobile-controller .mobile-score-button { box-shadow:var(--league-control-shadow); }
+#mobile-controller .mobile-score-button:active { box-shadow:inset 0 2px 6px #0005; }
+.student-name-choice,.student-class-choice { box-shadow:inset 0 1px 0 var(--league-edge-light); }
+.student-picker-header { border-bottom:1px solid var(--league-line); margin-bottom:8px; }
+#mobile-controller .mobile-controller-main,.remote-sheet-card,.student-picker { scrollbar-gutter:stable; }
+@media (max-width:520px) {
+ #mobile-controller .mobile-controller-footer { padding-bottom:calc(25px + env(safe-area-inset-bottom,0px)); }
+}
+@media (prefers-reduced-motion:reduce) {
+ #teams-grid .team-container,.team-level-display,.island-run-launch,#play-again-btn { transition:none!important; }
+}
+/* Battle information scales up on classroom boards; compact phone layouts stay intact. */
+@media (min-width:1100px) and (min-height:650px) {
+ #battle-overlay .battle-hp-number,body.performance-light #battle-overlay .battle-hp-number,
+ #vixar-raid-overlay .vixar-team-hp-number { font-size:clamp(11px,.85vw,15px); font-variant-numeric:tabular-nums; }
+ #vixar-raid-overlay .vixar-team-hp-track { height:9px; }
+ #battle-overlay .battle-hp-label,#vixar-raid-overlay .vixar-team-hp-label { font-size:11px; }
+}

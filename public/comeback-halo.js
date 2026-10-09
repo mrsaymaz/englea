@@ -14,6 +14,9 @@
   hufflepuff:[[53,14,36],[57,6.5,32],[54,6.5,30],[56,7,28],[65,12,26],[63,11,26],[65,9.5,28],[63,7,28],[62,10.5,28],[62,12.5,28],[65,15,26]],
   ravenclaw:[[71,7,26],[70,20.5,22],[72,17.5,22],[70,19,22],[71,13.5,22],[69,14,22],[67,12,24],[67,11.5,24],[68,12.5,24],[64,9.5,24],[60,9,24]]
  };
+ // v11.0.0: Level 11 (Mythic) and Level 12 (Celestial) forms.
+ ANCHORS.gryffindor.push([64,15,26],[66,17,26]);ANCHORS.slytherin.push([48,9,26],[53,14,26]);
+ ANCHORS.hufflepuff.push([66,11,26],[67,12,26]);ANCHORS.ravenclaw.push([64,11,24],[65,18,24]);
  // Light avatars (drawn on a 200 × 200 grid, head centred): the top of the head rises with some traits.
  const LIGHT={
   gryffindor:{x:50,y:15,w:36,traits:{mane_ice:5,mane_fire:7,crown_celestial:2.5}},
@@ -56,7 +59,7 @@
  const NS='http://www.w3.org/2000/svg',watched=new Map(),active=new Map();
  function anchorFor(mascot,team){
   const avatar=mascot.querySelector('.animated-avatar:not(.animated-previous)');
-  if(avatar){const level=Math.max(0,Math.min(10,Math.floor(Number(avatar.dataset.avatarLevel)||0)));const [x,y,w]=ANCHORS[team.id][level];return {x,y,w};}
+  if(avatar){const level=Math.max(0,Math.min(12,Math.floor(Number(avatar.dataset.avatarLevel)||0)));const [x,y,w]=ANCHORS[team.id][level];return {x,y,w};}
   if(!mascot.querySelector(':scope>svg:not(.halo-svg)'))return null;
   const light=LIGHT[team.id];let y=light.y;for(const trait of team.traits||[])if(light.traits[trait]!==undefined)y=Math.min(y,light.traits[trait]);
   return {x:light.x,y,w:light.w};

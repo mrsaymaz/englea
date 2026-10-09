@@ -6,7 +6,7 @@
     function valid(s){
         return s&&s.schema===7&&typeof s.sessionId==='string'&&s.sessionId.length<120&&Number.isFinite(s.savedAt)
             &&Array.isArray(s.teams)&&s.teams.length===4&&new Set(s.teams.map(t=>t.id)).size===4
-            &&s.teams.every(t=>IDS.includes(t.id)&&Number.isFinite(t.points)&&Number.isInteger(t.level)&&t.level>=0&&t.level<=10&&Array.isArray(t.traits)&&t.traits.length<=10)
+            &&s.teams.every(t=>IDS.includes(t.id)&&Number.isFinite(t.points)&&Number.isInteger(t.level)&&t.level>=0&&t.level<=12&&Array.isArray(t.traits)&&t.traits.length<=12)
             &&Array.isArray(s.pointSliderValues)&&s.pointSliderValues.length===4&&s.pointSliderValues.every(n=>Number.isFinite(n)&&n>0)
             &&s.classMission&&Number.isFinite(s.classMission.progress)&&Number.isFinite(s.classMission.target)&&s.classMission.target>0;
     }

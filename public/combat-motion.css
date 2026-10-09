@@ -35,3 +35,6 @@ body.performance-animated #unity-event-overlay .guardian-tail{transform-origin:3
 body.performance-animated #unity-event-overlay .guardian-wings{transform-origin:54% 40.5%;transform:translateY(-18px) scaleX(.55) scaleY(.94)}
 body.performance-animated #unity-event-overlay .guardian-piece.show{transform:none}
 @media(prefers-reduced-motion:reduce){.arena-mark,.arena-bolt,.raid-small-fx{display:none!important}body.performance-animated #unity-event-overlay .guardian-piece{transition:none!important;animation:none!important;transform:none!important}}
+
+/* v11.0.0: the Battle Arena already mirrors the right-hand fighter; a still picture that looks left is turned too, so both fighters face each other. */
+.battle-fighter .animated-avatar[data-native-facing="left"] > .animated-sprite { transform:scaleX(-1); }

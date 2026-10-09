@@ -9,14 +9,24 @@
     let enabled=false,bridge=null,generation=0,pumpScheduled=false;
     const clock=SceneRuntime.create('evolution');
     const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const clamp=level=>Math.max(0,Math.min(10,Math.floor(Number(level)||0)));
+    const clamp=level=>Math.max(0,Math.min(12,Math.floor(Number(level)||0)));
     const valid=id=>ids.includes(id);
-    const source=(id,level)=>`./assets/animated/${id}-${clamp(level)}.webp?v=6.7`;
+    // v11.0.0: the Level 11 and 12 forms carry their own tag; Levels 0–10 keep v6.7 so they are not downloaded again.
+    const source=(id,level)=>`./assets/animated/${id}-${clamp(level)}.webp?v=${clamp(level)>10?'11.0.0':'6.7'}`;
+    // v11.0.0: which way each still picture looks. Almost all look right, like every pose sheet; these few look left.
+    // Fights use it so every creature faces its opponent (see vixar-saga.css and combat-motion.css).
+    const LEFT_FACING={gryffindor:[0,1,2],slytherin:[0]};
+    const facing=(id,level)=>LEFT_FACING[id]?.includes(clamp(level))?'left':'right';
     function markup(id,level){
         if(!valid(id))return '';
+        scope.CreaturePoses?.preload(id,clamp(level));
+        return still(id,level);
+    }
+    // The same picture without its pose sheets: for scenes that only show it (the Finale, in every display mode).
+    function still(id,level){
+        if(!valid(id))return '';
         level=clamp(level);
-        scope.CreaturePoses?.preload(id,level);
-        return `<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}" role="img" aria-label="${id}, level ${level}"><img class="animated-sprite" src="${source(id,level)}" width="384" height="384" alt="" decoding="async" draggable="false"></span>`;
+        return `<span class="animated-avatar" data-avatar-team="${id}" data-avatar-level="${level}" data-native-facing="${facing(id,level)}" role="img" aria-label="${id}, level ${level}"><img class="animated-sprite" src="${source(id,level)}" width="384" height="384" alt="" decoding="async" draggable="false"></span>`;
     }
     function preload(id,level){
         if(!enabled||!valid(id))return Promise.resolve();
@@ -34,7 +44,7 @@
         while(images.size>8)images.delete(images.keys().next().value);
         return entry.promise;
     }
-    function warmNext(id,level){if(enabled&&level<10)preload(id,clamp(level)+1);}
+    function warmNext(id,level){if(enabled&&level<(scope.LeagueSagaCap?.()??10))preload(id,clamp(level)+1);}
     function wait(ms,job){
         if(job.cancelled)return Promise.resolve();
         return new Promise(resolve=>{
@@ -81,7 +91,7 @@
             const chest=layer.querySelector('.animated-chest'),lid=layer.querySelector('.animated-chest-lid');
             const glow=layer.querySelector('.animated-chest-glow'),ribbon=layer.querySelector('.animated-ribbon');
             const seed=layer.querySelector('.animated-light-seed'),arrival=layer.querySelector('.animated-arrival');
-            const total=durations[job.milestone],anticipation=total*.36,transfer=total*.32;
+            const total=durations[Math.min(10,job.milestone)],anticipation=total*.36,transfer=total*.32;
             motion(chest,[{opacity:0,transform:'translateY(5px) scale(.88)'},{opacity:1,transform:'translateY(0) scale(1)',offset:.16},{opacity:1,transform:'translateX(-2px) rotate(-3deg)',offset:.46},{opacity:1,transform:'translateX(2px) rotate(3deg)',offset:.56},{opacity:1,transform:'translateX(-1px) rotate(-2deg)',offset:.75},{opacity:1,transform:'none'}],{duration:anticipation,fill:'forwards',easing:'ease-in-out'},job);
             // The underlying CSS keeps the chest visible after the entrance completes.
             motion(glow,[{opacity:0,transform:'scaleX(.3)'},{opacity:.85,transform:'scaleX(1)'}],{duration:anticipation,fill:'forwards'},job);
@@ -93,7 +103,7 @@
             motion(seed,[{opacity:0,transform:'translate(0,0) scale(.6)'},{opacity:1,transform:'translate(15px,-11px) scale(1)',offset:.2},{opacity:1,transform:'translate(24px,-29px)',offset:.48},{opacity:1,transform:'translate(18px,-51px)',offset:.74},{opacity:0,transform:'translate(2px,-75px) scale(.45)'}],{duration:transfer,easing:'linear'},job);
             await wait(transfer,job);if(!alive(job))return;
             reveal(job);
-            motion(arrival,[{opacity:0,transform:'scale(.6)'},{opacity:job.milestone === 10 ? .68 : .4,transform:'scale(1)',offset:.25},{opacity:0,transform:`scale(${job.milestone===10?1.4:1.13})`}],{duration:total*.27,easing:'ease-out'},job);
+            motion(arrival,[{opacity:0,transform:'scale(.6)'},{opacity:job.milestone >= 10 ? .68 : .4,transform:'scale(1)',offset:.25},{opacity:0,transform:`scale(${job.milestone>=10?1.4:1.13})`}],{duration:total*.27,easing:'ease-out'},job);
             motion(chest,[{opacity:1},{opacity:0,transform:'translateY(4px) scale(.94)'}],{duration:total*.25,easing:'ease-in'},job);
             await wait(total*.32,job);
         }finally{
@@ -128,7 +138,7 @@
         if(!held.has(id))held.set(id,from);
         const previous=queue.get(id);
         const earliest=previous?previous.from:from;
-        const milestone=[3,5,7,10].filter(n=>n>earliest&&n<=to).pop()||0;
+        const milestone=[3,5,7,10,11,12].filter(n=>n>earliest&&n<=to).pop()||0;
         queue.set(id,{id,from:earliest,to,milestone});
         pump();
     }
@@ -162,10 +172,12 @@
         const img=event.target;
         if(!(img instanceof HTMLImageElement)||!img.classList.contains('animated-sprite'))return;
         const frame=img.closest('.animated-avatar');if(!frame)return;
+        // A Level 11 or 12 form that fails to load shows the Level 10 form instead.
+        if(Number(frame.dataset.avatarLevel)>10&&!img.dataset.fallback){img.dataset.fallback='10';img.src=source(frame.dataset.avatarTeam,10);return;}
         frame.dataset.assetFailed='true';
         frame.innerHTML=`<span class="animated-art-fallback">${symbols[frame.dataset.avatarTeam]||'✦'}</span>`;
     },true);
-    scope.AnimatedMode={markup,preload,warmNext,enqueue,cancelAll,cancelTeam,pump,setEnabled,
+    scope.AnimatedMode={markup,still,preload,warmNext,enqueue,cancelAll,cancelTeam,pump,setEnabled,
         configure(callbacks){bridge=callbacks;},
         displayLevel(id,actual){return held.has(id)?held.get(id):clamp(actual);},
         hasVisual(id){return held.has(id);},

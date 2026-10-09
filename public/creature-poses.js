@@ -6,7 +6,10 @@
  const teamStates=['ready','attack','guard','hit','proud','support','runA','runB','jump'];
  const bossStates=['ready','attack','guard','hit','exposed','defeat'];
  const vixarStates=['ready','charge','cast','guard','exposed','hit','ultimate','defeat','proud'];
- const level=n=>Math.max(0,Math.min(10,Math.floor(Number(n)||0)));
+ const level=n=>Math.max(0,Math.min(12,Math.floor(Number(n)||0)));
+ // v11.0.0: Scarlet and Gilded Vixar use the Vixar states. Slyffindor and Huffleclaw (the Merge Spell's fused teams)
+ // use the team states once their sheets are added; until then the two Level 12 creatures act together.
+ const vixarForms=['vixar','vixar-scarlet','vixar-gilded'],merged=['slyffindor','huffleclaw'];
  const base=root.document?new URL('./assets/poses/',document.currentScript?.src||document.baseURI).href:'./assets/poses/';
  // Ten pose sheets stay decoded: four teams at their current and next level (8), plus an island boss and Vixar.
  const MAX_SHEETS=10;
@@ -18,17 +21,23 @@
  function pack(id,n=0){
   if(teams.includes(id))return {key:id+'-'+level(n),cols:3,rows:3,states:teamStates};
   if(bosses.includes(id))return {key:id,cols:3,rows:2,states:bossStates};
-  return id==='vixar'?{key:id,cols:3,rows:3,states:vixarStates}:null;
+  if(merged.includes(id))return {key:id,cols:3,rows:3,states:teamStates};
+  return vixarForms.includes(id)?{key:id,cols:3,rows:3,states:vixarStates}:null;
  }
+ // The tag of each picture: the v10.5.0 sheets keep theirs, so boards that already have them do not download them again.
+ const tag=key=>/^vixar-(scarlet|gilded)$/.test(key)?'11.0.0-art1':/-1[12]$|^slyffindor$|^huffleclaw$/.test(key)?'11.0.0':'10.5.0';
  function load(id,n){
   const p=pack(id,n);if(!p||typeof root.Image!=='function')return Promise.resolve(null);
   let e=cache.get(p.key);if(e){cache.delete(p.key);cache.set(p.key,e);return e.promise;}
-  const img=new root.Image();e={...p,img,url:base+p.key+'.webp?v=10.5.0',ready:false,promise:null};
-  e.promise=new Promise(resolve=>{img.onload=()=>{(img.decode?.()||Promise.resolve()).catch(()=>{}).then(()=>{e.ready=true;resolve(e);});};img.onerror=()=>resolve(null);});
+  const img=new root.Image();e={...p,img,url:base+p.key+'.webp?v='+tag(p.key),ready:false,promise:null};
+  // A Level 11 or 12 sheet that fails to load falls back to the Level 10 sheet; the original avatar stays visible meanwhile.
+  const fallback=teams.includes(id)&&level(n)>10;
+  e.promise=new Promise(resolve=>{img.onload=()=>{(img.decode?.()||Promise.resolve()).catch(()=>{}).then(()=>{e.ready=true;resolve(e);});};
+   img.onerror=()=>{if(cache.get(p.key)===e)cache.delete(p.key);if(fallback){e.fallback=10;load(id,10).then(resolve);}else resolve(null);};});
   cache.set(p.key,e);img.src=e.url;while(cache.size>MAX_SHEETS)cache.delete(cache.keys().next().value);return e.promise;
  }
  function loaded(id,n){const p=pack(id,n),e=p&&cache.get(p.key);return e?.ready?e:null;}
- function canonical(p,state){if(p.states.includes(state))return state;return ({charge:'ready',cast:'attack',revive:'proud',knockout:p.key==='vixar'||bosses.includes(p.key)?'defeat':'hit',fatigue:'guard',landing:'guard',acknowledge:'support',arrive:'ready',ultimate:'attack'})[state]||'ready';}
+ function canonical(p,state){if(p.states.includes(state))return state;return ({charge:'ready',cast:'attack',revive:'proud',knockout:vixarForms.includes(p.key)||bosses.includes(p.key)?'defeat':'hit',fatigue:'guard',landing:'guard',acknowledge:'support',arrive:'ready',ultimate:'attack'})[state]||'ready';}
  function index(p,state){return Math.max(0,p.states.indexOf(canonical(p,state)));}
  function frame(e,state){const i=index(e,state),w=e.img.naturalWidth/e.cols,h=e.img.naturalHeight/e.rows;return {x:i%e.cols*w,y:Math.floor(i/e.cols)*h,w,h};}
  function draw(ctx,e,state,x,y,w,h,flip=false){
@@ -67,12 +76,17 @@
  function arena(id,kind,impact){const host=document.getElementById('battle-shell-'+id);if(kind==='revive')clear(host);if(kind==='attack')exchange(host,impact);else act(host,kind,{duration:kind==='knockout'?60000:kind==='guard'?650:kind==='revive'?1100:500});}
  // Read health only. One bracing response on entering the low-HP band, never a per-tick animation.
  function healthChanged(scene,id,hp,maxHP){const host=document.getElementById((scene==='arena'?'battle-shell-':'vixar-avatar-shell-')+id);if(!host||!maxHP)return;const low=hp>0&&hp/maxHP<=.25,was=health.get(host);health.set(host,low);if(low&&!was)act(host,'fatigue',{duration:1100,priority:15});}
- function raid(id,kind,impact){
+ function raid(id,kind,impact,options={}){
   if(id==='guardian')return;
   if(id==='boss'){
-   const el=document.getElementById('vixar-animated-actor');if(!document.body.classList.contains('performance-animated'))return;
+   // Light mode keeps Vixar a still picture (the boss still moves): its 1920-px pose sheets are not downloaded there.
+   const el=document.getElementById('vixar-animated-actor');if(!el||!document.body.classList.contains('performance-animated'))return;
    const state=kind==='attack'?'cast':kind==='cast'?'charge':kind==='arrive'?'ready':kind;
-   show(el,state,{id:'vixar',duration:kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?1100:650});
+   const poseOptions={id:el.dataset.poseId||'vixar',duration:options.duration||(kind==='knockout'?12000:kind==='ultimate'?1450:kind==='guard'?800:kind==='hit'?310:650),priority:({attack:55,cast:35,hit:60,guard:70,ultimate:90,knockout:100})[kind]||20};
+   if(kind==='attack'&&options.releaseAt){
+    const ticket=epoch,release=Math.max(20,options.releaseAt);
+    if(show(el,'charge',{...poseOptions,duration:release}))after(()=>{if(ticket===epoch)show(el,'cast',{...poseOptions,duration:Math.max(100,poseOptions.duration-release)});},release);
+   }else show(el,state,poseOptions);
   }else{const host=document.getElementById('vixar-avatar-shell-'+id);if(kind==='revive')clear(host);if(kind==='attack')exchange(host,impact||520);else act(host,kind,{duration:kind==='knockout'?60000:kind==='revive'?1100:650});}
  }
  function bossState(b,hit=false){return b?.defeated||b?.state==='defeated'?'defeat':hit?'hit':({arrive:'ready',warn:'ready',strike:'attack',expose:'exposed',counter:'guard',knockout:'attack'})[b?.state]||'ready';}

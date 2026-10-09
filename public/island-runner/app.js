@@ -56,7 +56,8 @@
   mergeProgress(H.context.progress||{});
   enforceHost();
   const hostImage=new Image();hostImage.src=H.context.avatar;
-  hostImage.onerror=()=>{const fallback=new URL(`../assets/animated/${H.context.house}-${H.context.level}.webp`,document.baseURI).href;if(hostImage.src!==fallback)hostImage.src=fallback;};
+  // v11.0.0: a Level 11 or 12 form that fails to load falls back to the Level 10 form.
+  hostImage.onerror=()=>{const level=Math.min(10,Math.max(0,Math.round(H.context.level)||0)),fallback=new URL(`../assets/animated/${H.context.house}-${level}.webp`,document.baseURI).href;if(hostImage.src!==fallback)hostImage.src=fallback;};
   const bossImages={};function bossImage(island){const b=B.get(island);if(!bossImages[b.id]){const img=new Image();img.src=b.asset;bossImages[b.id]=img;}return bossImages[b.id];}
   const renderer=new S.Renderer($('gameCanvas'));
   let audioContext=null,lastCoinSound=0;
@@ -474,7 +475,7 @@
   };
   $('exportButton').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`island-runner-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Backup download started. Keep it with your game folder.');};
   $('importButton').onclick=()=>$('importFile').click();
-  $('balanceExport').onclick=()=>{try{const rows=JSON.parse(localStorage.getItem('island-run-balance-v91')||'[]'),blob=new Blob([JSON.stringify({version:'10.5.1',runs:rows},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='island-run-balance-notes.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{notify('Balance notes are unavailable in this browser.');}};
+  $('balanceExport').onclick=()=>{try{const rows=JSON.parse(localStorage.getItem('island-run-balance-v91')||'[]'),blob=new Blob([JSON.stringify({version:'11.0.0',runs:rows},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='island-run-balance-notes.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{notify('Balance notes are unavailable in this browser.');}};
   $('importFile').onchange=async()=>{
     const file=$('importFile').files[0];$('importFile').value='';if(!file)return;
     try{if(file.size>8*1024*1024)throw Error('This file is too large. Choose an Island Runner JSON backup smaller than 8 MB.');pendingImport=E.validateSave(JSON.parse(await file.text()));const edits=Object.keys(pendingImport.overrides).length,completed=Object.values(pendingImport.progress).reduce((n,p)=>n+Object.keys(p).length,0);$('importSummary').textContent=`Ready to restore ${completed} completed team islands and ${edits} edited question banks. This will replace the current progress, settings and edits in this browser.`;$('importPreview').hidden=false;}
@@ -494,7 +495,7 @@
     reportHost();
   }
   selected=preferredIsland();renderMap();updateStorageStatus();frameId=requestAnimationFrame(frame);
-  window.IslandRunner={version:'10.5.1',
+  window.IslandRunner={version:'11.0.0',
     setOptions(value){if(value&&typeof value==='object')Object.assign(localOptions,{listening:value.listening!==false,pictures:value.pictures===true});if(value?.listening)listeningActive=speechReady();if(!value?.listening){listeningActive=false;stopSpeech();if(run?.gate?.q?.format==='listen'){$('promptText').textContent=run.gate.q.speak;$('promptNote').textContent='Listening is off. The word is shown instead.';$('repeatAudio').hidden=true;}}if($('teacherDialog').open)renderRunOptions();reportHost();},
     repeatAudio(){const q=run?.gate?.q;if(q?.format==='listen'&&listeningActive){speak(q.speak);return {ok:true,message:'Repeating the word'};}if(run?.trailActive&&listeningActive){speak(run.trail.word.toLowerCase());return {ok:true,message:'Repeating the word'};}return {ok:false,message:'No listening question right now'};},
     control:remoteControl,applyTeaching(catalog){acceptTeaching(catalog);if(!run||run.status!=='running')renderMap();},applyProgress(progress){mergeProgress(progress);persist();if(!run||run.status!=='running'){selected=preferredIsland();renderMap();}},pause,resume,setHostVisible,getSnapshot:()=>({settings:{...state.settings},selectedIsland:selected,status:run?run.status:'map',practice,progress:JSON.parse(JSON.stringify(state.progress))})};

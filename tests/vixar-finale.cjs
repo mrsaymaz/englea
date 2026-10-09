@@ -14,8 +14,9 @@ const assert=require('assert/strict'),fs=require('fs');const {setup}=require('./
   assert.ok(r.fighters.every(f=>mission?(f.alive&&f.hp===f.max):(!f.alive&&f.hp===0)));
   results.push({mission,points,seed,stage:r.stage});
  }
- await p.evaluate(()=>{LeagueScenes.cancel();__qa.seed(9,1000);__qa.raid(true);LeagueScenes.skip();});
- const lower=await p.evaluate(()=>__qa.state().raid);assert.equal(lower.stage,'defeat');assert.equal(lower.finalAttack,false);assert.equal(lower.guardian,false);
+ // v11.0.0: the Rift replaces the Level 8 sigil. With the Rift open, Act I still waits until every team is Level 10.
+ await p.evaluate(()=>{LeagueScenes.cancel();__qa.seed(9,1000);__qa.raid(true);});
+ assert.equal(await p.evaluate(()=>__qa.state().raid),null);assert.equal(await p.evaluate(()=>__qa.sagaState().sigil),false);
  await p.evaluate(()=>{LeagueScenes.cancel();__qa.seed(10,1000);__qa.raid(false);});
  assert.equal(await p.evaluate(()=>__qa.raidHit(false)),0);assert.ok(await p.evaluate(()=>__qa.raidHit(true))>0);
  for(const [label,kind] of [['NULL LANCE','spear'],['CROWNFALL','shard'],['GRAVITY COLLAPSE','orb'],['SOUL REND','crescent'],['SEPARATED','chain'],['UNITY','unity']]){
@@ -40,6 +41,6 @@ const assert=require('assert/strict'),fs=require('fs');const {setup}=require('./
  await p.waitForTimeout(8500);await p.screenshot({path:'output/guardian-clean-assembly.png'});
  await p.evaluate(()=>LeagueScenes.cancel());assert.equal(await p.locator('#raid-motion-layer > *').count(),0);
  assert.deepEqual(e.errors,[]);fs.writeFileSync('output/vixar-finale-results.json',JSON.stringify(results,null,2));
- console.log('PASS 24 natural Level 10 raids: seals break, all teams damage Vixar, 10% knockout, mission-gated victory; Level 9 stays locked.');
+ console.log('PASS 24 natural Level 10 raids: seals break, all teams damage Vixar, 10% knockout, mission-gated victory; Level 9 gets no fight.');
  console.log('PASS six projectile shapes, sequential claw HP timing, clean assembly, pause/exit cleanup and reduced-motion finale.');
 }finally{await e.close();}})().catch(e=>{console.error(e);process.exit(1);});

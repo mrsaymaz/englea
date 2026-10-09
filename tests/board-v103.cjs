@@ -4,7 +4,7 @@
    - Island Run starts on the board's remembered step: a slow board draws the run at 55% resolution from the
      first frame; a new board draws it sharp.
    - The remembered effects level is applied at start; the board background is not drawn while the Arena shows.
-   Frame-rate figures are in ../TEST-REPORT-v10.3.0.md (measured with a slowed CPU; too variable for a pass/fail). */
+   Frame-rate figures are in ../archive/TEST-REPORT-v10.3.0.md (measured with a slowed CPU; too variable for a pass/fail). */
 const assert=require('assert/strict');
 const {setup}=require('./support.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));

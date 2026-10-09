@@ -1,12 +1,10 @@
-English League · Island Run Edition · v10.5.1
+English League · Island Run Edition · v11.0.0
 
-v10.5.1: lighter creature poses. 10 pose sheets stay decoded (was 6), and poses are sized by CSS with no page measuring. Apps Script unchanged (v10.4.0).
+v11.0.0: The Vixar Saga. Each class fights three forms of Vixar across the term (Violet, Scarlet, Gilded); each win raises its level cap (10 → 11 Mythic → 12 Celestial). The Rift is opened from the phone. Act III adds the Merge Spell and the Finale that frees Mr. Saymaz. Lightweight fight effects for the raid and the Arena. New Level 11 and 12 art; Scarlet and Gilded Vixar.
 
-v10.5.0:
-
-465 new creature action poses: 44 team forms, ten island bosses and Vixar.
-Shared pose controller and results interactions; local Creature Studio included.
-Presentation only; gameplay, remote protocol and stored data formats retained.
-No Apps Script update from v10.4.3. Keep GOOGLE-APPS-SCRIPT-v10.4.0.gs.
+Apps Script update: deploy GOOGLE-APPS-SCRIPT-v11.0.0.gs as a New version of the existing web app (adds the Vixar_Saga and Vixar_Finale_Lines tabs).
 No new Netlify or Cloudflare environment variables.
-Read START-HERE-v10.5.1.md and TEST-REPORT-v10.5.1.md.
+Visual polish (art1, motion1, finale1, visual2) and its browser review: the illustrated Mr. Saymaz, the hug with the four Level 0 creatures, 18 high-resolution Scarlet and Gilded Vixar poses, form-specific spells, refined board and Island Run styles, offline previews (FINALE-PREVIEW.html, ART-PREVIEW.html, BATTLE-MOTION-PREVIEW.html). No further Apps Script change.
+Read START-HERE-v11.0.0.md and TEST-REPORT-v11.0.0.md.
+
+Presentation revision: 11.0.0-scenes1 · painted battle worlds and continuous Finale dawn. See SAGA-SCENES-UPDATE.md.

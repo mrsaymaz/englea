@@ -1,0 +1,46 @@
+/* scenes1 · Static painted environments; no per-frame filters or camera drift. */
+.saga-world-art {
+  position:absolute; left:0; top:calc(0px - var(--world-offset,0px)); width:100%;
+  height:calc(100% + var(--world-offset,0px)); object-fit:cover; object-position:center;
+  display:block; opacity:0; pointer-events:none; user-select:none;
+}
+.world-ready > .saga-world-art { opacity:1; }
+.world-ready > svg { visibility:hidden; }
+#vixar-raid-overlay[data-act="violet"] .saga-backdrop { display:block; }
+.saga-backdrop.world-ready::after {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg,rgba(5,4,17,.68),rgba(5,4,17,.14) 28%,rgba(5,4,17,.2) 62%,rgba(5,4,17,.56)),
+    radial-gradient(ellipse at 50% 43%,rgba(4,3,16,.48),rgba(4,3,16,.12) 42%,transparent 70%);
+}
+.saga-backdrop .saga-motes { z-index:1; }
+.saga-backdrop[data-act="violet"] .saga-mote { background:#c4b5fd; }
+/* Do not stack the old geometric scenery on top of the painting. On load failure it stays visible. */
+#vixar-raid-arena.painted-world > .vixar-arena-eclipse,
+#vixar-raid-arena.painted-world > .vixar-arena-floor,
+#vixar-raid-arena.painted-world > .vixar-monolith { display:none; }
+#vixar-raid-arena.painted-world .vixar-boss-hud-line {
+  width:fit-content; max-width:100%; margin:.36rem auto 0; padding:.28rem .7rem;
+  border-radius:1rem; background:rgba(5,4,17,.82); color:#e2e8f0;
+}
+.painted-finale .finale-sky::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at center,rgba(5,4,17,.26),rgba(5,4,17,.58));
+}
+.painted-finale .finale-light { transition:opacity 2.4s ease-in-out; }
+/* Keep the same dawn pixels from liberation to the hug; actor crossfade remains independent. */
+.painted-finale .finale-light::after { display:none; }
+.painted-finale:not([data-step="crack"]) .finale-rays { opacity:.16 !important; }
+.painted-finale .finale-floor { background:radial-gradient(ellipse,rgba(255,231,179,.12),transparent 70%); }
+.painted-finale .finale-closing-title { text-shadow:0 2px 12px #21132e,0 1px 3px #21132e; }
+.painted-finale .finale-closing-line,.painted-finale .finale-date,.painted-finale .finale-kicker,.painted-finale .finale-the-end {
+  text-shadow:0 2px 6px #21132e;
+}
+.raid-cast-seal { width:clamp(86px,12vw,164px); height:clamp(86px,12vw,164px); }
+.raid-cast-seal svg { width:100%; height:100%; overflow:visible; }
+.raid-boss-shot::before {
+  content:''; position:absolute; right:55%; top:43%; width:110%; height:14%;
+  border-radius:100%; background:linear-gradient(90deg,transparent,currentColor); opacity:.65;
+}
+.raid-boss-shot[data-projectile="orb"]::before,.raid-boss-shot[data-projectile="unity"]::before { display:none; }
+@media (prefers-reduced-motion:reduce) { .painted-finale .finale-light { transition:none; } }
+body.performance-light .raid-cast-seal,body:not(.performance-animated) .raid-cast-seal { display:none; }

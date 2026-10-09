@@ -1,3 +1,32 @@
+# v11.0.0 checks (the Vixar Saga)
+
+Run `npm run test:v11` for the full dependency-free suite (all v10.5.1 checks plus `v11.cjs`). `v11.cjs` covers:
+
+- the saga store: stages, caps, one advance per win, attempts, corrections, the merge of two copies (a teacher correction wins; otherwise the furthest stage);
+- the Merge Spell engine: turn order, two right answers per house, the partner rescue, the second casting, partial merges;
+- the Finale names (up to three per house, nobody named for a miss) and the per-grade lines;
+- the Apps Script `Vixar_Saga` and `Vixar_Finale_Lines` tabs, `SAGA_SAVE` / `SAGA_SET` / `SAGA_LINES_SAVE`, Merge rows in Challenge_Log;
+- the Netlify messages for an older script;
+- the Level 11/12 art, its cache tag and the Level 10 fallback;
+- the saga art: Mr. Saymaz's portrait, five poses and six reveal frames (sizes read from the WebP headers), the fused teams' pictures and nine-pose sheets (hashes checked), the kneeling pose, the transparent hug picture, the 18 high-resolution Vixar pose sources and their sheets;
+- the wiring (the class cap replaces Level 10 everywhere; the Rift gates every fight; build 11.0.0) and the light-effects rules.
+
+`npm run test:board` now also runs `board-v11.cjs` (board + phone in Chromium):
+- the Rift (a short tap does nothing; a 1.5 s hold opens it; the sigil only at the act's level; close and reopen);
+- a loss (an attempt, the Rift closed, Undo leaves the saga alone);
+- a win (the escape, the reward panel, the cap rising next session, the row queued offline and saved after sign-in);
+- Level 11 (Mythic) and no chest above the cap;
+- Act III: the Edict, the Merge Spell from the board and the phone, the rescue, the second casting, a partial merge, Merge rows; Slyffindor's picture in the spell and in the fight, posed from its own sheet;
+- the Finale from the phone with the English voice, the six-frame reveal, the hug (the four Level 0 creatures in his arms; the kneeling pose and the hug picture, in Animated and Light mode; their own pictures in Light mode too), Freed, Mr. Saymaz's portrait as the ally, Replay the Finale;
+- recovery mid-fight; Light mode with reduced motion; the Level 10 fallback; the phone panel's size;
+- Teacher Studio's Finale speech tab.
+
+`npm run test:board` also runs `board-preview.cjs`: every act of the fight preview (Animated and Light), the Finale with example names, the launcher's links, and nothing reaching the classes' saved data or the server.
+
+Visual polish checks (run from the project folder): `node tests/vixar-motion.cjs` (each Vixar form's spells and movement, timing, cleanup; no dependencies) and, with the `sharp` package installed, `node tests/art-upgrade.cjs` (pose sources, sheets and idle pictures), `node tests/finale-integration.cjs` (the reveal, the hug, pause, skip, framing) and `node tests/visual-integrity.cjs` (local references, the transparent hug picture, stylesheet wiring, contrast).
+
+`npm run test:saga-balance` runs the balance lab (`saga-balance.cjs [fights]`, default 20 per scenario) and writes `balance-lab/saga-balance.json`. `npm run test:finale` runs `vixar-finale.cjs`.
+
 # v10.4.0 checks
 
 Run `npm run test:v104` for the full dependency-free suite (all v10.3 checks plus `v104.cjs`). `v104.cjs` covers:

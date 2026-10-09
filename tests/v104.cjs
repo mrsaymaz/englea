@@ -124,7 +124,7 @@ await test('Netlify: Challenge cards wait on the phone while the Sheet runs an o
  const payload={type:'LEADERBOARD_FINAL',pin:'2595',className:'5-A',sessionId:'lesson-8',islandProgress:{},standings:[],
   challengeLog:[{id:'lesson-8-c1',at:Date.now(),className:'5-A',team:'Slytherin',studentId:'',student:'',level:5,type:'Speaking',word:'club',island:2,result:'right'}]};
  let writes=0;const older=async(url,o)=>{const b=JSON.parse(o.body);if(b.type!=='ISLAND_GET')writes++;return new Response(JSON.stringify({status:'success',islandProgress:{},questionLogVersion:1,contributionsVersion:1,navigatorSealsVersion:1}));};
- const r=await (await handleSession(req(payload),older)).json();assert.equal(r.status,'error');assert.match(r.message,/Challenge cards are kept on this phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v10\.4\.0\.gs/);assert.equal(writes,0);
+ const r=await (await handleSession(req(payload),older)).json();assert.equal(r.status,'error');assert.match(r.message,/Challenge cards are kept on this phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v\d+\.\d+\.\d+\.gs/);assert.equal(writes,0);
  const gas=makeGas();const current=async(url,o)=>new Response(JSON.stringify(gas.post(JSON.parse(o.body))));
  const ok=await (await handleSession(req(payload),current)).json();assert.equal(ok.status,'success');assert.equal(ok.challengesAdded,1);
 });
@@ -134,7 +134,7 @@ await test('Board wiring: the go-back point, the stakes, wrong/right/skip, the r
  assert.equal((game.match(/noteLevelStart\(team\);/g)||[]).length,4,'every level-up records where the team stood (Animated, both chests, Unity)');
  assert.match(game,/if \(person\) lastAwardStudent\.set\(team\.id, \{id:person\.id, name:person\.name\}\);/);
  assert.match(game,/if \(startChallenge\(sub, index, activeAnimatedWheel, \{ delay:advanceImmediately \? 0 : undefined \}\)\) \{/);
- assert.match(game,/stakes:team \? `✓ Right: keep Level \$\{team\.level\} · ✗ Wrong: back to Level \$\{wheel\.restore\?\.level \?\? wheel\.stage - 1\}` : '',/);
+ assert.match(game,/stakes:team \? `✓ Right: keep Level \$\{team\.level\} and its points · ✗ Wrong: back to Level \$\{wheel\.restore\?\.level \?\? wheel\.stage - 1\}` : '',/);
  assert.match(game,/team\.wheelMilestonesReached = team\.wheelMilestonesReached\.filter\(stage => stage <= team\.level\);/);
  assert.match(game,/saveState\(\); \/\/ Undo puts the team back/);
  assert.match(game,/if \(LeagueChallenge\.active\) \{ LeagueChallenge\.command\(\{op:LeagueChallenge\.answered \? 'continue' : 'skip'\}\); return; \}/,'Close Wheel / Skip / Exit: Skip card before an answer, Continue after');

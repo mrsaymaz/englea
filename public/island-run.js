@@ -31,7 +31,7 @@
       const svg=c.avatarMarkup.replace('width="100%"','width="384"').replace('height="100%"','height="384"');
       portraitBlob=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));return portraitBlob;
     }
-    return new URL(`assets/animated/${c.house}-${Math.max(0,Math.min(10,Math.round(c.level)||0))}.webp`,document.baseURI).href;
+    return new URL(`assets/animated/${c.house}-${Math.max(0,Math.min(12,Math.round(c.level)||0))}.webp`,document.baseURI).href;
   }
   function disposeFrame(){
     clearTimeout(loadTimer);loadTimer=null;
@@ -77,7 +77,7 @@
     $('island-run-loading').hidden=false;$('island-run-loading-text').textContent='Opening the islands…';$('island-run-retry').hidden=true;
     frame=document.createElement('iframe');frame.id='island-run-frame';frame.title=`Island Run · ${c.className} · ${c.name}`;
     frame.setAttribute('allow','fullscreen');frame.setAttribute('allowfullscreen','');
-    frame.src='./island-runner/index.html?v=10.5.1';frame.addEventListener('error',fail);
+    frame.src='./island-runner/index.html?v=11.0.0';frame.addEventListener('error',fail);
     $('island-run-stage').append(frame);loadTimer=setTimeout(fail,15000);changed();return true;
   }
   function open(){
