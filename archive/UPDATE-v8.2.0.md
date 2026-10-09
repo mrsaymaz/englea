@@ -13,7 +13,7 @@ The board remains the source of confirmed counts. Lists update after confirmed a
 
 No Google Apps Script changes are required. All champion displays, constellation stars, Class Mission and wheel settings are preserved.
 
-The corrected 5-A roster is included: Nisa in Hufflepuff, Elif Naz in Gryffindor. If upgrading from v8.1.0 or earlier, start a fresh 5-A session rather than resuming an old session, because saved student identities use roster positions. Sessions created in v8.1.1 have the corrected roster already.
+The corrected 5-A roster is included: Nog in Hufflepuff, Emobi Nese in Gryffindor. If upgrading from v8.1.0 or earlier, start a fresh 5-A session rather than resuming an old session, because saved student identities use roster positions. Sessions created in v8.1.1 have the corrected roster already.
 
 ## Phone layout and verification
 

@@ -121,52 +121,52 @@ await test('Merge Spell: the suggested student has the fewest contributions; eac
 await test('Apps Script v11.0.0: Vixar_Saga row per class, no double advance on re-save, Merge answers in Challenge_Log once',()=>{
  const gas=makeGas(),now=Date.now();
  const row={stage:'Scarlet',attempts:0,won:{Violet:now-5000},lastSessionId:'lesson-a',fightSessions:['lesson-a'],updatedAt:now-5000};
- const merge=[{id:'lesson-a-m1',at:now-6000,className:'5-A',team:'Gryffindor',studentId:'5-A:gryffindor:0',student:'Elif Naz',level:12,type:'Merge · Grammar',merge:true,word:'meet · answered: meets',island:2,result:'right'},
+ const merge=[{id:'lesson-a-m1',at:now-6000,className:'5-A',team:'Gryffindor',studentId:'5-A:gryffindor:0',student:'Emobi Nese',level:12,type:'Merge · Grammar',merge:true,word:'meet · answered: meets',island:2,result:'right'},
   {id:'lesson-a-m2',at:now-5900,className:'5-A',team:'Slytherin',student:'',level:12,type:'Merge · Vocabulary',word:'answered: x',island:2,result:'wrong'}];
- let r=gas.post({type:'SAGA_SAVE',pin:'2595',className:'5-A',sessionId:'lesson-a',saga:row,mergeLog:merge});
+ let r=gas.post({type:'SAGA_SAVE',pin:'8642',className:'5-A',sessionId:'lesson-a',saga:row,mergeLog:merge});
  assert.equal(r.status,'success',r.message);assert.equal(r.saga.stage,'Scarlet');assert.equal(r.challengesAdded,2);
  const sheet=gas.ss.getSheetByName('Vixar_Saga');same(sheet.rows[0],['Class','Stage','Level cap','Attempts at current form','Violet won','Scarlet won','Gilded won','Last session ID','Corrections','Corrected at','Fight sessions','Updated']);
  assert.equal(sheet.rows[1][0],'5-A');assert.equal(sheet.rows[1][2],11);assert(sheet.rows[1][4] instanceof gas.SheetDate);assert.equal(sheet.formats.get('2:5'),'dd/mm/yyyy hh:mm:ss');
- r=gas.post({type:'SAGA_SAVE',pin:'2595',className:'5-A',sessionId:'lesson-a',saga:row,mergeLog:merge});
+ r=gas.post({type:'SAGA_SAVE',pin:'8642',className:'5-A',sessionId:'lesson-a',saga:row,mergeLog:merge});
  assert.equal(r.saga.stage,'Scarlet','a re-save does not advance again');assert.equal(r.challengesAdded,0,'no duplicate Merge rows');assert.equal(sheet.getLastRow(),2,'one row per class');
- r=gas.post({type:'SAGA_SAVE',pin:'2595',className:'5-A',saga:{stage:'Violet',attempts:3,updatedAt:now}});assert.equal(r.saga.stage,'Scarlet','a save never takes an earned stage back');
+ r=gas.post({type:'SAGA_SAVE',pin:'8642',className:'5-A',saga:{stage:'Violet',attempts:3,updatedAt:now}});assert.equal(r.saga.stage,'Scarlet','a save never takes an earned stage back');
  const log=gas.ss.getSheetByName('Challenge_Log');assert.equal(log.rows[1][6],'Merge · Grammar');assert.equal(log.rows[1][5],12);assert.equal(log.rows[1][9],'Right');
  // The same Merge rows inside a session record are not written twice either.
- r=gas.post({type:'LEADERBOARD_FINAL',pin:'2595',className:'5-A',sessionId:'lesson-a',standings:[],challengeLog:merge});assert.equal(r.status,'success');assert.equal(r.sagaVersion,1);assert.equal(r.challengesAdded,0);
- for(const bad of [{...merge[0],id:'x-m9',level:5},{...merge[0],id:'x-m9',team:'Practice'},{...merge[0],id:'x-m9',type:'Merge · Taboo Description'}]){r=gas.post({type:'SAGA_SAVE',pin:'2595',className:'5-A',saga:row,mergeLog:[bad]});assert.equal(r.status,'error');}
+ r=gas.post({type:'LEADERBOARD_FINAL',pin:'8642',className:'5-A',sessionId:'lesson-a',standings:[],challengeLog:merge});assert.equal(r.status,'success');assert.equal(r.sagaVersion,1);assert.equal(r.challengesAdded,0);
+ for(const bad of [{...merge[0],id:'x-m9',level:5},{...merge[0],id:'x-m9',team:'Practice'},{...merge[0],id:'x-m9',type:'Merge · Taboo Description'}]){r=gas.post({type:'SAGA_SAVE',pin:'8642',className:'5-A',saga:row,mergeLog:[bad]});assert.equal(r.status,'error');}
 });
 await test('Apps Script v11.0.0: Set stage is logged ("Set to Scarlet by teacher, 02/12/2026"); Load islands returns the row, the Finale data and the lines',()=>{
  const gas=makeGas(),at=new Date(2026,11,2,9,10).getTime();
- gas.post({type:'SAGA_SAVE',pin:'2595',className:'6-C',saga:{stage:'Gilded',won:{Violet:at-9e8,Scarlet:at-5e8},fightSessions:['f1','f2'],updatedAt:at-5e8}});
- let r=gas.post({type:'SAGA_SET',pin:'2595',className:'6-C',stage:'Scarlet',at,note:'Set to Scarlet by teacher'});
+ gas.post({type:'SAGA_SAVE',pin:'8642',className:'6-C',saga:{stage:'Gilded',won:{Violet:at-9e8,Scarlet:at-5e8},fightSessions:['f1','f2'],updatedAt:at-5e8}});
+ let r=gas.post({type:'SAGA_SET',pin:'8642',className:'6-C',stage:'Scarlet',at,note:'Set to Scarlet by teacher'});
  assert.equal(r.status,'success');assert.equal(r.saga.stage,'Scarlet');assert.equal(r.saga.won.Scarlet,0);assert.equal(r.saga.correctedAt,at);
  const row=gas.ss.getSheetByName('Vixar_Saga').rows[1];assert.equal(row[8],'Set to Scarlet by teacher, 02/12/2026');assert.equal(row[2],11);
- assert.equal(gas.post({type:'SAGA_SET',pin:'2595',className:'6-C',stage:'Blue'}).status,'error');assert.equal(gas.post({type:'SAGA_SET',pin:'0000',className:'6-C',stage:'Violet'}).status,'unauthorized');
+ assert.equal(gas.post({type:'SAGA_SET',pin:'8642',className:'6-C',stage:'Blue'}).status,'error');assert.equal(gas.post({type:'SAGA_SET',pin:'0000',className:'6-C',stage:'Violet'}).status,'unauthorized');
  // What the Finale needs: contributions of the saga sessions, navigators and Merge answers.
- gas.post({type:'LEADERBOARD_FINAL',pin:'2595',className:'6-C',sessionId:'f1',standings:[],studentContributions:{everyone:{gryffindor:[{name:'Selin',awards:4}],slytherin:[],hufflepuff:[],ravenclaw:[]}}});
- gas.post({type:'LEADERBOARD_FINAL',pin:'2595',className:'6-C',sessionId:'other',standings:[],studentContributions:{everyone:{gryffindor:[{name:'Amir',awards:9}],slytherin:[],hufflepuff:[],ravenclaw:[]}}});
- gas.post({type:'SAGA_SAVE',pin:'2595',className:'6-C',saga:{stage:'Scarlet',updatedAt:Date.now()},mergeLog:[{id:'f2-m1',at:Date.now(),className:'6-C',team:'Ravenclaw',student:'Hedil',level:12,type:'Merge · Translation',word:'',island:3,result:'right'}]});
- r=gas.post({type:'SAGA_LINES_SAVE',pin:'2595',className:'6-C',grade:6,lines:['Thank you, 6-C.','You never stopped.']});assert.equal(r.status,'success');same(r.finaleLines.lines,['Thank you, 6-C.','You never stopped.']);
- assert.equal(gas.post({type:'SAGA_LINES_SAVE',pin:'2595',className:'6-C',grade:6,lines:[]}).status,'error');
- r=gas.post({type:'ISLAND_GET',pin:'2595',className:'6-C'});
+ gas.post({type:'LEADERBOARD_FINAL',pin:'8642',className:'6-C',sessionId:'f1',standings:[],studentContributions:{everyone:{gryffindor:[{name:'Silep',awards:4}],slytherin:[],hufflepuff:[],ravenclaw:[]}}});
+ gas.post({type:'LEADERBOARD_FINAL',pin:'8642',className:'6-C',sessionId:'other',standings:[],studentContributions:{everyone:{gryffindor:[{name:'Arebo',awards:9}],slytherin:[],hufflepuff:[],ravenclaw:[]}}});
+ gas.post({type:'SAGA_SAVE',pin:'8642',className:'6-C',saga:{stage:'Scarlet',updatedAt:Date.now()},mergeLog:[{id:'f2-m1',at:Date.now(),className:'6-C',team:'Ravenclaw',student:'Hopuz',level:12,type:'Merge · Translation',word:'',island:3,result:'right'}]});
+ r=gas.post({type:'SAGA_LINES_SAVE',pin:'8642',className:'6-C',grade:6,lines:['Thank you, 6-C.','You never stopped.']});assert.equal(r.status,'success');same(r.finaleLines.lines,['Thank you, 6-C.','You never stopped.']);
+ assert.equal(gas.post({type:'SAGA_LINES_SAVE',pin:'8642',className:'6-C',grade:6,lines:[]}).status,'error');
+ r=gas.post({type:'ISLAND_GET',pin:'8642',className:'6-C'});
  assert.equal(r.sagaVersion,1);assert.equal(r.saga.stage,'Scarlet');same(r.saga.fightSessions,['f1','f2']);
- same(r.sagaExtras.contributions.map(c=>[c.name,c.contributions,c.sessionId]),[['Selin',4,'f1']],'only the saga sessions');
- same(r.sagaExtras.merge.map(m=>[m.team,m.student,m.result]),[['ravenclaw','Hedil','right']]);
+ same(r.sagaExtras.contributions.map(c=>[c.name,c.contributions,c.sessionId]),[['Silep',4,'f1']],'only the saga sessions');
+ same(r.sagaExtras.merge.map(m=>[m.team,m.student,m.result]),[['ravenclaw','Hopuz','right']]);
  same(r.finaleLines.lines,['Thank you, 6-C.','You never stopped.']);assert.equal(r.finaleLines.grade,6);
- assert.equal(gas.post({type:'ISLAND_GET',pin:'2595',className:'8-B'}).saga.stage,'Violet','a class without a row starts at Violet');
+ assert.equal(gas.post({type:'ISLAND_GET',pin:'8642',className:'8-B'}).saga.stage,'Violet','a class without a row starts at Violet');
 });
 await test('Netlify: saga saves pass through; an older script keeps the saga and Merge answers on the phone and writes nothing',async()=>{
- const {handleSession}=await import('../netlify/functions/session.mjs');
- const req=data=>new Request('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ const {handleSession}=await import('../netlify/functions/session.mjs'),A=await require('./fixture.cjs').auth();
+ const req=data=>A.signed('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
  const older=async(url,o)=>{const b=JSON.parse(o.body);if(b.type==='ISLAND_GET')return new Response(JSON.stringify({status:'success',islandProgress:{},questionLogVersion:1,contributionsVersion:1,navigatorSealsVersion:1,challengeLogVersion:1}));
   return new Response(JSON.stringify(['FULL_SESSION','LEADERBOARD_FINAL','BATTLE_OUTCOME'].includes(b.type)?{status:'success'}:{status:'error',message:'Unknown record type'}));};
- let r=await (await handleSession(req({type:'SAGA_SAVE',pin:'2595',className:'5-A',saga:{stage:'Scarlet'}}),older)).json();
- assert.equal(r.status,'error');assert.match(r.message,/Vixar Saga is kept on this board and phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v11\.0\.0\.gs/);
- r=await (await handleSession(req({type:'LEADERBOARD_FINAL',pin:'2595',className:'5-A',sessionId:'s',islandProgress:{},standings:[],challengeLog:[{id:'s-m1',merge:true,type:'Merge · Grammar'}]}),older)).json();
+ let r=await (await handleSession(req({type:'SAGA_SAVE',pin:'8642',className:'5-A',saga:{stage:'Scarlet'}}),older,A.deps)).json();
+ assert.equal(r.status,'error');assert.match(r.message,/Vixar Saga is kept on this board and phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v12\.0\.0\.gs/);
+ r=await (await handleSession(req({type:'LEADERBOARD_FINAL',pin:'8642',className:'5-A',sessionId:'s',islandProgress:{},standings:[],challengeLog:[{id:'s-m1',merge:true,type:'Merge · Grammar'}]}),older,A.deps)).json();
  assert.equal(r.status,'error');assert.match(r.message,/Merge Spell answers are kept on this phone/);
  const gas=makeGas(),current=async(url,o)=>new Response(JSON.stringify(gas.post(JSON.parse(o.body))));
- r=await (await handleSession(req({type:'SAGA_SAVE',pin:'2595',className:'5-A',saga:{stage:'Scarlet',updatedAt:Date.now()}}),current)).json();assert.equal(r.status,'success');assert.equal(r.saga.stage,'Scarlet');
- for(const type of ['SAGA_SET','SAGA_LINES_SAVE']){r=await (await handleSession(req({type,pin:'',className:'5-A'}),current)).json();assert.equal(r.status,'error');assert.match(r.message,/Teacher PIN/);}
+ r=await (await handleSession(req({type:'SAGA_SAVE',pin:'8642',className:'5-A',saga:{stage:'Scarlet',updatedAt:Date.now()}}),current,A.deps)).json();assert.equal(r.status,'success');assert.equal(r.saga.stage,'Scarlet');
+ for(const type of ['SAGA_SET','SAGA_LINES_SAVE']){r=await (await handleSession(req({type,pin:'',className:'5-A'}),current,A.deps)).json();assert.equal(r.status,'error');assert.match(r.message,/Teacher PIN/);}
 });
 await test('New art falls back to the Level 10 pictures when a Level 11 or 12 sheet fails to load; the v10.5.0 sheets keep their cache tag',async()=>{
  const images=[];const c={console,URL,Map,Set,WeakMap,Promise,Math,performance:{now:()=>0},setTimeout:()=>0,clearTimeout(){},CSS:{supports:()=>true},

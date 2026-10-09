@@ -1,4 +1,6 @@
-/* Online roster catalogue. Session snapshots are managed by game.js, never by this editor. */
+/* Online roster catalogue. Session snapshots are managed by game.js, never by this editor.
+   v12.0.0: the real class lists come only from Google Sheets, through the signed-in /api/roster request with the Teacher
+   PIN; this device keeps its own copy (englishLeague.roster.v1) for offline lessons. Until then the board shows example names. */
 (function(root){
  'use strict';
  const KEY='englishLeague.roster.v1',labels={gryffindor:'Gryffindor',slytherin:'Slytherin',hufflepuff:'Hufflepuff',ravenclaw:'Ravenclaw'};
@@ -48,7 +50,7 @@
   body.replaceChildren();const form=el('form'),label=el('label','Teacher PIN'),input=el('input');input.id='roster-pin';input.type='password';input.autocomplete='off';input.inputMode='numeric';input.maxLength=100;label.htmlFor=input.id;
   const submit=el('button','Load online');submit.id='roster-load';submit.type='submit';form.append(label,input,submit);form.onsubmit=e=>{e.preventDefault();pin=input.value.trim();if(!pin){message('Enter the same Teacher PIN used to save results.',true);return;}load();};
   body.append(el('p','Use the Teacher PIN for Google Sheets, not the changing screen-access code.'),form);
-  message(catalog?'A saved roster is available for lessons. Load online to edit the latest version.':'First use automatically adds your 120 existing students to the Roster tab.');input.focus();
+  message(catalog?'A saved roster is available for lessons. Load online to edit the latest version.':'Your class lists are kept in the Roster tab of your Google Sheet. Load online to bring them to this device.');input.focus();
  }
  function renderList(){
   body.replaceChildren();const bar=el('div',undefined,'roster-bar'),select=el('select');select.id='roster-class';select.setAttribute('aria-label','Class');

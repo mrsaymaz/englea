@@ -150,3 +150,6 @@
 }
 @media(max-width:360px){.student-name-grid,.mobile-participation-body{grid-template-columns:1fr;}.student-name-choice{min-height:64px;}.student-name-choice strong{font-size:18px;}}
 @media(max-height:620px){.student-picker-header{padding-top:14px;}.student-name-choice,.student-class-choice{min-height:64px;}.champion-duo{--arena-avatar-size:min(27vw,25vh);}.champion-duo.is-grand #winner-svg-container{width:26vh!important;height:26vh!important;}}
+/* v12.0.0: shown on the board while it uses example names (nobody has signed in on this device yet). */
+.example-roster-chip{display:inline-flex;align-items:center;margin-left:6px;padding:3px 9px;border-radius:999px;border:1px dashed #fbbf24;color:#fde68a;background:rgba(120,53,15,.35);font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+.example-roster-chip[hidden]{display:none;}

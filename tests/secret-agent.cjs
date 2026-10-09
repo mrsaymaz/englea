@@ -26,7 +26,7 @@ const {setup}=require('./support.cjs');
   await phone.waitForFunction(()=>__qa.state().remotePending===0);
   assert.equal((await state()).secretAgents.assignments.slytherin.studentId,'5-A:gryffindor:0');
   assert.equal(await board.locator('.powerup-btn[data-team="slytherin"][data-type="secretAgent"]').getAttribute('aria-pressed'),'true');
-  assert.doesNotMatch(await board.locator('#ticker-text').textContent(),/Elif Naz/);
+  assert.doesNotMatch(await board.locator('#ticker-text').textContent(),/Emobi Nese/);
   assert.equal(await board.evaluate(()=>__qa.selectClass('5-C').ok),false);
   // Duplicate agents are unavailable, including for a different receiving team.
   await phone.locator('#mobile-agent-hufflepuff').click();
@@ -46,7 +46,7 @@ const {setup}=require('./support.cjs');
   let after=await state();assert.deepEqual(after.pointsByTeam,{gryffindor:-earned,slytherin:earned,hufflepuff:0,ravenclaw:0});assert.deepEqual(after.levelsByTeam,before.levelsByTeam);
   assert.deepEqual(after.studentContributions,before.studentContributions);assert.deepEqual(after.mission,before.mission);
   assert.equal(after.secretAgents.assignments.slytherin.status,'revealed');
-  assert.match(await board.locator('#agent-reveal-cards').textContent(),/Elif Naz.*Gryffindor.*Slytherin.*20 points transferred/s);
+  assert.match(await board.locator('#agent-reveal-cards').textContent(),/Emobi Nese.*Gryffindor.*Slytherin.*20 points transferred/s);
   await board.screenshot({path:'output/secret-agent-reveal.png'});
   // Reload while reveal is open; transfer must never repeat.
   await board.evaluate(()=>__qa.checkpoint());await board.reload();await board.waitForFunction(()=>Boolean(window.__qa)&&LeagueAccess.granted);await board.evaluate(()=>__qa.start({resume:true}));await board.evaluate(()=>__qa.connect('host'));

@@ -5,18 +5,21 @@ const context={window:{}};
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path.join(root,'public/student-rosters.js'),'utf8'),context);
 const students=context.window.LeagueStudents;
-assert.ok(students.members('5-A','hufflepuff').some(person=>person.name==='Nisa'));
-assert.ok(!students.members('5-A','gryffindor').some(person=>person.name==='Nisa'));
-assert.ok(students.members('5-A','gryffindor').some(person=>person.name==='Elif Naz'));
-assert.ok(!students.members('5-A','hufflepuff').some(person=>person.name==='Elif Naz'));
-assert.ok(students.members('6-C','ravenclaw').some(person=>person.name==='Elif Naz'));
+// v12.0.0: the public file has example names only; a signed-in device uses its class lists (the fictional fixture here).
+assert.ok(students.usingExamples());assert.ok(students.members('5-A','gryffindor').every(p=>p.id.startsWith('example-')));
+students.useRoster(require('./fixture.cjs').roster);assert.ok(!students.usingExamples());
+assert.ok(students.members('5-A','hufflepuff').some(person=>person.name==='Nog'));
+assert.ok(!students.members('5-A','gryffindor').some(person=>person.name==='Nog'));
+assert.ok(students.members('5-A','gryffindor').some(person=>person.name==='Emobi Nese'));
+assert.ok(!students.members('5-A','hufflepuff').some(person=>person.name==='Emobi Nese'));
+assert.ok(students.members('6-C','ravenclaw').some(person=>person.name==='Emobi Nese'));
 
 assert.equal(students.classes.reduce((total,className) => total + students.teams.reduce((sum,teamId) => sum + students.members(className,teamId).length,0),0),120);
-assert.equal(students.members('5-C','slytherin').at(-1).name,'Cemile');
-assert.ok(students.members('8-B','slytherin').some(person=>person.name==='Muhammed B.'));
-assert.ok(!students.members('8-B','slytherin').some(person=>person.name==='Hasan Hüseyin'));
-assert.ok(students.members('8-B','ravenclaw').some(person=>person.name==='Hasan Hüseyin'));
-assert.ok(!students.members('8-B','ravenclaw').some(person=>person.name==='Muhammed B.'));
+assert.equal(students.members('5-C','slytherin').at(-1).name,'Cilef');
+assert.ok(students.members('8-B','slytherin').some(person=>person.name==='Moka B.'));
+assert.ok(!students.members('8-B','slytherin').some(person=>person.name==='Hoder Huyun'));
+assert.ok(students.members('8-B','ravenclaw').some(person=>person.name==='Hoder Huyun'));
+assert.ok(!students.members('8-B','ravenclaw').some(person=>person.name==='Moka B.'));
 
 const totals={
   '5-A:gryffindor:0':{points:1000,awards:1},
@@ -25,7 +28,7 @@ const totals={
 };
 const ranked=students.ranked('5-A','gryffindor',totals);
 assert.deepEqual(JSON.parse(JSON.stringify(ranked.map(person=>[person.name,person.awards,person.rank]))),[
-  ['Sümeyye',2,1],['Elif Naz',1,2],['Mehmet Emin',1,2]
+  ['Süvog',2,1],['Emobi Nese',1,2],['Meyebur Eril',1,2]
 ]);
 assert.equal(students.summary('5-A',totals).metric,'contribution_count');
 

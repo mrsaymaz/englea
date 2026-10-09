@@ -108,19 +108,33 @@
  const tierName=level=>TIERS[Math.min(12,Math.max(10,Math.floor(Number(level)||0)))]||'';
 
  // ---- The Finale's names: up to three students per house, named only for what they gave ----
- // contributions: [{team, name, contributions}] from the saga sessions (Google Sheets and this session);
- // navigators: [{team, student}]; merge: [{team, student, result:'right'}] (Merge Spell answers).
- function finaleNames({contributions=[],navigators=[],merge=[]}={}){
+ // contributions: [{team, name, studentId?, contributions}] from the saga sessions (Google Sheets and this session);
+ // navigators: [{team, student, studentId?}]; merge: [{team, student, studentId?, kind?, result:'right'}] (Merge Spell, True
+ // Rune and Scarlet Brand answers). v12.0.0: a student is one entry per house by roster ID, so a rename never splits
+ // them and two students who share a name stay two; rows saved before IDs join the entry with their name when only one
+ // student in that house has it. `current` maps IDs to today's roster names (shown instead of an older name).
+ const SAGA_GAVE=Object.freeze({merge:'Merge Spell',rune:'True Rune',brand:'Broke the Scarlet Brand'});
+ function finaleNames({contributions=[],navigators=[],merge=[],current={}}={}){
   const houses=Object.fromEntries(TEAMS.map(t=>[t,new Map()]));
-  const entry=(team,name)=>{if(!houses[team]||typeof name!=='string'||!name.trim())return null;const key=name.trim().toLocaleLowerCase('tr');
-   let e=houses[team].get(key);if(!e){e={name:name.trim().slice(0,70),team,contributions:0,merge:0,navigator:false};houses[team].set(key,e);}return e;};
-  for(const r of contributions){const e=entry(r?.team,r?.name);const n=Number(r?.contributions);if(e&&Number.isFinite(n)&&n>0)e.contributions+=Math.round(n);}
-  for(const r of navigators){const e=entry(r?.team,r?.student);if(e)e.navigator=true;}
-  for(const r of merge){if(r?.result!=='right')continue;const e=entry(r?.team,r?.student);if(e)e.merge+=1;}
+  const realId=id=>typeof id==='string'&&/^[A-Za-z0-9:_-]{1,100}$/.test(id)&&!id.startsWith('example-')?id:'';
+  const entry=(team,name,rawId)=>{
+   if(!houses[team])return null;const id=realId(rawId),label=typeof name==='string'?name.trim():'';
+   if(!id&&!label)return null;const nameKey='name:'+label.toLocaleLowerCase('tr'),house=houses[team];
+   let e=id?house.get('id:'+id):house.get(nameKey);
+   if(!e&&id){const legacy=house.get(nameKey);if(legacy&&!legacy.id){house.delete(nameKey);legacy.id=id;house.set('id:'+id,legacy);e=legacy;}}
+   if(!e&&!id&&label){const same=[...house.values()].filter(x=>x.id&&x.nameKey===nameKey);if(same.length===1)e=same[0];}
+   if(!e){e={name:label.slice(0,70),nameKey,id,team,contributions:0,merge:0,kinds:new Set(),navigator:false};house.set(id?'id:'+id:nameKey,e);}
+   if(id&&typeof current?.[id]==='string'&&current[id].trim()){e.name=current[id].trim().slice(0,70);}
+   else if(label&&!e.name)e.name=label.slice(0,70);
+   return e;
+  };
+  for(const r of contributions){const e=entry(r?.team,r?.name,r?.studentId);const n=Number(r?.contributions);if(e&&Number.isFinite(n)&&n>0)e.contributions+=Math.round(n);}
+  for(const r of navigators){const e=entry(r?.team,r?.student,r?.studentId);if(e)e.navigator=true;}
+  for(const r of merge){if(r?.result!=='right')continue;const e=entry(r?.team,r?.student,r?.studentId);if(e){e.merge+=1;e.kinds.add(SAGA_GAVE[r?.kind]?r.kind:'merge');}}
   return Object.fromEntries(TEAMS.map(t=>{
-   const list=[...houses[t].values()].filter(e=>e.contributions>0||e.merge>0||e.navigator)
+   const list=[...houses[t].values()].filter(e=>e.name&&(e.contributions>0||e.merge>0||e.navigator))
     .sort((a,b)=>(b.contributions+b.merge*3+(b.navigator?2:0))-(a.contributions+a.merge*3+(a.navigator?2:0))||a.name.localeCompare(b.name,'tr')).slice(0,3)
-    .map(e=>({name:e.name,gave:[e.contributions?`${e.contributions} contribution${e.contributions===1?'':'s'}`:'',e.merge?'Merge Spell':'',e.navigator?'Island Run navigator':''].filter(Boolean)}));
+    .map(e=>({name:e.name,...(e.id?{id:e.id}:{}),gave:[e.contributions?`${e.contributions} contribution${e.contributions===1?'':'s'}`:'',...['merge','rune','brand'].filter(k=>e.kinds.has(k)).map(k=>SAGA_GAVE[k]),e.navigator?'Island Run navigator':''].filter(Boolean)}));
    return [t,list];
   }));
  }
@@ -150,9 +164,10 @@
  const text=(v,max)=>typeof v==='string'?v.trim().slice(0,max):'';
  function cleanExtras(raw){
   const team=t=>{const n=String(t||'').toLowerCase();return TEAMS.includes(n)?n:null;};
-  const contributions=(Array.isArray(raw?.contributions)?raw.contributions:[]).map(r=>({team:team(r?.team),name:text(r?.name,70),contributions:Math.max(0,Math.min(100000,Math.round(Number(r?.contributions)||0))),sessionId:sessionOk(r?.sessionId)?r.sessionId:''})).filter(r=>r.team&&r.name&&r.contributions>0).slice(-2000);
-  const navigators=(Array.isArray(raw?.navigators)?raw.navigators:[]).map(r=>({team:team(r?.team),student:text(r?.student,70)})).filter(r=>r.team&&r.student).slice(-500);
-  const merge=(Array.isArray(raw?.merge)?raw.merge:[]).map(r=>({id:text(r?.id,140),team:team(r?.team),student:text(r?.student,70),result:r?.result==='right'?'right':'wrong'})).filter(r=>r.team).slice(-500);
+  const sid=v=>typeof v==='string'&&/^[A-Za-z0-9:_-]{1,100}$/.test(v)?v:'';
+  const contributions=(Array.isArray(raw?.contributions)?raw.contributions:[]).map(r=>({team:team(r?.team),name:text(r?.name,70),studentId:sid(r?.studentId),contributions:Math.max(0,Math.min(100000,Math.round(Number(r?.contributions)||0))),sessionId:sessionOk(r?.sessionId)?r.sessionId:''})).filter(r=>r.team&&r.name&&r.contributions>0).slice(-2000);
+  const navigators=(Array.isArray(raw?.navigators)?raw.navigators:[]).map(r=>({team:team(r?.team),student:text(r?.student,70),studentId:sid(r?.studentId)})).filter(r=>r.team&&r.student).slice(-500);
+  const merge=(Array.isArray(raw?.merge)?raw.merge:[]).map(r=>({id:text(r?.id,140),team:team(r?.team),student:text(r?.student,70),studentId:sid(r?.studentId),kind:['merge','rune','brand'].includes(r?.kind)?r.kind:'merge',result:r?.result==='right'?'right':'wrong'})).filter(r=>r.team).slice(-500);
   return {contributions,navigators,merge,at:time(raw?.at)||0};
  }
  let extrasStore={};try{const saved=JSON.parse(storage()?.getItem(EXTRAS_KEY)||'{}');for(const c of CLASSES)if(saved?.[c])extrasStore[c]=cleanExtras(saved[c]);}catch{extrasStore={};}

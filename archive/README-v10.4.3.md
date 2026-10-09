@@ -87,7 +87,7 @@ Each card shows the three students with the fewest contributions and their count
 
 The existing compact layout fits all four cards in an iPhone 14 Pro portrait viewport (393 × 660 CSS pixels with room for browser controls), without scrolling. Scoring buttons remain at least 44 pixels high. Full-screen safe-area spacing was also checked. Shorter or zoomed views can scroll; landscape uses four columns when space permits. Earlier layout validation used Chromium mobile emulation, not a physical iPhone or Safari. v8.9.0 adds its remote load control inside the Save Record dialog, preserving the header layout.
 
-The corrected 5-A roster remains included: Nisa belongs to Hufflepuff and Elif Naz belongs to Gryffindor. If upgrading from v8.1.0 or earlier, start a fresh 5-A session rather than resuming an old saved session, since saved identities use roster positions.
+The corrected 5-A roster remains included: Nog belongs to Hufflepuff and Emobi Nese belongs to Gryffindor. If upgrading from v8.1.0 or earlier, start a fresh 5-A session rather than resuming an old saved session, since saved identities use roster positions.
 
 Refresh the board and remote after deployment. Each browser opens the access screen before the classroom start screen.
 

@@ -1,0 +1,9 @@
+{
+  "name": "english-league",
+  "version": "12.0.0",
+  "private": true,
+  "description": "English League with Mr. Saymaz: the classroom board, the phone remote and Island Run (static site in public/, Netlify Functions in netlify/functions).",
+  "dependencies": {
+    "@netlify/blobs": "10.7.13"
+  }
+}

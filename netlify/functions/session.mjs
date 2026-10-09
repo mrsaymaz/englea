@@ -1,40 +1,64 @@
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby1slB2qFrDkSp_4AsW7NGiADQju3TisakEWG-s1lGwAoho9gkAoz9enWZbAIEMT9eZww/exec';
-const reply=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
-export async function handleSession(request,fetcher=fetch){
- if(request.method!=='POST')return reply({status:'error',message:'Use POST.'},405);
- if(!request.headers.get('content-type')?.includes('application/json'))return reply({status:'error',message:'JSON required.'},415);
- const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return reply({status:'error',message:'Origin not allowed.'},403);
- let data;try{const raw=await request.text();if(raw.length>900000)return reply({status:'error',message:'Record too large.'},413);data=JSON.parse(raw);}catch{return reply({status:'error',message:'Invalid JSON.'},400);}
- if(!['TEACHING_GET','TEACHING_SAVE','ISLAND_GET','FULL_SESSION','LEADERBOARD_FINAL','BATTLE_OUTCOME','SAGA_SAVE','SAGA_SET','SAGA_LINES_SAVE'].includes(data?.type)||typeof data.pin!=='string'||!data.pin.trim()||data.pin.length>100)return reply({status:'error',message:'Enter your Teacher PIN.'},400);
- const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),20000);
- try{
-  if(data.type!=='ISLAND_GET'&&(data.islandProgress!==undefined||data.questionLog!==undefined)){
-   const check=await fetcher(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'ISLAND_GET',className:data.className,pin:data.pin}),redirect:'follow',signal:abort.signal});
-   const capability=await check.json();
-   if(capability.status==='unauthorized')return reply(capability);
-   if(!check.ok||capability.status!=='success'||!capability.islandProgress)return reply({status:'error',message:'Load islands first. Update Apps Script to v9.0.0 and deploy a New version of the existing web app if needed.'});
-   const passport=Object.values(data.islandProgress||{}).some(levels=>Object.values(levels||{}).some(v=>v?.coinPercent!==undefined||v?.hardClear!==undefined));
-   if(data.questionLog!==undefined&&capability.questionLogVersion!==1)return reply({status:'error',message:'Island Run answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
-   // v9.6.0: every student's contribution count needs the v9.6.0 script; an older script would keep only the top three.
-   if(data.studentContributions?.everyone!==undefined&&capability.contributionsVersion!==1)return reply({status:'error',message:'Student contributions are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
-   // v9.7.0: navigator seals need the v9.7.0 script; an older one would silently drop them.
-   if(Array.isArray(data.navigatorSeals)&&data.navigatorSeals.length&&capability.navigatorSealsVersion!==1)return reply({status:'error',message:'Navigator seals are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
-   // v10.4.0: Challenge Deck cards need the v10.4.0 script; an older one would silently drop them.
-   if(Array.isArray(data.challengeLog)&&data.challengeLog.length&&capability.challengeLogVersion!==1)return reply({status:'error',message:'Challenge cards are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
-   // v11.0.0: Merge Spell answers need the v11.0.0 script; an older one would refuse the whole save.
-   if(Array.isArray(data.challengeLog)&&data.challengeLog.some(row=>row?.merge===true||String(row?.type||'').startsWith('Merge'))&&capability.sagaVersion!==1)return reply({status:'error',message:'Merge Spell answers are kept on this phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then save again.'});
-   if(passport&&capability.passportVersion!==1)return reply({status:'error',message:'Your passport is kept locally. Update Apps Script using GOOGLE-APPS-SCRIPT-v9.1.0.gs, then deploy a New version of the existing web app and retry this save.'});
+// Google Sheets saves and loads (sessions, islands, Studio, the Vixar Saga). v12.0.0: a signed-in device only (a teacher
+// session), with the Teacher PIN; the request to Apps Script carries the server key.
+import { defaultStore, requireSession, sameOriginJson, json, callScript, setupMessage, pinPaused, notePinResult } from '../shared/auth.mjs';
+
+const TYPES = ['TEACHING_GET', 'TEACHING_SAVE', 'ISLAND_GET', 'FULL_SESSION', 'LEADERBOARD_FINAL', 'BATTLE_OUTCOME', 'SAGA_SAVE', 'SAGA_SET', 'SAGA_LINES_SAVE'];
+const UPDATE = 'Update Apps Script using GOOGLE-APPS-SCRIPT-v12.0.0.gs, deploy a New version of the existing web app, then save again.';
+const trialRow = row => row?.trial === true || /^(Rune|Brand) · /.test(String(row?.type || ''));
+
+export async function handleSession(request, fetcher = fetch, deps = {}) {
+  const now = deps.now ?? Date.now(), env = deps.env ?? process.env;
+  if (request.method !== 'POST') return json({ status: 'error', message: 'Use POST.' }, 405);
+  const refused = sameOriginJson(request);
+  if (refused) return refused;
+  const store = deps.store ?? await defaultStore();
+  const auth = await requireSession(request, { store, secret: deps.secret, now });
+  if (!auth.ok) return auth.response;
+  let data;
+  try { const raw = await request.text(); if (raw.length > 900000) return json({ status: 'error', message: 'Record too large.' }, 413); data = JSON.parse(raw); }
+  catch { return json({ status: 'error', message: 'Invalid JSON.' }, 400); }
+  if (!TYPES.includes(data?.type) || typeof data.pin !== 'string' || !data.pin.trim() || data.pin.length > 100) return json({ status: 'error', message: 'Enter your Teacher PIN.' }, 400);
+  delete data.serverKey;
+  const missing = setupMessage(env);
+  if (missing) return json({ status: 'error', code: 'setup', message: missing });
+  const paused = await pinPaused(store, auth.device.id, now);
+  if (paused) return json({ status: 'error', code: 'pin-paused', message: 'Too many wrong Teacher PINs. Wait 15 minutes, then try again.' }, 429);
+  const call = payload => callScript(payload, { fetcher, env });
+  const noted = async result => { if (result?.status === 'unauthorized' || result?.status === 'success') await notePinResult(store, auth.device.id, result.status === 'success', now); return result; };
+  try {
+    if (data.type !== 'ISLAND_GET' && (data.islandProgress !== undefined || data.questionLog !== undefined)) {
+      const { ok, data: capability } = await call({ type: 'ISLAND_GET', className: data.className, pin: data.pin });
+      await noted(capability);
+      if (capability?.status === 'unauthorized') return json(capability);
+      if (capability?.status === 'error' && capability.code) return json(capability);
+      if (!ok || capability?.status !== 'success' || !capability.islandProgress) return json({ status: 'error', message: 'Load islands first. ' + UPDATE });
+      const passport = Object.values(data.islandProgress || {}).some(levels => Object.values(levels || {}).some(v => v?.coinPercent !== undefined || v?.hardClear !== undefined));
+      if (data.questionLog !== undefined && capability.questionLogVersion !== 1) return json({ status: 'error', message: 'Island Run answers are kept on this phone. ' + UPDATE });
+      // v12.0.0: contribution rows carry each student's roster ID; an older script would match them by name only.
+      if (data.studentContributions?.everyone !== undefined && capability.contributionIdsVersion !== 1) return json({ status: 'error', message: 'Student contributions are kept on this phone. ' + UPDATE });
+      if (Array.isArray(data.navigatorSeals) && data.navigatorSeals.length && capability.navigatorSealsVersion !== 1) return json({ status: 'error', message: 'Navigator seals are kept on this phone. ' + UPDATE });
+      if (Array.isArray(data.challengeLog) && data.challengeLog.length && capability.challengeLogVersion !== 1) return json({ status: 'error', message: 'Challenge cards are kept on this phone. ' + UPDATE });
+      if (Array.isArray(data.challengeLog) && data.challengeLog.some(row => row?.merge === true || String(row?.type || '').startsWith('Merge')) && capability.sagaVersion !== 1) return json({ status: 'error', message: 'Merge Spell answers are kept on this phone. ' + UPDATE });
+      if (Array.isArray(data.challengeLog) && data.challengeLog.some(trialRow) && capability.trialsVersion !== 1) return json({ status: 'error', message: 'True Rune and Scarlet Brand answers are kept on this phone. ' + UPDATE });
+      if (passport && capability.passportVersion !== 1) return json({ status: 'error', message: 'Your passport is kept locally. ' + UPDATE });
+    }
+    if (data.type === 'SAGA_SAVE' && Array.isArray(data.mergeLog) && data.mergeLog.some(trialRow)) {
+      // The saga row carries this fight's True Rune or Scarlet Brand answers; an older script would refuse the row.
+      const { data: capability } = await call({ type: 'ISLAND_GET', className: data.className, pin: data.pin });
+      await noted(capability);
+      if (capability?.status === 'success' && capability.trialsVersion !== 1) return json({ status: 'error', message: 'The Vixar Saga is kept on this board and phone. ' + UPDATE });
+    }
+    const { ok, data: result } = await call(data);
+    await noted(result);
+    if (!ok || !['success', 'unauthorized', 'conflict', 'error'].includes(result?.status)) throw Error('Invalid response');
+    if (result.status === 'success' && (data.type === 'ISLAND_GET' || data.islandProgress !== undefined) && (!result.islandProgress || typeof result.islandProgress !== 'object')) return json({ status: 'error', message: UPDATE });
+    if (result.status === 'success' && data.type.startsWith('TEACHING_') && (!result.content || !result.revision)) return json({ status: 'error', message: UPDATE });
+    // An older script does not know the Vixar Saga and writes nothing; the stage stays queued on the phone.
+    if (result.message === 'Unknown record type' && data.type.startsWith('SAGA_')) result.message = 'The Vixar Saga is kept on this board and phone. ' + UPDATE;
+    else if (result.message === 'Unknown record type') result.message = UPDATE;
+    return json(result);
+  } catch {
+    return json({ status: 'error', message: 'Could not confirm the save. Check your connection and retry; records with a session ID will not duplicate.', uncertain: true }, 502);
   }
-  const upstream=await fetcher(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),redirect:'follow',signal:abort.signal});
-  const result=await upstream.json();
-  if(!upstream.ok||!['success','unauthorized','conflict','error'].includes(result?.status))throw Error('Invalid response');
-  if(result.status==='success'&&(data.type==='ISLAND_GET'||data.islandProgress!==undefined)&&(!result.islandProgress||typeof result.islandProgress!=='object'))return reply({status:'error',message:'Update Apps Script to v9.0.0 and deploy a New version of the existing web app.'});
-  if(result.status==='success'&&data.type.startsWith('TEACHING_')&&(!result.content||!result.revision))return reply({status:'error',message:'Update Apps Script to v9.0.0.'});
-  // v11.0.0: an older script does not know the Vixar Saga and writes nothing; the stage stays queued on the phone.
-  if(result.message==='Unknown record type'&&data.type.startsWith('SAGA_'))result.message='The Vixar Saga is kept on this board and phone. Update Apps Script using GOOGLE-APPS-SCRIPT-v11.0.0.gs, deploy a New version of the existing web app, then it is saved.';
-  else if(result.message==='Unknown record type')result.message='Update Apps Script to v9.0.0 and deploy a New version of the existing web app.';
-  return reply(result);
- }catch{return reply({status:'error',message:'Could not confirm the save. Check your connection and retry; records with a session ID will not duplicate.',uncertain:true},502);}
- finally{clearTimeout(timer);}
 }
-export default request=>handleSession(request);
+export default request => handleSession(request);

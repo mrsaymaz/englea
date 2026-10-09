@@ -34,4 +34,4 @@ Testing used Chromium browser emulation. Physical iPhone/Safari validation was n
 
 Developer tests: from tests, run npm run test:agent and npm run test:invite after installing Playwright and its browser. Existing Chromium binaries can be selected with PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH and PLAYWRIGHT_CHROMIUM_ARGS.
 
-The corrected 5-A roster is included: Nisa in Hufflepuff, Elif Naz in Gryffindor. If updating from v8.1.0 or earlier, start a fresh 5-A session; older saved records use the previous roster positions.
+The corrected 5-A roster is included: Nog in Hufflepuff, Emobi Nese in Gryffindor. If updating from v8.1.0 or earlier, start a fresh 5-A session; older saved records use the previous roster positions.

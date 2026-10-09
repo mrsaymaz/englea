@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {makeGas}=require('./roster-gas-harness.cjs');
-const g=makeGas(),pin='2595',progress={'5-A|gryffindor':{1:{score:850,stars:3}}};
+const g=makeGas(),pin='8642',progress={'5-A|gryffindor':{1:{score:850,stars:3}}};
 const post=(x)=>g.post({pin,...x});
 assert.equal(post({type:'ISLAND_GET',pin:'bad',className:'5-A'}).status,'unauthorized');
 assert.equal(g.sheets.has('Island_Progress'),false);
@@ -29,16 +29,16 @@ P.merge({'5-A|gryffindor':{1:{score:1,stars:1}},'6-C|slytherin':{1:{score:999,st
 const disk=JSON.parse(stored.get('english-league-island-runner-v1'));disk.progress['5-A|gryffindor'][2]={score:940,stars:2};stored.set('english-league-island-runner-v1',JSON.stringify(disk));const eventCount=events.length;P.merge(disk.progress,'5-A');assert.equal(events.length,eventCount+1);
 P.acknowledge('5-A',post({type:'ISLAND_GET',className:'5-A'}).islandProgress);assert.equal(P.label('5-A'),'Island progress saved online');
 (async()=>{
- const {handleSession}=await import('../netlify/functions/session.mjs');
- const req=data=>new Request('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ const {handleSession}=await import('../netlify/functions/session.mjs'),A=await require('./fixture.cjs').auth();
+ const req=data=>A.signed('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
  const upstream=async(url,options)=>new Response(JSON.stringify(g.post(JSON.parse(options.body))));
- assert.equal((await (await handleSession(req({pin,...second}),upstream)).json()).status,'success');
+ assert.equal((await (await handleSession(req({pin,...second}),upstream,A.deps)).json()).status,'success');
  assert.equal(lb.getLastRow(),4);assert.equal(bt.getLastRow(),4);
  let oldWrites=0;const old=async(url,opt)=>{const body=JSON.parse(opt.body);if(body.type!=='ISLAND_GET')oldWrites++;return new Response(JSON.stringify({status:'error',message:'Unknown record type'}));};
- assert.equal((await (await handleSession(req({pin,...payload}),old)).json()).status,'error');assert.equal(oldWrites,0);
- assert.equal((await (await handleSession(req({pin:'bad',...payload}),upstream)).json()).status,'unauthorized');
- assert.equal((await handleSession(req({pin,type:'ROSTER_SAVE'}),upstream)).status,400);
- const wrongOrigin=new Request('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://other.test'},body:JSON.stringify({pin,...payload})});assert.equal((await handleSession(wrongOrigin,upstream)).status,403);
- assert.equal((await (await handleSession(req({pin,...payload}),async()=>{throw Error('offline');})).json()).uncertain,true);
+ assert.equal((await (await handleSession(req({pin,...payload}),old,A.deps)).json()).status,'error');assert.equal(oldWrites,0);
+ assert.equal((await (await handleSession(req({pin:'bad',...payload}),upstream,A.deps)).json()).status,'unauthorized');
+ assert.equal((await handleSession(req({pin,type:'ROSTER_SAVE'}),upstream,A.deps)).status,400);
+ const wrongOrigin=A.signed('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://other.test'},body:JSON.stringify({pin,...payload})});assert.equal((await handleSession(wrongOrigin,upstream,A.deps)).status,403);
+ assert.equal((await (await handleSession(req({pin,...payload}),async()=>{throw Error('offline');},A.deps)).json()).uncertain,true);
  console.log('PASS class/team isolation, cloud restore, best-only merge, post-run updates, idempotent mixed-type retries, invalid data/PIN, old-script preflight, and proxy failures.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

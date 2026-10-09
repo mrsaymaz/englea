@@ -20,7 +20,7 @@ async function pair(e,{answer,phoneContext=null,boardContext=null}){
 }
 async function typePin(phone){
  await phone.waitForFunction(()=>document.getElementById('island-cloud-dialog')?.open,{},{timeout:8000});
- await phone.fill('#island-cloud-pin','2595');await phone.locator('#island-cloud-dialog button[type="submit"]').click();
+ await phone.fill('#island-cloud-pin','8642');await phone.locator('#island-cloud-dialog button[type="submit"]').click();
  await phone.waitForFunction(()=>!document.getElementById('island-cloud-dialog').open,{},{timeout:8000});
 }
 async function champions(board){
@@ -34,8 +34,8 @@ async function champions(board){
  try{
   // A Sheet with earlier sessions from other classes.
   const gas=makeGas();
-  gas.post({type:'FULL_SESSION',pin:'2595',className:'7-A',sessionId:'old-1',standings:[{name:'Ravenclaw',points:90,level:3},{name:'Gryffindor',points:40,level:2}],winner:'Ravenclaw'});
-  gas.post({type:'FULL_SESSION',pin:'2595',className:'6-C',sessionId:'old-2',standings:[{name:'Slytherin',points:70,level:3},{name:'Hufflepuff',points:70,level:2}],winner:'Hufflepuff'});
+  gas.post({type:'FULL_SESSION',pin:'8642',className:'7-A',sessionId:'old-1',standings:[{name:'Ravenclaw',points:90,level:3},{name:'Gryffindor',points:40,level:2}],winner:'Ravenclaw'});
+  gas.post({type:'FULL_SESSION',pin:'8642',className:'6-C',sessionId:'old-2',standings:[{name:'Slytherin',points:70,level:3},{name:'Hufflepuff',points:70,level:2}],winner:'Hufflepuff'});
   const current=data=>gas.post(data);
 
   // 1. PIN typed on the phone: the season reaches the board.

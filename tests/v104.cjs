@@ -102,15 +102,15 @@ await test('The teacher’s Studio word pairs are enough: Translation, Vocabular
  assert(v.turkish&&['kütüphane','defter','silgi','cetvel'].includes(v.options[v.answer]),'no English meanings pasted: Vocabulary asks for the Turkish meaning');
 });
 await test('Apps Script v10.4.0: Challenge_Log rows (day-first dates), no duplicates on a retried save, invalid rows refused, Load islands reports the version',()=>{
- const gas=makeGas(),pin='2595',at=Date.now();
+ const gas=makeGas(),pin='8642',at=Date.now();
  assert.equal(gas.post({type:'ISLAND_GET',pin,className:'5-A'}).challengeLogVersion,1);
- const row=(n,extra={})=>({id:`lesson-7-c${n}`,at:at+n,className:'5-A',team:'Gryffindor',studentId:'5-A:gryffindor:4',student:'Yusuf H.',level:5,type:'Taboo Description',word:'uniform',island:1,result:'wrong',...extra});
+ const row=(n,extra={})=>({id:`lesson-7-c${n}`,at:at+n,className:'5-A',team:'Gryffindor',studentId:'5-A:gryffindor:4',student:'Yurag H.',level:5,type:'Taboo Description',word:'uniform',island:1,result:'wrong',...extra});
  const save=rows=>gas.post({type:'LEADERBOARD_FINAL',pin,className:'5-A',sessionId:'lesson-7',standings:[{name:'Gryffindor',points:240,level:4}],challengeLog:rows});
  let r=save([row(1),row(2,{result:'right',type:'Grammar',word:'=SUM(A1)'}),row(3,{team:'Practice',level:0,studentId:'',student:'',result:'skipped'})]);
  assert.equal(r.status,'success');assert.equal(r.challengesAdded,3);assert.equal(r.challengeLogVersion,1);
  const sheet=gas.sheets.get('Challenge_Log');
  assert.deepEqual(sheet.rows[0],['Date','Class','Team','Student','Student ID','Wheel level','Card','Word','Island','Result','Row ID','Session ID']);
- assert.deepEqual(sheet.rows[1].slice(1),['5-A','Gryffindor','Yusuf H.','5-A:gryffindor:4',5,'Taboo Description','uniform',1,'Wrong','lesson-7-c1','lesson-7']);
+ assert.deepEqual(sheet.rows[1].slice(1),['5-A','Gryffindor','Yurag H.','5-A:gryffindor:4',5,'Taboo Description','uniform',1,'Wrong','lesson-7-c1','lesson-7']);
  assert.equal(sheet.rows[2][7],"'=SUM(A1)",'a formula is written as text');assert.equal(sheet.rows[3][2],'Practice');assert.equal(sheet.rows[3][5],'');assert.equal(sheet.rows[3][9],'Skipped');
  assert(sheet.rows[1][0] instanceof gas.SheetDate);assert.equal(sheet.formats.get('2:1'),'dd/mm/yyyy hh:mm:ss');
  r=save([row(1),row(2),row(3),row(4,{result:'right'})]);assert.equal(r.challengesAdded,1,'a retried save adds only the new card');assert.equal(sheet.getLastRow(),5);
@@ -119,14 +119,14 @@ await test('Apps Script v10.4.0: Challenge_Log rows (day-first dates), no duplic
  assert.equal(sheet.getLastRow(),5,'a refused save writes nothing');
 });
 await test('Netlify: Challenge cards wait on the phone while the Sheet runs an older script; the v10.4.0 script takes them',async()=>{
- const {handleSession}=await import('../netlify/functions/session.mjs');
- const req=data=>new Request('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
- const payload={type:'LEADERBOARD_FINAL',pin:'2595',className:'5-A',sessionId:'lesson-8',islandProgress:{},standings:[],
+ const {handleSession}=await import('../netlify/functions/session.mjs'),A=await require('./fixture.cjs').auth();
+ const req=data=>A.signed('https://school.test/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ const payload={type:'LEADERBOARD_FINAL',pin:'8642',className:'5-A',sessionId:'lesson-8',islandProgress:{},standings:[],
   challengeLog:[{id:'lesson-8-c1',at:Date.now(),className:'5-A',team:'Slytherin',studentId:'',student:'',level:5,type:'Speaking',word:'club',island:2,result:'right'}]};
  let writes=0;const older=async(url,o)=>{const b=JSON.parse(o.body);if(b.type!=='ISLAND_GET')writes++;return new Response(JSON.stringify({status:'success',islandProgress:{},questionLogVersion:1,contributionsVersion:1,navigatorSealsVersion:1}));};
- const r=await (await handleSession(req(payload),older)).json();assert.equal(r.status,'error');assert.match(r.message,/Challenge cards are kept on this phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v\d+\.\d+\.\d+\.gs/);assert.equal(writes,0);
+ const r=await (await handleSession(req(payload),older,A.deps)).json();assert.equal(r.status,'error');assert.match(r.message,/Challenge cards are kept on this phone\. Update Apps Script using GOOGLE-APPS-SCRIPT-v\d+\.\d+\.\d+\.gs/);assert.equal(writes,0);
  const gas=makeGas();const current=async(url,o)=>new Response(JSON.stringify(gas.post(JSON.parse(o.body))));
- const ok=await (await handleSession(req(payload),current)).json();assert.equal(ok.status,'success');assert.equal(ok.challengesAdded,1);
+ const ok=await (await handleSession(req(payload),current,A.deps)).json();assert.equal(ok.status,'success');assert.equal(ok.challengesAdded,1);
 });
 await test('Board wiring: the go-back point, the stakes, wrong/right/skip, the recovery snapshot, the phone panel and the Sheets payload',()=>{
  const game=pub('game.js'),html=pub('index.html');

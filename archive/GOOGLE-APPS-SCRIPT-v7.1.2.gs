@@ -1,4 +1,4 @@
-const TEACHER_PIN = "2595"; // Keep this private
+const TEACHER_PIN = "REMOVED"; // v12.0.0: the PIN was removed from the published archive (v12 keeps it in Script properties)
 
 const LEADER_HEADERS = [
   "Leaders of Gryffindor",

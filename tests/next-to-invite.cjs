@@ -43,26 +43,26 @@ const {setup}=require('./support.cjs');
   });
   await board.evaluate(()=>__qa.selectClass('5-A'));await phone.waitForFunction(()=>__qa.state().remoteStudentClass==='5-A');
   const firstNames=()=>phone.locator('#mobile-invite-gryffindor .mobile-invite-name').allTextContents();
-  assert.deepEqual(await firstNames(),['Elif Naz','Sümeyye','Mehmet Emin']);
+  assert.deepEqual(await firstNames(),['Emobi Nese','Süvog','Meyebur Eril']);
   // v8.9+ opens Load islands when a class is chosen; the teacher continues offline here.
   await phone.evaluate(()=>document.querySelectorAll('dialog[open]').forEach(d=>d.close()));
   await phone.locator('.mobile-score-button.add[onclick*="gryffindor"]').click();
   await phone.locator('[data-student-id="5-A:gryffindor:0"].student-name-choice').click();
   await phone.waitForFunction(()=>__qa.state().remoteStudentContributions['5-A:gryffindor:0']?.awards===1);
-  assert.deepEqual(await firstNames(),['Sümeyye','Mehmet Emin','Yusuf Mete']);
+  assert.deepEqual(await firstNames(),['Süvog','Meyebur Eril','Yurag Miyomo']);
   await board.evaluate(()=>__qa.resetTeam('gryffindor'));
   await phone.waitForFunction(()=>document.getElementById('mobile-score-gryffindor').textContent==='0');
-  assert.deepEqual(await firstNames(),['Sümeyye','Mehmet Emin','Yusuf Mete']);
+  assert.deepEqual(await firstNames(),['Süvog','Meyebur Eril','Yurag Miyomo']);
   await board.locator('#undo-btn').click();await board.locator('#undo-btn').click();
   await phone.waitForFunction(()=>!__qa.state().remoteStudentContributions['5-A:gryffindor:0']);
-  assert.deepEqual(await firstNames(),['Elif Naz','Sümeyye','Mehmet Emin']);
+  assert.deepEqual(await firstNames(),['Emobi Nese','Süvog','Meyebur Eril']);
   // Counts, rather than points, determine who is invited next.
   const ranking=await phone.evaluate(()=>LeagueStudents.nextToInvite('5-A','gryffindor',{
    '5-A:gryffindor:0':{points:100000,awards:1},'5-A:gryffindor:1':{points:2,awards:2},
    '5-A:gryffindor:2':{points:3,awards:3},'5-A:gryffindor:3':{points:3,awards:3},
    '5-A:gryffindor:4':{points:3,awards:3},'5-A:gryffindor:5':{points:3,awards:3},'5-A:gryffindor:6':{points:3,awards:3}
   }).map(p=>[p.name,p.awards]));
-  assert.deepEqual(ranking,[['Elif Naz',1],['Sümeyye',2],['Mehmet Emin',3]]);
+  assert.deepEqual(ranking,[['Emobi Nese',1],['Süvog',2],['Meyebur Eril',3]]);
   await phone.screenshot({path:'output/remote-iphone14pro-393x660.png'});
   await phone.setViewportSize({width:393,height:852});
   await phone.addStyleTag({content:'#mobile-controller{padding-top:59px}.mobile-controller-footer{padding-bottom:40px}'});

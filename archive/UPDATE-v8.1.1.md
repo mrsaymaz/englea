@@ -2,10 +2,10 @@
 
 This update corrects the 5-A roster:
 
-- Nisa is in Hufflepuff.
-- Elif Naz is in Gryffindor.
+- Nog is in Hufflepuff.
+- Emobi Nese is in Gryffindor.
 
-The other classes remain unchanged, including Elif Naz in 6-C Ravenclaw. All v8.1 features remain included.
+The other classes remain unchanged, including Emobi Nese in 6-C Ravenclaw. All v8.1 features remain included.
 
 Deploy the complete package using your existing Netlify deployment method. Refresh both the board and teacher remote, then check that the opening badge says v8.1.1.
 

@@ -2098,6 +2098,8 @@
                 window.LeagueIslandProgress?.select(remoteRole==='controller'?remoteStudentClass:selectedClass,remoteRole==='controller'||!window.remoteConnection?.open);
                 window.LeaguePassportSeals?.render();
                 document.getElementById('board-selected-class').textContent = selectedClass || 'Choose';
+                // v12.0.0: before anyone signs in on this device the board shows example names, never real ones.
+                const exampleChip = document.getElementById('example-roster-chip'); if (exampleChip) exampleChip.hidden = !LeagueStudents.usingExamples();
                 document.getElementById('mobile-selected-class').textContent = remoteStudentClass || 'Choose';
                 document.getElementById('mobile-class-btn').setAttribute('aria-label', remoteStudentClass ? `Class ${remoteStudentClass}` : 'Choose class');
                 for (const teamId of LeagueStudents.teams) {
@@ -5541,15 +5543,17 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 const contributions = extras.contributions.filter(row => !today || row.sessionId !== sessionId);
                 if (today) for (const team of LeagueStudents.teams) for (const person of LeagueStudents.members(c, team)) {
                     const awards = studentContributions[person.id]?.awards || 0;
-                    if (awards) contributions.push({ team, name:person.name, contributions:awards, sessionId });
+                    if (awards) contributions.push({ team, name:person.name, studentId:person.id, contributions:awards, sessionId });
                 }
-                const navigators = [...extras.navigators, ...(globalThis.LeagueNavigatorSeals?.rows(c) || []).map(row => ({ team:row.team, student:row.student }))];
+                const navigators = [...extras.navigators, ...(globalThis.LeagueNavigatorSeals?.rows(c) || []).map(row => ({ team:row.team, student:row.student, studentId:row.studentId }))];
                 const seen = new Set(), merge = [];
-                for (const row of [...extras.merge, ...challengeLog.filter(r => r.merge && r.className === c)]) {
+                for (const row of [...extras.merge, ...challengeLog.filter(r => (r.merge || r.trial) && r.className === c)]) {
                     if (row.id && seen.has(row.id)) continue; if (row.id) seen.add(row.id);
-                    merge.push({ team:houseId(row.team), student:row.student, result:row.result });
+                    merge.push({ team:houseId(row.team), student:row.student, studentId:row.studentId || '', kind:row.kind || (String(row.type || '').startsWith('Rune') ? 'rune' : String(row.type || '').startsWith('Brand') ? 'brand' : 'merge'), result:row.result });
                 }
-                return LeagueSaga.finaleNames({ contributions, navigators, merge });
+                // v12.0.0: students are matched by roster ID; today's roster names are shown for every ID it still has.
+                const current = Object.fromEntries(LeagueStudents.teams.flatMap(team => LeagueStudents.members(c, team).map(person => [person.id, person.name])));
+                return LeagueSaga.finaleNames({ contributions, navigators, merge, current });
             }
             // The Finale shows the creatures' own pictures in every display mode (one still picture each, no pose sheets):
             // the story needs the Celestial creatures turning back into their Level 0 selves, which the Light-mode crests can't show.
@@ -7663,7 +7667,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                     navigatorSeals:globalThis.LeagueNavigatorSeals?.rows(classInput)||[],
                     type: recordType,
                     className: classInput,
-                    studentContributions:lbRecord.studentContributions || null,
+                    // v12.0.0: example students (shown before a sign-in) are not real students and are not saved.
+                    studentContributions:LeagueStudents.withoutExamples(lbRecord.studentContributions || null).summary,
                     pin: pin,
                     standings: lbRecord.standings || fallbackStandings,
                     classMissionCompleted: Boolean(lbRecord.classMissionCompleted),
@@ -7683,7 +7688,8 @@ const leagueText = leagueWinners.length === 1 ? leagueWinners[0].name : leagueWi
                 let entry=LeagueOutbox.find(recordId);
                 entry=LeagueOutbox.add(recordId,payload,{refresh:true});
                 await LeagueOutbox.send(entry,pin,{retry:true});
-                statusEl.textContent=(entry.error||LeagueOutbox.labels[entry.state])+(LeagueOutbox.storageOK?'':' · local storage unavailable');
+                const exampleAwards=LeagueStudents.withoutExamples(lbRecord.studentContributions||null).skipped;
+                statusEl.textContent=(entry.error||LeagueOutbox.labels[entry.state])+(LeagueOutbox.storageOK?'':' · local storage unavailable')+(exampleAwards?` · ${exampleAwards} contribution${exampleAwards===1?'':'s'} under example names not saved (sign in before the lesson to use your class lists)`:'');
                 statusEl.style.color=entry.state==='sent'?'#7dd3fc':'#fcd34d';
                 if(entry.state==='sent')globalThis.LeagueTeacher?.accepted(pin);
                 document.getElementById('teacher-pin-input').value=globalThis.LeagueTeacher?.pin||'';

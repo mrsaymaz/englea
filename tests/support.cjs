@@ -57,26 +57,62 @@ window.__qa={
  challengeLog:()=>challengeLog,team:id=>cleanTeam(teamsData.find(t=>t.id===id)),wheels:()=>({active:activeAnimatedWheel,pending:pendingAnimatedWheels}),
  hidden(value){Object.defineProperty(document,'hidden',{configurable:true,value});document.dispatchEvent(new Event('visibilitychange'));}
 };`;
-async function setup({autoUnlock=true,time=null,rosterHandler=null}={}){
- const access=await import('../netlify/functions/access-time.mjs');let serverTime=time;
+// v12.0.0: the access check, TURN credentials and the roster go through the real Netlify functions, with a test secret,
+// a memory store and a pretend Apps Script for the Teacher PIN. A new browser context is a new device: it signs in with
+// the time code and the test PIN. Pages start with the fictional class roster (as after a sign-in) unless
+// fixtureRoster is false (the example names a device shows before anyone signs in).
+const fixture=require('./fixture.cjs');
+async function setup({autoUnlock=true,time=null,rosterHandler=null,fixtureRoster=true}={}){
+ const access=await import('../netlify/functions/access-time.mjs'),turn=await import('../netlify/functions/turn-credentials.mjs'),authLib=await import('../netlify/shared/auth.mjs');
+ let serverTime=time;const store=authLib.memoryStore();
+ const env={LEAGUE_SERVER_KEY:fixture.SERVER_KEY,CLOUDFLARE_TURN_KEY_ID:'test-key',CLOUDFLARE_TURN_KEY_API_TOKEN:'test-token'};
+ const authDeps={store,secret:fixture.SECRET,env,get now(){return serverTime??Date.now();}};
+ const scriptFetch=async(url,options)=>new Response(JSON.stringify(fixture.authCheck(JSON.parse(options.body))));
+ const turnFetch=async()=>new Response(JSON.stringify({iceServers:[{urls:['stun:example.invalid']},{urls:['turn:example.invalid'],username:'test',credential:'test'}]}));
+ let base='';
+ async function forward(req,handler){
+  let body='';for await(const chunk of req)body+=chunk;
+  const headers=new Headers();for(const [k,v] of Object.entries(req.headers))if(typeof v==='string')headers.set(k,v);
+  const reply=await handler(new Request(base+req.url,{method:req.method,headers,...(['GET','HEAD'].includes(req.method)?{}:{body})}));
+  const out={};reply.headers.forEach((v,k)=>{if(k!=='set-cookie')out[k]=v;});
+  const cookies=reply.headers.getSetCookie?.()||[];if(cookies.length)out['set-cookie']=cookies;
+  return {reply,out};
+ }
  const server=http.createServer(async(req,res)=>{
   const url=decodeURIComponent(req.url.split('?')[0]);
-  if(url==='/api/roster'&&rosterHandler){let body='';for await(const chunk of req)body+=chunk;const reply=await rosterHandler(new Request('http://localhost'+url,{method:req.method,headers:{'Content-Type':'application/json'},body}));res.writeHead(reply.status,Object.fromEntries(reply.headers));res.end(await reply.text());return;}
-  if(url==='/api/access-time'){let body='';for await(const chunk of req)body+=chunk;const reply=await access.handleAt(new Request('http://localhost'+url,{method:req.method,...(req.method==='POST'?{body,headers:{'Content-Type':'application/json'}}:{})}),serverTime??Date.now());res.writeHead(reply.status,Object.fromEntries(reply.headers));res.end(await reply.text());return;}
-  if(url==='/api/turn-credentials'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({iceServers:[{urls:['stun:example.invalid']},{urls:['turn:example.invalid'],username:'test',credential:'test'}],expiresIn:21600}));return;}
+  const send=async handler=>{const {reply,out}=await forward(req,handler);res.writeHead(reply.status,out);res.end(await reply.text());};
+  if(url==='/api/roster'&&rosterHandler)return send(r=>rosterHandler(r,{...authDeps,now:authDeps.now}));
+  if(url==='/api/access-time')return send(r=>access.handleAt(r,{...authDeps,now:authDeps.now,fetcher:scriptFetch}));
+  if(url==='/api/turn-credentials')return send(r=>turn.handleTurn(r,{...authDeps,now:authDeps.now,fetcher:turnFetch}));
   const file=path.resolve(root,'.'+(url==='/'?'/index.html':url));
   if(!file.startsWith(root+path.sep)||!fs.existsSync(file)){res.writeHead(404);res.end();return;}
   let data=fs.readFileSync(file);if(file.endsWith('/game.js')){const str=data.toString(),i=str.lastIndexOf('    });');data=Buffer.from(str.slice(0,i)+hook+str.slice(i));}
   if(file.endsWith('/vendor/peerjs.min.js'))data=Buffer.from('window.Peer=class {constructor(){setTimeout(()=>this.handlers?.open?.("test"),10)} on(n,f){this.handlers??={};this.handlers[n]=f} connect(){return {open:false,on(){}}} reconnect(){} };');
-  res.setHeader('Content-Type',file.endsWith('.html')?'text/html':file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.webp')?'image/webp':'application/octet-stream');res.end(data);
+  res.setHeader('Content-Type',file.endsWith('.html')?'text/html':file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.webp')?'image/webp':file.endsWith('.json')?'application/json':'application/octet-stream');res.end(data);
  });
- await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;
  const launchOptions={headless:true};
  if(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH)launchOptions.executablePath=process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
  if(process.env.PLAYWRIGHT_CHROMIUM_ARGS)launchOptions.args=JSON.parse(process.env.PLAYWRIGHT_CHROMIUM_ARGS);
  const browser=await chromium.launch(launchOptions);
  const errors=[],missing=[];
- async function page(context=null){const ctx=context||await browser.newContext({viewport:{width:1366,height:768}}),p=await ctx.newPage();p.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.message);});p.on('response',r=>{if(r.status()>=400)missing.push(r.url());});await p.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());await p.goto(base);await p.waitForFunction(()=>Boolean(window.__qa));if(autoUnlock){await p.waitForFunction(()=>!document.getElementById('access-submit').disabled);await p.locator('#access-code').fill(access.codesAt(serverTime??Date.now()).normal);await p.locator('#access-submit').click();await p.waitForFunction(()=>LeagueAccess.granted);}return p;}
- return {browser,server,base,page,errors,missing,setTime:n=>{serverTime=n;},codes:()=>access.codesAt(serverTime??Date.now()),close:async()=>{await browser.close();server.close();}};
+ // Sign in a page the way a teacher does on a new device: the time code, then the Teacher PIN.
+ async function unlock(p,{pin=fixture.TEST_PIN}={}){
+  await p.waitForFunction(()=>LeagueAccess.granted||!document.getElementById('access-submit').disabled);
+  if(await p.evaluate(()=>LeagueAccess.granted))return; // this device already has a session
+  await p.locator('#access-code').fill(access.codesAt(serverTime??Date.now()).normal);await p.locator('#access-submit').click();
+  await p.waitForFunction(()=>LeagueAccess.granted||!document.getElementById('access-pin-row').hidden);
+  if(!(await p.evaluate(()=>LeagueAccess.granted))){await p.locator('#access-pin').fill(pin);await p.locator('#access-submit').click();}
+  await p.waitForFunction(()=>LeagueAccess.granted);
+ }
+ async function page(context=null,{path:startPath='/'}={}){
+  const ctx=context||await browser.newContext({viewport:{width:1366,height:768}});
+  if(fixtureRoster&&!ctx.__leagueFixture){ctx.__leagueFixture=true;await ctx.addInitScript(([key,value])=>{try{if(!localStorage.getItem(key))localStorage.setItem(key,value);}catch{}},[fixture.ROSTER_KEY,JSON.stringify(fixture.catalog())]);}
+  const p=await ctx.newPage();p.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.message);});p.on('response',r=>{if(r.status()>=400)missing.push(r.url());});
+  await p.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());await p.goto(base+startPath);await p.waitForFunction(()=>Boolean(window.__qa||window.__qaRemote));
+  if(autoUnlock)await unlock(p);
+  return p;
+ }
+ return {browser,server,base,page,unlock,errors,missing,store,authDeps,setTime:n=>{serverTime=n;},codes:()=>access.codesAt(serverTime??Date.now()),close:async()=>{await browser.close();server.close();}};
 }
-module.exports={setup,root};
+module.exports={setup,root,fixture};

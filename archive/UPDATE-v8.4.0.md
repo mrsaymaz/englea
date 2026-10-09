@@ -13,7 +13,7 @@ The next Half Down or Secret Agent attempt goes through unless the teacher issue
 
 Protection is evaluated at selection time, not at point-award or reveal time. Adding Shield after Half Down or an agent is already active does not undo that effect. The new shield remains available for a later incoming effect. Shield is a manually issued charge, not automatic protection for the whole session.
 
-Example: Hufflepuff has Shield. Slytherin selects Nisa as its Secret Agent. Hufflepuff's Shield is consumed and Nisa's agent transfer is blocked. Half Down applied afterward affects Hufflepuff normally. At reveal, Nisa transfers zero points. If Half Down had arrived first, it would have been blocked and the later Secret Agent would transfer the full amount, even below zero after a reset.
+Example: Hufflepuff has Shield. Slytherin selects Nog as its Secret Agent. Hufflepuff's Shield is consumed and Nog's agent transfer is blocked. Half Down applied afterward affects Hufflepuff normally. At reveal, Nog transfers zero points. If Half Down had arrived first, it would have been blocked and the later Secret Agent would transfer the full amount, even below zero after a reset.
 
 Undo restores the shield charge and blocked-agent state together. Session recovery preserves both. Retried remote commands do not consume a charge again. Public feedback never displays the selected student's identity before reveal.
 

@@ -7,11 +7,11 @@ let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
 const isDate=v=>Object.prototype.toString.call(v)==='[object Date]'&&!isNaN(v.getTime());
 const cell=(gas,tab,row,col)=>({value:gas.sheets.get(tab).rows[row-1]?.[col-1],format:gas.sheets.get(tab).formats.get(row+':'+col)});
 const FULL='dd/mm/yyyy hh:mm:ss',DAY='dd/mm/yyyy';
-const session=(extra={})=>({type:'FULL_SESSION',pin:'2595',className:'5-A',sessionId:'lesson-1',winner:'Gryffindor',
+const session=(extra={})=>({type:'FULL_SESSION',pin:'8642',className:'5-A',sessionId:'lesson-1',winner:'Gryffindor',
  standings:[{name:'Gryffindor',points:90,level:3},{name:'Slytherin',points:40,level:2}],
- studentContributions:{everyone:true,teams:{gryffindor:[{name:'Elif Naz',awards:3}],slytherin:[{name:'Şeyma',awards:1}],hufflepuff:[],ravenclaw:[]}},
+ studentContributions:{everyone:true,teams:{gryffindor:[{name:'Emobi Nese',awards:3}],slytherin:[{name:'Şugebı',awards:1}],hufflepuff:[],ravenclaw:[]}},
  islandProgress:{'5-A|gryffindor':{1:{score:700,stars:3}}},
- navigatorSeals:[{studentId:'5-A:gryffindor:0',student:'Elif Naz',team:'gryffindor',island:1,sessionId:'lesson-1'}],
+ navigatorSeals:[{studentId:'5-A:gryffindor:0',student:'Emobi Nese',team:'gryffindor',island:1,sessionId:'lesson-1'}],
  questionLog:[{id:'run-1:q1',t:Date.UTC(2026,9,5,9,30),s:'lesson-1',c:'5-A',h:'gryffindor',g:5,i:1,q:'q1',k:'apple',y:'word',f:'text',ok:false,e:false,v:false,m:true,p:'A',a:'B',x:'apple?'}],
  ...extra});
 test('A session save writes real dates shown DD/MM/YYYY in every tab: Leaderboard, Battle_Results, Student_Contributions, Navigator_Seals, Island_Progress, Question_Log and Question_Summary',()=>{
@@ -27,7 +27,7 @@ test('Saving the same session again keeps the date day first; the season, seals 
  const gas=makeGas();gas.post(session());gas.post(session());
  assert.equal(gas.sheets.get('Leaderboard').getLastRow(),3,'one header, the "existing lesson" row and this session');
  assert.equal(cell(gas,'Leaderboard',3,1).format,FULL);
- const got=gas.post({type:'ISLAND_GET',pin:'2595',className:'5-A'});
+ const got=gas.post({type:'ISLAND_GET',pin:'8642',className:'5-A'});
  assert.equal(got.status,'success');assert.equal(got.season.wins.gryffindor,2);assert.equal(got.navigatorSeals.length,1);assert.equal(got.islandProgress['5-A|gryffindor'][1].stars,3);
 });
 test('formatOldDates converts the month-first text of earlier saves (and ISO text) into day-first dates, once; other text stays as it is',()=>{
@@ -50,6 +50,6 @@ test('formatOldDates converts the month-first text of earlier saves (and ISO tex
  assert.match(report,/Leaderboard: 3 converted · Battle_Results: 1 converted/);
  assert.match(gas.call('formatOldDates'),/Leaderboard: 0 converted · Battle_Results: 0 converted/,'running it again changes nothing');
  assert.equal(gas.locked,false,'the lock is released');
- const got=gas.post({type:'ISLAND_GET',pin:'2595',className:'5-A'});assert.equal(got.status,'success');assert(got.season.sessions>=5,'converted rows still count in the season');
+ const got=gas.post({type:'ISLAND_GET',pin:'8642',className:'5-A'});assert.equal(got.status,'success');assert(got.season.sessions>=5,'converted rows still count in the season');
 });
 console.log(JSON.stringify({checks}));

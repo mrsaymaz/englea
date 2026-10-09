@@ -17,13 +17,13 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await board.evaluate(()=>{__qa.selectClass('5-A');document.querySelectorAll('dialog[open]').forEach(d=>d.close());__qa.seed(10,40);});await wait(800);
 
   // Student award card: ten seal places, the earned ones filled; no points chip and no team seal chip.
-  await board.evaluate(()=>LeagueNavigatorSeals.merge('5-A',[{studentId:'5-A:gryffindor:0',student:'Elif Naz',team:'gryffindor',island:1},{studentId:'5-A:gryffindor:0',student:'Elif Naz',team:'gryffindor',island:4}]));
+  await board.evaluate(()=>LeagueNavigatorSeals.merge('5-A',[{studentId:'5-A:gryffindor:0',student:'Emobi Nese',team:'gryffindor',island:1},{studentId:'5-A:gryffindor:0',student:'Emobi Nese',team:'gryffindor',island:4}]));
   await board.evaluate(()=>__qa.studentAward('gryffindor','5-A:gryffindor:0'));await wait(400);
   const card=await board.evaluate(()=>{const c=document.querySelector('#team-gryffindor .student-contribution-badge');const g=c?.querySelector('.student-seal-grid');const r=g?.getBoundingClientRect();
    return {name:c?.querySelector('.student-contribution-name')?.textContent,slots:c?.querySelectorAll('.student-seal-slot').length,earned:[...(c?.querySelectorAll('.student-seal-slot.earned')||[])].map(s=>s.title),
     points:c?.querySelectorAll('.student-contribution-points').length,rows:new Set([...(c?.querySelectorAll('.student-seal-slot')||[])].map(s=>Math.round(s.getBoundingClientRect().top))).size,
     inside:Boolean(r&&c.closest('.mascot-area').getBoundingClientRect().bottom>=r.bottom-1),teamChips:document.querySelectorAll('.passport-seals,.mobile-passport-seals').length};});
-  assert.deepEqual(card,{name:'Elif Naz',slots:10,earned:['Island 1 · Veyr seal','Island 4 · Rootmaw seal'],points:0,rows:2,inside:true,teamChips:0});
+  assert.deepEqual(card,{name:'Emobi Nese',slots:10,earned:['Island 1 · Veyr seal','Island 4 · Rootmaw seal'],points:0,rows:2,inside:true,teamChips:0});
   console.log('PASS the award card shows the student’s name and ten seal places in two rows of five (islands 1 and 4 earned); no points chip, no team seal chips');
 
   // Contributors on every team, then the arena; the champion's contributors provide the navigator.

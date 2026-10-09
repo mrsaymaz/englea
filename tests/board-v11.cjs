@@ -77,8 +77,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   await phone.waitForFunction(()=>LeagueOutbox.find('saga:5-A')?.payload.saga.stage==='Scarlet');
   assert.equal(await phone.evaluate(()=>LeagueOutbox.find('saga:5-A').state),'waiting','offline: queued in the outbox');
   let saved=null;await phone.route('**/api/session',async r=>{const body=JSON.parse(r.request().postData());saved=body;await r.fulfill({contentType:'application/json',body:JSON.stringify({status:'success',sagaVersion:1,saga:body.saga})});});
-  await phone.evaluate(()=>LeagueTeacher.accepted('2595'));await phone.waitForFunction(()=>LeagueOutbox.find('saga:5-A')?.state==='sent');
-  assert.equal(saved.type,'SAGA_SAVE');assert.equal(saved.saga.stage,'Scarlet');assert.equal(saved.className,'5-A');assert.equal(saved.pin,'2595');
+  await phone.evaluate(()=>LeagueTeacher.accepted('8642'));await phone.waitForFunction(()=>LeagueOutbox.find('saga:5-A')?.state==='sent');
+  assert.equal(saved.type,'SAGA_SAVE');assert.equal(saved.saga.stage,'Scarlet');assert.equal(saved.className,'5-A');assert.equal(saved.pin,'8642');
   console.log('PASS a win advances Violet → Scarlet once: false victory, the cut, the escape, the reward panel with the Level 11 forms; today stays at Level 10; the row waits offline and is saved after sign-in');
 
   // 4. The next session: Level 11.
@@ -204,7 +204,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
    if(body.type==='ISLAND_GET')return ok({islandProgress:{},sagaVersion:1,saga:null,sagaExtras:null,finaleLines:null});
    if(body.type==='TEACHING_GET')return ok({unit:body.unit,content:{},revision:'0'.repeat(64),version:0});return ok({});});
   await p4.evaluate(()=>{__qa.start();__qa.selectClass('6-C');document.querySelectorAll('dialog[open]').forEach(d=>d.close());LeagueStudio.open({className:'6-C'});});
-  await p4.fill('#studio-pin','2595');await p4.click('#studio-auth button');await p4.waitForSelector('#studio-workspace:not([hidden])',{timeout:8000}).catch(async err=>{console.log('studio status:',await p4.textContent('#studio-status'));throw err;});
+  await p4.fill('#studio-pin','8642');await p4.click('#studio-auth button');await p4.waitForSelector('#studio-workspace:not([hidden])',{timeout:8000}).catch(async err=>{console.log('studio status:',await p4.textContent('#studio-status'));throw err;});
   await p4.click('[data-studio-tab="finale"]');await p4.waitForSelector('#studio-finale-lines');
   assert.equal(await p4.inputValue('#studio-finale-lines'),(await p4.evaluate(()=>LeagueSaga.DEFAULT_LINES[6].join('\n'))),'the default Grade 6 lines are shown');
   assert.match(await p4.textContent('#studio-status'),/default lines/);

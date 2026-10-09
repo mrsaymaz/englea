@@ -2,7 +2,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
 const source=fs.readFileSync(require.resolve('../public/game.js'),'utf8');
 const block=(a,b)=>source.slice(source.indexOf(a),source.indexOf(b,source.indexOf(a)));
 const {wire}=require('./peerjs-wire.cjs');
-const rosterContext={};rosterContext.window=rosterContext;vm.createContext(rosterContext);vm.runInContext(fs.readFileSync(require.resolve('../public/student-rosters.js'),'utf8'),rosterContext);
+const rosterContext={};rosterContext.window=rosterContext;vm.createContext(rosterContext);vm.runInContext(fs.readFileSync(require.resolve('../public/student-rosters.js'),'utf8'),rosterContext);rosterContext.window.LeagueStudents.useRoster(require('./fixture.cjs').roster);
 const students=rosterContext.LeagueStudents.defaults(),catalog={schema:1,version:1,revision:'a'.repeat(64),students};
 assert.match(source,/peer\.connect\('class6d-' \+ activeRoomCode, \{ reliable:true, serialization:'binary' \}\)/);
 const jobs=[],messages=[];let dropState=2,dropAck=1;

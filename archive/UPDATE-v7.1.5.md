@@ -9,8 +9,8 @@ The Google Apps Script, TURN function and Netlify environment settings are uncha
 
 ## Roster check
 
-- Open **5-C → Slytherin** and confirm **Cemile** appears.
-- Open **8-B → Slytherin** and confirm **Muhammed B.** appears and Hasan Hüseyin does not.
-- Open **8-B → Ravenclaw** and confirm **Hasan Hüseyin** appears and Muhammed B. does not.
+- Open **5-C → Slytherin** and confirm **Cilef** appears.
+- Open **8-B → Slytherin** and confirm **Moka B.** appears and Hoder Huyun does not.
+- Open **8-B → Ravenclaw** and confirm **Hoder Huyun** appears and Moka B. does not.
 
 For a clean classroom record after deploying the changed rosters, start a new session rather than resuming a session created with the previous roster.

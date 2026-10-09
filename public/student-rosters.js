@@ -1,42 +1,23 @@
-/* Class-scoped identities and participation totals. No network requests. */
+/* Class-scoped identities and participation totals. No network requests.
+   v12.0.0: this public file holds example names only. The real class lists live in Google Sheets (the Roster tab) and
+   reach a board or phone only through the signed-in, PIN-checked roster request (roster-manager.js); a device keeps
+   its own copy for offline lessons. Example students have IDs that start with "example-", so a lesson played with
+   example names can never be saved under a real student's ID. */
 (function(root) {
     'use strict';
-    const names = {
-        '5-A': {
-            gryffindor: ['Elif Naz', 'Sümeyye', 'Mehmet Emin', 'Yusuf Mete', 'Yusuf H.', 'Canberk', 'Öykü Nas'],
-            slytherin: ['Şeyma', 'Yazan', 'Fatma C.', 'Zümra', 'Abdussamed', 'Baran', 'İlhan'],
-            ravenclaw: ['Derin', 'Yusufhan', 'Behçet', 'Nesibe', 'Fatma K.', 'Zehra'],
-            hufflepuff: ['Nisa', 'Poyraz', 'Şeyma D.', 'Yunus Emre', 'Eymen', 'İkra']
-        },
-        '5-C': {
-            gryffindor: ['Leys', 'Cuma', 'Rahme', 'Murat', 'Dilek Yaren', 'Fatma N.'],
-            slytherin: ['Zuhal', 'Ahmet Osman', 'İsranur', 'Şahin', 'Ayşe', 'Hümeyra', 'Cemile'],
-            ravenclaw: ['Burak', 'Hasan', 'Elif', 'Emel', 'Mehmet Ali', 'Hira Nur', 'Rukiye'],
-            hufflepuff: ['Şüheda', 'Yusuf Taha', 'Cansu', 'Ömercan', 'Büşra', 'Ahmet']
-        },
-        '6-C': {
-            gryffindor: ['Eslem Nur', 'Selin', 'Berfin', 'Amir', 'Hüseyin Emir'],
-            slytherin: ['Hanife Betül', 'Muhammed Al.', 'Yusuf', 'Kamar', 'Azra', 'Kadriye'],
-            ravenclaw: ['Ece Eylül', 'Elif Naz', 'Seyfullah', 'Mehmet Berat', 'Hedil'],
-            hufflepuff: ['Ecrin', 'Burak', 'Eslem Sare', 'Ozan', 'Muhammed Ab.']
-        },
-        '7-A': {
-            gryffindor: ['Jana', 'Fettah Ali', 'Abdulvahap', 'Mekke Züleyha', 'Hatice Y.', 'Hamza Sadık'],
-            slytherin: ['Afra', 'Belinay', 'Ömer Faruk', 'Zeynep', 'Hadice', 'Hiranur'],
-            ravenclaw: ['Abdullah', 'Asya', 'Rihem', 'Masuma', 'Sudenur Ecrin', 'Ahmed'],
-            hufflepuff: ['Semih', 'Veysel', 'Rimes', 'Berfin', 'Meryem', 'Rahaf']
-        },
-        '8-B': {
-            gryffindor: ['Ahmet Emir', 'Batuhan', 'Gazi', 'Emirhan', 'Yusuf Haktan', 'Yahya'],
-            slytherin: ['Abdullah', 'Mahmud', 'Salih', 'Enes', 'M. Emir', 'Muhammed B.'],
-            ravenclaw: ['Ensar', 'Seydan', 'Bilal', 'Hasan Hüseyin', 'Ömer Asaf', 'Halit'],
-            hufflepuff: ['Ahmet M.', 'Kemal Berk', 'Mert', 'Mustafa', 'Kubilay']
-        }
-    };
-    const classes = Object.freeze(Object.keys(names));
+    const classes = Object.freeze(['5-A', '5-C', '6-C', '7-A', '8-B']);
     const teams = Object.freeze(['gryffindor', 'slytherin', 'hufflepuff', 'ravenclaw']);
-    const defaultStudents = classes.flatMap(className => teams.flatMap(teamId => names[className][teamId].map((name,index) =>
-        ({id:`${className}:${teamId}:${index}`,name,className,teamId,active:true}))));
+    // The same seven example names per house in every class (used before sign-in and in the public previews).
+    const EXAMPLE_NAMES = Object.freeze({
+        gryffindor: ['Ada', 'Bora', 'Cleo', 'Deniz', 'Emil', 'Fiona', 'Gale'],
+        slytherin: ['Hazel', 'Ilkin', 'Jasper', 'Kaya', 'Leo', 'Mira', 'Nilo'],
+        hufflepuff: ['Olive', 'Pax', 'Quinn', 'Rumi', 'Sage', 'Toby', 'Uma'],
+        ravenclaw: ['Vera', 'Wren', 'Xan', 'Yara', 'Zeno', 'Arin', 'Bex']
+    });
+    const EXAMPLE_PREFIX = 'example-';
+    const isExample = id => typeof id === 'string' && id.startsWith(EXAMPLE_PREFIX);
+    const defaultStudents = classes.flatMap(className => teams.flatMap(teamId => EXAMPLE_NAMES[teamId].map((name,index) =>
+        ({id:`${EXAMPLE_PREFIX}${className}-${teamId}-${index}`,name,className,teamId,active:true}))));
     function validateRoster(value) {
         if(!Array.isArray(value)||value.length>500)throw Error('Roster must contain no more than 500 students.');
         const ids=new Set();
@@ -56,6 +37,8 @@
     useRoster(defaultStudents);
     const defaults=()=>defaultStudents.map(p=>({...p}));
     const snapshot=()=>activeStudents.map(p=>({...p}));
+    // True while the board or phone shows example names (nobody has signed in on this device yet).
+    const usingExamples=()=>activeStudents.length>0&&activeStudents.every(p=>isExample(p.id));
     const validClass = value => classes.includes(value);
     const members = (className, teamId) => validClass(className) && teams.includes(teamId) ? rosters[className][teamId] : [];
     const student = (className, teamId, id) => members(className, teamId).find(item => item.id === id) || null;
@@ -95,10 +78,22 @@
     const hasCredits = totals => Object.values(totals).some(entry => entry.points > 0);
     const contributors = (className, teamId, totals) => members(className,teamId).filter(person => totals[person.id]?.awards > 0);
     const uniqueCount = (className, totals) => teams.reduce((sum,teamId) => sum + contributors(className,teamId,totals).length,0);
-    // v9.6.0: `everyone` lists every student of the class in roster order with their contribution
-    // count (zero included), so the Sheet keeps the whole class's record, not just the leaders.
-    const summary = (className, totals) => ({className:className || null, metric:'contribution_count',
+    // v9.6.0: `everyone` lists every student of the class in roster order with their contribution count (zero included),
+    // so the Sheet keeps the whole class's record. v12.0.0: each row carries the student's roster ID, with the name and
+    // team as they were in this lesson, so later renames and team changes never split or merge a student's history.
+    const summary = (className, totals) => ({className:className || null, metric:'contribution_count', ids:1,
         teams:Object.fromEntries(teams.map(teamId => [teamId, ranked(className, teamId, totals)])),
-        everyone:Object.fromEntries(teams.map(teamId => [teamId, members(className, teamId).map(person => ({name:person.name, awards:totals[person.id]?.awards || 0}))]))});
-    root.LeagueStudents = Object.freeze({defaults, snapshot, useRoster, validateRoster, classes, teams, members, student, validClass, restore, credit, ranked, nextToInvite, hasCredits, contributors, uniqueCount, summary});
+        everyone:Object.fromEntries(teams.map(teamId => [teamId, members(className, teamId).map(person => ({id:person.id, name:person.name, awards:totals[person.id]?.awards || 0}))]))});
+    // Example students are not real students: their rows are left out of what is saved to Google Sheets.
+    function withoutExamples(summaryValue) {
+        if (!summaryValue || typeof summaryValue !== 'object') return {summary:summaryValue, skipped:0};
+        let skipped = 0;
+        const keep = list => Array.isArray(list) ? list.filter(row => { const out = isExample(row?.id); if (out && Number(row?.awards) > 0) skipped += Number(row.awards); return !out; }) : list;
+        const next = {...summaryValue};
+        if (summaryValue.everyone) next.everyone = Object.fromEntries(Object.entries(summaryValue.everyone).map(([t, list]) => [t, keep(list)]));
+        if (summaryValue.teams) { const before = skipped; next.teams = Object.fromEntries(Object.entries(summaryValue.teams).map(([t, list]) => [t, keep(list)])); if (summaryValue.everyone) skipped = before; }
+        return {summary:next, skipped};
+    }
+    root.LeagueStudents = Object.freeze({defaults, snapshot, useRoster, validateRoster, classes, teams, members, student, validClass, restore, credit, ranked, nextToInvite, hasCredits, contributors, uniqueCount, summary,
+        isExample, usingExamples, withoutExamples, EXAMPLE_NAMES});
 })(window);

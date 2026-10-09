@@ -15,7 +15,7 @@ When a team wins the Final Arena and goes on to Island Run, one student is chose
 
 ## Island seals belong to the navigator
 
-- Each island the navigator's runs complete (practice runs excepted) earns **that student** the island's seal. The result card shows it, for example **Elif Naz · seal 3 of 10**, and when the class is back on the board a card announces **Navigator seal earned**.
+- Each island the navigator's runs complete (practice runs excepted) earns **that student** the island's seal. The result card shows it, for example **Emobi Nese · seal 3 of 10**, and when the class is back on the board a card announces **Navigator seal earned**.
 - When a student earns points, their award card on the team card is a little larger and shows **ten seal places**: islands 1–5 on the first row and 6–10 on the second. Earned seals are bright gold with the island number, so they read from the back of the room; empty places are faint outlines with the number. The points are no longer printed on this card (the score panel and the history still show them).
 - Seals are no longer shown on the team cards (board and remote). The team's passport still unlocks islands and restores the map, as before.
 

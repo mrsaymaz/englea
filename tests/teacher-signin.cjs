@@ -7,7 +7,7 @@ const {setup}=require('./support.cjs');
 const {makeGas}=require('./roster-gas-harness.cjs');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function sheet(){
- const gas=makeGas(),pin='2595';
+ const gas=makeGas(),pin='8642';require('./fixture.cjs').seedGasRoster(gas); // the teacher's Roster tab (fictional names)
  const roster=gas.post({type:'ROSTER_GET',pin});
  const students=roster.students.map(p=>p.className==='5-A'&&p.teamId==='gryffindor'&&p===roster.students.find(q=>q.className==='5-A'&&q.teamId==='gryffindor')?{...p,name:'Deniz Yıldız'}:p);
  assert.equal(gas.post({type:'ROSTER_SAVE',pin,revision:roster.revision,students}).status,'success');
@@ -41,7 +41,7 @@ async function pair(e,gas,typed){
  const e=await setup();
  try{
   // 1. The right PIN: one sign-in, everything loads, no PIN prompt anywhere.
-  {const {gas,first}=sheet();const {board,phone,calls}=await pair(e,gas,'2595');
+  {const {gas,first}=sheet();const {board,phone,calls}=await pair(e,gas,'8642');
    await phone.waitForFunction(()=>LeagueTeacher.state==='ok'&&/islands/.test(document.getElementById('mobile-teacher-status').textContent),{},{timeout:10000});
    await board.waitForFunction(id=>LeagueStudents.student('5-A','gryffindor',id)?.name==='Deniz Yıldız'&&Boolean(LeagueSeason.data),first.id,{timeout:8000});
    const shown=await board.evaluate(id=>({seals:LeagueNavigatorSeals.rows('5-A').filter(r=>r.studentId===id).length,islands:Object.keys(LeagueIslandProgress.snapshot('5-A')['5-A|gryffindor']).length,wins:LeagueSeason.data.wins}),first.id);
@@ -64,8 +64,8 @@ async function pair(e,gas,typed){
   {const {gas,first}=sheet();const {board,phone}=await pair(e,gas,'1111');
    await phone.waitForFunction(()=>LeagueTeacher.state==='error'&&document.getElementById('island-cloud-dialog')?.open,{},{timeout:10000});
    assert.match(await phone.evaluate(()=>document.getElementById('mobile-teacher-status').textContent),/Teacher PIN not accepted/);
-   await phone.fill('#island-cloud-pin','2595');await phone.locator('#island-cloud-dialog button[type="submit"]').click();
-   await phone.waitForFunction(()=>LeagueTeacher.state==='ok'&&LeagueTeacher.pin==='2595',{},{timeout:8000});
+   await phone.fill('#island-cloud-pin','8642');await phone.locator('#island-cloud-dialog button[type="submit"]').click();
+   await phone.waitForFunction(()=>LeagueTeacher.state==='ok'&&LeagueTeacher.pin==='8642',{},{timeout:8000});
    await board.waitForFunction(id=>LeagueStudents.student('5-A','gryffindor',id)?.name==='Deniz Yıldız'&&Boolean(LeagueSeason.data),first.id,{timeout:8000});
    assert.deepEqual(await phone.evaluate(()=>window.__dialogs),['island-cloud-dialog'],'one prompt only');
    console.log('PASS a wrong PIN is reported on the phone and asked for once; the PIN entered there loads names, islands and the season');

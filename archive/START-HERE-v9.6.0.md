@@ -15,7 +15,7 @@ The English League title and fonts are unchanged. No new images, fonts or librar
 
 - A new **Student_Contributions** tab gets one row per student of the class for each saved session: **Date, Class, Team, Student, Contributions, Session ID**. *Contributions* is how many times that student contributed in the session. Students who did not contribute are listed with **0**, so the whole class is on record.
 - Saving the same session again updates its counts in place. It never adds duplicate rows. A new session adds new rows.
-- Leaderboard columns **I–L** now list every contributor of each team with their count, for example `Elif Naz (3) · Derin (1)`. Before, they listed the top three. The headers become **Contributors of Gryffindor** and so on; an existing sheet is renamed in place, and older rows stay as they are.
+- Leaderboard columns **I–L** now list every contributor of each team with their count, for example `Emobi Nese (3) · Detor (1)`. Before, they listed the top three. The headers become **Contributors of Gryffindor** and so on; an existing sheet is renamed in place, and older rows stay as they are.
 - A save that only records the arena result adds no student rows.
 
 ## Animated mode is the board's mode

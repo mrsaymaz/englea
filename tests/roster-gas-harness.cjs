@@ -1,6 +1,7 @@
 const vm=require('vm'),fs=require('fs'),crypto=require('crypto'),path=require('path');
+const SERVER_KEY='test-server-key-0123456789abcdef';
 function makeGas(){
- const sheets=new Map(),properties=new Map();let locked=false,denyLock=false,active='Leaderboard';
+ const sheets=new Map(),properties=new Map([['TEACHER_PIN','8642'],['LEAGUE_SERVER_KEY',SERVER_KEY]]);let locked=false,denyLock=false,active='Leaderboard';
  class Sheet{
   constructor(name){this.name=name;this.rows=[];this.formats=new Map();}
   getName(){return this.name;}getMaxRows(){return this.maxRows||1000;}insertRowsAfter(at,n){this.maxRows=this.getMaxRows()+n;}getLastRow(){let n=this.rows.length;while(n&&!this.rows[n-1]?.some(v=>v!==''&&v!==undefined))n--;return n;}
@@ -18,8 +19,9 @@ function makeGas(){
  const ss={getSheetByName:n=>sheets.get(n)||null,insertSheet(n){const s=new Sheet(n);sheets.set(n,s);return s;},getActiveSheet:()=>sheets.get(active),getSheets:()=>[...sheets.values()]};
  ss.insertSheet('Leaderboard').rows=[['Date','Class','First','Second','Third','Fourth','Score','Mission'],['existing lesson']];
  ss.insertSheet('Battle_Results').rows=[['Date','Class','Winner','HP','Damage','Duration'],['existing battle']];
- const c={SpreadsheetApp:{getActiveSpreadsheet:()=>ss,flush(){}},PropertiesService:{getScriptProperties:()=>({getProperty:k=>properties.get(k),setProperty:(k,v)=>properties.set(k,v)})},LockService:{getScriptLock:()=>({tryLock(){if(denyLock||locked)return false;locked=true;return true;},hasLock:()=>locked,releaseLock(){locked=false;}})},Utilities:{DigestAlgorithm:{SHA_256:'sha256'},Charset:{UTF_8:'utf8'},computeDigest:(a,s)=>[...crypto.createHash('sha256').update(s).digest()]},ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({setMimeType:()=>({text})})}};
- vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../GOOGLE-APPS-SCRIPT-v11.0.0.gs'),'utf8'),c);
- return {post:data=>JSON.parse(c.doPost({postData:{contents:JSON.stringify(data)}}).text),call:(name,...args)=>c[name](...args),SheetDate:vm.runInContext('Date',c),ss,sheets,active(name){active=name;},lock(value){denyLock=value;},get locked(){return locked;}};
+ const c={SpreadsheetApp:{getActiveSpreadsheet:()=>ss,flush(){}},PropertiesService:{getScriptProperties:()=>({getProperty:k=>properties.get(k),setProperty:(k,v)=>properties.set(k,v)})},LockService:{getScriptLock:()=>({tryLock(){if(denyLock||locked)return false;locked=true;return true;},hasLock:()=>locked,releaseLock(){locked=false;}})},Utilities:{DigestAlgorithm:{SHA_256:'sha256'},Charset:{UTF_8:'utf8'},computeDigest:(a,s)=>[...crypto.createHash('sha256').update(s).digest()]},ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({setMimeType:()=>({text})})},Logger:{log(){}}};
+ vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../GOOGLE-APPS-SCRIPT-v12.0.0.gs'),'utf8'),c);
+ // v12.0.0: Netlify adds the server key to every request; post() does the same (raw() sends a body as it is).
+ return {post:data=>JSON.parse(c.doPost({postData:{contents:JSON.stringify({serverKey:SERVER_KEY,...data})}}).text),raw:data=>JSON.parse(c.doPost({postData:{contents:JSON.stringify(data)}}).text),properties,call:(name,...args)=>c[name](...args),SheetDate:vm.runInContext('Date',c),ss,sheets,active(name){active=name;},lock(value){denyLock=value;},get locked(){return locked;}};
 }
 module.exports={makeGas};

@@ -14,7 +14,7 @@ env.eval('teacher-studio.js');w.LeagueStudio.configure({getClass:()=> '5-C'});w.
 const el=id=>d.getElementById(id),event={preventDefault(){}};
 (async()=>{
  el('studio-pin').value='bad';await el('studio-auth').onsubmit(event);assert.match(el('studio-status').textContent,/PIN/);
- el('studio-pin').value='2595';await el('studio-auth').onsubmit(event);assert.equal(el('studio-workspace').hidden,false);assert.equal(el('studio-class').value,'5-C');assert(el('studio-question-list').children.length>50);
+ el('studio-pin').value='8642';await el('studio-auth').onsubmit(event);assert.equal(el('studio-workspace').hidden,false);assert.equal(el('studio-class').value,'5-C');assert(el('studio-question-list').children.length>50);
  el('studio-objective').value='Teacher revised objective';el('studio-objective').oninput();el('studio-prompt').value='Custom word';el('studio-question-form').dispatchEvent({type:'input'});await el('studio-save').onclick();assert.equal(lastSave.content.objective,'Teacher revised objective');assert.equal(lastSave.content.bank[0].prompt,'Custom word');assert.equal(lastSave.version,1);
  el('studio-class').value='6-C';await el('studio-class').onchange();assert.equal(el('studio-objective').value,w.RunnerContent.grades[6][0].objective);
  el('studio-island').value='2';await el('studio-island').onchange();assert.match(el('studio-scope').textContent,/Grade 6/);

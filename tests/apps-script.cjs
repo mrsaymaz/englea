@@ -28,13 +28,14 @@ const context={
   console
 };
 vm.createContext(context);
-vm.runInContext(fs.readFileSync(path.join(__dirname,'../archive/GOOGLE-APPS-SCRIPT-v7.1.2.gs'),'utf8'),context);
+// v12.0.0: the archived script's PIN was removed from the repository; the test supplies its own.
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../archive/GOOGLE-APPS-SCRIPT-v7.1.2.gs'),'utf8').replace('const TEACHER_PIN = "REMOVED";','const TEACHER_PIN = "8642";'),context);
 const payload={
-  pin:'2595',type:'FULL_SESSION',sessionId:'session-one',className:'5-A',classMissionCompleted:true,
+  pin:'8642',type:'FULL_SESSION',sessionId:'session-one',className:'5-A',classMissionCompleted:true,
   standings:[{name:'Gryffindor',points:200,level:2},{name:'Slytherin',points:100,level:1}],winner:'Gryffindor',remainingHP:40,damageDealt:80,durationSeconds:30,
   studentContributions:{teams:{
-    gryffindor:[{name:'Nisa',points:80,awards:2,rank:2},{name:'Sümeyye',points:120,awards:1,rank:1},{name:'Canberk',points:60,awards:2,rank:3},{name:'Mehmet Emin',points:50,awards:3,rank:4}],
-    slytherin:[{name:'Şeyma',points:100,awards:1,rank:1}],ravenclaw:[],hufflepuff:[]
+    gryffindor:[{name:'Nog',points:80,awards:2,rank:2},{name:'Süvog',points:120,awards:1,rank:1},{name:'Casubon',points:60,awards:2,rank:3},{name:'Meyebur Eril',points:50,awards:3,rank:4}],
+    slytherin:[{name:'Şugebı',points:100,awards:1,rank:1}],ravenclaw:[],hufflepuff:[]
   }}
 };
 const post=data=>JSON.parse(context.doPost({postData:{contents:JSON.stringify(data)}}).text);
@@ -43,8 +44,8 @@ assert.deepEqual(response,{status:'success'});
 assert.equal(spreadsheet.sheets.Leaderboard.getLastRow(),2);assert.equal(spreadsheet.sheets.Battle_Results.getLastRow(),2);
 const leaderboard=spreadsheet.sheets.Leaderboard;
 assert.deepEqual(leaderboard.rows[0].slice(8,12),['Leaders of Gryffindor','Leaders of Hufflepuff','Leaders of Slytherin','Leaders of Ravenclaw']);
-assert.equal(leaderboard.rows[1][8],'Mehmet Emin (3) · Canberk (2) · Nisa (2)');
-assert.equal(leaderboard.rows[1][9],'-');assert.equal(leaderboard.rows[1][10],'Şeyma (1)');assert.equal(leaderboard.rows[1][11],'-');
+assert.equal(leaderboard.rows[1][8],'Meyebur Eril (3) · Casubon (2) · Nog (2)');
+assert.equal(leaderboard.rows[1][9],'-');assert.equal(leaderboard.rows[1][10],'Şugebı (1)');assert.equal(leaderboard.rows[1][11],'-');
 assert.ok(!JSON.stringify(leaderboard.rows[1].slice(8,12)).includes('120'));
 response=post({...payload,pin:'wrong'});assert.equal(response.status,'unauthorized');assert.equal(leaderboard.getLastRow(),2);
 response=post({...payload,type:'UNKNOWN',sessionId:'session-two'});assert.equal(response.status,'error');assert.equal(leaderboard.getLastRow(),2);

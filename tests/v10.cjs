@@ -7,7 +7,7 @@ const pub=f=>fs.readFileSync(path.join(__dirname,'../public',f),'utf8');
 const plain=v=>JSON.parse(JSON.stringify(v));
 const {makeGas}=require('./roster-gas-harness.cjs');
 const standing=(name,points)=>({name,points,level:3});
-const save=(gas,type,className,sessionId,standings,winner)=>gas.post({type,pin:'2595',className,sessionId,standings,winner});
+const save=(gas,type,className,sessionId,standings,winner)=>gas.post({type,pin:'8642',className,sessionId,standings,winner});
 
 test('Season wins: League title and Arena each count once, a Grand Champion twice, a shared title once per tied team',()=>{
  const gas=makeGas();
@@ -18,7 +18,7 @@ test('Season wins: League title and Arena each count once, a Grand Champion twic
  // A standings-only save and an Arena-only save.
  save(gas,'LEADERBOARD_FINAL','6-C','s3',[standing('Hufflepuff',55),standing('Gryffindor',30),standing('Slytherin',20),standing('Ravenclaw',10)]);
  save(gas,'BATTLE_OUTCOME','8-B','s4',[],'Ravenclaw');
- const season=gas.post({type:'ISLAND_GET',pin:'2595',className:'5-A'}).season;
+ const season=gas.post({type:'ISLAND_GET',pin:'8642',className:'5-A'}).season;
  assert.deepEqual(plain(season.wins),{gryffindor:2,hufflepuff:2,slytherin:1,ravenclaw:2});
  assert.equal(season.sessions,4);assert.deepEqual(plain(season.classes),['5-A','6-C','7-A','8-B']);assert.deepEqual(plain(season.recent),['s1','s2','s3','s4']);
 });

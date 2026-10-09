@@ -1,11 +1,49 @@
-// English League v11.0.0 · The Vixar Saga: a Vixar_Saga tab (one row per class: its stage, level cap, attempts,
-// the dates each form was broken, the last session, teacher corrections), Merge Spell answers in Challenge_Log (marked
-// Merge), what the Finale needs (the class's saga-session contributions, navigators and Merge answers) and the Finale's
-// thank-you lines per grade (Vixar_Finale_Lines, edited in Studio). Deploy it as a New version of the existing web app.
-// Includes v10.4.0 · Challenge_Log: one row per Challenge Deck card played on the English wheel (student, card,
-// word, right or wrong). Includes v10.2.0 (the class's last saved session for the Comeback Halo), v10.1.2 (day-first dates, formatOldDates), v10.0.0 (School League
-// Season), v9.7.0 (Navigator_Seals) and v9.6.0 (Student_Contributions). Keep your own Teacher PIN on the next line.
-const TEACHER_PIN = "2595"; // Keep this private
+// English League v12.0.0 · Foundations and Trials.
+// SETUP (once): Apps Script editor → Project Settings (gear icon) → Script properties → Add script property:
+//   TEACHER_PIN        your Teacher PIN (choose a new one: the PIN of earlier versions was published with the code)
+//   LEAGUE_SERVER_KEY  a long random passphrase; put the SAME value in Netlify → Environment variables → LEAGUE_SERVER_KEY
+// Then Deploy → Manage deployments → Edit → New version. Run checkLeagueSetup() from the editor to check both values.
+// - Only your English League site can use this web app: every request must carry LEAGUE_SERVER_KEY (Netlify adds it on
+//   the server; browsers never see it), then the Teacher PIN. No PIN and no student names are written in this code.
+// - The Roster tab is the only place that holds the real class lists. A new Roster tab starts empty (add students in
+//   Manage); earlier versions of this file filled it with names written in the code.
+// - Student_Contributions rows carry each student's roster ID (column G) next to the name and team as they were in that
+//   lesson (columns C–D), so renames, team changes and repeated names never split or merge a student's record. Older
+//   rows are matched to IDs once (column H says how); run migrateStudentIds() again after fixing the Roster tab.
+// - English League → Build term report writes Term_Report: one row per student ID across the whole record.
+// - The Vixar Saga's Act I (the True Rune) and Act II (the Scarlet Brand rescue) answers are added to Challenge_Log as
+//   "Rune · …" and "Brand · …" rows, like the Merge Spell's "Merge · …" rows.
+// Includes v11.0.0 (Vixar_Saga, Vixar_Finale_Lines, Merge answers), v10.4.0 (Challenge_Log), v10.2.0 (the class's last
+// saved session for the Comeback Halo), v10.1.2 (day-first dates, formatOldDates), v10.0.0 (School League Season),
+// v9.7.0 (Navigator_Seals) and v9.6.0 (Student_Contributions).
+function leagueSecrets_() {
+  const props = PropertiesService.getScriptProperties();
+  return { pin: String(props.getProperty('TEACHER_PIN') || '').trim(), key: String(props.getProperty('LEAGUE_SERVER_KEY') || '') };
+}
+// Compares a given secret with the expected one in time that does not depend on where they first differ.
+function sameSecret_(given, expected) {
+  given = String(given === undefined || given === null ? '' : given); expected = String(expected || '');
+  if (!expected) return false;
+  let diff = given.length ^ expected.length;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ (given.charCodeAt(i) || 0);
+  return diff === 0;
+}
+// Run from the editor: says whether both script properties are set (it never shows them).
+function checkLeagueSetup() {
+  const s = leagueSecrets_(), notes = [];
+  notes.push(s.pin ? 'TEACHER_PIN is set (' + s.pin.length + ' characters' + (s.pin.length < 6 ? ', use at least 6' : '') + ').' : 'TEACHER_PIN is missing.');
+  notes.push(s.key ? 'LEAGUE_SERVER_KEY is set (' + s.key.length + ' characters' + (s.key.length < 24 ? ', use at least 24' : '') + ').' : 'LEAGUE_SERVER_KEY is missing.');
+  const text = notes.join(' ');
+  Logger.log(text);
+  return text;
+}
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('English League')
+    .addItem('Build term report', 'buildTermReport')
+    .addItem('Match student IDs in older contributions', 'migrateStudentIds')
+    .addItem('Check setup', 'checkLeagueSetup')
+    .addToUi();
+}
 
 // Earlier versions wrote "Leaders of …" (top three). v9.6.0 lists every contributor, so new sheets get
 // "Contributors of …"; sheets with the earlier headers are renamed in place.
@@ -21,7 +59,8 @@ const CONTRIBUTOR_HEADERS = [
   "Contributors of Slytherin",
   "Contributors of Ravenclaw"
 ];
-const CONTRIBUTION_HEADERS = ['Date','Class','Team','Student','Contributions','Session ID'];
+// v12.0.0: G–H added. Student ID is the roster ID; the name and team in C–D are as they were in that lesson.
+const CONTRIBUTION_HEADERS = ['Date','Class','Team','Student','Contributions','Session ID','Student ID','ID source'];
 const CONTRIBUTION_TEAMS = {gryffindor:'Gryffindor',hufflepuff:'Hufflepuff',slytherin:'Slytherin',ravenclaw:'Ravenclaw'};
 // v9.7.0: one row per student per island seal earned as the session's Island Run navigator.
 const NAVIGATOR_HEADERS = ['Date','Class','Team','Student','Student ID','Island','Guardian','Session ID'];
@@ -42,9 +81,15 @@ function doPost(e) {
 
     const data = JSON.parse(e.postData.contents);
 
-    if (String(data.pin).trim() !== String(TEACHER_PIN).trim()) {
+    const secrets = leagueSecrets_();
+    if (!secrets.pin || !secrets.key) return jsonResponse({ status: "error", code: "setup", message: "Apps Script setup: add TEACHER_PIN and LEAGUE_SERVER_KEY in Project Settings → Script properties, then deploy a New version." });
+    // Only the English League site (Netlify, which adds the key on the server) can reach the PIN check.
+    if (!sameSecret_(data.serverKey, secrets.key)) return jsonResponse({ status: "error", code: "server-key", message: "This request did not come from your English League site. LEAGUE_SERVER_KEY must be the same in Netlify and in Apps Script." });
+    if (!sameSecret_(String(data.pin === undefined || data.pin === null ? '' : data.pin).trim(), secrets.pin)) {
       return jsonResponse({ status: "unauthorized", message: "Invalid PIN" });
     }
+    // v12.0.0: the site checks the Teacher PIN once when a new board or phone signs in.
+    if (data.type === 'AUTH_CHECK') return jsonResponse({ status: 'success', authVersion: 1 });
 
     requestLock = LockService.getScriptLock();
     if (!requestLock.tryLock(10000)) return jsonResponse({status:'error',message:'Another save is in progress. Please try again.'});
@@ -54,8 +99,10 @@ function doPost(e) {
     if (['SAGA_SAVE','SAGA_SET','SAGA_LINES_SAVE'].includes(data.type)) return jsonResponse(handleSaga(ss,data));
     if (data.type === 'ISLAND_GET') {
       const getClass=validIslandClass(data.className);
+      // v12.0.0: older contribution rows get their student IDs the first time the teacher signs in after the update.
+      if(PropertiesService.getScriptProperties().getProperty('ENGLISH_LEAGUE_CONTRIBUTION_IDS')!=='1'&&ss.getSheetByName('Student_Contributions'))contributionSheet(ss);
       const saga=readSaga(ss,getClass);
-      return jsonResponse({status:'success',passportVersion:1,questionLogVersion:1,contributionsVersion:1,navigatorSealsVersion:1,seasonVersion:1,lastSessionVersion:1,challengeLogVersion:1,sagaVersion:1,lastSession:lastSessionFor(ss,getClass),season:readSeason(ss),navigatorSeals:readNavigatorSeals(ss,getClass),islandProgress:readIslandProgress(ss,getClass),teaching:teachingCatalog(ss,Number(getClass[0])),questionLog:readQuestionLog(ss,getClass).slice(-600),
+      return jsonResponse({status:'success',passportVersion:1,questionLogVersion:1,contributionsVersion:1,contributionIdsVersion:1,trialsVersion:1,authVersion:1,navigatorSealsVersion:1,seasonVersion:1,lastSessionVersion:1,challengeLogVersion:1,sagaVersion:1,lastSession:lastSessionFor(ss,getClass),season:readSeason(ss),navigatorSeals:readNavigatorSeals(ss,getClass),islandProgress:readIslandProgress(ss,getClass),teaching:teachingCatalog(ss,Number(getClass[0])),questionLog:readQuestionLog(ss,getClass).slice(-600),
         saga:saga,sagaExtras:sagaExtras(ss,getClass,saga),finaleLines:readFinaleLines(ss,Number(getClass[0]))});
     }
     if (!['FULL_SESSION','LEADERBOARD_FINAL','BATTLE_OUTCOME'].includes(data.type)) return jsonResponse({status:'error',message:'Unknown record type'});
@@ -193,11 +240,11 @@ function doPost(e) {
 
     const islandProgress = islandClass ? mergeIslandProgress(ss,islandClass,incomingIslands) : undefined;
     const questionsAdded = questionRows && questionRows.length ? appendQuestionLog(ss, questionRows) : 0;
-    const contributionsWritten = contributionRows.length ? writeContributions(ss, contributionRows, {date:now, className, sessionId:data.sessionId}) : 0;
+    const contributionsWritten = contributionRows.length ? writeContributions(ss, contributionRows, {date:now, className, sessionId:data.sessionId}) : {written:0};
     const sealsAdded = sealRows && sealRows.length ? writeNavigatorSeals(ss, sealRows, {date:now, className}) : 0;
     const navigatorSeals = sealRows ? readNavigatorSeals(ss, validIslandClass(data.className)) : undefined;
     const challengesAdded = challengeRows && challengeRows.length ? appendChallengeLog(ss, challengeRows) : 0;
-    return jsonResponse({ status: "success", passportVersion:1, questionLogVersion:1, contributionsVersion:1, navigatorSealsVersion:1, seasonVersion:1, challengeLogVersion:1, sagaVersion:1, season:readSeason(ss), islandProgress, questionsAdded, contributionsWritten, sealsAdded, challengesAdded, navigatorSeals });
+    return jsonResponse({ status: "success", passportVersion:1, questionLogVersion:1, contributionsVersion:1, contributionIdsVersion:1, trialsVersion:1, navigatorSealsVersion:1, seasonVersion:1, challengeLogVersion:1, sagaVersion:1, season:readSeason(ss), islandProgress, questionsAdded, contributionsWritten:contributionsWritten.written, contributionsSkipped:contributionRows.skipped||0, sealsAdded, challengesAdded, navigatorSeals });
   } catch (err) {
     return jsonResponse({ status: "error", error: err.toString(), message: err.message || String(err) });
   } finally {
@@ -210,849 +257,8 @@ function jsonResponse(payload) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// v8.7.0: existing students are imported automatically. No manual roster entry needed.
-const DEFAULT_ROSTER = [
-  {
-    "id": "5-A:gryffindor:0",
-    "name": "Elif Naz",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:gryffindor:1",
-    "name": "Sümeyye",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:gryffindor:2",
-    "name": "Mehmet Emin",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:gryffindor:3",
-    "name": "Yusuf Mete",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:gryffindor:4",
-    "name": "Yusuf H.",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:gryffindor:5",
-    "name": "Canberk",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:gryffindor:6",
-    "name": "Öykü Nas",
-    "className": "5-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:0",
-    "name": "Şeyma",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:1",
-    "name": "Yazan",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:2",
-    "name": "Fatma C.",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:3",
-    "name": "Zümra",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:4",
-    "name": "Abdussamed",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:5",
-    "name": "Baran",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:slytherin:6",
-    "name": "İlhan",
-    "className": "5-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-A:hufflepuff:0",
-    "name": "Nisa",
-    "className": "5-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-A:hufflepuff:1",
-    "name": "Poyraz",
-    "className": "5-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-A:hufflepuff:2",
-    "name": "Şeyma D.",
-    "className": "5-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-A:hufflepuff:3",
-    "name": "Yunus Emre",
-    "className": "5-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-A:hufflepuff:4",
-    "name": "Eymen",
-    "className": "5-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-A:hufflepuff:5",
-    "name": "İkra",
-    "className": "5-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-A:ravenclaw:0",
-    "name": "Derin",
-    "className": "5-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-A:ravenclaw:1",
-    "name": "Yusufhan",
-    "className": "5-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-A:ravenclaw:2",
-    "name": "Behçet",
-    "className": "5-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-A:ravenclaw:3",
-    "name": "Nesibe",
-    "className": "5-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-A:ravenclaw:4",
-    "name": "Fatma K.",
-    "className": "5-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-A:ravenclaw:5",
-    "name": "Zehra",
-    "className": "5-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:gryffindor:0",
-    "name": "Leys",
-    "className": "5-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-C:gryffindor:1",
-    "name": "Cuma",
-    "className": "5-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-C:gryffindor:2",
-    "name": "Rahme",
-    "className": "5-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-C:gryffindor:3",
-    "name": "Murat",
-    "className": "5-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-C:gryffindor:4",
-    "name": "Dilek Yaren",
-    "className": "5-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-C:gryffindor:5",
-    "name": "Fatma N.",
-    "className": "5-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:0",
-    "name": "Zuhal",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:1",
-    "name": "Ahmet Osman",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:2",
-    "name": "İsranur",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:3",
-    "name": "Şahin",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:4",
-    "name": "Ayşe",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:5",
-    "name": "Hümeyra",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:slytherin:6",
-    "name": "Cemile",
-    "className": "5-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "5-C:hufflepuff:0",
-    "name": "Şüheda",
-    "className": "5-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-C:hufflepuff:1",
-    "name": "Yusuf Taha",
-    "className": "5-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-C:hufflepuff:2",
-    "name": "Cansu",
-    "className": "5-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-C:hufflepuff:3",
-    "name": "Ömercan",
-    "className": "5-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-C:hufflepuff:4",
-    "name": "Büşra",
-    "className": "5-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-C:hufflepuff:5",
-    "name": "Ahmet",
-    "className": "5-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:0",
-    "name": "Burak",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:1",
-    "name": "Hasan",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:2",
-    "name": "Elif",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:3",
-    "name": "Emel",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:4",
-    "name": "Mehmet Ali",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:5",
-    "name": "Hira Nur",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "5-C:ravenclaw:6",
-    "name": "Rukiye",
-    "className": "5-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "6-C:gryffindor:0",
-    "name": "Eslem Nur",
-    "className": "6-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "6-C:gryffindor:1",
-    "name": "Selin",
-    "className": "6-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "6-C:gryffindor:2",
-    "name": "Berfin",
-    "className": "6-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "6-C:gryffindor:3",
-    "name": "Amir",
-    "className": "6-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "6-C:gryffindor:4",
-    "name": "Hüseyin Emir",
-    "className": "6-C",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "6-C:slytherin:0",
-    "name": "Hanife Betül",
-    "className": "6-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "6-C:slytherin:1",
-    "name": "Muhammed Al.",
-    "className": "6-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "6-C:slytherin:2",
-    "name": "Yusuf",
-    "className": "6-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "6-C:slytherin:3",
-    "name": "Kamar",
-    "className": "6-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "6-C:slytherin:4",
-    "name": "Azra",
-    "className": "6-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "6-C:slytherin:5",
-    "name": "Kadriye",
-    "className": "6-C",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "6-C:hufflepuff:0",
-    "name": "Ecrin",
-    "className": "6-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "6-C:hufflepuff:1",
-    "name": "Burak",
-    "className": "6-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "6-C:hufflepuff:2",
-    "name": "Eslem Sare",
-    "className": "6-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "6-C:hufflepuff:3",
-    "name": "Ozan",
-    "className": "6-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "6-C:hufflepuff:4",
-    "name": "Muhammed Ab.",
-    "className": "6-C",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "6-C:ravenclaw:0",
-    "name": "Ece Eylül",
-    "className": "6-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "6-C:ravenclaw:1",
-    "name": "Elif Naz",
-    "className": "6-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "6-C:ravenclaw:2",
-    "name": "Seyfullah",
-    "className": "6-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "6-C:ravenclaw:3",
-    "name": "Mehmet Berat",
-    "className": "6-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "6-C:ravenclaw:4",
-    "name": "Hedil",
-    "className": "6-C",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "7-A:gryffindor:0",
-    "name": "Jana",
-    "className": "7-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "7-A:gryffindor:1",
-    "name": "Fettah Ali",
-    "className": "7-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "7-A:gryffindor:2",
-    "name": "Abdulvahap",
-    "className": "7-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "7-A:gryffindor:3",
-    "name": "Mekke Züleyha",
-    "className": "7-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "7-A:gryffindor:4",
-    "name": "Hatice Y.",
-    "className": "7-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "7-A:gryffindor:5",
-    "name": "Hamza Sadık",
-    "className": "7-A",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "7-A:slytherin:0",
-    "name": "Afra",
-    "className": "7-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "7-A:slytherin:1",
-    "name": "Belinay",
-    "className": "7-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "7-A:slytherin:2",
-    "name": "Ömer Faruk",
-    "className": "7-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "7-A:slytherin:3",
-    "name": "Zeynep",
-    "className": "7-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "7-A:slytherin:4",
-    "name": "Hadice",
-    "className": "7-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "7-A:slytherin:5",
-    "name": "Hiranur",
-    "className": "7-A",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "7-A:hufflepuff:0",
-    "name": "Semih",
-    "className": "7-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "7-A:hufflepuff:1",
-    "name": "Veysel",
-    "className": "7-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "7-A:hufflepuff:2",
-    "name": "Rimes",
-    "className": "7-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "7-A:hufflepuff:3",
-    "name": "Berfin",
-    "className": "7-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "7-A:hufflepuff:4",
-    "name": "Meryem",
-    "className": "7-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "7-A:hufflepuff:5",
-    "name": "Rahaf",
-    "className": "7-A",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "7-A:ravenclaw:0",
-    "name": "Abdullah",
-    "className": "7-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "7-A:ravenclaw:1",
-    "name": "Asya",
-    "className": "7-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "7-A:ravenclaw:2",
-    "name": "Rihem",
-    "className": "7-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "7-A:ravenclaw:3",
-    "name": "Masuma",
-    "className": "7-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "7-A:ravenclaw:4",
-    "name": "Sudenur Ecrin",
-    "className": "7-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "7-A:ravenclaw:5",
-    "name": "Ahmed",
-    "className": "7-A",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "8-B:gryffindor:0",
-    "name": "Ahmet Emir",
-    "className": "8-B",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "8-B:gryffindor:1",
-    "name": "Batuhan",
-    "className": "8-B",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "8-B:gryffindor:2",
-    "name": "Gazi",
-    "className": "8-B",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "8-B:gryffindor:3",
-    "name": "Emirhan",
-    "className": "8-B",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "8-B:gryffindor:4",
-    "name": "Yusuf Haktan",
-    "className": "8-B",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "8-B:gryffindor:5",
-    "name": "Yahya",
-    "className": "8-B",
-    "teamId": "gryffindor",
-    "active": true
-  },
-  {
-    "id": "8-B:slytherin:0",
-    "name": "Abdullah",
-    "className": "8-B",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "8-B:slytherin:1",
-    "name": "Mahmud",
-    "className": "8-B",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "8-B:slytherin:2",
-    "name": "Salih",
-    "className": "8-B",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "8-B:slytherin:3",
-    "name": "Enes",
-    "className": "8-B",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "8-B:slytherin:4",
-    "name": "M. Emir",
-    "className": "8-B",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "8-B:slytherin:5",
-    "name": "Muhammed B.",
-    "className": "8-B",
-    "teamId": "slytherin",
-    "active": true
-  },
-  {
-    "id": "8-B:hufflepuff:0",
-    "name": "Ahmet M.",
-    "className": "8-B",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "8-B:hufflepuff:1",
-    "name": "Kemal Berk",
-    "className": "8-B",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "8-B:hufflepuff:2",
-    "name": "Mert",
-    "className": "8-B",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "8-B:hufflepuff:3",
-    "name": "Mustafa",
-    "className": "8-B",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "8-B:hufflepuff:4",
-    "name": "Kubilay",
-    "className": "8-B",
-    "teamId": "hufflepuff",
-    "active": true
-  },
-  {
-    "id": "8-B:ravenclaw:0",
-    "name": "Ensar",
-    "className": "8-B",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "8-B:ravenclaw:1",
-    "name": "Seydan",
-    "className": "8-B",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "8-B:ravenclaw:2",
-    "name": "Bilal",
-    "className": "8-B",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "8-B:ravenclaw:3",
-    "name": "Hasan Hüseyin",
-    "className": "8-B",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "8-B:ravenclaw:4",
-    "name": "Ömer Asaf",
-    "className": "8-B",
-    "teamId": "ravenclaw",
-    "active": true
-  },
-  {
-    "id": "8-B:ravenclaw:5",
-    "name": "Halit",
-    "className": "8-B",
-    "teamId": "ravenclaw",
-    "active": true
-  }
-];
+// v12.0.0: no student names are written in this code. A new Roster tab starts with its headers only; add students in
+// Manage on the phone (earlier versions filled a new tab with names written here).
 
 const ROSTER_HEADERS = ['Student ID','Class','Student','Team','Active'];
 function validateRosterRows(students) {
@@ -1087,7 +293,6 @@ function handleRosterRequest(ss,data) {
   if(sheet.getLastRow()===0){
     sheet.getRange(1,1,1,5).setValues([ROSTER_HEADERS]).setFontWeight('bold').setBackground('#1e293b').setFontColor('#ffffff');
     sheet.setFrozenRows(1);
-    writeRosterRows(sheet,DEFAULT_ROSTER);
     props.setProperty('ENGLISH_LEAGUE_ROSTER_VERSION','1');
     sheet.autoResizeColumns(1,5);
   }
@@ -1257,6 +462,9 @@ const CHALLENGE_HEADERS=['Date','Class','Team','Student','Student ID','Wheel lev
 const CHALLENGE_TYPES=['Vocabulary','Grammar','Pronunciation','Speaking','Listening','Sentence Repair','Taboo Description','Translation','Ask a Question'];
 // v11.0.0: Merge Spell answers are logged as "Merge · <card>" (Level 12, the raid's level).
 const MERGE_TYPES=['Vocabulary','Translation','Grammar','Sentence Repair','Ask a Question'].map(function(t){return 'Merge · '+t;});
+// v12.0.0: Act I (the True Rune, Level 10) and Act II (the Scarlet Brand rescue, Level 11).
+const TRIAL_TYPES=['Rune','Brand'].reduce(function(all,kind){return all.concat(['Vocabulary','Translation','Grammar','Sentence Repair','Ask a Question'].map(function(t){return kind+' · '+t;}));},[]);
+const SAGA_ANSWER_TYPES=MERGE_TYPES.concat(TRIAL_TYPES);
 const CHALLENGE_RESULTS={right:'Right',wrong:'Wrong',skipped:'Skipped'};
 function validateChallengeRows(rows,className){
   if(!Array.isArray(rows)||rows.length>200)throw Error('Challenge cards must be a list of no more than 200 rows.');
@@ -1265,7 +473,8 @@ function validateChallengeRows(rows,className){
   return rows.map(r=>{
     const at=Number(r&&r.at),level=Number(r&&r.level),island=Number(r&&r.island);
     if(!r||typeof r.id!=='string'||!/^[A-Za-z0-9:_.-]{3,140}$/.test(r.id)||r.className!==className||!Number.isFinite(at)||at<1.5e12||at>4e12
-      ||['Gryffindor','Hufflepuff','Slytherin','Ravenclaw','Practice'].indexOf(r.team)<0||[0,5,10,12].indexOf(level)<0||(CHALLENGE_TYPES.indexOf(r.type)<0&&MERGE_TYPES.indexOf(r.type)<0)||(MERGE_TYPES.indexOf(r.type)>=0&&(level!==12||r.team==='Practice'))
+      ||['Gryffindor','Hufflepuff','Slytherin','Ravenclaw','Practice'].indexOf(r.team)<0||[0,5,10,11,12].indexOf(level)<0||(CHALLENGE_TYPES.indexOf(r.type)<0&&SAGA_ANSWER_TYPES.indexOf(r.type)<0)||(MERGE_TYPES.indexOf(r.type)>=0&&(level!==12||r.team==='Practice'))
+      ||(TRIAL_TYPES.indexOf(r.type)>=0&&(level!==(r.type.indexOf('Rune')===0?10:11)||r.team==='Practice'))
       ||!Number.isInteger(island)||island<1||island>10||!CHALLENGE_RESULTS[r.result]||!text(r.student,80)||!text(r.studentId,120)||!text(r.word,120))throw Error('Invalid Challenge Deck row.');
     return {id:r.id,at:Math.round(at),className:className,team:r.team,student:r.student||'',studentId:r.studentId||'',level:level,type:r.type,word:r.word||'',island:island,result:r.result};
   });
@@ -1348,22 +557,29 @@ function rebuildQuestionSummary(ss,rows){
 }
 
 // ---- v9.6.0 · Student_Contributions: one row per student per session, with the number of contributions ----
-// The board sends every student of the class (zero included) under studentContributions.everyone; older
-// boards send only contributors under studentContributions.teams. Re-saving a session updates its rows.
+// The board sends every student of the class (zero included) under studentContributions.everyone; older boards send
+// only contributors under studentContributions.teams. Re-saving a session updates its rows.
+// v12.0.0: every row carries the student's roster ID; rows are matched by ID within a session (by team and name only
+// for rows saved before IDs). Example students (IDs "example-…", shown before anyone signs in) are never saved.
+const STUDENT_ID_PATTERN = /^[A-Za-z0-9:_-]{1,100}$/;
 function validateContributionRows(summary){
-  if(!summary||typeof summary!=='object')return [];
+  const rows=[];rows.skipped=0;
+  if(!summary||typeof summary!=='object')return rows;
   const source=summary.everyone&&typeof summary.everyone==='object'?summary.everyone:(summary.teams&&typeof summary.teams==='object'?summary.teams:null);
-  if(!source)return [];
-  const rows=[],seen={};
+  if(!source)return rows;
+  const seen={};
   Object.keys(CONTRIBUTION_TEAMS).forEach(teamId=>{
     const list=source[teamId];if(list===undefined)return;
     if(!Array.isArray(list))throw Error('Student contributions must be a list per team.');
     list.forEach(student=>{
       const name=String(student&&student.name||'').trim(),awards=Number(student&&student.awards);
+      const id=student&&student.id!==undefined&&student.id!==null?String(student.id):'';
       if(!name||name.length>80)throw Error('A student name in the contributions is empty or too long.');
       if(!Number.isInteger(awards)||awards<0||awards>100000)throw Error('A contribution count is invalid.');
-      const key=teamId+'|'+name;if(seen[key])return;seen[key]=true;
-      rows.push({team:CONTRIBUTION_TEAMS[teamId],name,awards});
+      if(id&&!STUDENT_ID_PATTERN.test(id))throw Error('A student ID in the contributions is invalid.');
+      if(id.indexOf('example-')===0){rows.skipped+=awards;return;}
+      const key=id?'id|'+id:teamId+'|'+name;if(seen[key])return;seen[key]=true;
+      rows.push({team:CONTRIBUTION_TEAMS[teamId],name,awards,id});
     });
   });
   if(rows.length>300)throw Error('Too many students in one session record.');
@@ -1371,23 +587,89 @@ function validateContributionRows(summary){
 }
 function contributionSheet(ss){
   const sheet=ss.getSheetByName('Student_Contributions')||ss.insertSheet('Student_Contributions');
-  if(!sheet.getLastRow()){sheet.getRange(1,1,1,CONTRIBUTION_HEADERS.length).setValues([CONTRIBUTION_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);}
-  const headers=sheet.getRange(1,1,1,CONTRIBUTION_HEADERS.length).getValues()[0].map(v=>String(v||'').trim());
-  if(headers.join('|')!==CONTRIBUTION_HEADERS.join('|'))throw Error('Student_Contributions columns A–F must keep their headers: '+CONTRIBUTION_HEADERS.join(', ')+'.');
+  const width=CONTRIBUTION_HEADERS.length;
+  if(!sheet.getLastRow()){sheet.getRange(1,1,1,width).setValues([CONTRIBUTION_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);}
+  const headers=sheet.getRange(1,1,1,width).getValues()[0].map(v=>String(v||'').trim());
+  if(headers.slice(0,6).join('|')!==CONTRIBUTION_HEADERS.slice(0,6).join('|'))throw Error('Student_Contributions columns A–F must keep their headers: '+CONTRIBUTION_HEADERS.slice(0,6).join(', ')+'.');
+  if(headers.slice(6).join('|')!==CONTRIBUTION_HEADERS.slice(6).join('|')){
+    if(headers[6]||headers[7])throw Error('Student_Contributions columns G–H must be empty or keep the headers Student ID, ID source.');
+    sheet.getRange(1,7,1,2).setValues([CONTRIBUTION_HEADERS.slice(6)]).setFontWeight('bold');
+  }
+  if(PropertiesService.getScriptProperties().getProperty('ENGLISH_LEAGUE_CONTRIBUTION_IDS')!=='1')matchContributionIds_(ss,sheet);
   return sheet;
 }
 function writeContributions(ss,rows,meta){
+  const width=CONTRIBUTION_HEADERS.length;
   const sheet=contributionSheet(ss),className=sheetText(meta.className),sessionId=meta.sessionId?String(meta.sessionId):'';
-  const last=sheet.getLastRow(),existing=last>1?sheet.getRange(2,1,last-1,CONTRIBUTION_HEADERS.length).getValues():[],index={};
-  if(sessionId)existing.forEach((r,i)=>{if(String(r[5])===sessionId&&String(r[1])===className)index[r[2]+'|'+r[3]]=i+2;});
+  const last=sheet.getLastRow(),existing=last>1?sheet.getRange(2,1,last-1,width).getValues():[],byId={},byName={};
+  if(sessionId)existing.forEach((r,i)=>{
+    if(String(r[5])!==sessionId||String(r[1])!==className)return;
+    const id=String(r[6]||'');
+    if(id)byId[id]=i+2;else byName[r[2]+'|'+r[3]]=i+2;
+  });
   const fresh=[];let written=0;
   rows.forEach(row=>{
-    const name=sheetText(row.name),at=sessionId?index[row.team+'|'+name]:undefined;
-    if(at){sheet.getRange(at,5,1,1).setValues([[row.awards]]);written++;}
-    else fresh.push([meta.date,className,row.team,name,row.awards,sessionId]);
+    const name=sheetText(row.name);
+    let at=sessionId&&row.id?byId[row.id]:undefined;
+    if(!at&&sessionId)at=byName[row.team+'|'+name];
+    if(at){
+      sheet.getRange(at,5,1,1).setValues([[row.awards]]);
+      // A row first saved before IDs gets its ID now; the name and team stay as the lesson had them.
+      if(row.id&&!byId[row.id]){sheet.getRange(at,7,1,2).setValues([[row.id,'board']]);byId[row.id]=at;}
+      written++;
+    }
+    else fresh.push([meta.date,className,row.team,name,row.awards,sessionId,row.id||'',row.id?'board':'']);
   });
-  if(fresh.length){sheet.getRange(Math.max(2,last+1),1,fresh.length,CONTRIBUTION_HEADERS.length).setValues(fresh);dayFirst(sheet.getRange(Math.max(2,last+1),1,fresh.length,1));written+=fresh.length;}
-  return written;
+  if(fresh.length){sheet.getRange(Math.max(2,last+1),1,fresh.length,width).setValues(fresh);dayFirst(sheet.getRange(Math.max(2,last+1),1,fresh.length,1));written+=fresh.length;}
+  return {written};
+}
+// Gives rows saved before v12.0.0 their student ID, once: the Roster tab (current names) and Navigator_Seals (names as
+// they were) say which ID a class's name belonged to. A name that matches one student in the team (or else one in the
+// class) gets that ID; a name shared by two students stays blank as "ambiguous"; a name not found stays "unmatched".
+function rosterNameKey_(name){return String(name===undefined||name===null?'':name).replace(/^'/,'').trim().normalize('NFC').toLocaleLowerCase('tr');}
+function studentIdIndex_(ss){
+  const index={};
+  const add=(className,team,name,id)=>{
+    if(!STUDENT_ID_PATTERN.test(id)||!className||!name)return;
+    [className+'|'+team+'|'+rosterNameKey_(name),className+'||'+rosterNameKey_(name)].forEach(k=>{(index[k]=index[k]||{})[id]=true;});
+  };
+  const roster=ss.getSheetByName('Roster');
+  if(roster&&roster.getLastRow()>1)roster.getRange(2,1,roster.getLastRow()-1,5).getValues().forEach(r=>add(String(r[1]),String(r[3]).toLowerCase(),r[2],String(r[0])));
+  const seals=ss.getSheetByName('Navigator_Seals');
+  if(seals&&seals.getLastRow()>1)seals.getRange(2,1,seals.getLastRow()-1,NAVIGATOR_HEADERS.length).getValues().forEach(r=>add(String(r[1]).replace(/^'/,''),String(r[2]).toLowerCase(),r[3],String(r[4])));
+  return index;
+}
+function matchContributionIds_(ss,sheet){
+  const width=CONTRIBUTION_HEADERS.length,last=sheet.getLastRow(),report={matched:0,ambiguous:0,unmatched:0,kept:0};
+  if(last>1){
+    const index=studentIdIndex_(ss),range=sheet.getRange(2,7,last-1,2),values=sheet.getRange(2,1,last-1,width).getValues();
+    const out=values.map(r=>{
+      if(String(r[6]||'')){report.kept++;return [r[6],r[7]||'board'];}
+      if(!String(r[3]||'').trim())return ['',''];
+      const className=String(r[1]).replace(/^'/,''),team=String(r[2]).toLowerCase(),name=rosterNameKey_(r[3]);
+      const inTeam=Object.keys(index[className+'|'+team+'|'+name]||{}),inClass=Object.keys(index[className+'||'+name]||{});
+      if(inTeam.length===1){report.matched++;return [inTeam[0],'matched by name and team'];}
+      if(!inTeam.length&&inClass.length===1){report.matched++;return [inClass[0],'matched by name in class'];}
+      if(inTeam.length>1||inClass.length>1){report.ambiguous++;return ['','ambiguous: same name'];}
+      report.unmatched++;return ['','unmatched'];
+    });
+    range.setValues(out);
+  }
+  PropertiesService.getScriptProperties().setProperty('ENGLISH_LEAGUE_CONTRIBUTION_IDS','1');
+  return report;
+}
+// Menu → Match student IDs in older contributions (also safe to run again after editing the Roster tab).
+function migrateStudentIds(){
+  const ss=SpreadsheetApp.getActiveSpreadsheet(),lock=LockService.getScriptLock();
+  if(!lock.tryLock(30000))throw Error('A save is in progress. Try again in a moment.');
+  try{
+    const sheet=ss.getSheetByName('Student_Contributions');
+    if(!sheet||sheet.getLastRow()<2)return 'No contribution rows yet.';
+    contributionSheet(ss);
+    const r=matchContributionIds_(ss,sheet);
+    const text='Student IDs: '+r.kept+' already set, '+r.matched+' matched, '+r.ambiguous+' ambiguous, '+r.unmatched+' unmatched.';
+    Logger.log(text);return text;
+  }finally{lock.releaseLock();}
 }
 
 // ---- v9.7.0 · Navigator_Seals: the island seals each student earned as the session's Island Run navigator ----
@@ -1626,10 +908,10 @@ function handleSaga(ss,data){
   // SAGA_SAVE: the board's row after a fight (through the phone). Merge answers travel with it.
   const incoming=cleanSaga(data.saga,className);
   const merged=mergeSaga(current,incoming);
-  const mergeRows=data.mergeLog!==undefined?validateChallengeRows(data.mergeLog,className).filter(function(r){return MERGE_TYPES.indexOf(r.type)>=0;}):[];
+  const mergeRows=data.mergeLog!==undefined?validateChallengeRows(data.mergeLog,className).filter(function(r){return SAGA_ANSWER_TYPES.indexOf(r.type)>=0;}):[];
   const saved=writeSaga(ss,merged);
   const challengesAdded=mergeRows.length?appendChallengeLog(ss,mergeRows):0;
-  return {status:'success',sagaVersion:1,saga:saved,challengesAdded:challengesAdded};
+  return {status:'success',sagaVersion:1,trialsVersion:1,saga:saved,challengesAdded:challengesAdded};
 }
 // What the Finale names students from: the class's contributions in the sessions it fought a saga form, its Island Run
 // navigators and its Merge Spell answers. (No list of who missed a question is kept anywhere.)
@@ -1641,13 +923,13 @@ function sagaExtras(ss,className,saga){
   const cs=ss.getSheetByName('Student_Contributions');
   if(cs&&cs.getLastRow()>1)cs.getRange(2,1,cs.getLastRow()-1,CONTRIBUTION_HEADERS.length).getValues().forEach(function(r){
     if(unquote(r[1])!==className||!sessions[String(r[5])]||!teams[String(r[2])]||!(Number(r[4])>0))return;
-    contributions.push({team:teams[String(r[2])],name:unquote(r[3]).slice(0,70),contributions:Number(r[4]),sessionId:String(r[5])});
+    contributions.push({team:teams[String(r[2])],name:unquote(r[3]).slice(0,70),studentId:String(r[6]||''),contributions:Number(r[4]),sessionId:String(r[5])});
   });
-  readNavigatorSeals(ss,className).forEach(function(r){navigators.push({team:r.team,student:r.student});});
+  readNavigatorSeals(ss,className).forEach(function(r){navigators.push({team:r.team,student:r.student,studentId:r.studentId});});
   const ch=ss.getSheetByName('Challenge_Log');
   if(ch&&ch.getLastRow()>1)ch.getRange(2,1,ch.getLastRow()-1,CHALLENGE_HEADERS.length).getValues().forEach(function(r){
-    if(String(r[1])!==className||MERGE_TYPES.indexOf(String(r[6]))<0||!teams[String(r[2])])return;
-    merge.push({id:unquote(r[10]),team:teams[String(r[2])],student:unquote(r[3]).slice(0,70),result:String(r[9])==='Right'?'right':'wrong'});
+    if(String(r[1])!==className||SAGA_ANSWER_TYPES.indexOf(String(r[6]))<0||!teams[String(r[2])])return;
+    merge.push({id:unquote(r[10]),team:teams[String(r[2])],student:unquote(r[3]).slice(0,70),studentId:unquote(r[4]).slice(0,100),kind:String(r[6]).split(' · ')[0].toLowerCase(),result:String(r[9])==='Right'?'right':'wrong'});
   });
   return {contributions:contributions.slice(-2000),navigators:navigators.slice(-500),merge:merge.slice(-500)};
 }
@@ -1672,4 +954,64 @@ function writeFinaleLines(ss,grade,lines){
   const line=at>=0?at+2:values.length+2;
   sheet.getRange(line,1,1,FINALE_HEADERS.length).setValues([[grade,lines.map(sheetText).join('\n'),new Date()]]);
   dayFirst(sheet.getRange(line,3));
+}
+
+
+// ---- v12.0.0 · Term report: one row per student ID (English League → Build term report) ----
+// Everything is grouped by the roster ID, so a student who was renamed or moved to another team is still one row, and
+// two students with the same name stay two rows. Rows saved before IDs that could not be matched are listed at the
+// end by name, so nothing is silently left out.
+const TERM_HEADERS=['Student ID','Student (roster)','Class','Team (roster)','Active','Lessons','Contributions','Challenge cards right','Challenge cards','Saga answers right','Navigator seals','Names in lessons','Teams in lessons','First lesson','Last lesson'];
+function buildTermReport(){
+  const ss=SpreadsheetApp.getActiveSpreadsheet(),lock=LockService.getScriptLock();
+  if(!lock.tryLock(30000))throw Error('A save is in progress. Try again in a moment.');
+  try{
+    const people={},unmatched={},teamName=id=>CONTRIBUTION_TEAMS[String(id).toLowerCase()]||String(id);
+    const person=id=>people[id]=people[id]||{id,lessons:{},contributions:0,right:0,cards:0,saga:0,seals:0,names:{},teams:{},first:0,last:0,cls:''};
+    const roster=ss.getSheetByName('Roster');
+    const rosterRows=roster&&roster.getLastRow()>1?roster.getRange(2,1,roster.getLastRow()-1,5).getValues():[];
+    const rosterById={};rosterRows.forEach(r=>{if(String(r[0]))rosterById[String(r[0])]={name:String(r[2]),cls:String(r[1]),team:String(r[3]),active:r[4]===true||String(r[4]).toUpperCase()==='TRUE'};});
+    const time=v=>{const d=oldDateValue(v);return d?d.getTime():0;};
+    const cs=ss.getSheetByName('Student_Contributions');
+    if(cs&&cs.getLastRow()>1){
+      contributionSheet(ss);
+      cs.getRange(2,1,cs.getLastRow()-1,CONTRIBUTION_HEADERS.length).getValues().forEach(r=>{
+        const id=String(r[6]||''),awards=Number(r[4])||0,at=time(r[0]),name=String(r[3]).replace(/^'/,''),cls=String(r[1]).replace(/^'/,'');
+        if(!id){if(!name)return;const k=cls+'|'+r[2]+'|'+name;const u=unmatched[k]=unmatched[k]||{cls,team:String(r[2]),name,lessons:0,contributions:0,note:String(r[7]||'unmatched')};u.lessons++;u.contributions+=awards;return;}
+        const p=person(id);p.cls=p.cls||cls;p.lessons[String(r[5])||('row'+at)]=true;p.contributions+=awards;p.names[name]=true;p.teams[String(r[2])]=true;
+        if(at&&(!p.first||at<p.first))p.first=at;if(at>p.last)p.last=at;
+      });
+    }
+    const ch=ss.getSheetByName('Challenge_Log');
+    if(ch&&ch.getLastRow()>1)ch.getRange(2,1,ch.getLastRow()-1,CHALLENGE_HEADERS.length).getValues().forEach(r=>{
+      const id=String(r[4]||'').replace(/^'/,'');if(!id||!STUDENT_ID_PATTERN.test(id))return;
+      const p=person(id),saga=SAGA_ANSWER_TYPES.indexOf(String(r[6]))>=0,right=String(r[9])==='Right';
+      if(saga){if(right)p.saga++;}else if(String(r[9])!=='Skipped'){p.cards++;if(right)p.right++;}
+    });
+    readNavigatorSealsAll_(ss).forEach(r=>{person(r.studentId).seals++;});
+    const day=ms=>ms?new Date(ms):'';
+    const out=Object.keys(people).map(id=>{
+      const p=people[id],r=rosterById[id]||{};
+      return [id,sheetText(r.name||Object.keys(p.names).pop()||''),r.cls||p.cls,r.team||'',r.active===undefined?'':r.active?'Yes':'No',Object.keys(p.lessons).length,p.contributions,p.right,p.cards,p.saga,p.seals,
+        sheetText(Object.keys(p.names).join(' · ')),Object.keys(p.teams).join(' · '),day(p.first),day(p.last)];
+    }).sort((a,b)=>String(a[2]).localeCompare(String(b[2]))||String(a[3]).localeCompare(String(b[3]))||String(a[1]).localeCompare(String(b[1]),'tr'));
+    const extra=Object.keys(unmatched).map(k=>{const u=unmatched[k];return ['('+u.note+')',sheetText(u.name),u.cls,u.team,'',u.lessons,u.contributions,'','','','',sheetText(u.name),u.team,'',''];});
+    const sheet=ss.getSheetByName('Term_Report')||ss.insertSheet('Term_Report');
+    sheet.clearContents();
+    sheet.getRange(1,1,1,TERM_HEADERS.length).setValues([TERM_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);
+    const rows=out.concat(extra);
+    if(rows.length){
+      if(rows.length+1>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),rows.length+1-sheet.getMaxRows());
+      sheet.getRange(2,1,rows.length,TERM_HEADERS.length).setValues(rows);
+      dayFirst(sheet.getRange(2,14,rows.length,2),DATE_ONLY_FORMAT);
+    }
+    const text='Term report: '+out.length+' students'+(extra.length?', '+extra.length+' older rows without an ID (listed at the end)':'')+'.';
+    Logger.log(text);return text;
+  }finally{lock.releaseLock();}
+}
+function readNavigatorSealsAll_(ss){
+  const sheet=ss.getSheetByName('Navigator_Seals');if(!sheet||sheet.getLastRow()<2)return [];
+  return sheet.getRange(2,1,sheet.getLastRow()-1,NAVIGATOR_HEADERS.length).getValues()
+    .filter(r=>STUDENT_ID_PATTERN.test(String(r[4])))
+    .map(r=>({studentId:String(r[4]),island:Number(r[5])}));
 }

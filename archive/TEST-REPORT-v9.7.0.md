@@ -17,7 +17,7 @@
   - The phone keyboard (↓, ↑, Space) and the controller's DOWN button steer the runner on the board.
   - A second run keeps the same navigator.
   - A seal is kept on the board (once per island), reaches the phone for saving, is announced with the student's name after Island Run, and the controller closes with Island Run.
-- **End-to-end in Chromium (Animated mode):** board and phone bridged, a session with contributors in every team, the Final Arena, then a complete island 1 run played by the skilled test driver. The champion team's contributor (Sümeyye) was named on the opening card and the phone controller; the result card showed **Sümeyye · seal 1 of 10**; back on the Champions screen "Navigator seal earned · Sümeyye · Island 1" appeared, and the seal was stored with the session ID. A student who already held that island's seal earned no second one.
+- **End-to-end in Chromium (Animated mode):** board and phone bridged, a session with contributors in every team, the Final Arena, then a complete island 1 run played by the skilled test driver. The champion team's contributor (Süvog) was named on the opening card and the phone controller; the result card showed **Süvog · seal 1 of 10**; back on the Champions screen "Navigator seal earned · Süvog · Island 1" appeared, and the seal was stored with the session ID. A student who already held that island's seal earned no second one.
 - **Other browser suites pass:** iPhone remote layout (`next-to-invite.cjs`), arena techniques, projectiles and HP, Vixar finale, Unity reward visibility and the access gate.
 - **Native Canvas2D renders** (`render-runner-v91.cjs` with `@napi-rs/canvas`): 320 frames pass.
 

@@ -16,21 +16,21 @@ const flush=()=>new Promise(r=>setImmediate(r));
 (async()=>{
 await test('The PIN waits for Allow, then signs in once: names first, then the class’s islands, seals and season',async()=>{
  const t=teacher({roster:()=>({ok:true})});
- t.T.start(' 2595 ');assert.equal(t.T.state,'pending');assert.equal(t.T.waiting,true,'Load islands does not ask while the sign-in is waiting');assert.deepEqual(t.calls.roster,[]);
+ t.T.start(' 8642 ');assert.equal(t.T.state,'pending');assert.equal(t.T.waiting,true,'Load islands does not ask while the sign-in is waiting');assert.deepEqual(t.calls.roster,[]);
  assert.match(t.node('mobile-teacher-status').textContent,/signs in after Allow/);
- t.connect();await flush();assert.deepEqual(t.calls.roster,['2595']);assert.deepEqual(t.calls.islands,['2595']);assert.equal(t.T.state,'ok');assert.equal(t.T.pin,'2595');
+ t.connect();await flush();assert.deepEqual(t.calls.roster,['8642']);assert.deepEqual(t.calls.islands,['8642']);assert.equal(t.T.state,'ok');assert.equal(t.T.pin,'8642');
  t.T.connected();await flush();assert.equal(t.calls.roster.length,1,'a reconnect does not sign in again');
- t.T.accepted('2595','islands');assert.match(t.node('mobile-teacher-status').textContent,/names, islands, seals and season loaded/);assert.equal(t.node('mobile-teacher-btn').textContent,'Teacher signed in ✓');
+ t.T.accepted('8642','islands');assert.match(t.node('mobile-teacher-status').textContent,/names, islands, seals and season loaded/);assert.equal(t.node('mobile-teacher-btn').textContent,'Teacher signed in ✓');
 });
 await test('A wrong PIN is forgotten and asked for again; an unreachable Sheet keeps the PIN; no PIN changes nothing',async()=>{
  let t=teacher({roster:()=>({ok:false,unauthorized:true,message:'Incorrect Teacher PIN.'}),connected:true});
  t.T.start('1111');await flush();assert.equal(t.T.state,'error');assert.equal(t.T.pin,'');assert.deepEqual(t.calls.islands,['']);assert.equal(t.T.waiting,false);
  assert.match(t.node('mobile-teacher-status').textContent,/not accepted · tap to try again/);
- t.T.accepted('2595','islands');await flush();assert.equal(t.T.state,'ok');assert.deepEqual(t.calls.roster,['1111','2595'],'the PIN typed in Load islands loads the names too');
+ t.T.accepted('8642','islands');await flush();assert.equal(t.T.state,'ok');assert.deepEqual(t.calls.roster,['1111','8642'],'the PIN typed in Load islands loads the names too');
  t=teacher({roster:()=>({ok:false,message:'Google Sheets could not be reached.'}),connected:true});
- t.T.start('2595');await flush();assert.equal(t.T.state,'offline');assert.equal(t.T.pin,'2595');assert.deepEqual(t.calls.islands,['2595']);
+ t.T.start('8642');await flush();assert.equal(t.T.state,'offline');assert.equal(t.T.pin,'8642');assert.deepEqual(t.calls.islands,['8642']);
  t=teacher({roster:()=>({ok:true}),connected:true});t.T.start('');await flush();assert.equal(t.T.state,'none');assert.equal(t.T.waiting,false);assert.deepEqual(t.calls.roster,[]);
- t=teacher({roster:()=>({ok:true}),remote:false});t.T.accepted('2595');assert.deepEqual(t.calls.roster,[],'the board does not load the roster on its own');
+ t=teacher({roster:()=>({ok:true}),remote:false});t.T.accepted('8642');assert.deepEqual(t.calls.roster,[],'the board does not load the roster on its own');
 });
 await test('Every PIN prompt reuses the sign-in: Load islands, Save Record, saved-result retry, Studio and Manage',()=>{
  const game=pub('game.js'),islands=pub('island-progress.js'),roster=pub('roster-manager.js'),studio=pub('teacher-studio.js');

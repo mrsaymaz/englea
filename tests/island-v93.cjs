@@ -82,19 +82,19 @@ test('Answer log: review starts on a miss and ends after correct answers in two 
 test('Apps Script v9.3.0 appends answers once, rebuilds the summary and returns them on Load islands',()=>{
  const {makeGas}=require('./roster-gas-harness.cjs'),gas=makeGas();
  const rows=[row('runA:0','be',false),row('runA:1','tag',true,{x:'=HYPERLINK("x")'})];
- const save=()=>gas.post({type:'FULL_SESSION',pin:'2595',className:'5-A',sessionId:'lesson-1',standings:[],islandProgress:{},questionLog:rows});
+ const save=()=>gas.post({type:'FULL_SESSION',pin:'8642',className:'5-A',sessionId:'lesson-1',standings:[],islandProgress:{},questionLog:rows});
  let r=save();assert.equal(r.status,'success',JSON.stringify(r));assert.equal(r.questionsAdded,2);assert.equal(r.questionLogVersion,1);
  r=save();assert.equal(r.questionsAdded,0);
  const log=gas.sheets.get('Question_Log');assert.equal(log.getLastRow(),3);assert.equal(log.rows[2][15],"'=HYPERLINK(\"x\")");
  const summary=gas.sheets.get('Question_Summary');assert.equal(summary.rows[0][0],'Class');assert(summary.rows.some(x=>x[1]==='be'&&x[8]==='Yes'));
- const get=gas.post({type:'ISLAND_GET',pin:'2595',className:'5-A'});assert.equal(get.questionLogVersion,1);assert.equal(get.questionLog.length,2);assert.equal(get.questionLog[1].x,'=HYPERLINK("x")');
- const bad=gas.post({type:'FULL_SESSION',pin:'2595',className:'5-A',sessionId:'lesson-2',standings:[],questionLog:[{...rows[0],id:'runB:0',c:'6-C'}]});
+ const get=gas.post({type:'ISLAND_GET',pin:'8642',className:'5-A'});assert.equal(get.questionLogVersion,1);assert.equal(get.questionLog.length,2);assert.equal(get.questionLog[1].x,'=HYPERLINK("x")');
+ const bad=gas.post({type:'FULL_SESSION',pin:'8642',className:'5-A',sessionId:'lesson-2',standings:[],questionLog:[{...rows[0],id:'runB:0',c:'6-C'}]});
  assert.equal(bad.status,'error');assert.equal(gas.sheets.get('Leaderboard').rows.filter(x=>x[12]==='lesson-2').length,0,'nothing is written when a row is invalid');
 });
 (async()=>{
- const {handleSession}=await import('../netlify/functions/session.mjs');
+ const {handleSession}=await import('../netlify/functions/session.mjs'),A=await require('./fixture.cjs').auth();
  const call=async(capability,body)=>{const fetcher=async(url,o)=>{const d=JSON.parse(o.body);return {ok:true,json:async()=>d.type==='ISLAND_GET'?capability:{status:'success',islandProgress:{}}};};
-  return (await handleSession(new Request('https://x.invalid/api/session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),fetcher)).json();};
+  return (await handleSession(A.signed('https://x.invalid/api/session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),fetcher,A.deps)).json();};
  const body={type:'FULL_SESSION',pin:'1',className:'5-A',islandProgress:{},questionLog:[row('runZ:0','be',false)]};
  let r=await call({status:'success',islandProgress:{},passportVersion:1},body);assert.equal(r.status,'error');assert.match(r.message,/GOOGLE-APPS-SCRIPT-v\d+\.\d+\.\d+\.gs/); // the current script includes the v9.3.0 answer log
  r=await call({status:'success',islandProgress:{},passportVersion:1,questionLogVersion:1},body);assert.equal(r.status,'success');

@@ -1,6 +1,10 @@
-// English League v10.0.0 · adds the School League Season: season wins for every team across every class,
-// counted from the Leaderboard and Battle_Results tabs (older sessions included). Includes v9.7.0
-// (Navigator_Seals) and v9.6.0 (Student_Contributions). Keep your own Teacher PIN on the next line.
+// English League v11.0.0 · The Vixar Saga: a Vixar_Saga tab (one row per class: its stage, level cap, attempts,
+// the dates each form was broken, the last session, teacher corrections), Merge Spell answers in Challenge_Log (marked
+// Merge), what the Finale needs (the class's saga-session contributions, navigators and Merge answers) and the Finale's
+// thank-you lines per grade (Vixar_Finale_Lines, edited in Studio). Deploy it as a New version of the existing web app.
+// Includes v10.4.0 · Challenge_Log: one row per Challenge Deck card played on the English wheel (student, card,
+// word, right or wrong). Includes v10.2.0 (the class's last saved session for the Comeback Halo), v10.1.2 (day-first dates, formatOldDates), v10.0.0 (School League
+// Season), v9.7.0 (Navigator_Seals) and v9.6.0 (Student_Contributions). Keep your own Teacher PIN on the next line.
 const TEACHER_PIN = "REMOVED"; // v12.0.0: the PIN was removed from the published archive (v12 keeps it in Script properties)
 
 // Earlier versions wrote "Leaders of …" (top three). v9.6.0 lists every contributor, so new sheets get
@@ -23,6 +27,12 @@ const CONTRIBUTION_TEAMS = {gryffindor:'Gryffindor',hufflepuff:'Hufflepuff',slyt
 const NAVIGATOR_HEADERS = ['Date','Class','Team','Student','Student ID','Island','Guardian','Session ID'];
 const GUARDIAN_NAMES = ['Veyr','Tickthorn','Mirrath','Rootmaw','Vox','Kaelis','Morrow','Noctryn','Ferron','Astrax'];
 
+// v10.1.2: dates are stored as real dates (so the Sheet can sort and filter them) and shown day first, with the
+// time, whatever the Sheet's locale. Earlier versions wrote US-style text (month first).
+const DATE_TIME_FORMAT = 'dd/mm/yyyy hh:mm:ss';
+const DATE_ONLY_FORMAT = 'dd/mm/yyyy';
+function dayFirst(range,format){range.setNumberFormat(format||DATE_TIME_FORMAT);return range;}
+
 function doPost(e) {
   let requestLock;
   try {
@@ -41,9 +51,12 @@ function doPost(e) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     if (data.type === 'ROSTER_GET' || data.type === 'ROSTER_SAVE') return jsonResponse(handleRosterRequest(ss,data));
     if (['TEACHING_GET','TEACHING_SAVE'].includes(data.type)) return jsonResponse(handleTeaching(ss,data));
+    if (['SAGA_SAVE','SAGA_SET','SAGA_LINES_SAVE'].includes(data.type)) return jsonResponse(handleSaga(ss,data));
     if (data.type === 'ISLAND_GET') {
       const getClass=validIslandClass(data.className);
-      return jsonResponse({status:'success',passportVersion:1,questionLogVersion:1,contributionsVersion:1,navigatorSealsVersion:1,seasonVersion:1,season:readSeason(ss),navigatorSeals:readNavigatorSeals(ss,getClass),islandProgress:readIslandProgress(ss,getClass),teaching:teachingCatalog(ss,Number(getClass[0])),questionLog:readQuestionLog(ss,getClass).slice(-600)});
+      const saga=readSaga(ss,getClass);
+      return jsonResponse({status:'success',passportVersion:1,questionLogVersion:1,contributionsVersion:1,navigatorSealsVersion:1,seasonVersion:1,lastSessionVersion:1,challengeLogVersion:1,sagaVersion:1,lastSession:lastSessionFor(ss,getClass),season:readSeason(ss),navigatorSeals:readNavigatorSeals(ss,getClass),islandProgress:readIslandProgress(ss,getClass),teaching:teachingCatalog(ss,Number(getClass[0])),questionLog:readQuestionLog(ss,getClass).slice(-600),
+        saga:saga,sagaExtras:sagaExtras(ss,getClass,saga),finaleLines:readFinaleLines(ss,Number(getClass[0]))});
     }
     if (!['FULL_SESSION','LEADERBOARD_FINAL','BATTLE_OUTCOME'].includes(data.type)) return jsonResponse({status:'error',message:'Unknown record type'});
     const islandClass = data.islandProgress !== undefined ? validIslandClass(data.className) : null;
@@ -53,6 +66,7 @@ function doPost(e) {
     const questionRows = data.questionLog !== undefined ? validateQuestionRows(data.questionLog, String(data.className || '').trim()) : null;
     const contributionRows = ['FULL_SESSION','LEADERBOARD_FINAL'].includes(data.type) ? validateContributionRows(data.studentContributions) : [];
     const sealRows = data.navigatorSeals !== undefined ? validateNavigatorSeals(data.navigatorSeals, validIslandClass(data.className)) : null;
+    const challengeRows = data.challengeLog !== undefined ? validateChallengeRows(data.challengeLog, String(data.className || '').trim()) : null;
     function resultsSheet(name) {
       const sheet=ss.getSheetByName(name)||ss.insertSheet(name);
       if(!sheet.getLastRow()){
@@ -63,7 +77,7 @@ function doPost(e) {
     }
 
     const className = String(data.className || "Unassigned").trim();
-    const now = new Date().toLocaleString();
+    const now = new Date();
 
     function nextAvailableRow(sheet) {
       const dates = sheet.getRange("A:A").getValues();
@@ -85,6 +99,7 @@ function doPost(e) {
         rowValues[keyColumn-1]=data.sessionId;
       }
       sheet.getRange(row, 1, 1, rowValues.length).setValues([rowValues]);
+      dayFirst(sheet.getRange(row, 1));
     }
 
     function ensureLeaderHeaders(sheet) {
@@ -181,7 +196,8 @@ function doPost(e) {
     const contributionsWritten = contributionRows.length ? writeContributions(ss, contributionRows, {date:now, className, sessionId:data.sessionId}) : 0;
     const sealsAdded = sealRows && sealRows.length ? writeNavigatorSeals(ss, sealRows, {date:now, className}) : 0;
     const navigatorSeals = sealRows ? readNavigatorSeals(ss, validIslandClass(data.className)) : undefined;
-    return jsonResponse({ status: "success", passportVersion:1, questionLogVersion:1, contributionsVersion:1, navigatorSealsVersion:1, seasonVersion:1, season:readSeason(ss), islandProgress, questionsAdded, contributionsWritten, sealsAdded, navigatorSeals });
+    const challengesAdded = challengeRows && challengeRows.length ? appendChallengeLog(ss, challengeRows) : 0;
+    return jsonResponse({ status: "success", passportVersion:1, questionLogVersion:1, contributionsVersion:1, navigatorSealsVersion:1, seasonVersion:1, challengeLogVersion:1, sagaVersion:1, season:readSeason(ss), islandProgress, questionsAdded, contributionsWritten, sealsAdded, challengesAdded, navigatorSeals });
   } catch (err) {
     return jsonResponse({ status: "error", error: err.toString(), message: err.message || String(err) });
   } finally {
@@ -310,9 +326,9 @@ function mergeIslandProgress(ss,className,incoming){
     const best=bestIslandResult(old||{score:0,stars:0},value);
     if(old&&JSON.stringify(old)===JSON.stringify(best))return;
     const index=rows.findIndex(r=>r[0]===className&&String(r[1]).toLowerCase()===team&&String(r[2])===id);
-    const row=[className,team[0].toUpperCase()+team.slice(1),Number(id),best.score,best.stars,new Date().toISOString(),best.coinPercent===undefined?'':best.coinPercent,best.hardClear?'Yes':''];
-    if(index>=0){sheet.getRange(index+2,1,1,8).setValues([row]);rows[index]=row;}
-    else {if(rows.length+2>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),100);sheet.getRange(rows.length+2,1,1,8).setValues([row]);rows.push(row);}
+    const row=[className,team[0].toUpperCase()+team.slice(1),Number(id),best.score,best.stars,new Date(),best.coinPercent===undefined?'':best.coinPercent,best.hardClear?'Yes':''];
+    if(index>=0){sheet.getRange(index+2,1,1,8).setValues([row]);dayFirst(sheet.getRange(index+2,6));rows[index]=row;}
+    else {if(rows.length+2>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),100);sheet.getRange(rows.length+2,1,1,8).setValues([row]);dayFirst(sheet.getRange(rows.length+2,6));rows.push(row);}
     existing[key][id]=best;
   }));
   return existing;
@@ -394,6 +410,41 @@ function handleTeaching(ss,data){
 
 
 // v9.3.0: Island Run team answers. One row per answer; Row ID prevents duplicates when a session is saved again.
+// v10.4.0 Challenge Deck: one row per card dealt by the English wheel. Result is Right, Wrong or Skipped; a wrong
+// answer took the team back to the level before the wheel. Rows are never written twice (Row ID).
+const CHALLENGE_HEADERS=['Date','Class','Team','Student','Student ID','Wheel level','Card','Word','Island','Result','Row ID','Session ID'];
+const CHALLENGE_TYPES=['Vocabulary','Grammar','Pronunciation','Speaking','Listening','Sentence Repair','Taboo Description','Translation','Ask a Question'];
+// v11.0.0: Merge Spell answers are logged as "Merge · <card>" (Level 12, the raid's level).
+const MERGE_TYPES=['Vocabulary','Translation','Grammar','Sentence Repair','Ask a Question'].map(function(t){return 'Merge · '+t;});
+const CHALLENGE_RESULTS={right:'Right',wrong:'Wrong',skipped:'Skipped'};
+function validateChallengeRows(rows,className){
+  if(!Array.isArray(rows)||rows.length>200)throw Error('Challenge cards must be a list of no more than 200 rows.');
+  validIslandClass(className);
+  const text=(v,max)=>v===undefined||typeof v==='string'&&v.length<=max;
+  return rows.map(r=>{
+    const at=Number(r&&r.at),level=Number(r&&r.level),island=Number(r&&r.island);
+    if(!r||typeof r.id!=='string'||!/^[A-Za-z0-9:_.-]{3,140}$/.test(r.id)||r.className!==className||!Number.isFinite(at)||at<1.5e12||at>4e12
+      ||['Gryffindor','Hufflepuff','Slytherin','Ravenclaw','Practice'].indexOf(r.team)<0||[0,5,10,12].indexOf(level)<0||(CHALLENGE_TYPES.indexOf(r.type)<0&&MERGE_TYPES.indexOf(r.type)<0)||(MERGE_TYPES.indexOf(r.type)>=0&&(level!==12||r.team==='Practice'))
+      ||!Number.isInteger(island)||island<1||island>10||!CHALLENGE_RESULTS[r.result]||!text(r.student,80)||!text(r.studentId,120)||!text(r.word,120))throw Error('Invalid Challenge Deck row.');
+    return {id:r.id,at:Math.round(at),className:className,team:r.team,student:r.student||'',studentId:r.studentId||'',level:level,type:r.type,word:r.word||'',island:island,result:r.result};
+  });
+}
+function challengeSheet(ss){
+  const sheet=ss.getSheetByName('Challenge_Log')||ss.insertSheet('Challenge_Log');
+  if(!sheet.getLastRow()){sheet.getRange(1,1,1,CHALLENGE_HEADERS.length).setValues([CHALLENGE_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);}
+  if(JSON.stringify(sheet.getRange(1,1,1,CHALLENGE_HEADERS.length).getValues()[0])!==JSON.stringify(CHALLENGE_HEADERS))throw Error('Challenge_Log has different headers. Rename that tab before saving.');
+  return sheet;
+}
+function appendChallengeLog(ss,rows){
+  const sheet=challengeSheet(ss),values=sheet.getLastRow()>1?sheet.getRange(2,1,sheet.getLastRow()-1,CHALLENGE_HEADERS.length).getValues():[],seen={};
+  values.forEach(r=>{seen[String(r[10]).replace(/^'/,'')]=true;});
+  const fresh=rows.filter(r=>!seen[r.id]&&(seen[r.id]=true));
+  if(!fresh.length)return 0;
+  const out=fresh.map(r=>[new Date(r.at),r.className,r.team,sheetText(r.student),sheetText(r.studentId),r.level||'',r.type,sheetText(r.word),r.island,CHALLENGE_RESULTS[r.result],sheetText(r.id),sheetText(String(r.id).replace(/-c\d+$/,''))]);
+  const start=values.length+2;if(start+out.length-1>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),out.length+50);
+  sheet.getRange(start,1,out.length,CHALLENGE_HEADERS.length).setValues(out);dayFirst(sheet.getRange(start,1,out.length,1));
+  return out.length;
+}
 const QUESTION_HEADERS=['Date','Class','Team','Grade','Island','Question ID','Concept','Kind','Format','Correct','Second chance','Review','Chose lane','Picked','Answer','Prompt','Row ID','Session ID','Time (ms)'];
 const SUMMARY_HEADERS=['Class','Concept','Example prompt','Attempts','Correct','Wrong','Accuracy','Last wrong','In review'];
 const QUESTION_TEAMS=['gryffindor','hufflepuff','slytherin','ravenclaw'];
@@ -431,9 +482,9 @@ function appendQuestionLog(ss,rows){
   const sheet=questionSheet(ss),values=questionValues(sheet),seen={};values.forEach(r=>{seen[String(r[16]).replace(/^'/,'')]=true;});
   const yes=v=>v?'Yes':'',fresh=rows.filter(r=>!seen[r.id]&&(seen[r.id]=true));
   if(!fresh.length)return 0;
-  const out=fresh.map(r=>[new Date(r.t).toISOString(),r.c,r.h.charAt(0).toUpperCase()+r.h.slice(1),r.g,r.i,sheetText(r.q),sheetText(r.k),r.y,r.f,r.ok?'Yes':'No',yes(r.e),yes(r.v),r.m?'Yes':'No',sheetText(r.p),sheetText(r.a),sheetText(r.x),sheetText(r.id),sheetText(r.s),r.t]);
+  const out=fresh.map(r=>[new Date(r.t),r.c,r.h.charAt(0).toUpperCase()+r.h.slice(1),r.g,r.i,sheetText(r.q),sheetText(r.k),r.y,r.f,r.ok?'Yes':'No',yes(r.e),yes(r.v),r.m?'Yes':'No',sheetText(r.p),sheetText(r.a),sheetText(r.x),sheetText(r.id),sheetText(r.s),r.t]);
   const start=values.length+2;if(start+out.length-1>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),out.length+50);
-  sheet.getRange(start,1,out.length,QUESTION_HEADERS.length).setValues(out);
+  sheet.getRange(start,1,out.length,QUESTION_HEADERS.length).setValues(out);dayFirst(sheet.getRange(start,1,out.length,1));
   rebuildQuestionSummary(ss,questionValues(sheet).map(rowFromSheet));
   return out.length;
 }
@@ -449,10 +500,10 @@ function rebuildQuestionSummary(ss,rows){
     else{g.wrong++;g.lastWrong=Math.max(g.lastWrong,r.t);if(!r.e){g.review=true;g.runs={};}}
   });
   const out=Object.keys(groups).map(k=>groups[k]).sort((a,b)=>a.c.localeCompare(b.c)||b.wrong-a.wrong||a.k.localeCompare(b.k))
-    .map(g=>[g.c,sheetText(g.k),sheetText(g.prompt),g.attempts,g.correct,g.wrong,Math.round(g.correct/g.attempts*100)+'%',g.lastWrong?new Date(g.lastWrong).toISOString().slice(0,10):'',g.review?'Yes':'']);
+    .map(g=>[g.c,sheetText(g.k),sheetText(g.prompt),g.attempts,g.correct,g.wrong,Math.round(g.correct/g.attempts*100)+'%',g.lastWrong?new Date(g.lastWrong):'',g.review?'Yes':'']);
   sheet.clearContents();
   sheet.getRange(1,1,1,SUMMARY_HEADERS.length).setValues([SUMMARY_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);
-  if(out.length){if(out.length+1>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),out.length+1-sheet.getMaxRows());sheet.getRange(2,1,out.length,SUMMARY_HEADERS.length).setValues(out);}
+  if(out.length){if(out.length+1>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),out.length+1-sheet.getMaxRows());sheet.getRange(2,1,out.length,SUMMARY_HEADERS.length).setValues(out);dayFirst(sheet.getRange(2,8,out.length,1),DATE_ONLY_FORMAT);}
 }
 
 // ---- v9.6.0 · Student_Contributions: one row per student per session, with the number of contributions ----
@@ -494,7 +545,7 @@ function writeContributions(ss,rows,meta){
     if(at){sheet.getRange(at,5,1,1).setValues([[row.awards]]);written++;}
     else fresh.push([meta.date,className,row.team,name,row.awards,sessionId]);
   });
-  if(fresh.length){sheet.getRange(Math.max(2,last+1),1,fresh.length,CONTRIBUTION_HEADERS.length).setValues(fresh);written+=fresh.length;}
+  if(fresh.length){sheet.getRange(Math.max(2,last+1),1,fresh.length,CONTRIBUTION_HEADERS.length).setValues(fresh);dayFirst(sheet.getRange(Math.max(2,last+1),1,fresh.length,1));written+=fresh.length;}
   return written;
 }
 
@@ -534,7 +585,7 @@ function writeNavigatorSeals(ss,rows,meta){
     const key=className+'|'+row.studentId+'|'+row.island;if(have[key])return;have[key]=true;
     fresh.push([meta.date,className,row.team,sheetText(row.student),row.studentId,row.island,GUARDIAN_NAMES[row.island-1],row.sessionId]);
   });
-  if(fresh.length)sheet.getRange(Math.max(2,last+1),1,fresh.length,NAVIGATOR_HEADERS.length).setValues(fresh);
+  if(fresh.length){sheet.getRange(Math.max(2,last+1),1,fresh.length,NAVIGATOR_HEADERS.length).setValues(fresh);dayFirst(sheet.getRange(Math.max(2,last+1),1,fresh.length,1));}
   return fresh.length;
 }
 function readNavigatorSeals(ss,className){
@@ -572,4 +623,212 @@ function readSeason(ss){
     const id=String(r[6]||'').trim();if(!id||!seen[id])count(String(r[1]||'').trim(),id);
   });
   return {wins,sessions,classes:Object.keys(classes).filter(c=>/^[0-9]+-[A-Z]$/.test(c)).sort(),recent:ids.filter(id=>/^[A-Za-z0-9_-]{1,120}$/.test(id)).slice(-1000)};
+}
+
+// ---- v10.1.2 · formatOldDates: run once from the Apps Script editor (choose formatOldDates, then Run) ----
+// Earlier versions wrote dates as US-style text such as "10/5/2026, 7:46:12 PM" (month first) or as ISO text
+// such as "2026-10-05T16:46:12.000Z". This turns them into real dates shown DD/MM/YYYY. Cells that are already
+// dates only get the day-first format; anything else (notes, hand-typed text) is left exactly as it is.
+// Running it again changes nothing.
+const OLD_DATE_COLUMNS = [['Leaderboard',1],['Battle_Results',1],['Student_Contributions',1],['Navigator_Seals',1],['Island_Progress',6],['Question_Log',1],['Question_Summary',8,DATE_ONLY_FORMAT]];
+function oldDateValue(value){
+  if(value instanceof Date)return isNaN(value.getTime())?null:value;
+  const text=String(value===undefined||value===null?'':value).trim();
+  let m=text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]M)?$/i);
+  if(m){let hour=Number(m[4]);const half=(m[7]||'').toUpperCase();if(half==='PM'&&hour<12)hour+=12;if(half==='AM'&&hour===12)hour=0;
+   const d=new Date(Number(m[3]),Number(m[1])-1,Number(m[2]),hour,Number(m[5]),Number(m[6]||0));
+   return d.getMonth()===Number(m[1])-1&&d.getDate()===Number(m[2])?d:null;}
+  m=text.match(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$/);
+  if(m){const d=m[1]?new Date(text):new Date(Number(text.slice(0,4)),Number(text.slice(5,7))-1,Number(text.slice(8,10)));return isNaN(d.getTime())?null:d;}
+  return null;
+}
+function formatOldDates(){
+  const ss=SpreadsheetApp.getActiveSpreadsheet(),lock=LockService.getScriptLock(),report=[];
+  if(!lock.tryLock(30000))throw Error('A save is in progress. Try again in a moment.');
+  try{
+    OLD_DATE_COLUMNS.forEach(([name,column,format])=>{
+      const sheet=ss.getSheetByName(name);if(!sheet||sheet.getLastRow()<2)return;
+      // One read and at most two writes per tab, so large tabs finish quickly.
+      const range=sheet.getRange(2,column,sheet.getLastRow()-1,1),values=range.getValues(),formats=range.getNumberFormats();let changed=0;
+      const out=values.map((r,i)=>{const d=oldDateValue(r[0]);if(!d)return [r[0]];formats[i]=[format||DATE_TIME_FORMAT];if(!(r[0] instanceof Date))changed++;return [d];});
+      if(changed)range.setValues(out);
+      range.setNumberFormats(formats);
+      report.push(name+': '+changed+' converted');
+    });
+  }finally{lock.releaseLock();}
+  return report.join(' · ');
+}
+
+// ---- v10.2.0 · Comeback Halo: the class's last saved session ----
+// League title holder(s) from the class's latest Leaderboard row (a shared title counts every tied team) and the
+// Arena champion from Battle_Results: the same session when both were saved, otherwise whichever was saved later.
+// Every team that won neither earns ×2 in the class's next session (decided on the board).
+function lastSessionFor(ss,className){
+  const when=v=>{const d=oldDateValue(v);return d?d.getTime():0;},same=v=>String(v||'').trim();
+  let league=null,arena=null,battleRows=[];
+  const board=ss.getSheetByName('Leaderboard');
+  if(board&&board.getLastRow()>1)board.getRange(2,1,board.getLastRow()-1,13).getValues().forEach(r=>{
+    if(same(r[1])!==className)return;
+    const standings=[r[2],r[3],r[4],r[5]].map(seasonStanding).filter(Boolean);if(!standings.length)return;
+    const scored=standings.filter(s=>s.points!==null);let champions=[standings[0].team];
+    if(scored.length){const top=Math.max.apply(null,scored.map(s=>s.points));champions=scored.filter(s=>s.points===top).map(s=>s.team);}
+    league={sessionId:same(r[12]),at:when(r[0]),teams:champions.filter((t,i,a)=>a.indexOf(t)===i)};
+  });
+  const battles=ss.getSheetByName('Battle_Results');
+  if(battles&&battles.getLastRow()>1)battleRows=battles.getRange(2,1,battles.getLastRow()-1,7).getValues().filter(r=>same(r[1])===className&&seasonTeam(r[2]));
+  const arenaOf=r=>({sessionId:same(r[6]),at:when(r[0]),team:seasonTeam(r[2])});
+  const lastArena=battleRows.length?arenaOf(battleRows[battleRows.length-1]):null;
+  const id=(x,at)=>/^[A-Za-z0-9_-]{1,120}$/.test(x)?x:'sheet-'+at;
+  const arenaOnly=a=>({sessionId:id(a.sessionId,a.at),at:a.at,league:[],arena:a.team});
+  if(!league)return lastArena?arenaOnly(lastArena):null;
+  // The Arena of the same session as the latest League row (rows from before Session IDs: saved within 6 hours).
+  let paired=null;
+  if(league.sessionId){const match=battleRows.filter(r=>same(r[6])===league.sessionId).pop();if(match)paired=arenaOf(match);}
+  else if(lastArena&&!lastArena.sessionId&&Math.abs(league.at-lastArena.at)<6*3600000)paired=lastArena;
+  // A later Arena-only save is a later session.
+  const lastIsPaired=Boolean(paired&&lastArena&&(league.sessionId?lastArena.sessionId===league.sessionId:paired===lastArena));
+  if(lastArena&&!lastIsPaired&&lastArena.at>league.at)return arenaOnly(lastArena);
+  return {sessionId:id(league.sessionId,league.at),at:Math.max(league.at,paired?paired.at:0),league:league.teams,arena:paired?paired.team:null};
+}
+
+
+// ---- v11.0.0 · The Vixar Saga ----
+// One row per class. A won stage is never taken back by a save: the furthest stage is kept, and the same session's win
+// cannot advance twice (the board sends the whole row, never "advance by one"). Only Set stage (a teacher correction,
+// with the PIN) moves a class back; it is written in Corrections.
+const SAGA_HEADERS=['Class','Stage','Level cap','Attempts at current form','Violet won','Scarlet won','Gilded won','Last session ID','Corrections','Corrected at','Fight sessions','Updated'];
+const SAGA_STAGES=['Violet','Scarlet','Gilded','Freed'];
+const SAGA_CAPS={Violet:10,Scarlet:11,Gilded:12,Freed:12};
+const SAGA_FORMS=['Violet','Scarlet','Gilded'];
+function sagaSheet(ss){
+  const sheet=ss.getSheetByName('Vixar_Saga')||ss.insertSheet('Vixar_Saga');
+  if(!sheet.getLastRow()){sheet.getRange(1,1,1,SAGA_HEADERS.length).setValues([SAGA_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);}
+  if(JSON.stringify(sheet.getRange(1,1,1,SAGA_HEADERS.length).getValues()[0])!==JSON.stringify(SAGA_HEADERS))throw Error('Vixar_Saga has different headers. Rename that tab before saving.');
+  return sheet;
+}
+function sagaTime(v){const d=v instanceof Date?v:oldDateValue(v);const n=d?d.getTime():Number(v);return Number.isFinite(n)&&n>1.4e12&&n<4.2e12?Math.round(n):0;}
+function sagaSessionOk(s){return typeof s==='string'&&/^[A-Za-z0-9_-]{1,120}$/.test(s);}
+function sagaBlank(className){return {className:className,stage:'Violet',attempts:0,won:{Violet:0,Scarlet:0,Gilded:0},lastSessionId:'',fightSessions:[],corrections:[],correctionsText:'',updatedAt:0,correctedAt:0};}
+function cleanSaga(raw,className){
+  const row=sagaBlank(className);if(!raw||typeof raw!=='object')return row;
+  if(SAGA_STAGES.indexOf(raw.stage)>=0)row.stage=raw.stage;
+  const attempts=Number(raw.attempts);row.attempts=Math.floor(attempts)===attempts&&attempts>=0&&attempts<=1000?attempts:0;
+  SAGA_FORMS.forEach(function(s){row.won[s]=sagaTime(raw.won&&raw.won[s]);});
+  row.lastSessionId=sagaSessionOk(raw.lastSessionId)?raw.lastSessionId:'';
+  row.fightSessions=Array.isArray(raw.fightSessions)?raw.fightSessions.filter(sagaSessionOk).filter(function(v,i,a){return a.indexOf(v)===i;}).slice(-40):[];
+  row.corrections=Array.isArray(raw.corrections)?raw.corrections.filter(function(x){return x&&sagaTime(x.at)&&SAGA_STAGES.indexOf(x.to)>=0;}).map(function(x){return {at:sagaTime(x.at),from:SAGA_STAGES.indexOf(x.from)>=0?x.from:'',to:x.to,note:String(x.note||'').slice(0,80)};}).slice(-20):[];
+  row.updatedAt=sagaTime(raw.updatedAt);row.correctedAt=sagaTime(raw.correctedAt);
+  return row;
+}
+function sagaRows(sheet){return sheet.getLastRow()>1?sheet.getRange(2,1,sheet.getLastRow()-1,SAGA_HEADERS.length).getValues():[];}
+function readSaga(ss,className){
+  const sheet=ss.getSheetByName('Vixar_Saga');if(!sheet||sheet.getLastRow()<2)return sagaBlank(className);
+  const r=sagaRows(sheet).filter(function(x){return String(x[0])===className;})[0];if(!r)return sagaBlank(className);
+  const row=sagaBlank(className);
+  row.stage=SAGA_STAGES.indexOf(String(r[1]))>=0?String(r[1]):'Violet';
+  row.attempts=Math.max(0,Math.floor(Number(r[3])||0));
+  row.won={Violet:sagaTime(r[4]),Scarlet:sagaTime(r[5]),Gilded:sagaTime(r[6])};
+  row.lastSessionId=sagaSessionOk(String(r[7]||''))?String(r[7]):'';
+  row.correctionsText=String(r[8]||'');row.correctedAt=sagaTime(r[9]);
+  if(row.correctedAt)row.corrections=[{at:row.correctedAt,from:'',to:row.stage,note:'Sheet correction'}];
+  row.fightSessions=String(r[10]||'').split(',').map(function(x){return x.trim();}).filter(sagaSessionOk).slice(-40);
+  row.updatedAt=sagaTime(r[11]);
+  return row;
+}
+// The same rule as the board (vixar-saga.js): a correction newer than everything the other copy did wins; otherwise the
+// furthest stage is kept, with the attempts of the copy that holds it.
+function mergeSaga(a,b){
+  const union=function(x,y){return x.concat(y).filter(function(v,i,arr){return arr.indexOf(v)===i;}).slice(-40);};
+  if(b.correctedAt>a.correctedAt&&b.correctedAt>=a.updatedAt){const out=JSON.parse(JSON.stringify(b));out.fightSessions=union(a.fightSessions,b.fightSessions);out.correctionsText=a.correctionsText;return out;}
+  if(a.correctedAt>b.correctedAt&&a.correctedAt>=b.updatedAt){const out=JSON.parse(JSON.stringify(a));out.fightSessions=union(a.fightSessions,b.fightSessions);return out;}
+  const ia=SAGA_STAGES.indexOf(a.stage),ib=SAGA_STAGES.indexOf(b.stage);
+  const ahead=ib>ia?b:ia>ib?a:(b.attempts>a.attempts?b:a);
+  const out=JSON.parse(JSON.stringify(ahead));
+  SAGA_FORMS.forEach(function(s){const x=[a.won[s],b.won[s]].filter(Boolean);out.won[s]=SAGA_STAGES.indexOf(s)<SAGA_STAGES.indexOf(out.stage)&&x.length?Math.min.apply(null,x):0;});
+  out.lastSessionId=(b.updatedAt>a.updatedAt?b:a).lastSessionId||ahead.lastSessionId;
+  out.fightSessions=union(a.fightSessions,b.fightSessions);out.correctionsText=a.correctionsText;out.correctedAt=Math.max(a.correctedAt,b.correctedAt);
+  out.updatedAt=Math.max(a.updatedAt,b.updatedAt);
+  return out;
+}
+function writeSaga(ss,row){
+  const sheet=sagaSheet(ss),values=sagaRows(sheet);
+  let at=-1;values.forEach(function(r,i){if(String(r[0])===row.className)at=i;});
+  const date=function(ms){return ms?new Date(ms):'';};
+  const out=[row.className,row.stage,SAGA_CAPS[row.stage],row.attempts,date(row.won.Violet),date(row.won.Scarlet),date(row.won.Gilded),sheetText(row.lastSessionId),
+    sheetText(row.correctionsText||''),date(row.correctedAt),sheetText(row.fightSessions.join(',')),new Date()];
+  const line=at>=0?at+2:values.length+2;
+  sheet.getRange(line,1,1,SAGA_HEADERS.length).setValues([out]);
+  [5,6,7,10,12].forEach(function(col){dayFirst(sheet.getRange(line,col));});
+  return readSaga(ss,row.className);
+}
+function dayFirstText(ms){const d=new Date(ms),p=function(n){return (n<10?'0':'')+n;};return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear();}
+function handleSaga(ss,data){
+  const className=validIslandClass(data.className);
+  if(data.type==='SAGA_LINES_SAVE'){
+    const grade=Number(data.grade);if([5,6,7,8].indexOf(grade)<0)throw Error('Choose grade 5, 6, 7 or 8.');
+    const lines=Array.isArray(data.lines)?data.lines.map(function(l){return String(l||'').replace(/\s+/g,' ').trim();}).filter(Boolean):[];
+    if(!lines.length||lines.length>10||lines.some(function(l){return l.length>160;}))throw Error('Write 1 to 10 lines of up to 160 characters.');
+    writeFinaleLines(ss,grade,lines);
+    return {status:'success',sagaVersion:1,finaleLines:readFinaleLines(ss,grade)};
+  }
+  const current=readSaga(ss,className);
+  if(data.type==='SAGA_SET'){
+    // Set stage (Manage, PIN): moves a class to any stage to fix a misclick or a test run. Logged in Corrections.
+    if(SAGA_STAGES.indexOf(data.stage)<0)throw Error('Unknown stage.');
+    const at=sagaTime(data.at)||Date.now(),note=String(data.note||('Set to '+data.stage+' by teacher')).slice(0,80);
+    const row=JSON.parse(JSON.stringify(current));
+    row.stage=data.stage;row.attempts=0;row.correctedAt=at;row.updatedAt=Math.max(row.updatedAt,at);
+    SAGA_FORMS.forEach(function(s){if(SAGA_STAGES.indexOf(s)>=SAGA_STAGES.indexOf(data.stage))row.won[s]=0;});
+    row.correctionsText=(row.correctionsText?row.correctionsText+' | ':'')+note+', '+dayFirstText(at);
+    return {status:'success',sagaVersion:1,saga:writeSaga(ss,row)};
+  }
+  // SAGA_SAVE: the board's row after a fight (through the phone). Merge answers travel with it.
+  const incoming=cleanSaga(data.saga,className);
+  const merged=mergeSaga(current,incoming);
+  const mergeRows=data.mergeLog!==undefined?validateChallengeRows(data.mergeLog,className).filter(function(r){return MERGE_TYPES.indexOf(r.type)>=0;}):[];
+  const saved=writeSaga(ss,merged);
+  const challengesAdded=mergeRows.length?appendChallengeLog(ss,mergeRows):0;
+  return {status:'success',sagaVersion:1,saga:saved,challengesAdded:challengesAdded};
+}
+// What the Finale names students from: the class's contributions in the sessions it fought a saga form, its Island Run
+// navigators and its Merge Spell answers. (No list of who missed a question is kept anywhere.)
+function sagaExtras(ss,className,saga){
+  const teams={};Object.keys(CONTRIBUTION_TEAMS).forEach(function(id){teams[CONTRIBUTION_TEAMS[id]]=id;});
+  const unquote=function(v){const t=String(v===undefined||v===null?'':v);return t.charAt(0)==="'"?t.slice(1):t;};
+  const sessions={};(saga&&saga.fightSessions||[]).forEach(function(id){sessions[id]=true;});
+  const contributions=[],navigators=[],merge=[];
+  const cs=ss.getSheetByName('Student_Contributions');
+  if(cs&&cs.getLastRow()>1)cs.getRange(2,1,cs.getLastRow()-1,CONTRIBUTION_HEADERS.length).getValues().forEach(function(r){
+    if(unquote(r[1])!==className||!sessions[String(r[5])]||!teams[String(r[2])]||!(Number(r[4])>0))return;
+    contributions.push({team:teams[String(r[2])],name:unquote(r[3]).slice(0,70),contributions:Number(r[4]),sessionId:String(r[5])});
+  });
+  readNavigatorSeals(ss,className).forEach(function(r){navigators.push({team:r.team,student:r.student});});
+  const ch=ss.getSheetByName('Challenge_Log');
+  if(ch&&ch.getLastRow()>1)ch.getRange(2,1,ch.getLastRow()-1,CHALLENGE_HEADERS.length).getValues().forEach(function(r){
+    if(String(r[1])!==className||MERGE_TYPES.indexOf(String(r[6]))<0||!teams[String(r[2])])return;
+    merge.push({id:unquote(r[10]),team:teams[String(r[2])],student:unquote(r[3]).slice(0,70),result:String(r[9])==='Right'?'right':'wrong'});
+  });
+  return {contributions:contributions.slice(-2000),navigators:navigators.slice(-500),merge:merge.slice(-500)};
+}
+// ---- v11.0.0 · Vixar_Finale_Lines: the Finale's thank-you speech per grade (edited in Studio) ----
+const FINALE_HEADERS=['Grade','Lines','Updated'];
+function finaleSheet(ss){
+  const sheet=ss.getSheetByName('Vixar_Finale_Lines')||ss.insertSheet('Vixar_Finale_Lines');
+  if(!sheet.getLastRow()){sheet.getRange(1,1,1,FINALE_HEADERS.length).setValues([FINALE_HEADERS]).setFontWeight('bold');sheet.setFrozenRows(1);}
+  if(JSON.stringify(sheet.getRange(1,1,1,FINALE_HEADERS.length).getValues()[0])!==JSON.stringify(FINALE_HEADERS))throw Error('Vixar_Finale_Lines has different headers. Rename that tab before saving.');
+  return sheet;
+}
+function readFinaleLines(ss,grade){
+  const sheet=ss.getSheetByName('Vixar_Finale_Lines');if(!sheet||sheet.getLastRow()<2)return null;
+  const r=sheet.getRange(2,1,sheet.getLastRow()-1,FINALE_HEADERS.length).getValues().filter(function(x){return Number(x[0])===grade;})[0];
+  if(!r)return null;
+  const lines=String(r[1]||'').split('\n').map(function(l){return l.replace(/^'/,'').trim();}).filter(Boolean).slice(0,10);
+  return lines.length?{grade:grade,lines:lines,at:sagaTime(r[2])}:null;
+}
+function writeFinaleLines(ss,grade,lines){
+  const sheet=finaleSheet(ss),values=sheet.getLastRow()>1?sheet.getRange(2,1,sheet.getLastRow()-1,FINALE_HEADERS.length).getValues():[];
+  let at=-1;values.forEach(function(r,i){if(Number(r[0])===grade)at=i;});
+  const line=at>=0?at+2:values.length+2;
+  sheet.getRange(line,1,1,FINALE_HEADERS.length).setValues([[grade,lines.map(sheetText).join('\n'),new Date()]]);
+  dayFirst(sheet.getRange(line,3));
 }

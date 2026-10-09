@@ -2,6 +2,10 @@
   publish = "public"
   functions = "netlify/functions"
 
+# v12.0.0: the functions share netlify/shared/auth.mjs and use Netlify Blobs (package.json) for sign-in limits.
+[functions]
+  node_bundler = "esbuild"
+
 [[redirects]]
   from = "/api/access-time"
   to = "/.netlify/functions/access-time"

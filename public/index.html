@@ -85,8 +85,8 @@
 <body class="p-4 sm:p-8">
     <section id="access-screen" aria-labelledby="access-title">
       <div class="access-card"><div class="access-crest" aria-hidden="true">♜</div><h1 id="access-title">English League</h1><p>Teacher access</p>
-      <form id="access-form"><label for="access-code">Access code</label><input id="access-code" type="password" inputmode="numeric" autocomplete="off" maxlength="4" aria-describedby="access-message"><button id="access-submit" type="submit" disabled>Enter classroom</button></form>
-      <p id="access-message" role="status" aria-live="polite">Connecting securely…</p><p class="access-note">Time verified online · Turkey time</p></div>
+      <form id="access-form"><div class="access-code-row"><label for="access-code">Access code</label><input id="access-code" type="password" inputmode="numeric" autocomplete="off" maxlength="4" aria-describedby="access-message"></div><div id="access-pin-row" hidden><label for="access-pin">Teacher PIN</label><input id="access-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="100" aria-describedby="access-message"></div><button id="access-submit" type="submit" disabled>Enter classroom</button><button id="access-back" type="button" hidden>Back to the access code</button></form>
+      <p id="access-message" role="status" aria-live="polite">Connecting securely…</p><p class="access-note">Checked on the server · Turkey time</p></div>
     </section>
 
 <!-- STARTUP SCREEN -->
@@ -460,7 +460,7 @@
                         <text x="32" y="28" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="Poppins, sans-serif" font-size="10" font-weight="700" letter-spacing="1">WITH</text>
                     </svg>
                     <span class="teacher-name">MR. SAYMAZ</span>
-                    <button id="board-class-btn" type="button" class="student-session-button" onclick="openStudentClassPicker()"><span>Class</span><strong id="board-selected-class">Choose</strong></button>
+                    <button id="board-class-btn" type="button" class="student-session-button" onclick="openStudentClassPicker()"><span>Class</span><strong id="board-selected-class">Choose</strong></button><span id="example-roster-chip" class="example-roster-chip" role="status" hidden title="Sign in on the phone with the Teacher PIN to load your class lists">Example names</span>
                 </div>
             </div>
 

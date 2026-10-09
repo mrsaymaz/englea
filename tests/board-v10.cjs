@@ -49,7 +49,7 @@ const firstTag=p=>p.evaluate(()=>{const c=document.querySelector('#team-hufflepu
   console.log('PASS elemental cards: regular with no seals; nature Spark, water Surge, air Storm and nature Mythic (Earthshaker) by seal count; Flamebearer, Tidecaller and Stormrider; no level number; “★ First time” above the effects; moving in Animated mode');
 
   // A newly earned seal: one burst on the next card, none after.
-  await p.evaluate(()=>LeagueNavigatorSeals.award('5-A',{id:'5-A:slytherin:0',name:'Şeyma',team:'slytherin'},3,'s'));
+  await p.evaluate(()=>LeagueNavigatorSeals.award('5-A',{id:'5-A:slytherin:0',name:'Şugebı',team:'slytherin'},3,'s'));
   await wait(4500);await award(p,'slytherin','5-A:slytherin:0');assert.equal((await card(p,'slytherin')).levelup,true);
   await wait(4500);await award(p,'slytherin','5-A:slytherin:0');assert.equal((await card(p,'slytherin')).levelup,false);
   console.log('PASS a new seal gives the student’s next card one level-up burst, and only once');

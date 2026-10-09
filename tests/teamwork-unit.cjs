@@ -35,7 +35,7 @@ function extract(name,next) {
 vm.runInContext(extract('recordStudentAward','renderChampionContributors')+
     extract('syncParticipationMission','completeClassMission')+
     extract('completeClassMission','unityEventIsBlocked'),context);
-const students=context.LeagueStudents;
+const students=context.LeagueStudents;students.useRoster(require('./fixture.cjs').roster);
 const people=students.teams.flatMap(id=>students.members('5-A',id));
 const teams=students.teams.map(id=>({id,name:id,level:3,points:500,traits:[],powerups:{}}));
 const award=(person,points=10)=>context.recordStudentAward(teams.find(t=>t.id===person.teamId),person,points);
@@ -114,7 +114,7 @@ assert.deepEqual(recognition.children.map(card=>card.dataset.team),['gryffindor'
 assert.ok(recognition.children.every(card=>card.children[0].innerHTML.includes(card.dataset.team)));
 const leaders=recognition.children[0].children[2].children;
 assert.equal(leaders.length,3);
-assert.deepEqual(leaders.map(row=>row.children[1].textContent),['Sümeyye','Yusuf Mete','Mehmet Emin']);
+assert.deepEqual(leaders.map(row=>row.children[1].textContent),['Süvog','Yurag Miyomo','Meyebur Eril']);
 assert.deepEqual(leaders.map(row=>row.children[0].textContent),['1','1','2']);
 assert.deepEqual(leaders.map(row=>row.children[2].textContent),['4×','4×','2×']);
 assert.ok(recognition.children.slice(1).every(card=>card.children[2].textContent==='No contributions recorded yet'));

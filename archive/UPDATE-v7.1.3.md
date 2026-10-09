@@ -19,7 +19,7 @@ If you already deployed `GOOGLE-APPS-SCRIPT-v7.1.2.gs`, no Apps Script redeploym
 4. If Google asks for authorization, approve the spreadsheet access for your own script.
 5. Make sure columns **I–L** of the `Leaderboard` sheet are empty, then finish a test session and save its official record from the remote. The four leader headers will be added automatically.
 
-The four new columns are **Leaders of Gryffindor**, **Leaders of Hufflepuff**, **Leaders of Slytherin**, and **Leaders of Ravenclaw**. Each cell stores up to three names with their number of contributions, for example `Nisa (5) · Sümeyye (4) · Mehmet Emin (3)`. Student point totals are not written to these columns.
+The four new columns are **Leaders of Gryffindor**, **Leaders of Hufflepuff**, **Leaders of Slytherin**, and **Leaders of Ravenclaw**. Each cell stores up to three names with their number of contributions, for example `Nog (5) · Süvog (4) · Meyebur Eril (3)`. Student point totals are not written to these columns.
 
 ## In class
 

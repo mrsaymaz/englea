@@ -38,11 +38,11 @@ const {setup}=require('./support.cjs');
    eightBSlytherin:LeagueStudents.members('8-B','slytherin').map(person=>person.name),
    eightBRavenclaw:LeagueStudents.members('8-B','ravenclaw').map(person=>person.name)
   }));
-  assert.ok(correctedRosters.fiveCSlytherin.includes('Cemile'));
-  assert.ok(correctedRosters.eightBSlytherin.includes('Muhammed B.'));
-  assert.ok(!correctedRosters.eightBSlytherin.includes('Hasan Hüseyin'));
-  assert.ok(correctedRosters.eightBRavenclaw.includes('Hasan Hüseyin'));
-  assert.ok(!correctedRosters.eightBRavenclaw.includes('Muhammed B.'));
+  assert.ok(correctedRosters.fiveCSlytherin.includes('Cilef'));
+  assert.ok(correctedRosters.eightBSlytherin.includes('Moka B.'));
+  assert.ok(!correctedRosters.eightBSlytherin.includes('Hoder Huyun'));
+  assert.ok(correctedRosters.eightBRavenclaw.includes('Hoder Huyun'));
+  assert.ok(!correctedRosters.eightBRavenclaw.includes('Moka B.'));
   assert.equal(total,120);pass('All 120 students across 20 rosters appear only in their corrected class and team; cancelling adds no points');
   await board.evaluate(()=>__qa.reset());await phone.waitForFunction(()=>!__qa.state().remoteStudentClass);
   await plus('gryffindor');assert.equal(await phone.locator('#student-picker').getAttribute('data-kind'),'class');
@@ -56,7 +56,7 @@ const {setup}=require('./support.cjs');
   assert.deepEqual((await state()).studentContributions['5-A:gryffindor:0'],{points:10,awards:1});
   assert.equal((await state()).mission.progress,1);
   assert.equal(await board.locator('#constellation-gryffindor .teamwork-star').count(),1);
-  assert.match(await board.locator('#team-gryffindor .student-contribution-badge').textContent(),/Elif Naz/);
+  assert.match(await board.locator('#team-gryffindor .student-contribution-badge').textContent(),/Emobi Nese/);
   await board.screenshot({path:'output/board-student.png'});
   pass('First + guides class → student; a lost receipt retries score and student credit exactly once');
   await plus('gryffindor');
@@ -67,7 +67,7 @@ const {setup}=require('./support.cjs');
   const countRanking=await board.evaluate(()=>LeagueStudents.ranked('5-A','gryffindor',{
    '5-A:gryffindor:0':{points:1000,awards:1},'5-A:gryffindor:1':{points:20,awards:2}
   }));
-  assert.deepEqual(countRanking.map(person=>[person.name,person.awards,person.rank]),[['Sümeyye',2,1],['Elif Naz',1,2]]);
+  assert.deepEqual(countRanking.map(person=>[person.name,person.awards,person.rank]),[['Süvog',2,1],['Emobi Nese',1,2]]);
   pass('Student picker shows contribution counts and rankings use participation frequency instead of points');
   await phone.locator('#mobile-class-btn').click();assert.ok(await phone.locator('[data-class-name="5-C"]').isDisabled());await phone.getByRole('button',{name:'Cancel',exact:true}).click();
   const before=await state();await board.evaluate(()=>{__qa.command('ADD','gryffindor',1,'invalid',undefined,{studentId:'5-A:slytherin:0'});__qa.command('ADD','gryffindor',2,'invalid',undefined,{className:'5-C',studentId:'5-C:gryffindor:0'});__qa.command('SET_CLASS',null,3,'invalid',undefined,{className:'5-C'});});
@@ -86,7 +86,7 @@ const {setup}=require('./support.cjs');
   await board.evaluate(()=>__qa.record());await phone.waitForFunction(()=>Boolean(__qa.state().remoteRecords.cachedLeaderboardRecord));
   await phone.evaluate(()=>openTeacherSaveModal());assert.equal(await phone.locator('#teacher-class-input').inputValue(),'5-A');await phone.evaluate(()=>closeTeacherSaveModal());
   const record=await phone.evaluate(()=>__qa.state().remoteRecords.cachedLeaderboardRecord);
-  assert.equal(record.className,'5-A');assert.equal(record.studentContributions.metric,'contribution_count');assert.equal(record.studentContributions.teams.gryffindor[0].name,'Elif Naz');
+  assert.equal(record.className,'5-A');assert.equal(record.studentContributions.metric,'contribution_count');assert.equal(record.studentContributions.teams.gryffindor[0].name,'Emobi Nese');
   await phone.locator('#mobile-participation-btn').click();
   assert.equal(await phone.locator('#mobile-participation-modal').isVisible(),true);
   assert.match(await phone.locator('#mobile-participation-meta').textContent(),/Class 5-A.*contribution count/i);

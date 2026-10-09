@@ -79,7 +79,7 @@ async function arena(p){
 
   // Google Sheets via the phone: a board that never played 5-A.
   const gas=makeGas();
-  gas.post({type:'FULL_SESSION',pin:'2595',className:'5-A',sessionId:'sheet-lesson',standings:[{name:'Gryffindor',points:90,level:3},{name:'Slytherin',points:40,level:2}],winner:'Slytherin'});
+  gas.post({type:'FULL_SESSION',pin:'8642',className:'5-A',sessionId:'sheet-lesson',standings:[{name:'Gryffindor',points:90,level:3},{name:'Slytherin',points:40,level:2}],winner:'Slytherin'});
   const board=await e.page(await e.browser.newContext({viewport:{width:1366,height:768}}));
   const phone=await e.page(await e.browser.newContext({viewport:{width:393,height:660},isMobile:true,hasTouch:true}));
   await phone.route('**/api/session',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(gas.post(JSON.parse(r.request().postData()||'{}')))}));
@@ -87,7 +87,7 @@ async function arena(p){
   await phone.exposeFunction('__send',d=>board.evaluate(d=>window.__receive(d),d).catch(()=>{}));await board.exposeFunction('__send',d=>phone.evaluate(d=>window.__receive(d),d).catch(()=>{}));
   await board.evaluate(()=>{__qa.start();__qa.mode('animated');__qa.selectClass('5-A');document.querySelectorAll('dialog[open]').forEach(d=>d.close());});
   assert.deepEqual(await halos(board),[]);
-  await phone.evaluate(()=>{LeagueTeacher.start('2595');document.getElementById('startup-overlay').classList.add('hidden');document.querySelector('.app-shell').style.display='none';document.getElementById('mobile-controller').classList.remove('hidden');});
+  await phone.evaluate(()=>{LeagueTeacher.start('8642');document.getElementById('startup-overlay').classList.add('hidden');document.querySelector('.app-shell').style.display='none';document.getElementById('mobile-controller').classList.remove('hidden');});
   await phone.evaluate(()=>__qa.connect('controller'));await board.evaluate(()=>__qa.connect('host'));
   await board.waitForFunction(()=>document.querySelectorAll('.halo-svg').length===2,{},{timeout:10000});
   assert.deepEqual(await halos(board),['hufflepuff','ravenclaw']);

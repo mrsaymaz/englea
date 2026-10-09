@@ -46,7 +46,7 @@ test('Scoring: the halo doubles the award after every other bonus; teams without
  const both=R.award({team:{...teams[0],powerups:{doubleUp:true}},teams,base:40,lastTeam:null,halo:true});assert.equal(both.points,160,'stacks with the Double power-up');
 });
 test('Apps Script v10.2.0: Load islands returns each class’s last saved session (same session, later Arena-only save, shared title, older rows)',()=>{
- const gas=makeGas(),pin='2595',st=(n,p)=>({name:n,points:p,level:2});
+ const gas=makeGas(),pin='8642',st=(n,p)=>({name:n,points:p,level:2});
  const save=(type,className,sessionId,standings,winner)=>gas.post({type,pin,className,sessionId,standings,winner});
  assert.equal(gas.post({type:'ISLAND_GET',pin,className:'5-A'}).lastSession,null,'no sessions yet');
  save('FULL_SESSION','5-A','s1',[st('Gryffindor',90),st('Slytherin',60)],'Ravenclaw');

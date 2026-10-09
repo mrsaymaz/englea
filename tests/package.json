@@ -1,5 +1,5 @@
 {
-  "name": "english-league-v11-0-0-regression-checks",
+  "name": "english-league-v12-0-0-regression-checks",
   "private": true,
   "scripts": {
     "test": "node run.cjs",
@@ -32,7 +32,8 @@
     "test:creature-art": "node creature-art.cjs",
     "test:creature-render": "node render-creatures.cjs",
     "test:saga-balance": "node saga-balance.cjs",
-    "test:finale": "node vixar-finale.cjs"
+    "test:finale": "node vixar-finale.cjs",
+    "test:v12": "npm run test:v11 && node v12.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"
