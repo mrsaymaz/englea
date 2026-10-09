@@ -95,6 +95,44 @@
       "bytes": 249214,
       "sha256": "ab1bc58678731b6c79f6fede05522c22dd491f871cd5d0b9b91a01a0f62daf1d"
     },
+    "gryffindor-11": {
+      "file": "gryffindor-11.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 241912,
+      "sha256": "7fae8a4987245f10fdd840c4d424f384bef4dfed21ecaa4c1356af460483651d"
+    },
+    "gryffindor-12": {
+      "file": "gryffindor-12.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 297254,
+      "sha256": "c790c548be2c17db2344551dfc3b87e65cb64ef3e705ed67e6a34f20ccd74bf2"
+    },
     "gryffindor-2": {
       "file": "gryffindor-2.webp",
       "cols": 3,
@@ -303,6 +341,44 @@
       ],
       "bytes": 242782,
       "sha256": "6d71a57d50d29a84cf082a75527dae8c20ef24bac13a598dcd2ab48673a9c4cf"
+    },
+    "hufflepuff-11": {
+      "file": "hufflepuff-11.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 277472,
+      "sha256": "7efa11941d86b1cca77ffbe1d52307d56ab8b7b0b2e01534880bdcfacab70dc2"
+    },
+    "hufflepuff-12": {
+      "file": "hufflepuff-12.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 274326,
+      "sha256": "a960fddf482c0c3f2774f214aaf51b87132319ee9a48baeded4c310ff54327bd"
     },
     "hufflepuff-2": {
       "file": "hufflepuff-2.webp",
@@ -577,6 +653,44 @@
       "bytes": 290284,
       "sha256": "0ef0adc2d0c9a354faf482ab44829eacdd11f544bb0e100b787b7d691448763c"
     },
+    "ravenclaw-11": {
+      "file": "ravenclaw-11.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 272972,
+      "sha256": "f11398af2fc7d8447f9d8c8c3ee43896f5e9e81345b9cc725943db022134d63a"
+    },
+    "ravenclaw-12": {
+      "file": "ravenclaw-12.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 231632,
+      "sha256": "8aa1fc467ce178b7164ecc91b99c15ec127eac710251fb1c713bf06e28eecc20"
+    },
     "ravenclaw-2": {
       "file": "ravenclaw-2.webp",
       "cols": 3,
@@ -802,6 +916,44 @@
       "bytes": 244124,
       "sha256": "54d3a4e0df695604f9448baebafd7be4f137d0fe167d89104505785589371682"
     },
+    "slytherin-11": {
+      "file": "slytherin-11.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 247142,
+      "sha256": "7e36da6ac8b11ff0c43522404bef07e41ed26e52adf20234e5f12d9f136f4beb"
+    },
+    "slytherin-12": {
+      "file": "slytherin-12.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 209980,
+      "sha256": "91b95498b3a47295f2e2d4ec93f8632de28307130c9292f8744866f24c7e14c6"
+    },
     "slytherin-2": {
       "file": "slytherin-2.webp",
       "cols": 3,
@@ -1005,6 +1157,44 @@
       "bytes": 525526,
       "sha256": "a4cbe74a08df003992df2479072c835104b8b4a1fab6288e70df60f8ed56adf0"
     },
+    "vixar-gilded": {
+      "file": "vixar-gilded.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 640,
+      "states": [
+        "ready",
+        "charge",
+        "cast",
+        "guard",
+        "exposed",
+        "hit",
+        "ultimate",
+        "defeat",
+        "proud"
+      ],
+      "bytes": 1241274,
+      "sha256": "42d5cf8adef569f32dbabbb22216460c5668ed954f13f644824e4453d13eacb6"
+    },
+    "vixar-scarlet": {
+      "file": "vixar-scarlet.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 640,
+      "states": [
+        "ready",
+        "charge",
+        "cast",
+        "guard",
+        "exposed",
+        "hit",
+        "ultimate",
+        "defeat",
+        "proud"
+      ],
+      "bytes": 1039488,
+      "sha256": "d0f6eaf74fa4f62b752bea8e22f16be6427347d42b5e79cc3167608e9283ec8d"
+    },
     "vox": {
       "file": "vox.webp",
       "cols": 3,
@@ -1020,6 +1210,45 @@
       ],
       "bytes": 171288,
       "sha256": "a3f0161fc82e58cbc083b5c701cfa3cd5c9db91a6eb298085be2368294aeb349"
+    },
+    "slyffindor": {
+      "file": "slyffindor.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 408756,
+      "sha256": "e16fc5a630b4956308344f3edf274b27029beb1fb39924b6c2599d7887f71872"
+    },
+    "huffleclaw": {
+      "file": "huffleclaw.webp",
+      "cols": 3,
+      "rows": 3,
+      "cell": 320,
+      "states": [
+        "ready",
+        "attack",
+        "guard",
+        "hit",
+        "proud",
+        "support",
+        "runA",
+        "runB",
+        "jump"
+      ],
+      "bytes": 342340,
+      "sha256": "1a8bc15454c5bf97034c55e73f11b6cd39bc577ea32d1da1c324993fb8c4a9f4"
     }
-  }
+  },
+  "saga": "11.0.0: Level 11 (Mythic) and Level 12 (Celestial) team forms; Scarlet and Gilded Vixar. Slyffindor and Huffleclaw (the Merge Spell fusions), team states."
 }

@@ -1,0 +1,34 @@
+{
+  "version": "11.0.0",
+  "howTo": "Illustrated Mr. Saymaz and the Level 0 reunion. hug.webp is a genuinely transparent 1024-square cutout; the existing Finale dawn is the only background. See VISUAL-REFINEMENT.md.",
+  "mrSaymaz": {
+    "portrait": "mr-saymaz-portrait.webp",
+    "ready": "mr-saymaz-ready.webp",
+    "proud": "mr-saymaz-proud.webp",
+    "support": "mr-saymaz-support.webp",
+    "wave": "mr-saymaz-wave.webp",
+    "bow": "mr-saymaz-bow.webp",
+    "kneel": "mr-saymaz-kneel.webp"
+  },
+  "reveal": [
+    "mr-saymaz-reveal-01-bound.webp",
+    "mr-saymaz-reveal-02-first-break.webp",
+    "mr-saymaz-reveal-03-chains-falling.webp",
+    "mr-saymaz-reveal-04-last-binding.webp",
+    "mr-saymaz-reveal-05-faceplate-crack.webp",
+    "mr-saymaz-reveal-06-identity-revealed.webp"
+  ],
+  "hug": "hug.webp",
+  "merged": {
+    "slyffindor": "slyffindor.webp",
+    "huffleclaw": "huffleclaw.webp"
+  },
+  "artRevision": "11.0.0-visual2",
+  "sceneRevision": "11.0.0-scenes1",
+  "worlds": {
+    "violet": "worlds/violet-court.webp",
+    "scarlet": "worlds/scarlet-forge.webp",
+    "gilded": "worlds/gilded-prison.webp",
+    "dawn": "worlds/restored-dawn.webp"
+  }
+}
